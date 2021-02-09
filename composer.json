@@ -1,0 +1,21 @@
+{
+    "name": "afeefa/api-resources",
+    "version": "0.0.1",
+    "description": "",
+    "type": "library",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Afeefa Kollektiv",
+            "email": "kollektiv@afeefa.de"
+        }
+    ],
+    "require-dev": {
+        "afeefa/package-manager": "^0"
+    },
+    "autoload": {
+      "psr-4": {
+          "Afeefa\\ApiResources\\": "src"
+      }
+  }
+}
