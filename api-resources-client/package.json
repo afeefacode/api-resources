@@ -1,0 +1,16 @@
+{
+  "name": "@afeefa/api-resources-client",
+  "version": "0.0.1",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "dev": "tsc --watch",
+    "build": "tsc"
+  },
+  "author": "Afeefa Kollektiv <kollektiv@afeefa.de>",
+  "license": "MIT",
+  "dependencies": {},
+  "devDependencies": {
+    "typescript": "^4.1.3"
+  }
+}
