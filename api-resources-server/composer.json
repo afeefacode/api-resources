@@ -1,0 +1,12 @@
+{
+    "name": "afeefa/api-resources-server",
+    "type": "library",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Afeefa Kollektiv",
+            "email": "kollektiv@afeefa.de"
+        }
+    ],
+    "require": {}
+}
