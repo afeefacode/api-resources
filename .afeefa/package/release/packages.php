@@ -6,9 +6,9 @@ use Webmozart\PathUtil\Path;
 return [
     Package::composer()
         ->path(Path::join(getcwd(), 'api-resources-server'))
-        ->split(Path::join(getcwd(), '..', 'api-resources-server')),
+        ->split('git@github.com:afeefacode/api-resources-server.git'),
 
     Package::npm()
         ->path(Path::join(getcwd(), 'api-resources-client'))
-        ->split(Path::join(getcwd(), '..', 'api-resources-client'))
+        ->split('git@github.com:afeefacode/api-resources-client.git')
 ];
