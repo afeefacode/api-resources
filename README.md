@@ -2,6 +2,13 @@
 
 Create multiple APIs for the same project.
 
+## Documentation
+
+See the examples below for inspiration and head over to the documentation pages:
+
+* on details regarding installation, configuration and further usage: https://afeefa-api-resources.readthedocs.io
+* or the Server API Documentation here: https://afeefacode.github.io/api-resources/server-api
+* and the Client API Documentation here: https://afeefacode.github.io/api-resources/client-api
 
 ## Build the docs
 
