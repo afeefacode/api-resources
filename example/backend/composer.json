@@ -1,0 +1,5 @@
+{
+    "require": {
+        "afeefa/api-resources-server": "^0.0.12"
+    }
+}

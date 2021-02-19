@@ -1,0 +1,50 @@
+{
+    "_readme": [
+        "This file locks the dependencies of your project to a known state",
+        "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
+        "This file is @generated automatically"
+    ],
+    "content-hash": "e6cd0ed4f1e58185247a36756126fa73",
+    "packages": [
+        {
+            "name": "afeefa/api-resources-server",
+            "version": "0.0.12",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/afeefacode/api-resources-server.git",
+                "reference": "95b226e5543ecbc12ae3252d5bf70f580311bc7a"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/afeefacode/api-resources-server/zipball/95b226e5543ecbc12ae3252d5bf70f580311bc7a",
+                "reference": "95b226e5543ecbc12ae3252d5bf70f580311bc7a",
+                "shasum": ""
+            },
+            "type": "library",
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Afeefa Kollektiv",
+                    "email": "kollektiv@afeefa.de"
+                }
+            ],
+            "support": {
+                "issues": "https://github.com/afeefacode/api-resources-server/issues",
+                "source": "https://github.com/afeefacode/api-resources-server/tree/v0.0.12"
+            },
+            "time": "2021-02-17T18:45:10+00:00"
+        }
+    ],
+    "packages-dev": [],
+    "aliases": [],
+    "minimum-stability": "stable",
+    "stability-flags": [],
+    "prefer-stable": false,
+    "prefer-lowest": false,
+    "platform": [],
+    "platform-dev": [],
+    "plugin-api-version": "2.0.0"
+}

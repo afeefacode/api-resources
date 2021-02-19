@@ -1,0 +1,5 @@
+{
+  "dependencies": {
+    "@afeefa/api-resources-client": "0.0.12"
+  }
+}
