@@ -1,0 +1,70 @@
+version: '3'
+
+services:
+
+  nginx:
+    container_name: afeefa-api-nginx
+    image: nginx
+    volumes:
+      - ../backend:/backend
+      - ./nginx.conf:/etc/nginx/conf.d/default.conf
+    ports:
+      - "8080:80"
+    links:
+      - php
+    networks:
+      - afeefa-api-network
+
+  php:
+    container_name: afeefa-api-php
+    hostname: api-resources-server
+    build: ./php
+    image: afeefa-api/php
+    working_dir: /backend
+    volumes:
+      - ../../api-resources-server:/api-resources-server
+      - ../backend:/backend
+    networks:
+      - afeefa-api-network
+
+  vue:
+    container_name: afeefa-api-vue
+    hostname: api-resources-client
+    build: ./vue
+    image: afeefa-api/vue
+    working_dir: /frontend
+    volumes:
+      - ../../api-resources-client:/api-resources-client
+      - ../frontend:/frontend
+    # command: "npm run serve"
+    networks:
+      - afeefa-api-network
+    # logging:
+    #     driver: none
+
+  mysql:
+    container_name: afeefa-api-mysql
+    image: mariadb
+    restart: always
+    volumes:
+      - afeefa-api-mysql:/var/lib/mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: api
+    networks:
+      - afeefa-api-network
+
+  adminer:
+    container_name: afeefa-api-adminer
+    image: adminer
+    restart: always
+    networks:
+      - afeefa-api-network
+
+networks:
+  afeefa-api-network:
+      driver: bridge
+
+volumes:
+  afeefa-api-mysql:
+    driver: local

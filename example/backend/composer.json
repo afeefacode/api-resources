@@ -1,5 +1,8 @@
 {
     "require": {
         "afeefa/api-resources-server": "^0.0.12"
+    },
+    "require-dev": {
+        "robmorgan/phinx": "^0.12.5"
     }
 }
