@@ -1,4 +1,3 @@
-import { test } from './index2'
-
-console.log(test)
-console.log('test')
+export { Client } from './Client'
+export { test } from './index2'
+export { Model } from './Model'

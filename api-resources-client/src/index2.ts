@@ -1,1 +1,1 @@
-export const test:String = "test"
+export const test:String = "test string"
