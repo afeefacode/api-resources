@@ -4,7 +4,8 @@
     "serve": "npm run --prefix node_modules/@afeefa/vue2-bootstrap serve",
     "build": "npm run --prefix node_modules/@afeefa/vue2-bootstrap build"
   },
-  "devDependencies": {
-    "@afeefa/vue2-bootstrap": "^1.0"
+  "dependencies": {
+    "@afeefa/vue2-bootstrap": "^1.0",
+    "@afeefa/api-resources-client": "file:../../api-resources-client"
   }
 }
