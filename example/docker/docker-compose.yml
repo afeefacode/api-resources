@@ -10,8 +10,6 @@ services:
       - ./nginx.conf:/etc/nginx/conf.d/default.conf
     ports:
       - "8080:80"
-    links:
-      - php
     networks:
       - api-resources-network
 
@@ -34,10 +32,6 @@ services:
     volumes:
       - ../../api-resources-client:/client
     command: "npm run dev"
-    networks:
-      - api-resources-network
-    # logging:
-    #     driver: none
 
   vue:
     container_name: api-resources-vue
@@ -61,13 +55,8 @@ services:
     environment:
       MYSQL_ROOT_PASSWORD: root
       MYSQL_DATABASE: api
-    networks:
-      - api-resources-network
-
-  adminer:
-    container_name: api-resources-adminer
-    image: adminer
-    restart: always
+    ports:
+      - '23306:3306'
     networks:
       - api-resources-network
 
