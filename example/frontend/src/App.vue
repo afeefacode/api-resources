@@ -1,12 +1,15 @@
 <template>
   <div>
-    <p>
-      Frontend
-    </p>
+    <h1>Tags</h1>
 
-    <p>
-      Data: {{ data }}
-    </p>
+    <ul>
+      <li
+        v-for="tag in tags"
+        :key="tag.id"
+      >
+        {{ tag.id }} {{ tag.name }}
+      </li>
+    </ul>
 
     <a href="/">Backend</a>
   </div>
@@ -18,11 +21,12 @@ import { Client } from '@afeefa/api-resources-client'
 
 @Component
 export default class App extends Vue {
-  data = null
+  tags = []
 
-  created () {
+  async created () {
     const client = new Client()
-    this.data = client.get()
+    const result = await client.get('http://localhost:8080/api')
+    this.tags = result.data
   }
 }
 </script>

@@ -10,6 +10,10 @@ RUN docker-php-ext-install \
 
 RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/bin --filename=composer
 
+COPY .aliasesrc /root/.aliasesrc
+
+RUN echo "\nsource /root/.aliasesrc" >> /root/.bashrc;
+
 COPY ./entrypoint.sh /entrypoint.sh
 
 ENTRYPOINT ["/entrypoint.sh", "php-fpm"]
