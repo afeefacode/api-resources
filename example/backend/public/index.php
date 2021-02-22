@@ -22,4 +22,9 @@ $app->get('/api', function (Request $request, Response $response, array $args) u
     return $response->withJson($tags);
 });
 
+$app->get('/', function (Request $request, Response $response, array $args) use ($db) {
+    $response->getBody()->write('Hello Api Resources <a href="/frontend">Frontend</a>');
+    return $response;
+});
+
 $app->run();

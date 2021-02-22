@@ -1,5 +1,7 @@
 <template>
   <div>
+    <a href="/">Backend</a>
+
     <h1>Tags</h1>
 
     <ul>
@@ -10,8 +12,6 @@
         {{ tag.id }} {{ tag.name }}
       </li>
     </ul>
-
-    <a href="/">Backend</a>
   </div>
 </template>
 
