@@ -3,82 +3,78 @@ version: '3'
 services:
 
   nginx:
-    container_name: afeefa-api-nginx
+    container_name: api-resources-nginx
     image: nginx
     volumes:
-      - ../backend:/backend
+      - ../..:/api-resources
       - ./nginx.conf:/etc/nginx/conf.d/default.conf
     ports:
       - "8080:80"
     links:
       - php
     networks:
-      - afeefa-api-network
+      - api-resources-network
 
   php:
-    container_name: afeefa-api-php
+    container_name: api-resources-php
     hostname: api-resources-server
     build: ./php
-    image: afeefa-api/php
-    working_dir: /backend
+    image: api-resources/php
+    working_dir: /api-resources/example/backend
     volumes:
-      - ../../api-resources-server:/api-resources-server
-      - ../backend:/backend
+      - ../..:/api-resources
     networks:
-      - afeefa-api-network
+      - api-resources-network
 
   ts:
-    container_name: afeefa-api-ts
+    container_name: api-resources-ts
     hostname: api-resources-ts
-    build: ./vue
-    image: afeefa-api/vue
+    image: api-resources/node
     working_dir: /client
     volumes:
       - ../../api-resources-client:/client
     command: "npm run dev"
     networks:
-      - afeefa-api-network
+      - api-resources-network
     # logging:
     #     driver: none
 
   vue:
-    container_name: afeefa-api-vue
+    container_name: api-resources-vue
     hostname: api-resources-client
-    build: ./vue
-    image: afeefa-api/vue
+    build: ./node
+    image: api-resources/node
     working_dir: /api-resources/example/frontend
     volumes:
       - ../..:/api-resources
-      # - ../frontend:/frontend
-    # command: "npm run serve"
     networks:
-      - afeefa-api-network
+      - api-resources-network
     # logging:
     #     driver: none
 
   mysql:
-    container_name: afeefa-api-mysql
+    container_name: api-resources-mysql
     image: mariadb
     restart: always
     volumes:
-      - afeefa-api-mysql:/var/lib/mysql
+      - api-resources-mysql:/var/lib/mysql
     environment:
       MYSQL_ROOT_PASSWORD: root
       MYSQL_DATABASE: api
     networks:
-      - afeefa-api-network
+      - api-resources-network
 
   adminer:
-    container_name: afeefa-api-adminer
+    container_name: api-resources-adminer
     image: adminer
     restart: always
     networks:
-      - afeefa-api-network
+      - api-resources-network
 
 networks:
-  afeefa-api-network:
+  api-resources-network:
       driver: bridge
 
 volumes:
-  afeefa-api-mysql:
+  api-resources-mysql:
     driver: local
