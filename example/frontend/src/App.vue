@@ -1,6 +1,8 @@
 <template>
   <div>
-    Frontend
+    <p>
+      Frontend
+    </p>
 
     <a href="/">Backend</a>
   </div>
@@ -10,3 +12,10 @@
 export default {
 }
 </script>
+
+
+<style lang="scss" scoped>
+p {
+  color: red;
+}
+</style>
