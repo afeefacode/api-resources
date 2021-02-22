@@ -27,15 +27,29 @@ services:
     networks:
       - afeefa-api-network
 
+  ts:
+    container_name: afeefa-api-ts
+    hostname: api-resources-ts
+    build: ./vue
+    image: afeefa-api/vue
+    working_dir: /client
+    volumes:
+      - ../../api-resources-client:/client
+    command: "npm run dev"
+    networks:
+      - afeefa-api-network
+    # logging:
+    #     driver: none
+
   vue:
     container_name: afeefa-api-vue
     hostname: api-resources-client
     build: ./vue
     image: afeefa-api/vue
-    working_dir: /frontend
+    working_dir: /api-resources/example/frontend
     volumes:
-      - ../../api-resources-client:/api-resources-client
-      - ../frontend:/frontend
+      - ../..:/api-resources
+      # - ../frontend:/frontend
     # command: "npm run serve"
     networks:
       - afeefa-api-network
