@@ -8,7 +8,7 @@ final class CreateTags extends AbstractMigration
     public function up()
     {
         $this->table('tags', ['signed' => false])
-            ->addColumn('name', 'string', ['limit' => 255, 'null' => false])
+            ->addColumn('name', 'string', ['limit' => 255])
             ->addIndex(['name'], ['unique' => true])
             ->create();
 

@@ -1,23 +1,15 @@
 <?php
 
-use Faker\Factory;
-use Phinx\Seed\AbstractSeed;
+use Backend\Seeds\BaseSeeder;
 
-class SeedTags extends AbstractSeed
+class SeedTags extends BaseSeeder
 {
-    public function run()
+    public function seed()
     {
-        $this->truncate();
-
-        $faker = Factory::create('de_DE');
-
         $tags = [];
 
-        foreach (range(1, 100) as $id) {
-            $name = $faker->unique()->word();
-
-            echo "$name\n";
-
+        foreach (range(1, 300) as $number) {
+            $name = $this->faker->unique()->word();
             $tags[] = [
                 'name' => $name
             ];
@@ -28,10 +20,6 @@ class SeedTags extends AbstractSeed
 
     public function truncate()
     {
-        $this->execute('SET FOREIGN_KEY_CHECKS=0');
-
         $this->table('tags')->truncate();
-
-        $this->execute('SET FOREIGN_KEY_CHECKS=1');
     }
 }

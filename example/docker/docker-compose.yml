@@ -49,7 +49,6 @@ services:
   mysql:
     container_name: api-resources-mysql
     image: mariadb
-    restart: always
     volumes:
       - api-resources-mysql:/var/lib/mysql
     environment:
