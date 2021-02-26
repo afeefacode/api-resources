@@ -5,7 +5,7 @@
     "build": "npm run --prefix node_modules/@afeefa/vue2-bootstrap build"
   },
   "dependencies": {
-    "@afeefa/vue2-bootstrap": "^1.0",
-    "@afeefa/api-resources-client": "file:../../api-resources-client"
+    "@afeefa/api-resources-client": "file:../../api-resources-client",
+    "@afeefa/vue2-bootstrap": "^1.0"
   }
 }
