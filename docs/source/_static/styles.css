@@ -1,0 +1,33 @@
+div.flex {
+  display: flex;
+  justify-content: flex-start;
+  align-items: stretch;
+  margin-bottom: 24px;
+}
+
+div.flex * {
+  margin-bottom: 0 !important;
+}
+
+div.flex .container > p {
+  margin: 0 0 .5rem;
+  font-size: .8rem;
+  padding: 0;
+}
+
+div.flex > .container {
+  margin-right: 1rem;
+}
+
+div.flex .container {
+  display: flex;
+  flex-direction: column;
+}
+
+div.flex .container div {
+  height: 100%;
+}
+
+div.flex .container .highlight {
+  padding-right: 1rem !important;
+}

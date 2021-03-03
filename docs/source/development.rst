@@ -5,7 +5,7 @@ Build the docs
 --------------
 
 Server API Documentation
-^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^
 
 The API documentation will be served statically on GitHub and hence needs to be checked into the repository for now. There is no github action yet.
 
@@ -18,7 +18,7 @@ The API documentation will be served statically on GitHub and hence needs to be 
   firefox docs/server-api/index.html &
 
 Client API Documentation
-^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^
 
 The API documentation will be served statically on GitHub and hence needs to be checked into the repository for now. There is no github action yet.
 

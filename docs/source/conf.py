@@ -37,7 +37,8 @@ language = 'en'
 # ones.
 extensions = [
     "sphinx_rtd_theme",
-    "m2r2"
+    "m2r2",
+    "sphinx_code_tabs"
 ]
 
 # Add any paths that contain templates here, relative to this directory.
@@ -66,3 +67,7 @@ source_suffix = ['.rst', '.md']
 # enable highlighting for PHP code not between <?php ... ?> by default
 lexers['php'] = PhpLexer(startinline=True)
 lexers['php-annotations'] = PhpLexer(startinline=True)
+
+html_css_files = [
+    'styles.css',
+]
