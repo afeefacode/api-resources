@@ -76,7 +76,6 @@ Retrival
               "type": "A",
               "id": "1",
               "fields": [
-                "title",
                 "b": {
                   "title"
                 }
@@ -93,7 +92,6 @@ Retrival
             {
               "_type": "A",
               "id": "1",
-              "title": "title-a",
               "b": {
                 "_type": "B",
                 "id": "1",
@@ -110,7 +108,6 @@ Retrival
             {
               "_type": "A",
               "id": "1",
-              "title": "title-a",
               "b": null
             }
 
@@ -133,13 +130,11 @@ Storage
                   "type": "A",
                   "id": "1",
                   "data": {
-                    "title": "title-a",
                     "b": {
                       "title": "title-b"
                     }
                   }
                   "fields": [
-                    "title",
                     "b": {
                       "title"
                     }
@@ -152,7 +147,6 @@ Storage
                 {
                   "_type": "A",
                   "id": "1",
-                  "title": "title-a",
                   "b": {
                     "_type": "B",
                     "id": "1",
@@ -173,14 +167,12 @@ Storage
                   "type": "A",
                   "id": "1",
                   "data": {
-                    "title": "title-a",
                     "b": {
                       "id": 1,
                       "title": "title-b"
                     }
                   }
                   "fields": [
-                    "title",
                     "b": {
                       "title"
                     }
@@ -193,7 +185,6 @@ Storage
                 {
                   "_type": "A",
                   "id": "1",
-                  "title": "title-a",
                   "b": {
                     "_type": "B",
                     "id": "1",
@@ -214,11 +205,9 @@ Storage
                   "type": "A",
                   "id": "1",
                   "data": {
-                    "title": "title-a",
                     "b": null
                   }
                   "fields": [
-                    "title",
                     "b": {
                       "title"
                     }
@@ -231,7 +220,6 @@ Storage
                 {
                   "_type": "A",
                   "id": "1",
-                  "title": "title-a",
                   "b": null
                 }
 
