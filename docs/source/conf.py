@@ -1,5 +1,6 @@
 import sphinx_rtd_theme
 import m2r2
+import sphinx_code_tabs
 
 # load PhpLexer
 from sphinx.highlighting import lexers
