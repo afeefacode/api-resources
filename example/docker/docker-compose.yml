@@ -11,7 +11,8 @@ services:
     ports:
       - "8080:80"
     networks:
-      - api-resources-network
+      - default
+      - nginx-frontproxy
 
   php:
     container_name: api-resources-php
@@ -21,8 +22,6 @@ services:
     working_dir: /api-resources/example/backend
     volumes:
       - ../..:/api-resources
-    networks:
-      - api-resources-network
 
   ts:
     container_name: api-resources-ts
@@ -41,10 +40,6 @@ services:
     working_dir: /api-resources/example/frontend
     volumes:
       - ../..:/api-resources
-    networks:
-      - api-resources-network
-    # logging:
-    #     driver: none
 
   mysql:
     container_name: api-resources-mysql
@@ -56,12 +51,11 @@ services:
       MYSQL_DATABASE: api
     ports:
       - '23306:3306'
-    networks:
-      - api-resources-network
+
 
 networks:
-  api-resources-network:
-      driver: bridge
+  nginx-frontproxy:
+    external: true
 
 volumes:
   api-resources-mysql:

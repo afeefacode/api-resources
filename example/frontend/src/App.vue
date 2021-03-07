@@ -1,5 +1,7 @@
 <template>
   <div>
+    <p>URL {{ url }}</p>
+
     <a href="/">Backend</a>
 
     <h1>Tags</h1>
@@ -23,9 +25,14 @@ import { Client } from '@afeefa/api-resources-client'
 export default class App extends Vue {
   tags = []
 
+  get url () {
+    const url = location.protocol + '//' + location.hostname + (location.port ? ':' + location.port : '')
+    return url
+  }
+
   async created () {
     const client = new Client()
-    const result = await client.get('http://localhost:8080/api')
+    const result = await client.get('/api')
     this.tags = result.data
   }
 }
