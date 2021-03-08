@@ -14,7 +14,8 @@ final class CreateComments extends AbstractMigration
             ->addColumn('author_name', 'string', ['limit' => 255])
             ->addColumn('content', 'text')
 
-            ->addIndex(['owner_id', 'owner_type'])
+            ->addColumn('date', 'datetime', ['null' => true])
+
             ->create();
     }
 

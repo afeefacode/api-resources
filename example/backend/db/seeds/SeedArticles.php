@@ -28,7 +28,8 @@ class SeedArticles extends BaseSeeder
                 'author_id' => $author['id'],
                 'title' => $this->faker->sentence(),
                 'summary' => $content[0],
-                'content' => implode("\n\n", $content)
+                'content' => implode("\n\n", $content),
+                'date' => $this->faker->dateTimeBetween('-5 years')->format('Y-m-d H:i:s')
             ];
         }
 

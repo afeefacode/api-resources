@@ -21,7 +21,6 @@ class SeedComments extends BaseSeeder
             $numComments = random_int(0, 10);
 
             if (!$numComments) {
-                echo "no comments for {$article['id']}\n";
                 continue;
             }
 
@@ -35,7 +34,8 @@ class SeedComments extends BaseSeeder
                     'owner_id' => $article['id'],
                     'owner_type' => 'Article',
                     'author_name' => $this->faker->name(),
-                    'content' => implode("\n\n", $content)
+                    'content' => implode("\n\n", $content),
+                    'date' => $this->faker->dateTimeBetween($article['date'])->format('Y-m-d H:i:s')
                 ];
             }
 

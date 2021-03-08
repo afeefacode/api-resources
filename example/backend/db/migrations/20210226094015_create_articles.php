@@ -9,9 +9,12 @@ final class CreateArticles extends AbstractMigration
     {
         $this->table('articles', ['signed' => false])
             ->addColumn('author_id', 'integer', ['signed' => false])
+
             ->addColumn('title', 'string', ['limit' => 255])
             ->addColumn('summary', 'string', ['limit' => 400, 'null' => true])
             ->addColumn('content', 'text', ['null' => true])
+
+            ->addColumn('date', 'datetime', ['null' => true])
 
             ->addForeignKey('author_id', 'authors', 'id', ['delete' => 'CASCADE', 'update' => 'NO_ACTION'])
 

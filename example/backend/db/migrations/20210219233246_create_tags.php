@@ -19,7 +19,6 @@ final class CreateTags extends AbstractMigration
 
             ->addColumn('user_id', 'integer', ['signed' => false])
             ->addColumn('user_type', 'string', ['limit' => 255])
-            ->addIndex(['user_id', 'user_type'])
 
             ->create();
     }
