@@ -1,0 +1,13 @@
+{
+  "compilerOptions": {
+    "baseUrl": ".",
+    "paths": {
+      "@/*": [
+        "src/*"
+      ],
+      "@afeefa/api-resources-client/*": [
+        "../../api-resources-client/src/*"
+      ]
+    }
+  }
+}
