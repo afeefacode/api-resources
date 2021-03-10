@@ -9,5 +9,10 @@
             "email": "kollektiv@afeefa.de"
         }
     ],
-    "require": {}
+    "require": {},
+    "autoload": {
+        "psr-4": {
+            "Afeefa\\ApiResources\\": "src"
+        }
+    }
 }
