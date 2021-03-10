@@ -22,6 +22,8 @@ services:
     working_dir: /api-resources/example/backend
     volumes:
       - ../..:/api-resources
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
 
   ts:
     container_name: api-resources-ts
