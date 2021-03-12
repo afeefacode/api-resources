@@ -16,7 +16,7 @@ class SearchResource extends Resource
 
     public function actions(ActionBag $actions): void
     {
-        $actions->action('search', function (Action $action) {
+        $actions->add('search', function (Action $action) {
             $action->filters(function (FilterBag $filters) {
                 $filters->keyword('q');
             });

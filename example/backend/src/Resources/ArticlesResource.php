@@ -19,7 +19,7 @@ class ArticlesResource extends Resource
 
     public function actions(ActionBag $actions): void
     {
-        $actions->action('get_articles', function (Action $action) {
+        $actions->add('get_articles', function (Action $action) {
             $action->filters(function (FilterBag $filters) {
                 $filters->id('autor_id')
                     ->request(function (Request $request) {
@@ -55,7 +55,7 @@ class ArticlesResource extends Resource
             });
         });
 
-        $actions->action('get_article', function (Action $action) {
+        $actions->add('get_article', function (Action $action) {
             $action->params(function (ActionParams $params) {
                 $params->add('id', IdField::class);
             });
@@ -65,7 +65,7 @@ class ArticlesResource extends Resource
             });
         });
 
-        $actions->action('create_article', function (Action $action) {
+        $actions->add('create_article', function (Action $action) {
             $action->input(function (ActionInput $input) {
                 $input->type(ArticleType::class);
             });
@@ -75,7 +75,7 @@ class ArticlesResource extends Resource
             });
         });
 
-        $actions->action('update_article', function (Action $action) {
+        $actions->add('update_article', function (Action $action) {
             $action
                 ->input(function (ActionInput $input) {
                     $input->type(ArticleType::class);
@@ -86,7 +86,7 @@ class ArticlesResource extends Resource
                 });
         });
 
-        $actions->action('update_articles', function (Action $action) {
+        $actions->add('update_articles', function (Action $action) {
             $action
                 ->params(function (ActionParams $params) {
                     $params->add('id', IdField::class);
@@ -102,7 +102,7 @@ class ArticlesResource extends Resource
                 });
         });
 
-        $actions->action('delete_article', function (Action $action) {
+        $actions->add('delete_article', function (Action $action) {
             $action->params(function (ActionParams $params) {
                 $params->add('id', IdField::class);
             });
@@ -111,7 +111,7 @@ class ArticlesResource extends Resource
             $action->outputType = 'test';
         });
 
-        $actions->action('delete_articles', function (Action $action) {
+        $actions->add('delete_articles', function (Action $action) {
             $action->inputType = ArticleType::class;
             $action->outputType = 'test';
         });

@@ -6,10 +6,10 @@ use Afeefa\ApiResources\Field\FieldBag;
 use Afeefa\ApiResources\Field\Fields\DateField;
 use Afeefa\ApiResources\Field\Fields\VarcharField;
 use Afeefa\ApiResources\Relation\RelationBag;
-use Afeefa\ApiResources\Type\Type;
+use Afeefa\ApiResources\Type\ModelType;
 use Afeefa\ApiResources\Validator\Validators\VarcharValidator;
 
-class ArticleType extends Type
+class ArticleType extends ModelType
 {
     public string $type = 'Example.Article';
 
