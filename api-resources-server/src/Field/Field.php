@@ -17,6 +17,10 @@ class Field implements ToSchemaJsonInterface
 
     public ?Validator $validator = null;
 
+    public bool $required = false;
+
+    public bool $allowed = false;
+
     public function __construct()
     {
         if (!isset($this->type)) {
@@ -26,35 +30,64 @@ class Field implements ToSchemaJsonInterface
 
     public function validate(callable $callback): Field
     {
-        $f = new ReflectionFunction($callback);
-        $param = $f->getParameters()[0] ?? null;
-        if ($param) {
-            /** @var ReflectionNamedType */
-            $type = $param->getType();
-            if ($type) {
-                $Validator = $type->getName();
-                $validator = new $Validator();
-                $callback($validator);
-                $this->validator = $validator;
+        if ($this->validator) {
+            $callback($this->validator);
+        } else {
+            $f = new ReflectionFunction($callback);
+            $param = $f->getParameters()[0] ?? null;
+            if ($param) {
+                /** @var ReflectionNamedType */
+                $type = $param->getType();
+                if ($type) {
+                    $Validator = $type->getName();
+                    $this->validator = new $Validator();
+                    $callback($this->validator);
+                }
             }
         }
 
         return $this;
     }
 
+    public function required(): Field
+    {
+        $this->required = true;
+        return $this;
+    }
+
+    public function allowed(): Field
+    {
+        $this->allowed = true;
+        return $this;
+    }
+
+    public function clone(): Field
+    {
+        $field = new static();
+        $field->name = $this->name;
+        $field->required = $this->required;
+        if ($this->validator) {
+            $field->validator = $this->validator->clone();
+        }
+        return $field;
+    }
+
     public function toSchemaJson(SchemaVisitor $visitor): array
     {
-        $visitor->field(new static());
+        // $visitor->field(new static());
 
         $json = [
-            'type' => $this->type
+            'type' => $this->type,
+            // 'name' => $this->name
         ];
 
-        if ($this->validator) {
-            $Validator = get_class($this->validator);
-            $visitor->validator(new $Validator());
+        if ($this->required) {
+            $json['required'] = true;
+        }
 
+        if ($this->validator) {
             $json['validator'] = $this->validator->toSchemaJson($visitor);
+            unset($json['validator']['rules']);
         }
 
         return $json;

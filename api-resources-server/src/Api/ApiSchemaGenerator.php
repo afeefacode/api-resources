@@ -32,7 +32,9 @@ class ApiSchemaGenerator
         }, $visitor->models);
 
         $validators = array_map(function (Validator $validator) use ($visitor) {
-            return $validator->toSchemaJson($visitor);
+            $json = $validator->toSchemaJson($visitor);
+            unset($json['params']);
+            return $json;
         }, $visitor->validators);
 
         $fields = array_map(function (Field $field) use ($visitor) {
@@ -44,9 +46,9 @@ class ApiSchemaGenerator
         }, $visitor->relations);
 
         return [
-            'resources' => $resources,
             'models' => $models,
-            // 'validators' => $validators
+            'resources' => $resources,
+            'validators' => $validators
             // 'fields' => $fields,
             // 'relations' => $relations,
         ];

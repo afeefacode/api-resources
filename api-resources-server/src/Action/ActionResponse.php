@@ -9,10 +9,17 @@ class ActionResponse implements ToSchemaJsonInterface
 {
     public bool $list = false;
     public string $Type;
+    public string $Types;
 
     public function type(string $Type)
     {
         $this->Type = $Type;
+        return $this;
+    }
+
+    public function types(array $Types)
+    {
+        $this->Types = $Types;
         return $this;
     }
 

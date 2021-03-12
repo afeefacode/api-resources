@@ -12,17 +12,24 @@ class Model implements ToSchemaJsonInterface
     public string $type = 'Afeefa.Model';
 
     protected FieldBag $fields;
+    protected FieldBag $updateFields;
+    protected FieldBag $createFields;
+
     protected RelationBag $relations;
 
     public function __construct()
     {
-        $fields = new FieldBag();
-        $this->fields($fields);
-        $this->fields = $fields;
+        $this->fields = new FieldBag();
+        $this->fields($this->fields);
 
-        $relations = new RelationBag();
-        $this->relations($relations);
-        $this->relations = $relations;
+        $this->updateFields = $this->fields->clone();
+        $this->updateFields($this->updateFields);
+
+        $this->createFields = $this->updateFields->clone();
+        $this->createFields($this->createFields);
+
+        $this->relations = new RelationBag();
+        $this->relations($this->relations);
     }
 
     public function fields(FieldBag $fields): void
@@ -46,6 +53,8 @@ class Model implements ToSchemaJsonInterface
         return [
             // 'type' => $this->type,
             'fields' => $this->fields->toSchemaJson($visitor),
+            'update_fields' => $this->updateFields->toSchemaJson($visitor),
+            'create_fields' => $this->createFields->toSchemaJson($visitor),
             'relations' => $this->relations->toSchemaJson($visitor)
         ];
     }
