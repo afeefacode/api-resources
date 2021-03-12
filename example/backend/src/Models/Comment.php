@@ -3,6 +3,9 @@
 namespace Backend\Models;
 
 use Afeefa\ApiResources\Field\FieldBag;
+use Afeefa\ApiResources\Field\Fields\DateField;
+use Afeefa\ApiResources\Field\Fields\TextField;
+use Afeefa\ApiResources\Field\Fields\VarcharField;
 use Afeefa\ApiResources\Model\Model;
 use Afeefa\ApiResources\Relation\RelationBag;
 
@@ -12,11 +15,11 @@ class Comment extends Model
 
     public function fields(FieldBag $fields): void
     {
-        $fields->varchar('author_name');
+        $fields->add('author_name', VarcharField::class);
 
-        $fields->text('content');
+        $fields->add('content', TextField::class);
 
-        $fields->date('date');
+        $fields->add('date', DateField::class);
     }
 
     public function relations(RelationBag $relations): void

@@ -8,6 +8,7 @@ use Afeefa\ApiResources\Action\ActionInput;
 use Afeefa\ApiResources\Action\ActionParams;
 use Afeefa\ApiResources\Action\ActionResponse;
 use Afeefa\ApiResources\Api\Request;
+use Afeefa\ApiResources\Field\Fields\IdField;
 use Afeefa\ApiResources\Filter\FilterBag;
 use Afeefa\ApiResources\Resource\Resource;
 use Backend\Models\Article;
@@ -22,8 +23,8 @@ class ArticlesResource extends Resource
             $action->filters(function (FilterBag $filters) {
                 $filters->id('autor_id')
                     ->request(function (Request $request) {
-                        $request
-                            ->action([AuthorsResource::class, 'test']);
+                        // $request
+                        //     ->action([AuthorsResource::class, 'test']);
                     });
 
                 $filters->id('tag_id');
@@ -56,7 +57,7 @@ class ArticlesResource extends Resource
 
         $actions->action('get_article', function (Action $action) {
             $action->params(function (ActionParams $params) {
-                $params->id('id');
+                $params->add('id', IdField::class);
             });
 
             $action->response(function (ActionResponse $response) {
@@ -88,7 +89,7 @@ class ArticlesResource extends Resource
         $actions->action('update_articles', function (Action $action) {
             $action
                 ->params(function (ActionParams $params) {
-                    $params->id('id');
+                    $params->add('id', IdField::class);
                     // $params->id('id')->list();
                 })
 
@@ -103,7 +104,7 @@ class ArticlesResource extends Resource
 
         $actions->action('delete_article', function (Action $action) {
             $action->params(function (ActionParams $params) {
-                $params->id('id');
+                $params->add('id', IdField::class);
             });
 
             $action->inputType = Article::class;

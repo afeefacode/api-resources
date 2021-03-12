@@ -3,6 +3,7 @@
 namespace Backend\Models;
 
 use Afeefa\ApiResources\Field\FieldBag;
+use Afeefa\ApiResources\Field\Fields\VarcharField;
 use Afeefa\ApiResources\Model\Model;
 use Afeefa\ApiResources\Relation\RelationBag;
 
@@ -12,9 +13,9 @@ class Author extends Model
 
     public function fields(FieldBag $fields): void
     {
-        $fields->varchar('name');
+        $fields->add('name', VarcharField::class);
 
-        $fields->varchar('email');
+        $fields->add('email', VarcharField::class);
     }
 
     public function relations(RelationBag $relations): void
