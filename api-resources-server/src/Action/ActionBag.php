@@ -12,7 +12,7 @@ class ActionBag implements ToSchemaJsonInterface
      */
     public array $actions = [];
 
-    public function action(string $name, callable $callback = null): ActionBag
+    public function add(string $name, callable $callback = null): ActionBag
     {
         $action = new Action();
         $action->name = $name;
@@ -20,6 +20,12 @@ class ActionBag implements ToSchemaJsonInterface
             $callback($action);
         }
         $this->actions[$name] = $action;
+        return $this;
+    }
+
+    public function remove(string $name): ActionBag
+    {
+        unset($this->actions[$name]);
         return $this;
     }
 

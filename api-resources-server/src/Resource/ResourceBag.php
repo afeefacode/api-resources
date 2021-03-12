@@ -4,6 +4,9 @@ namespace Afeefa\ApiResources\Resource;
 
 use Afeefa\ApiResources\Api\SchemaVisitor;
 use Afeefa\ApiResources\Api\ToSchemaJsonInterface;
+use Afeefa\ApiResources\Exception\Exceptions\MissingCallbackArgumentException;
+use Afeefa\ApiResources\Exception\Exceptions\MissingTypeHintException;
+use ReflectionFunction;
 
 class ResourceBag implements ToSchemaJsonInterface
 {
@@ -12,14 +15,32 @@ class ResourceBag implements ToSchemaJsonInterface
      */
     public array $resources = [];
 
-    public function resource(string $name, callable $callback = null): ResourceBag
+    public function resource($classOrCallback): ResourceBag
     {
-        $resource = new Resource();
-        $resource->name = $name;
-        if ($callback) {
-            $callback($resource);
+        if (is_callable($classOrCallback)) {
+            $callback = $classOrCallback;
+            $f = new ReflectionFunction($callback);
+            $param = $f->getParameters()[0] ?? null;
+            if ($param) {
+                /** @var ReflectionNamedType */
+                $type = $param->getType();
+                if ($type) {
+                    $Resource = $type->getName();
+                    $resource = new $Resource();
+                    $callback($resource);
+                    $this->resources[$resource->type] = $resource;
+                } else {
+                    throw new MissingTypeHintException("Resources callback variable \${$param->getName()} does provide a type hint.");
+                }
+            } else {
+                throw new MissingCallbackArgumentException('Resources callback does not provide an argument.');
+            }
+        } else {
+            $Resource = $classOrCallback;
+            $resource = new $Resource();
+            $this->resources[$resource->type] = $resource;
         }
-        $this->resources[$name] = $resource;
+
         return $this;
     }
 

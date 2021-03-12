@@ -19,13 +19,18 @@ class Resource implements ToSchemaJsonInterface
             throw new MissingTypeException('Missing type for resource of class ' . static::class);
         };
 
-        $actions = new ActionBag();
-        $this->actions($actions);
-        $this->actions = $actions;
+        $this->actions = new ActionBag();
+        $this->actions($this->actions);
     }
 
     public function actions(ActionBag $actions): void
     {
+    }
+
+    public function removeAction(string $name): Resource
+    {
+        $this->actions->remove($name);
+        return $this;
     }
 
     public function toSchemaJson(SchemaVisitor $visitor): array
