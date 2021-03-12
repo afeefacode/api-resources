@@ -1,15 +1,15 @@
 <?php
 
-namespace Afeefa\ApiResources\Model;
+namespace Afeefa\ApiResources\Type;
 
 use Afeefa\ApiResources\Api\SchemaVisitor;
 use Afeefa\ApiResources\Api\ToSchemaJsonInterface;
 use Afeefa\ApiResources\Field\FieldBag;
 use Afeefa\ApiResources\Relation\RelationBag;
 
-class Model implements ToSchemaJsonInterface
+class Type implements ToSchemaJsonInterface
 {
-    public string $type = 'Afeefa.Model';
+    public string $type = 'Afeefa.Type';
 
     protected FieldBag $fields;
     protected FieldBag $updateFields;

@@ -1,15 +1,15 @@
 <?php
 
-namespace Backend\Models;
+namespace Backend\Types;
 
 use Afeefa\ApiResources\Field\FieldBag;
 use Afeefa\ApiResources\Field\Fields\DateField;
 use Afeefa\ApiResources\Field\Fields\TextField;
 use Afeefa\ApiResources\Field\Fields\VarcharField;
-use Afeefa\ApiResources\Model\Model;
 use Afeefa\ApiResources\Relation\RelationBag;
+use Afeefa\ApiResources\Type\Type;
 
-class Comment extends Model
+class CommentType extends Type
 {
     public string $type = 'Example.Comment';
 
@@ -24,6 +24,6 @@ class Comment extends Model
 
     public function relations(RelationBag $relations): void
     {
-        $relations->linkOne('article', Article::class);
+        $relations->linkOne('article', ArticleType::class);
     }
 }

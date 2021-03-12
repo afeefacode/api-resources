@@ -1,13 +1,13 @@
 <?php
 
-namespace Backend\Models;
+namespace Backend\Types;
 
 use Afeefa\ApiResources\Field\FieldBag;
 use Afeefa\ApiResources\Field\Fields\VarcharField;
-use Afeefa\ApiResources\Model\Model;
 use Afeefa\ApiResources\Relation\RelationBag;
+use Afeefa\ApiResources\Type\Type;
 
-class Tag extends Model
+class TagType extends Type
 {
     public string $type = 'Example.Tag';
 
@@ -18,7 +18,7 @@ class Tag extends Model
 
     public function relations(RelationBag $relations): void
     {
-        $relations->hasMany('users', Model::class);
+        $relations->hasMany('users', Type::class);
     }
 }
 

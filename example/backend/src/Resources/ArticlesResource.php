@@ -11,7 +11,7 @@ use Afeefa\ApiResources\Api\Request;
 use Afeefa\ApiResources\Field\Fields\IdField;
 use Afeefa\ApiResources\Filter\FilterBag;
 use Afeefa\ApiResources\Resource\Resource;
-use Backend\Models\Article;
+use Backend\Types\ArticleType;
 
 class ArticlesResource extends Resource
 {
@@ -50,7 +50,7 @@ class ArticlesResource extends Resource
 
             $action->response(function (ActionResponse $response) {
                 $response
-                    ->type(Article::class)
+                    ->type(ArticleType::class)
                     ->list();
             });
         });
@@ -61,28 +61,28 @@ class ArticlesResource extends Resource
             });
 
             $action->response(function (ActionResponse $response) {
-                $response->type(Article::class);
+                $response->type(ArticleType::class);
             });
         });
 
         $actions->action('create_article', function (Action $action) {
             $action->input(function (ActionInput $input) {
-                $input->type(Article::class);
+                $input->type(ArticleType::class);
             });
 
             $action->response(function (ActionResponse $response) {
-                $response->type(Article::class);
+                $response->type(ArticleType::class);
             });
         });
 
         $actions->action('update_article', function (Action $action) {
             $action
                 ->input(function (ActionInput $input) {
-                    $input->type(Article::class);
+                    $input->type(ArticleType::class);
                 })
 
                 ->response(function (ActionResponse $response) {
-                    $response->type(Article::class);
+                    $response->type(ArticleType::class);
                 });
         });
 
@@ -94,11 +94,11 @@ class ArticlesResource extends Resource
                 })
 
                 ->input(function (ActionInput $input) {
-                    $input->type(Article::class);
+                    $input->type(ArticleType::class);
                 })
 
                 ->response(function (ActionResponse $response) {
-                    $response->type(Article::class);
+                    $response->type(ArticleType::class);
                 });
         });
 
@@ -107,12 +107,12 @@ class ArticlesResource extends Resource
                 $params->add('id', IdField::class);
             });
 
-            $action->inputType = Article::class;
+            $action->inputType = ArticleType::class;
             $action->outputType = 'test';
         });
 
         $actions->action('delete_articles', function (Action $action) {
-            $action->inputType = Article::class;
+            $action->inputType = ArticleType::class;
             $action->outputType = 'test';
         });
     }

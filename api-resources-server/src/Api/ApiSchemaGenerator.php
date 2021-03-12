@@ -3,9 +3,9 @@
 namespace Afeefa\ApiResources\Api;
 
 use Afeefa\ApiResources\Field\Field;
-use Afeefa\ApiResources\Model\Model;
 use Afeefa\ApiResources\Relation\Relation;
 use Afeefa\ApiResources\Resource\Resource;
+use Afeefa\ApiResources\Type\Type;
 use Afeefa\ApiResources\Validator\Validator;
 
 class ApiSchemaGenerator
@@ -23,13 +23,13 @@ class ApiSchemaGenerator
             return $resource->toSchemaJson($visitor);
         }, $this->resources);
 
-        $models = array_map(function (Model $model) use ($visitor) {
-            return $model->toSchemaJson($visitor);
-        }, $visitor->models);
+        $types = array_map(function (Type $type) use ($visitor) {
+            return $type->toSchemaJson($visitor);
+        }, $visitor->types);
 
-        $models = array_map(function (Model $model) use ($visitor) {
-            return $model->toSchemaJson($visitor);
-        }, $visitor->models);
+        $types = array_map(function (Type $type) use ($visitor) {
+            return $type->toSchemaJson($visitor);
+        }, $visitor->types);
 
         $validators = array_map(function (Validator $validator) use ($visitor) {
             $json = $validator->toSchemaJson($visitor);
@@ -46,7 +46,7 @@ class ApiSchemaGenerator
         }, $visitor->relations);
 
         return [
-            'models' => $models,
+            'types' => $types,
             'resources' => $resources,
             'validators' => $validators
             // 'fields' => $fields,

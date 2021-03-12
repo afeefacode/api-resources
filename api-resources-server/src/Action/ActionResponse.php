@@ -34,7 +34,7 @@ class ActionResponse implements ToSchemaJsonInterface
         $Type = $this->Type;
         $type = new $Type();
 
-        $visitor->model($type);
+        $visitor->type($type);
 
         $json = [
             'type' => $type->type

@@ -1,15 +1,15 @@
 <?php
 
-namespace Backend\Models;
+namespace Backend\Types;
 
 use Afeefa\ApiResources\Field\FieldBag;
 use Afeefa\ApiResources\Field\Fields\DateField;
 use Afeefa\ApiResources\Field\Fields\VarcharField;
-use Afeefa\ApiResources\Model\Model;
 use Afeefa\ApiResources\Relation\RelationBag;
+use Afeefa\ApiResources\Type\Type;
 use Afeefa\ApiResources\Validator\Validators\VarcharValidator;
 
-class Article extends Model
+class ArticleType extends Type
 {
     public string $type = 'Example.Article';
 
@@ -65,7 +65,7 @@ class Article extends Model
 
     public function relations(RelationBag $relations): void
     {
-        $relations->linkOne('author', Author::class);
+        $relations->linkOne('author', AuthorType::class);
 
         // $relations->linkOne('author', Author::class, function (Author $author) {
         //     $author->update(function (FieldBag $fields) {
@@ -80,8 +80,8 @@ class Article extends Model
         //     });
         // });
 
-        $relations->hasMany('comments', Comment::class);
+        $relations->hasMany('comments', CommentType::class);
 
-        $relations->linkMany('tags', Tag::class);
+        $relations->linkMany('tags', TagType::class);
     }
 }

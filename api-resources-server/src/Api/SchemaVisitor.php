@@ -4,16 +4,16 @@ namespace Afeefa\ApiResources\Api;
 
 use Afeefa\ApiResources\Field\Field;
 use Afeefa\ApiResources\Filter\Filter;
-use Afeefa\ApiResources\Model\Model;
 use Afeefa\ApiResources\Relation\Relation;
+use Afeefa\ApiResources\Type\Type;
 use Afeefa\ApiResources\Validator\Validator;
 
 class SchemaVisitor
 {
     /**
-     * @var array<Model>
+     * @var array<Type>
      */
-    public array $models = [];
+    public array $types = [];
 
     /**
      * @var array<Field>
@@ -35,9 +35,9 @@ class SchemaVisitor
      */
     public array $filters = [];
 
-    public function model(Model $model): self
+    public function type(Type $type): self
     {
-        $this->models[$model->type] = $model;
+        $this->types[$type->type] = $type;
         return $this;
     }
 

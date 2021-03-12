@@ -1,13 +1,13 @@
 <?php
 
-namespace Backend\Models;
+namespace Backend\Types;
 
 use Afeefa\ApiResources\Field\FieldBag;
 use Afeefa\ApiResources\Field\Fields\VarcharField;
-use Afeefa\ApiResources\Model\Model;
 use Afeefa\ApiResources\Relation\RelationBag;
+use Afeefa\ApiResources\Type\Type;
 
-class Author extends Model
+class AuthorType extends Type
 {
     public string $type = 'Example.Author';
 
@@ -20,8 +20,8 @@ class Author extends Model
 
     public function relations(RelationBag $relations): void
     {
-        $relations->hasMany('articles', Article::class);
+        $relations->hasMany('articles', ArticleType::class);
 
-        $relations->linkMany('tags', Tag::class);
+        $relations->linkMany('tags', TagType::class);
     }
 }

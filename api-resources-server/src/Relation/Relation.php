@@ -28,7 +28,7 @@ class Relation implements ToSchemaJsonInterface
         $RelatedType = $this->RelatedType;
         $relatedType = new $RelatedType();
 
-        $visitor->model($relatedType);
+        $visitor->type($relatedType);
 
         return [
             'type' => $this->type,
