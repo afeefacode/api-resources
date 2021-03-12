@@ -2,24 +2,27 @@
 
 namespace Afeefa\ApiResources\Type;
 
-use Afeefa\ApiResources\Api\SchemaVisitor;
 use Afeefa\ApiResources\Api\ToSchemaJsonInterface;
+use Afeefa\ApiResources\DI\ContainerAwareInterface;
+use Afeefa\ApiResources\DI\ContainerAwareTrait;
 use Afeefa\ApiResources\Field\FieldBag;
 use Afeefa\ApiResources\Relation\RelationBag;
 
-class Type implements ToSchemaJsonInterface
+class Type implements ToSchemaJsonInterface, ContainerAwareInterface
 {
+    use ContainerAwareTrait;
+
     public string $type = 'Afeefa.Type';
 
     public FieldBag $fields;
     public RelationBag $relations;
 
-    public function __construct()
+    public function created(): void
     {
-        $this->fields = new FieldBag();
+        $this->fields = $this->container->create(FieldBag::class);
         $this->fields($this->fields);
 
-        $this->relations = new RelationBag();
+        $this->relations = $this->container->create(RelationBag::class);
         $this->relations($this->relations);
     }
 
@@ -31,12 +34,12 @@ class Type implements ToSchemaJsonInterface
     {
     }
 
-    public function toSchemaJson(SchemaVisitor $visitor): array
+    public function toSchemaJson(): array
     {
         return [
             // 'type' => $this->type,
-            'fields' => $this->fields->toSchemaJson($visitor),
-            'relations' => $this->relations->toSchemaJson($visitor)
+            'fields' => $this->fields->toSchemaJson(),
+            'relations' => $this->relations->toSchemaJson()
         ];
     }
 }

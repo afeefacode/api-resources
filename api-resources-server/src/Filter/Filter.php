@@ -2,7 +2,6 @@
 
 namespace Afeefa\ApiResources\Filter;
 
-use Afeefa\ApiResources\Api\SchemaVisitor;
 use Afeefa\ApiResources\Api\ToSchemaJsonInterface;
 use Afeefa\ApiResources\Exception\Exceptions\MissingTypeException;
 
@@ -19,7 +18,7 @@ class Filter implements ToSchemaJsonInterface
         };
     }
 
-    public function toSchemaJson(SchemaVisitor $visitor): array
+    public function toSchemaJson(): array
     {
         $json = [
             'type' => $this->type

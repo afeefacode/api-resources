@@ -2,14 +2,14 @@
 
 namespace Afeefa\ApiResources\Field;
 
-use Afeefa\ApiResources\Api\SchemaVisitor;
 use Afeefa\ApiResources\Api\ToSchemaJsonInterface;
-use Afeefa\ApiResources\Exception\Exceptions\MissingCallbackArgumentException;
-use Afeefa\ApiResources\Exception\Exceptions\MissingTypeHintException;
-use ReflectionFunction;
+use Afeefa\ApiResources\DI\ContainerAwareInterface;
+use Afeefa\ApiResources\DI\ContainerAwareTrait;
 
-class FieldBag implements ToSchemaJsonInterface
+class FieldBag implements ToSchemaJsonInterface, ContainerAwareInterface
 {
+    use ContainerAwareTrait;
+
     /**
      * @var array<Field>
      */
@@ -19,30 +19,22 @@ class FieldBag implements ToSchemaJsonInterface
     {
         if (is_callable($classOrCallback)) {
             $callback = $classOrCallback;
-            $f = new ReflectionFunction($callback);
-            $param = $f->getParameters()[0] ?? null;
-            if ($param) {
-                /** @var ReflectionNamedType */
-                $type = $param->getType();
-                if ($type) {
-                    $Field = $type->getName();
-                    $field = new $Field();
-                    $field->name = $name;
-                    $field->allowed = true;
-                    $callback($field);
-                    $this->fields[$name] = $field;
-                } else {
-                    throw new MissingTypeHintException("Field {$name}'s callback variable \${$param->getName()} does provide a type hint.");
-                }
-            } else {
-                throw new MissingCallbackArgumentException("Field {$name}'s callback does not provide an argument.");
-            }
+            $Field = $this->container->getCallbackArgumentType($callback);
+            $this->container->add($Field); // register field class
+            $this->container->create($Field, function (Field $field) use ($name, $callback) {
+                $field->name = $name;
+                $field->allowed = true;
+                $callback($field);
+                $this->fields[$name] = $field;
+            });
         } else {
             $Field = $classOrCallback;
-            $field = new $Field();
-            $field->name = $name;
-            $field->allowed = true;
-            $this->fields[$name] = $field;
+            $this->container->add($Field); // register field class
+            $this->container->create($Field, function (Field $field) use ($name) {
+                $field->name = $name;
+                $field->allowed = true;
+                $this->fields[$name] = $field;
+            });
         }
 
         return $this;
@@ -70,18 +62,19 @@ class FieldBag implements ToSchemaJsonInterface
 
     public function clone(): FieldBag
     {
-        $fieldBag = new FieldBag();
-        foreach ($this->fields as $name => $field) {
-            $fieldBag->fields[$name] = $field->clone();
-        }
+        $fieldBag = $this->container->create(FieldBag::class, function (FieldBag $fieldBag) {
+            foreach ($this->fields as $name => $field) {
+                $fieldBag->fields[$name] = $field->clone();
+            }
+        });
         return $fieldBag;
     }
 
-    public function toSchemaJson(SchemaVisitor $visitor): array
+    public function toSchemaJson(): array
     {
-        return array_filter(array_map(function (Field $field) use ($visitor) {
+        return array_filter(array_map(function (Field $field) {
             if ($field->allowed) {
-                return $field->toSchemaJson($visitor);
+                return $field->toSchemaJson();
             }
             return null;
         }, $this->fields));

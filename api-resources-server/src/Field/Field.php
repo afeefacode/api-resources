@@ -2,15 +2,16 @@
 
 namespace Afeefa\ApiResources\Field;
 
-use Afeefa\ApiResources\Api\SchemaVisitor;
 use Afeefa\ApiResources\Api\ToSchemaJsonInterface;
+use Afeefa\ApiResources\DI\ContainerAwareInterface;
+use Afeefa\ApiResources\DI\ContainerAwareTrait;
 use Afeefa\ApiResources\Exception\Exceptions\MissingTypeException;
 use Afeefa\ApiResources\Validator\Validator;
-use ReflectionFunction;
-use ReflectionNamedType;
 
-class Field implements ToSchemaJsonInterface
+class Field implements ToSchemaJsonInterface, ContainerAwareInterface
 {
+    use ContainerAwareTrait;
+
     public string $type;
 
     public string $name;
@@ -21,7 +22,7 @@ class Field implements ToSchemaJsonInterface
 
     public bool $allowed = false;
 
-    public function __construct()
+    public function created(): void
     {
         if (!isset($this->type)) {
             throw new MissingTypeException('Missing type for field of class ' . static::class);
@@ -33,17 +34,10 @@ class Field implements ToSchemaJsonInterface
         if ($this->validator) {
             $callback($this->validator);
         } else {
-            $f = new ReflectionFunction($callback);
-            $param = $f->getParameters()[0] ?? null;
-            if ($param) {
-                /** @var ReflectionNamedType */
-                $type = $param->getType();
-                if ($type) {
-                    $Validator = $type->getName();
-                    $this->validator = new $Validator();
-                    $callback($this->validator);
-                }
-            }
+            $Validator = $this->container->getCallbackArgumentType($callback);
+            $this->container->add($Validator); // register validator class
+            $this->validator = $this->container->create($Validator);
+            $callback($this->validator);
         }
 
         return $this;
@@ -63,7 +57,7 @@ class Field implements ToSchemaJsonInterface
 
     public function clone(): Field
     {
-        $field = new static();
+        $field = $this->container->create(static::class);
         $field->name = $this->name;
         $field->required = $this->required;
         if ($this->validator) {
@@ -72,10 +66,8 @@ class Field implements ToSchemaJsonInterface
         return $field;
     }
 
-    public function toSchemaJson(SchemaVisitor $visitor): array
+    public function toSchemaJson(): array
     {
-        // $visitor->field(new static());
-
         $json = [
             'type' => $this->type,
             // 'name' => $this->name
@@ -86,7 +78,7 @@ class Field implements ToSchemaJsonInterface
         }
 
         if ($this->validator) {
-            $json['validator'] = $this->validator->toSchemaJson($visitor);
+            $json['validator'] = $this->validator->toSchemaJson();
             unset($json['validator']['rules']);
         }
 

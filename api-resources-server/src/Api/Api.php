@@ -2,19 +2,24 @@
 
 namespace Afeefa\ApiResources\Api;
 
-use Afeefa\ApiResources\Field\Field;
-use Afeefa\ApiResources\Relation\Relation;
+use Afeefa\ApiResources\DI\Container;
+use Afeefa\ApiResources\DI\ContainerAwareInterface;
+use Afeefa\ApiResources\DI\ContainerAwareTrait;
 use Afeefa\ApiResources\Resource\ResourceBag;
 use Afeefa\ApiResources\Type\Type;
 use Afeefa\ApiResources\Validator\Validator;
 
-class Api
+class Api implements ContainerAwareInterface
 {
+    use ContainerAwareTrait;
+
     protected ResourceBag $resources;
 
     public function __construct()
     {
-        $this->resources = new ResourceBag();
+        $this->container(new Container());
+
+        $this->resources = $this->container->create(ResourceBag::class);
         $this->resources($this->resources);
     }
 
@@ -29,35 +34,25 @@ class Api
 
     public function toSchemaJson(): array
     {
-        $visitor = new SchemaVisitor();
+        $resources = $this->resources->toSchemaJson();
 
-        $resources = $this->resources->toSchemaJson($visitor);
+        $types = array_map(
+            function (Type $type) {
+                return $type->toSchemaJson();
+            },
+            array_filter(
+                $this->container->entries(),
+                function ($object) {
+                    return $object instanceof Type;
+                }
+            )
+        );
 
-        $types = array_map(function (Type $type) use ($visitor) {
-            return $type->toSchemaJson($visitor);
-        }, $visitor->types);
-
-        $types = array_map(function (Type $type) use ($visitor) {
-            return $type->toSchemaJson($visitor);
-        }, $visitor->types);
-
-        $types = array_map(function (Type $type) use ($visitor) {
-            return $type->toSchemaJson($visitor);
-        }, $visitor->types);
-
-        $validators = array_map(function (Validator $validator) use ($visitor) {
-            $json = $validator->toSchemaJson($visitor);
-            unset($json['params']);
-            return $json;
-        }, $visitor->validators);
-
-        $fields = array_map(function (Field $field) use ($visitor) {
-            return $field->toSchemaJson($visitor);
-        }, $visitor->fields);
-
-        $relations = array_map(function (Relation $relation) use ($visitor) {
-            return $relation->toSchemaJson($visitor);
-        }, $visitor->relations);
+        $validators = array_map(function (Validator $validator) {
+            return $validator->toSchemaJson();
+        }, array_filter($this->container->entries(), function ($object) {
+            return $object instanceof Validator;
+        }));
 
         return [
             'types' => $types,

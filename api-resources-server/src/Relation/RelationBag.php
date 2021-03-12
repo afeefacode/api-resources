@@ -2,15 +2,18 @@
 
 namespace Afeefa\ApiResources\Relation;
 
-use Afeefa\ApiResources\Api\SchemaVisitor;
 use Afeefa\ApiResources\Api\ToSchemaJsonInterface;
+use Afeefa\ApiResources\DI\ContainerAwareInterface;
+use Afeefa\ApiResources\DI\ContainerAwareTrait;
 use Afeefa\ApiResources\Relation\Relations\HasMany;
 use Afeefa\ApiResources\Relation\Relations\HasOne;
 use Afeefa\ApiResources\Relation\Relations\LinkMany;
 use Afeefa\ApiResources\Relation\Relations\LinkOne;
 
-class RelationBag implements ToSchemaJsonInterface
+class RelationBag implements ToSchemaJsonInterface, ContainerAwareInterface
 {
+    use ContainerAwareTrait;
+
     /**
      * @var array<Relation>
      */
@@ -38,20 +41,24 @@ class RelationBag implements ToSchemaJsonInterface
 
     public function relation(string $name, string $RelatedType, string $Relation, callable $callback = null): Relation
     {
-        $relation = new $Relation();
-        $relation->name = $name;
-        $relation->RelatedType = $RelatedType;
-        if ($callback) {
-            $callback($relation);
-        }
-        $this->relations[$name] = $relation;
+        $this->container->add($Relation); // register relation class
+        $relation = $this->container->create($Relation, function (Relation $relation) use ($name, $RelatedType, $callback) {
+            $relation
+                ->name($name)
+                ->relatedType($RelatedType);
+
+            if ($callback) {
+                $callback($relation);
+            }
+            $this->relations[$name] = $relation;
+        });
         return $relation;
     }
 
-    public function toSchemaJson(SchemaVisitor $visitor): array
+    public function toSchemaJson(): array
     {
-        return array_map(function (Relation $relation) use ($visitor) {
-            return $relation->toSchemaJson($visitor);
+        return array_map(function (Relation $relation) {
+            return $relation->toSchemaJson();
         }, $this->relations);
     }
 }

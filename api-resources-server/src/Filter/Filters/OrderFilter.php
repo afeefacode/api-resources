@@ -2,7 +2,6 @@
 
 namespace Afeefa\ApiResources\Filter\Filters;
 
-use Afeefa\ApiResources\Api\SchemaVisitor;
 use Afeefa\ApiResources\Filter\Filter;
 
 class OrderFilter extends Filter
@@ -17,9 +16,9 @@ class OrderFilter extends Filter
         return $this;
     }
 
-    public function toSchemaJson(SchemaVisitor $visitor): array
+    public function toSchemaJson(): array
     {
-        $json = parent::toSchemaJson($visitor);
+        $json = parent::toSchemaJson();
         $json = array_merge($json, $this->values);
         return $json;
     }

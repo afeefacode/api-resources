@@ -2,7 +2,6 @@
 
 namespace Afeefa\ApiResources\Filter\Filters;
 
-use Afeefa\ApiResources\Api\SchemaVisitor;
 use Afeefa\ApiResources\Filter\Filter;
 
 class PageFilter extends Filter
@@ -19,9 +18,9 @@ class PageFilter extends Filter
         return $this;
     }
 
-    public function toSchemaJson(SchemaVisitor $visitor): array
+    public function toSchemaJson(): array
     {
-        $json = parent::toSchemaJson($visitor);
+        $json = parent::toSchemaJson();
         $json['default_page_size'] = $this->defaultPageSize;
         $json['page_sizes'] = $this->pageSizes;
         return $json;

@@ -2,12 +2,15 @@
 
 namespace Afeefa\ApiResources\Action;
 
-use Afeefa\ApiResources\Api\SchemaVisitor;
 use Afeefa\ApiResources\Api\ToSchemaJsonInterface;
+use Afeefa\ApiResources\DI\ContainerAwareInterface;
+use Afeefa\ApiResources\DI\ContainerAwareTrait;
 use Afeefa\ApiResources\Filter\FilterBag;
 
-class Action implements ToSchemaJsonInterface
+class Action implements ToSchemaJsonInterface, ContainerAwareInterface
 {
+    use ContainerAwareTrait;
+
     public string $name;
 
     public ActionParams $params;
@@ -20,56 +23,60 @@ class Action implements ToSchemaJsonInterface
 
     public function params(callable $callback): Action
     {
-        $params = new ActionParams();
-        $callback($params);
-        $this->params = $params;
+        $this->container->create(ActionParams::class, function (ActionParams $params) use ($callback) {
+            $callback($params);
+            $this->params = $params;
+        });
         return $this;
     }
 
     public function input(callable $callback): Action
     {
-        $input = new ActionInput();
-        $callback($input);
-        $this->input = $input;
+        $this->container->create(ActionInput::class, function (ActionInput $input) use ($callback) {
+            $callback($input);
+            $this->input = $input;
+        });
         return $this;
     }
 
     public function filters(callable $callback): Action
     {
-        $filters = new FilterBag();
-        $callback($filters);
-        $this->filters = $filters;
+        $this->container->create(FilterBag::class, function (FilterBag $filters) use ($callback) {
+            $callback($filters);
+            $this->filters = $filters;
+        });
         return $this;
     }
 
     public function response(callable $callback): Action
     {
-        $response = new ActionResponse();
-        $callback($response);
-        $this->response = $response;
+        $this->container->create(ActionResponse::class, function (ActionResponse $response) use ($callback) {
+            $callback($response);
+            $this->response = $response;
+        });
         return $this;
     }
 
-    public function toSchemaJson(SchemaVisitor $visitor): array
+    public function toSchemaJson(): array
     {
         $json = [
             // 'name' => $this->name
         ];
 
         if (isset($this->params)) {
-            $json['params'] = $this->params->toSchemaJson($visitor);
+            $json['params'] = $this->params->toSchemaJson();
         }
 
         if (isset($this->input)) {
-            $json['input'] = $this->input->toSchemaJson($visitor);
+            $json['input'] = $this->input->toSchemaJson();
         }
 
         if (isset($this->filters)) {
-            $json['filters'] = $this->filters->toSchemaJson($visitor);
+            $json['filters'] = $this->filters->toSchemaJson();
         }
 
         if (isset($this->response)) {
-            $json['response'] = $this->response->toSchemaJson($visitor);
+            $json['response'] = $this->response->toSchemaJson();
         }
 
         return $json;

@@ -2,7 +2,6 @@
 
 namespace Afeefa\ApiResources\Type;
 
-use Afeefa\ApiResources\Api\SchemaVisitor;
 use Afeefa\ApiResources\Field\FieldBag;
 
 class ModelType extends Type
@@ -12,9 +11,9 @@ class ModelType extends Type
     protected FieldBag $updateFields;
     protected FieldBag $createFields;
 
-    public function __construct()
+    public function created(): void
     {
-        parent::__construct();
+        parent::created();
 
         $this->updateFields = $this->fields->clone();
         $this->updateFields($this->updateFields);
@@ -31,12 +30,12 @@ class ModelType extends Type
     {
     }
 
-    public function toSchemaJson(SchemaVisitor $visitor): array
+    public function toSchemaJson(): array
     {
-        $json = parent::toSchemaJson($visitor);
+        $json = parent::toSchemaJson();
 
-        $json = $this->insertAfter('fields', $json, 'update_fields', $this->updateFields->toSchemaJson($visitor));
-        $json = $this->insertAfter('update_fields', $json, 'create_fields', $this->createFields->toSchemaJson($visitor));
+        $json = $this->insertAfter('fields', $json, 'update_fields', $this->updateFields->toSchemaJson());
+        $json = $this->insertAfter('update_fields', $json, 'create_fields', $this->createFields->toSchemaJson());
 
         return $json;
     }

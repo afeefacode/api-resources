@@ -2,7 +2,6 @@
 
 namespace Afeefa\ApiResources\Validator\Rule;
 
-use Afeefa\ApiResources\Api\SchemaVisitor;
 use Afeefa\ApiResources\Api\ToSchemaJsonInterface;
 
 class Rule implements ToSchemaJsonInterface
@@ -23,7 +22,7 @@ class Rule implements ToSchemaJsonInterface
         return $this;
     }
 
-    public function toSchemaJson(SchemaVisitor $visitor): array
+    public function toSchemaJson(): array
     {
         $json = [
             'message' => $this->message

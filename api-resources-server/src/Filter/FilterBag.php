@@ -2,7 +2,6 @@
 
 namespace Afeefa\ApiResources\Filter;
 
-use Afeefa\ApiResources\Api\SchemaVisitor;
 use Afeefa\ApiResources\Api\ToSchemaJsonInterface;
 use Afeefa\ApiResources\Filter\Filters\BooleanFilter;
 use Afeefa\ApiResources\Filter\Filters\IdFilter;
@@ -59,10 +58,10 @@ class FilterBag implements ToSchemaJsonInterface
         return $filter;
     }
 
-    public function toSchemaJson(SchemaVisitor $visitor): array
+    public function toSchemaJson(): array
     {
-        return array_map(function (Filter $filter) use ($visitor) {
-            return $filter->toSchemaJson($visitor);
+        return array_map(function (Filter $filter) {
+            return $filter->toSchemaJson();
         }, $this->filters);
     }
 }

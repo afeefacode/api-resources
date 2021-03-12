@@ -2,7 +2,6 @@
 
 namespace Afeefa\ApiResources\Validator;
 
-use Afeefa\ApiResources\Api\SchemaVisitor;
 use Afeefa\ApiResources\Api\ToSchemaJsonInterface;
 use Afeefa\ApiResources\Exception\Exceptions\MissingTypeException;
 use Afeefa\ApiResources\Validator\Rule\RuleBag;
@@ -45,16 +44,12 @@ class Validator implements ToSchemaJsonInterface
     {
     }
 
-    public function toSchemaJson(SchemaVisitor $visitor): array
+    public function toSchemaJson(): array
     {
-        $visitor->validator(new static());
-
-        $json = [
+        return [
             'type' => $this->type,
             'params' => $this->params,
-            'rules' => $this->rules->toSchemaJson($visitor),
+            'rules' => $this->rules->toSchemaJson(),
         ];
-
-        return $json;
     }
 }

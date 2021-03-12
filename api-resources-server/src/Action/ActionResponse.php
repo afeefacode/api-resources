@@ -2,11 +2,14 @@
 
 namespace Afeefa\ApiResources\Action;
 
-use Afeefa\ApiResources\Api\SchemaVisitor;
 use Afeefa\ApiResources\Api\ToSchemaJsonInterface;
+use Afeefa\ApiResources\DI\ContainerAwareInterface;
+use Afeefa\ApiResources\DI\ContainerAwareTrait;
 
-class ActionResponse implements ToSchemaJsonInterface
+class ActionResponse implements ToSchemaJsonInterface, ContainerAwareInterface
 {
+    use ContainerAwareTrait;
+
     public bool $list = false;
     public string $Type;
     public string $Types;
@@ -14,6 +17,9 @@ class ActionResponse implements ToSchemaJsonInterface
     public function type(string $Type)
     {
         $this->Type = $Type;
+
+        $this->container->add($this->Type);
+
         return $this;
     }
 
@@ -29,12 +35,9 @@ class ActionResponse implements ToSchemaJsonInterface
         return $this;
     }
 
-    public function toSchemaJson(SchemaVisitor $visitor): array
+    public function toSchemaJson(): array
     {
-        $Type = $this->Type;
-        $type = new $Type();
-
-        $visitor->type($type);
+        $type = $this->container->get($this->Type);
 
         $json = [
             'type' => $type->type

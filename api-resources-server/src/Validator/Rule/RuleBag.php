@@ -2,7 +2,6 @@
 
 namespace Afeefa\ApiResources\Validator\Rule;
 
-use Afeefa\ApiResources\Api\SchemaVisitor;
 use Afeefa\ApiResources\Api\ToSchemaJsonInterface;
 
 class RuleBag implements ToSchemaJsonInterface
@@ -19,10 +18,10 @@ class RuleBag implements ToSchemaJsonInterface
         return $rule;
     }
 
-    public function toSchemaJson(SchemaVisitor $visitor): array
+    public function toSchemaJson(): array
     {
-        return array_map(function (Rule $rule) use ($visitor) {
-            return $rule->toSchemaJson($visitor);
+        return array_map(function (Rule $rule) {
+            return $rule->toSchemaJson();
         }, $this->rules);
     }
 }
