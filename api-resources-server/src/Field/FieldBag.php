@@ -9,27 +9,20 @@ use Afeefa\ApiResources\Bag\Bag;
  */
 class FieldBag extends Bag
 {
-    public function add(string $name, $classOrCallback = null): FieldBag
+    public function add(string $name, $classOrCallback): FieldBag
     {
-        if (is_callable($classOrCallback)) {
-            $callback = $classOrCallback;
-            $Field = $this->container->getCallbackArgumentType($callback);
-            $this->container->add($Field); // register field class
-            $this->container->create($Field, function (Field $field) use ($name, $callback) {
-                $field->name = $name;
-                $field->allowed = true;
+        [$Field, $callback] = $this->resolveCallback($classOrCallback);
+
+        $this->container->add($Field); // register field class
+
+        $this->container->create($Field, function (Field $field) use ($name, $callback) {
+            $field->name = $name;
+            $field->allowed = true;
+            if ($callback) {
                 $callback($field);
-                $this->entries[$name] = $field;
-            });
-        } else {
-            $Field = $classOrCallback;
-            $this->container->add($Field); // register field class
-            $this->container->create($Field, function (Field $field) use ($name) {
-                $field->name = $name;
-                $field->allowed = true;
-                $this->entries[$name] = $field;
-            });
-        }
+            }
+            $this->entries[$name] = $field;
+        });
 
         return $this;
     }
@@ -43,7 +36,7 @@ class FieldBag extends Bag
 
     public function get(string $name): Field
     {
-        return parent::get($name);
+        return $this->entries[$name];
     }
 
     public function allow(array $names): FieldBag

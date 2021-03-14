@@ -15,15 +15,22 @@ class Bag implements ToSchemaJsonInterface, ContainerAwareInterface
      */
     protected array $entries = [];
 
-    public function remove(string $name): Bag
-    {
-        unset($this->entries[$name]);
-        return $this;
-    }
+    // public function remove(string $name): Bag
+    // {
+    //     unset($this->entries[$name]);
+    //     return $this;
+    // }
 
-    public function get(string $name): BagEntryInterface
+    protected function resolveCallback($classOrCallback): array
     {
-        return $this->entries[$name];
+        $callback = null;
+        if (is_callable($classOrCallback)) {
+            $Class = $this->container->getCallbackArgumentType($classOrCallback);
+            $callback = $classOrCallback;
+        } else {
+            $Class = $classOrCallback;
+        }
+        return [$Class, $callback];
     }
 
     public function toSchemaJson(): array

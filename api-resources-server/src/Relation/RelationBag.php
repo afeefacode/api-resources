@@ -9,25 +9,18 @@ use Afeefa\ApiResources\Bag\Bag;
  */
 class RelationBag extends Bag
 {
-    public function add(string $name, string $RelatedType, $classOrCallback = null): RelationBag
+    public function add(string $name, string $RelatedType, $classOrCallback): RelationBag
     {
-        if (is_callable($classOrCallback)) {
-            $callback = $classOrCallback;
-            $Relation = $this->container->getCallbackArgumentType($callback);
-            $this->container->create($Relation, function (Relation $relation) use ($name, $RelatedType, $callback) {
-                $relation->name = $name;
-                $relation->RelatedType = $RelatedType;
+        [$Relation, $callback] = $this->resolveCallback($classOrCallback);
+
+        $this->container->create($Relation, function (Relation $relation) use ($name, $RelatedType, $callback) {
+            $relation->name = $name;
+            $relation->RelatedType = $RelatedType;
+            if ($callback) {
                 $callback($relation);
-                $this->entries[$name] = $relation;
-            });
-        } else {
-            $Relation = $classOrCallback;
-            $this->container->create($Relation, function (Relation $relation) use ($name, $RelatedType) {
-                $relation->name = $name;
-                $relation->RelatedType = $RelatedType;
-                $this->entries[$name] = $relation;
-            });
-        }
+            }
+            $this->entries[$name] = $relation;
+        });
 
         return $this;
     }
