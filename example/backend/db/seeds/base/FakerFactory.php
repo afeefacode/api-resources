@@ -20,8 +20,7 @@ class FakerFactory
 
             $faker->addProvider(new FakerLoremProvider($faker));
 
-            $newClass = new class($faker) extends Base
-            {
+            $newClass = new class($faker) extends Base {
                 public function word()
                 {
                     // http://frequencylists.blogspot.com/2016/01/the-2980-most-frequently-used-german.html
