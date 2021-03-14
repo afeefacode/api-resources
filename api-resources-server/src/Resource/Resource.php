@@ -3,15 +3,11 @@
 namespace Afeefa\ApiResources\Resource;
 
 use Afeefa\ApiResources\Action\ActionBag;
-use Afeefa\ApiResources\Api\ToSchemaJsonInterface;
-use Afeefa\ApiResources\DI\ContainerAwareInterface;
-use Afeefa\ApiResources\DI\ContainerAwareTrait;
+use Afeefa\ApiResources\Bag\BagEntry;
 use Afeefa\ApiResources\Exception\Exceptions\MissingTypeException;
 
-class Resource implements ToSchemaJsonInterface, ContainerAwareInterface
+class Resource extends BagEntry
 {
-    use ContainerAwareTrait;
-
     public string $type;
 
     protected ActionBag $actions;

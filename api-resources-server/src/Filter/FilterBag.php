@@ -13,7 +13,7 @@ use Afeefa\ApiResources\Filter\Filters\TypeFilter;
 class FilterBag implements ToSchemaJsonInterface
 {
     /**
-     * @var array<Filter>
+     * @var Filter[]
      */
     public array $filters = [];
 

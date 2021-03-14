@@ -11,7 +11,7 @@ class ActionBag implements ToSchemaJsonInterface, ContainerAwareInterface
     use ContainerAwareTrait;
 
     /**
-     * @var array<Action>
+     * @var Action[]
      */
     public array $actions = [];
 

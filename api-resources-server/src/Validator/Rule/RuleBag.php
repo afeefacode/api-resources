@@ -7,7 +7,7 @@ use Afeefa\ApiResources\Api\ToSchemaJsonInterface;
 class RuleBag implements ToSchemaJsonInterface
 {
     /**
-     * @var array<Rule>
+     * @var Rule[]
      */
     public array $rules = [];
 

@@ -2,18 +2,14 @@
 
 namespace Afeefa\ApiResources\Field;
 
-use Afeefa\ApiResources\Api\ToSchemaJsonInterface;
-use Afeefa\ApiResources\DI\ContainerAwareInterface;
-use Afeefa\ApiResources\DI\ContainerAwareTrait;
+use Afeefa\ApiResources\Bag\Bag;
 
-class FieldBag implements ToSchemaJsonInterface, ContainerAwareInterface
+/**
+ * @property Field[] $entries
+ */
+class FieldBag extends Bag
 {
-    use ContainerAwareTrait;
-
-    /**
-     * @var array<Field>
-     */
-    public array $fields = [];
+    // protected array $entries = [];
 
     public function add(string $name, $classOrCallback = null): FieldBag
     {
@@ -25,7 +21,7 @@ class FieldBag implements ToSchemaJsonInterface, ContainerAwareInterface
                 $field->name = $name;
                 $field->allowed = true;
                 $callback($field);
-                $this->fields[$name] = $field;
+                $this->entries[$name] = $field;
             });
         } else {
             $Field = $classOrCallback;
@@ -33,7 +29,7 @@ class FieldBag implements ToSchemaJsonInterface, ContainerAwareInterface
             $this->container->create($Field, function (Field $field) use ($name) {
                 $field->name = $name;
                 $field->allowed = true;
-                $this->fields[$name] = $field;
+                $this->entries[$name] = $field;
             });
         }
 
@@ -42,20 +38,20 @@ class FieldBag implements ToSchemaJsonInterface, ContainerAwareInterface
 
     public function update(string $name, callable $callback): FieldBag
     {
-        $field = $this->fields[$name];
+        $field = $this->entries[$name];
         $callback($field);
         return $this;
     }
 
     public function get(string $name): Field
     {
-        return $this->fields[$name];
+        return parent::get($name);
     }
 
     public function allow(array $names): FieldBag
     {
         foreach ($names as $name) {
-            $this->fields[$name]->allowed = true;
+            $this->entries[$name]->allowed = true;
         }
         return $this;
     }
@@ -63,8 +59,8 @@ class FieldBag implements ToSchemaJsonInterface, ContainerAwareInterface
     public function clone(): FieldBag
     {
         $fieldBag = $this->container->create(FieldBag::class, function (FieldBag $fieldBag) {
-            foreach ($this->fields as $name => $field) {
-                $fieldBag->fields[$name] = $field->clone();
+            foreach ($this->entries as $name => $field) {
+                $fieldBag->entries[$name] = $field->clone();
             }
         });
         return $fieldBag;
@@ -77,6 +73,11 @@ class FieldBag implements ToSchemaJsonInterface, ContainerAwareInterface
                 return $field->toSchemaJson();
             }
             return null;
-        }, $this->fields));
+        }, $this->entries));
+    }
+
+    protected function includeInSchema(Field $field): bool
+    {
+        return $field->allowed;
     }
 }

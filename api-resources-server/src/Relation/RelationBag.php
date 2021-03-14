@@ -15,7 +15,7 @@ class RelationBag implements ToSchemaJsonInterface, ContainerAwareInterface
     use ContainerAwareTrait;
 
     /**
-     * @var array<Relation>
+     * @var Relation[]
      */
     public array $relations = [];
 
