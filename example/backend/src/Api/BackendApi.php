@@ -13,8 +13,8 @@ class BackendApi extends Api
     public function resources(ResourceBag $resources): void
     {
         $resources
-            ->resource(ArticlesResource::class)
-            ->resource(function (AuthorsResource $resource) {
+            ->add(ArticlesResource::class)
+            ->add(function (AuthorsResource $resource) {
                 // $resource->removeAction('get_authors');
             });
     }
