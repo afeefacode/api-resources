@@ -5,6 +5,7 @@ namespace Backend\Types;
 use Afeefa\ApiResources\Field\FieldBag;
 use Afeefa\ApiResources\Field\Fields\VarcharField;
 use Afeefa\ApiResources\Relation\RelationBag;
+use Afeefa\ApiResources\Relation\Relations\HasMany;
 use Afeefa\ApiResources\Type\Type;
 
 class TagType extends Type
@@ -18,7 +19,7 @@ class TagType extends Type
 
     public function relations(RelationBag $relations): void
     {
-        $relations->hasMany('users', Type::class);
+        $relations->add('users', Type::class, HasMany::class);
     }
 }
 

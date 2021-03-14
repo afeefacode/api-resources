@@ -5,6 +5,8 @@ namespace Backend\Types;
 use Afeefa\ApiResources\Field\FieldBag;
 use Afeefa\ApiResources\Field\Fields\VarcharField;
 use Afeefa\ApiResources\Relation\RelationBag;
+use Afeefa\ApiResources\Relation\Relations\HasMany;
+use Afeefa\ApiResources\Relation\Relations\LinkMany;
 use Afeefa\ApiResources\Type\Type;
 
 class AuthorType extends Type
@@ -20,8 +22,8 @@ class AuthorType extends Type
 
     public function relations(RelationBag $relations): void
     {
-        $relations->hasMany('articles', ArticleType::class);
+        $relations->add('articles', ArticleType::class, HasMany::class);
 
-        $relations->linkMany('tags', TagType::class);
+        $relations->add('tags', TagType::class, LinkMany::class);
     }
 }

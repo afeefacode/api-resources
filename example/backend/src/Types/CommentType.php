@@ -7,6 +7,7 @@ use Afeefa\ApiResources\Field\Fields\DateField;
 use Afeefa\ApiResources\Field\Fields\TextField;
 use Afeefa\ApiResources\Field\Fields\VarcharField;
 use Afeefa\ApiResources\Relation\RelationBag;
+use Afeefa\ApiResources\Relation\Relations\LinkOne;
 use Afeefa\ApiResources\Type\Type;
 
 class CommentType extends Type
@@ -24,6 +25,6 @@ class CommentType extends Type
 
     public function relations(RelationBag $relations): void
     {
-        $relations->linkOne('article', ArticleType::class);
+        $relations->add('article', ArticleType::class, LinkOne::class);
     }
 }

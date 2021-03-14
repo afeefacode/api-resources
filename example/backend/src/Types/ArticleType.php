@@ -6,6 +6,9 @@ use Afeefa\ApiResources\Field\FieldBag;
 use Afeefa\ApiResources\Field\Fields\DateField;
 use Afeefa\ApiResources\Field\Fields\VarcharField;
 use Afeefa\ApiResources\Relation\RelationBag;
+use Afeefa\ApiResources\Relation\Relations\HasMany;
+use Afeefa\ApiResources\Relation\Relations\LinkMany;
+use Afeefa\ApiResources\Relation\Relations\LinkOne;
 use Afeefa\ApiResources\Type\ModelType;
 use Afeefa\ApiResources\Validator\Validators\VarcharValidator;
 
@@ -65,7 +68,7 @@ class ArticleType extends ModelType
 
     public function relations(RelationBag $relations): void
     {
-        $relations->linkOne('author', AuthorType::class);
+        // $relations->linkOne('author', AuthorType::class);
 
         // $relations->linkOne('author', Author::class, function (Author $author) {
         //     $author->update(function (FieldBag $fields) {
@@ -80,8 +83,10 @@ class ArticleType extends ModelType
         //     });
         // });
 
-        $relations->hasMany('comments', CommentType::class);
+        $relations->add('author', AuthorType::class, LinkOne::class);
 
-        $relations->linkMany('tags', TagType::class);
+        $relations->add('comments', CommentType::class, HasMany::class);
+
+        $relations->add('tags', TagType::class, LinkMany::class);
     }
 }
