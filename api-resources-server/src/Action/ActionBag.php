@@ -2,41 +2,20 @@
 
 namespace Afeefa\ApiResources\Action;
 
-use Afeefa\ApiResources\Api\ToSchemaJsonInterface;
-use Afeefa\ApiResources\DI\ContainerAwareInterface;
-use Afeefa\ApiResources\DI\ContainerAwareTrait;
+use Afeefa\ApiResources\Bag\Bag;
 
-class ActionBag implements ToSchemaJsonInterface, ContainerAwareInterface
+/**
+ * @property Action[] $entries
+ */
+class ActionBag extends Bag
 {
-    use ContainerAwareTrait;
-
-    /**
-     * @var Action[]
-     */
-    public array $actions = [];
-
-    public function add(string $name, callable $callback = null): ActionBag
+    public function add(string $name, callable $callback): ActionBag
     {
         $this->container->create(Action::class, function (Action $action) use ($name, $callback) {
             $action->name = $name;
-            if ($callback) {
-                $callback($action);
-            }
-            $this->actions[$name] = $action;
+            $callback($action);
+            $this->entries[$name] = $action;
         });
         return $this;
-    }
-
-    public function remove(string $name): ActionBag
-    {
-        unset($this->actions[$name]);
-        return $this;
-    }
-
-    public function toSchemaJson(): array
-    {
-        return array_map(function (Action $action) {
-            return $action->toSchemaJson();
-        }, $this->actions);
     }
 }

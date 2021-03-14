@@ -2,15 +2,11 @@
 
 namespace Afeefa\ApiResources\Action;
 
-use Afeefa\ApiResources\Api\ToSchemaJsonInterface;
-use Afeefa\ApiResources\DI\ContainerAwareInterface;
-use Afeefa\ApiResources\DI\ContainerAwareTrait;
+use Afeefa\ApiResources\Bag\BagEntry;
 use Afeefa\ApiResources\Filter\FilterBag;
 
-class Action implements ToSchemaJsonInterface, ContainerAwareInterface
+class Action extends BagEntry
 {
-    use ContainerAwareTrait;
-
     public string $name;
 
     public ActionParams $params;

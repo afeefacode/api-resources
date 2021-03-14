@@ -2,9 +2,9 @@
 
 namespace Afeefa\ApiResources\Validator\Rule;
 
-use Afeefa\ApiResources\Api\ToSchemaJsonInterface;
+use Afeefa\ApiResources\Bag\BagEntry;
 
-class Rule implements ToSchemaJsonInterface
+class Rule extends BagEntry
 {
     public string $message = '{{ fieldName }} ist ungültig.';
 

@@ -15,6 +15,12 @@ class Bag implements ToSchemaJsonInterface, ContainerAwareInterface
      */
     protected array $entries = [];
 
+    public function remove(string $name): Bag
+    {
+        unset($this->entries[$name]);
+        return $this;
+    }
+
     public function get(string $name): BagEntryInterface
     {
         return $this->entries[$name];

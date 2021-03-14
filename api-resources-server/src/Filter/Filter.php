@@ -2,10 +2,10 @@
 
 namespace Afeefa\ApiResources\Filter;
 
-use Afeefa\ApiResources\Api\ToSchemaJsonInterface;
+use Afeefa\ApiResources\Bag\BagEntry;
 use Afeefa\ApiResources\Exception\Exceptions\MissingTypeException;
 
-class Filter implements ToSchemaJsonInterface
+class Filter extends BagEntry
 {
     public string $type;
 

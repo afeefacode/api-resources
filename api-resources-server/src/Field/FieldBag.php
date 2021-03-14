@@ -9,8 +9,6 @@ use Afeefa\ApiResources\Bag\Bag;
  */
 class FieldBag extends Bag
 {
-    // protected array $entries = [];
-
     public function add(string $name, $classOrCallback = null): FieldBag
     {
         if (is_callable($classOrCallback)) {
@@ -74,10 +72,5 @@ class FieldBag extends Bag
             }
             return null;
         }, $this->entries));
-    }
-
-    protected function includeInSchema(Field $field): bool
-    {
-        return $field->allowed;
     }
 }

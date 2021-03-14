@@ -2,26 +2,17 @@
 
 namespace Afeefa\ApiResources\Validator\Rule;
 
-use Afeefa\ApiResources\Api\ToSchemaJsonInterface;
+use Afeefa\ApiResources\Bag\Bag;
 
-class RuleBag implements ToSchemaJsonInterface
+/**
+ * @property Rule[] $entries
+ */
+class RuleBag extends Bag
 {
-    /**
-     * @var Rule[]
-     */
-    public array $rules = [];
-
     public function add(string $name): Rule
     {
         $rule = new Rule();
-        $this->rules[$name] = $rule;
+        $this->entries[$name] = $rule;
         return $rule;
-    }
-
-    public function toSchemaJson(): array
-    {
-        return array_map(function (Rule $rule) {
-            return $rule->toSchemaJson();
-        }, $this->rules);
     }
 }

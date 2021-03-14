@@ -2,66 +2,31 @@
 
 namespace Afeefa\ApiResources\Filter;
 
-use Afeefa\ApiResources\Api\ToSchemaJsonInterface;
-use Afeefa\ApiResources\Filter\Filters\BooleanFilter;
-use Afeefa\ApiResources\Filter\Filters\IdFilter;
-use Afeefa\ApiResources\Filter\Filters\KeywordFilter;
-use Afeefa\ApiResources\Filter\Filters\OrderFilter;
-use Afeefa\ApiResources\Filter\Filters\PageFilter;
-use Afeefa\ApiResources\Filter\Filters\TypeFilter;
+use Afeefa\ApiResources\Bag\Bag;
 
-class FilterBag implements ToSchemaJsonInterface
+/**
+ * @property Filter[] $entries
+ */
+class FilterBag extends Bag
 {
-    /**
-     * @var Filter[]
-     */
-    public array $filters = [];
-
-    public function id(string $name, callable $callback = null): IdFilter
+    public function add(string $name, $classOrCallback = null): FilterBag
     {
-        return $this->filter($name, IdFilter::class, $callback);
-    }
-
-    public function boolean(string $name, callable $callback = null): BooleanFilter
-    {
-        return $this->filter($name, BooleanFilter::class, $callback);
-    }
-
-    public function keyword(string $name, callable $callback = null): Filter
-    {
-        return $this->filter($name, KeywordFilter::class, $callback);
-    }
-
-    public function type(string $name, callable $callback = null): Filter
-    {
-        return $this->filter($name, TypeFilter::class, $callback);
-    }
-
-    public function page(string $name, callable $callback = null): PageFilter
-    {
-        return $this->filter($name, PageFilter::class, $callback);
-    }
-
-    public function order(string $name, callable $callback = null): OrderFilter
-    {
-        return $this->filter($name, OrderFilter::class, $callback);
-    }
-
-    protected function filter(string $name, string $Filter, callable $callback = null): Filter
-    {
-        $filter = new $Filter();
-        $filter->name = $name;
-        if ($callback) {
-            $callback($filter);
+        if (is_callable($classOrCallback)) {
+            $callback = $classOrCallback;
+            $Filter = $this->container->getCallbackArgumentType($callback);
+            $this->container->create($Filter, function (Filter $filter) use ($name, $callback) {
+                $filter->name = $name;
+                $callback($filter);
+                $this->entries[$name] = $filter;
+            });
+        } else {
+            $Filter = $classOrCallback;
+            $this->container->create($Filter, function (Filter $filter) use ($name) {
+                $filter->name = $name;
+                $this->entries[$name] = $filter;
+            });
         }
-        $this->filters[$name] = $filter;
-        return $filter;
-    }
 
-    public function toSchemaJson(): array
-    {
-        return array_map(function (Filter $filter) {
-            return $filter->toSchemaJson();
-        }, $this->filters);
+        return $this;
     }
 }

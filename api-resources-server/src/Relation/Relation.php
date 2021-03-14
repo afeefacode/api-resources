@@ -2,15 +2,11 @@
 
 namespace Afeefa\ApiResources\Relation;
 
-use Afeefa\ApiResources\Api\ToSchemaJsonInterface;
-use Afeefa\ApiResources\DI\ContainerAwareInterface;
-use Afeefa\ApiResources\DI\ContainerAwareTrait;
+use Afeefa\ApiResources\Bag\BagEntry;
 use Afeefa\ApiResources\Exception\Exceptions\MissingTypeException;
 
-class Relation implements ToSchemaJsonInterface, ContainerAwareInterface
+class Relation extends BagEntry
 {
-    use ContainerAwareTrait;
-
     public string $type;
 
     public string $name;
