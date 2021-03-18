@@ -1,4 +1,4 @@
 export { Client } from './Client';
-export { test } from './index2';
+export { Resource } from './Resource';
 export { Model } from './Model';
 //# sourceMappingURL=index.d.ts.map

@@ -1,7 +1,5 @@
-var Model = /** @class */ (function () {
-    function Model() {
+export class Model {
+    constructor() {
         console.log('New Model');
     }
-    return Model;
-}());
-export { Model };
+}
