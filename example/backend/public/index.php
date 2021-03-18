@@ -53,7 +53,7 @@ $app->get('/backend-api/schema', function (HttpRequest $request, Response $respo
     return $response->withJson($result);
 });
 
-$app->get('/', function (HttpRequest $request, Response $response, array $args) use ($db) {
+$app->get('/', function (HttpRequest $request, Response $response, array $args) {
     ob_start();
     include 'index.html';
     $content = ob_get_clean();
