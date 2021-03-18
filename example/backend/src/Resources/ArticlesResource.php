@@ -17,6 +17,7 @@ use Afeefa\ApiResources\Filter\Filters\OrderFilter;
 use Afeefa\ApiResources\Filter\Filters\PageFilter;
 use Afeefa\ApiResources\Resource\ModelResource;
 use Backend\Types\ArticleType;
+use Medoo\Medoo;
 
 class ArticlesResource extends ModelResource
 {
@@ -66,6 +67,14 @@ class ArticlesResource extends ModelResource
                 $response
                     ->type(ArticleType::class)
                     ->list();
+            });
+
+            $action->execute(function (Medoo $db) {
+                return $db->select(
+                    'articles',
+                    ['id', 'title'],
+                    ['ORDER' => 'id']
+                );
             });
         });
 

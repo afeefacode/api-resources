@@ -7,14 +7,14 @@
     ],
     "require": {
         "afeefa/api-resources-server": "*",
-        "afeefa/debug-dump-log": "^0.0.20",
+        "afeefa/debug-dump-log": "^0",
         "slim/slim": "^4.7",
         "slim/psr7": "^1.3",
         "catfan/medoo": "^1.7",
         "slim/http": "^1.2"
     },
     "require-dev": {
-        "robmorgan/phinx": "^0.12.5",
+        "robmorgan/phinx": "^0.12",
         "fakerphp/faker": "^1.13"
     },
     "autoload": {

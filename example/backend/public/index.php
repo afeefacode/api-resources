@@ -1,29 +1,56 @@
 <?php
 
+use Afeefa\ApiResources\Api\Request as ApiRequest;
+use Afeefa\ApiResources\DI\Container;
+use Backend\Api\BackendApi;
+use Backend\Resources\ArticlesResource;
 use Medoo\Medoo;
 use Slim\Factory\AppFactory;
 use Slim\Http\Response;
-use Slim\Http\ServerRequest as Request;
+use Slim\Http\ServerRequest as HttpRequest;
 
 require __DIR__ . '/../vendor/autoload.php';
 
-$db = new Medoo([
-    'database_type' => 'mysql',
-    'database_name' => 'api',
-    'server' => 'mysql',
-    'username' => 'root',
-    'password' => 'root'
+$container = new Container([
+    Medoo::class => function () {
+        return new Medoo([
+            'database_type' => 'mysql',
+            'database_name' => 'api',
+            'server' => 'mysql',
+            'username' => 'root',
+            'password' => 'root'
+        ]);
+    }
 ]);
 
+AppFactory::setContainer($container);
 $app = AppFactory::create();
+$app->addErrorMiddleware(true, false, false);
 
-$app->get('/api', function (Request $request, Response $response, array $args) use ($db) {
-    $tags = $db->select('tags', ['id', 'name']);
-    return $response->withJson($tags);
+$app->get('/backend-api/test', function (HttpRequest $request, Response $response, array $args) {
+    $result = $this->call(function (BackendApi $api) {
+        return $api->request(function (ApiRequest $request) {
+            $request
+                ->resource(ArticlesResource::$type)
+                ->action('get_articles');
+        });
+    });
+    return $response->withJson($result);
 });
 
-$app->get('/', function (Request $request, Response $response, array $args) use ($db) {
-    $response->getBody()->write('Hello Api Resources <a href="/frontend">Frontend</a>');
+$app->get('/backend-api/schema', function (HttpRequest $request, Response $response, array $args) {
+    $result = $this->call(function (BackendApi $api) {
+        return $api->toSchemaJson();
+    });
+    $this->dumpEntries();
+    return $response->withJson($result);
+});
+
+$app->get('/', function (HttpRequest $request, Response $response, array $args) use ($db) {
+    ob_start();
+    include 'index.html';
+    $content = ob_get_clean();
+    $response->getBody()->write($content);
     return $response;
 });
 
