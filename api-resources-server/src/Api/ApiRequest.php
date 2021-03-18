@@ -4,7 +4,7 @@ namespace Afeefa\ApiResources\Api;
 
 class ApiRequest
 {
-    public $resourceId;
+    protected $resourceId;
 
     public static function fromInput()
     {

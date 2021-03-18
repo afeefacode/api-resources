@@ -8,7 +8,7 @@ class BooleanFilter extends Filter
 {
     public string $type = 'Afeefa.Boolean';
 
-    public $values = [true];
+    protected $values = [true];
 
     public function values(array $values)
     {

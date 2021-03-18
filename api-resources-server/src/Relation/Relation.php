@@ -9,9 +9,9 @@ class Relation extends BagEntry
 {
     public string $type;
 
-    public string $name;
+    protected string $name;
 
-    public string $RelatedType;
+    protected string $RelatedType;
 
     public function created(): void
     {

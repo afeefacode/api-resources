@@ -8,7 +8,7 @@ class OrderFilter extends Filter
 {
     public string $type = 'Afeefa.Order';
 
-    public array $values;
+    protected array $values;
 
     public function values(array $values): OrderFilter
     {

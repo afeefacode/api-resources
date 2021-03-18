@@ -43,7 +43,7 @@ class FieldBag extends Bag
     public function allow(array $names): FieldBag
     {
         foreach ($names as $name) {
-            $this->entries[$name]->allowed = true;
+            $this->entries[$name]->allowed(true);
         }
         return $this;
     }
@@ -61,7 +61,7 @@ class FieldBag extends Bag
     public function toSchemaJson(): array
     {
         return array_filter(array_map(function (Field $field) {
-            if ($field->allowed) {
+            if ($field->isAllowed()) {
                 return $field->toSchemaJson();
             }
             return null;

@@ -10,8 +10,9 @@ class ActionInput implements ToSchemaJsonInterface, ContainerAwareInterface
 {
     use ContainerAwareTrait;
 
-    public bool $list = false;
-    public string $Type;
+    protected bool $list = false;
+
+    protected string $Type;
 
     public function type(string $Type)
     {

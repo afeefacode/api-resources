@@ -4,9 +4,11 @@ namespace Afeefa\ApiResources\Api;
 
 class Request
 {
-    public string $resource;
-    public $action;
-    public array $filters = [];
+    protected string $resource;
+
+    protected $action;
+
+    protected array $filters = [];
 
     public static function new()
     {

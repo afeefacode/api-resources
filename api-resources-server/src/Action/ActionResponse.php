@@ -10,22 +10,24 @@ class ActionResponse implements ToSchemaJsonInterface, ContainerAwareInterface
 {
     use ContainerAwareTrait;
 
-    public bool $list = false;
-    public string $Type;
-    public string $Types;
+    protected bool $list = false;
+
+    protected string $type;
+
+    protected array $types;
 
     public function type(string $Type)
     {
-        $this->Type = $Type;
+        $this->type = $Type;
 
-        $this->container->add($this->Type);
+        $this->container->add($this->type);
 
         return $this;
     }
 
-    public function types(array $Types)
+    public function types(array $types)
     {
-        $this->Types = $Types;
+        $this->types = $types;
         return $this;
     }
 
@@ -37,7 +39,7 @@ class ActionResponse implements ToSchemaJsonInterface, ContainerAwareInterface
 
     public function toSchemaJson(): array
     {
-        $type = $this->container->get($this->Type);
+        $type = $this->container->get($this->type);
 
         $json = [
             'type' => $type->type

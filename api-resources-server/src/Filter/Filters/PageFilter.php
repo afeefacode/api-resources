@@ -8,8 +8,9 @@ class PageFilter extends Filter
 {
     public string $type = 'Afeefa.Page';
 
-    public $defaultPageSize;
-    public $pageSizes;
+    protected $defaultPageSize;
+
+    protected $pageSizes;
 
     public function pageSizes(array $pageSizes, int $defaultPageSize): PageFilter
     {

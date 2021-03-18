@@ -9,7 +9,7 @@ class IdFilter extends Filter
 {
     public string $type = 'Afeefa.Id';
 
-    public $request;
+    protected Request $request;
 
     public function request(callable $callback): IdFilter
     {

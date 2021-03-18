@@ -7,15 +7,15 @@ use Afeefa\ApiResources\Filter\FilterBag;
 
 class Action extends BagEntry
 {
-    public string $name;
+    protected string $name;
 
-    public ActionParams $params;
+    protected ActionParams $params;
 
-    public ActionInput $input;
+    protected ActionInput $input;
 
     protected FilterBag $filters;
 
-    public ActionResponse $response;
+    protected ActionResponse $response;
 
     public function name(string $name): Action
     {

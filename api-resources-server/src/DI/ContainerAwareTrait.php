@@ -4,7 +4,7 @@ namespace Afeefa\ApiResources\DI;
 
 trait ContainerAwareTrait
 {
-    public Container $container;
+    protected Container $container;
 
     public function container(Container $container): void
     {

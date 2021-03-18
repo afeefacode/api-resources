@@ -9,7 +9,7 @@ class Filter extends BagEntry
 {
     public string $type;
 
-    public string $name;
+    protected string $name;
 
     public function __construct()
     {

@@ -10,13 +10,13 @@ class Field extends BagEntry
 {
     public string $type;
 
-    public string $name;
+    protected string $name;
 
-    public ?Validator $validator = null;
+    protected ?Validator $validator = null;
 
-    public bool $required = false;
+    protected bool $required = false;
 
-    public bool $allowed = false;
+    protected bool $allowed = false;
 
     public function created(): void
     {
@@ -55,6 +55,11 @@ class Field extends BagEntry
     {
         $this->allowed = true;
         return $this;
+    }
+
+    public function isAllowed(): bool
+    {
+        return $this->allowed;
     }
 
     public function clone(): Field
