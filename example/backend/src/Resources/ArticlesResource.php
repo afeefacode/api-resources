@@ -7,7 +7,7 @@ use Afeefa\ApiResources\Action\ActionBag;
 use Afeefa\ApiResources\Action\ActionInput;
 use Afeefa\ApiResources\Action\ActionParams;
 use Afeefa\ApiResources\Action\ActionResponse;
-use Afeefa\ApiResources\Api\Request;
+use Afeefa\ApiResources\Api\ApiRequest;
 use Afeefa\ApiResources\Field\Fields\IdField;
 use Afeefa\ApiResources\Filter\FilterBag;
 use Afeefa\ApiResources\Filter\Filters\BooleanFilter;
@@ -32,14 +32,14 @@ class ArticlesResource extends ModelResource
         $actions->add('get_articles', function (Action $action) {
             $action->filters(function (FilterBag $filters) {#
                 $filters->add('author_id', function (IdFilter $filter) {
-                    $filter->request(function (Request $request) {
+                    $filter->request(function (ApiRequest $request) {
                         // $request
                         //     ->action([AuthorsResource::class, 'test']);
                     });
                 });
 
                 $filters->add('tag_id', function (IdFilter $filter) {
-                    $filter->request(function (Request $request) {
+                    $filter->request(function (ApiRequest $request) {
                         //     $request
                         //         ->action([ArticlesResource::class, 'getTags'])
                         //         ->filter('user_type', 'Example.Article');

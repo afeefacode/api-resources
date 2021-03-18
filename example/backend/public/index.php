@@ -1,6 +1,6 @@
 <?php
 
-use Afeefa\ApiResources\Api\Request as ApiRequest;
+use Afeefa\ApiResources\Api\ApiRequest;
 use Afeefa\ApiResources\DI\Container;
 use Backend\Api\BackendApi;
 use Backend\Resources\ArticlesResource;

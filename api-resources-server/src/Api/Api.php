@@ -30,20 +30,17 @@ class Api implements ContainerAwareInterface
 
     public function request(Closure $callback)
     {
-        $request = new Request();
+        $request = new ApiRequest();
         $request->api($this);
-
         $callback($request);
-
         return $request->send();
     }
 
     public function requestFromInput()
     {
-        $request = new Request();
+        $request = new ApiRequest();
         $request->api($this);
         $request->fromInput();
-
         return $request->send();
     }
 
