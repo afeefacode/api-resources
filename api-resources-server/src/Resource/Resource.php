@@ -2,6 +2,7 @@
 
 namespace Afeefa\ApiResources\Resource;
 
+use Afeefa\ApiResources\Action\Action;
 use Afeefa\ApiResources\Action\ActionBag;
 use Afeefa\ApiResources\Bag\BagEntry;
 use Afeefa\ApiResources\Exception\Exceptions\MissingTypeException;
@@ -24,6 +25,11 @@ class Resource extends BagEntry
 
     public function actions(ActionBag $actions): void
     {
+    }
+
+    public function getAction(string $name): Action
+    {
+        return $this->actions->get($name);
     }
 
     public function removeAction(string $name): Resource

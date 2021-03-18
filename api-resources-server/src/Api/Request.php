@@ -2,20 +2,15 @@
 
 namespace Afeefa\ApiResources\Api;
 
-use Closure;
-
 class Request
 {
+    protected Api $api;
+
     protected string $resource;
 
-    protected $action;
+    protected string $action;
 
     protected array $filters = [];
-
-    public static function new()
-    {
-        return new self();
-    }
 
     public function resource(string $resource): Request
     {
@@ -23,7 +18,13 @@ class Request
         return $this;
     }
 
-    public function action(Closure $action): Request
+    public function api(Api $api): Request
+    {
+        $this->api = $api;
+        return $this;
+    }
+
+    public function action(string $action): Request
     {
         $this->action = $action;
         return $this;
@@ -33,5 +34,13 @@ class Request
     {
         $this->filters[] = [$name => $value];
         return $this;
+    }
+
+    public function send()
+    {
+        return $this
+            ->api
+            ->getAction($this->resource, $this->action)
+            ->call();
     }
 }

@@ -2,6 +2,7 @@
 
 namespace Afeefa\ApiResources\Api;
 
+use Afeefa\ApiResources\Action\Action;
 use Afeefa\ApiResources\DI\Container;
 use Afeefa\ApiResources\DI\ContainerAwareInterface;
 use Afeefa\ApiResources\DI\ContainerAwareTrait;
@@ -15,9 +16,14 @@ class Api implements ContainerAwareInterface
 
     protected ResourceBag $resources;
 
-    public function __construct()
+    public static function create(Container $container = null): Api
     {
-        $this->container(new Container());
+        return new static($container);
+    }
+
+    public function __construct(Container $container = null)
+    {
+        $this->container($container ?? new Container());
 
         $this->resources = $this->container->create(ResourceBag::class);
         $this->resources($this->resources);
@@ -27,8 +33,16 @@ class Api implements ContainerAwareInterface
     {
     }
 
-    public function request(ApiRequest $request)
+    public function getAction(string $resourceType, string $actionName): Action
     {
+        $resource = $this->resources->get($resourceType);
+        return $resource->getAction($actionName);
+    }
+
+    public function request()
+    {
+        $request = new Request();
+        $request->api($this);
         return $request;
     }
 

@@ -68,6 +68,12 @@ class Action extends BagEntry
         return $this;
     }
 
+    public function call()
+    {
+        $executor = $this->executor;
+        return $this->container->call($executor);
+    }
+
     public function toSchemaJson(): array
     {
         $json = [

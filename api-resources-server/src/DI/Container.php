@@ -11,6 +11,19 @@ use ReflectionNamedType;
 class Container
 {
     private array $entries = [];
+    private array $config = [];
+
+    public static function withConfig(array $config): Container
+    {
+        $container = new Container();
+        $container->config($config);
+        return $container;
+    }
+
+    public function config(array $config): void
+    {
+        $this->config = $config;
+    }
 
     /**
      * Creates and adds a container entry, if it not exists
@@ -26,9 +39,10 @@ class Container
     public function get(string $Class): object
     {
         if (!isset($this->entries[$Class])) {
-            $instance = new $Class();
+            $args = $this->config[$Class] ?? [];
+            $instance = new $Class(...$args);
             $this->entries[$Class] = $instance;
-            $this->bootstrap($instance);
+            $this->bootstrapInstance($instance);
         }
 
         return $this->entries[$Class];
@@ -48,7 +62,7 @@ class Container
     public function create(string $Class, Closure $callback = null): object
     {
         $instance = new $Class();
-        $this->bootstrap($instance);
+        $this->bootstrapInstance($instance);
         if ($callback) {
             $callback($instance);
         }
@@ -56,28 +70,60 @@ class Container
     }
 
     /**
+     * Calls a function while injecting dependencies
+     */
+    public function call(Closure $callback, array $arguments = [])
+    {
+        if (!count($arguments)) {
+            $argumentTypes = $this->getCallbackArgumentTypes($callback);
+
+            $arguments = array_map(function ($argument) {
+                return $this->get($argument);
+            }, $argumentTypes);
+        }
+
+        return $callback(...$arguments);
+    }
+
+    /**
      * Returns the type of the first callback argument
      */
     public function getCallbackArgumentType(Closure $callback): string
     {
-        $f = new ReflectionFunction($callback);
-        $param = $f->getParameters()[0] ?? null;
-        if ($param) {
-            $type = $param->getType();
-            if ($type instanceof ReflectionNamedType) {
-                return $type->getName();
-            }
-            throw new MissingTypeHintException("Callback variable \${$param->getName()} does provide a type hint.");
-        } else {
+        $arguments = $this->getCallbackArgumentTypes($callback);
+
+        $type = $arguments[0] ?? null;
+
+        if (!$type) {
             throw new MissingCallbackArgumentException('Callback does not provide an argument.');
         }
+
+        return $type;
     }
 
-    private function bootstrap($instance): void
+    private function bootstrapInstance($instance): void
     {
         if ($instance instanceof ContainerAwareInterface) {
             $instance->container($this);
             $instance->created();
         }
+    }
+
+    private function getCallbackArgumentTypes(Closure $callback): array
+    {
+        $argumentTypes = [];
+
+        $f = new ReflectionFunction($callback);
+        $params = $f->getParameters();
+        foreach ($params as $param) {
+            $type = $param->getType();
+            if ($type instanceof ReflectionNamedType) {
+                $argumentTypes[] = $type->getName();
+                continue;
+            }
+            throw new MissingTypeHintException("Callback variable \${$param->getName()} does provide a type hint.");
+        }
+
+        return $argumentTypes;
     }
 }

@@ -5,6 +5,7 @@ namespace Afeefa\ApiResources\Bag;
 use Afeefa\ApiResources\Api\ToSchemaJsonInterface;
 use Afeefa\ApiResources\DI\ContainerAwareInterface;
 use Afeefa\ApiResources\DI\ContainerAwareTrait;
+use Closure;
 
 class Bag implements ToSchemaJsonInterface, ContainerAwareInterface
 {
@@ -15,6 +16,11 @@ class Bag implements ToSchemaJsonInterface, ContainerAwareInterface
      */
     protected array $entries = [];
 
+    public function get(string $name): BagEntryInterface
+    {
+        return $this->entries[$name];
+    }
+
     // public function remove(string $name): Bag
     // {
     //     unset($this->entries[$name]);
@@ -24,7 +30,7 @@ class Bag implements ToSchemaJsonInterface, ContainerAwareInterface
     protected function resolveCallback($classOrCallback): array
     {
         $callback = null;
-        if (is_callable($classOrCallback)) {
+        if ($classOrCallback instanceof Closure) {
             $Class = $this->container->getCallbackArgumentType($classOrCallback);
             $callback = $classOrCallback;
         } else {

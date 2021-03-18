@@ -7,6 +7,7 @@ use Closure;
 
 /**
  * @property Action[] $entries
+ * @method Action get(string $name)
  */
 class ActionBag extends Bag
 {

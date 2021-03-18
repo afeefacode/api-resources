@@ -6,6 +6,7 @@ use Afeefa\ApiResources\Bag\Bag;
 
 /**
  * @property Resource[] $entries
+ * @method Resource get(string $type)
  */
 class ResourceBag extends Bag
 {
