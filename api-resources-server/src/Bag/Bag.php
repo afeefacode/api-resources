@@ -27,16 +27,12 @@ class Bag implements ToSchemaJsonInterface, ContainerAwareInterface
     //     return $this;
     // }
 
-    protected function resolveCallback($classOrCallback): array
+    protected function classOrCallback($classOrCallback): array
     {
-        $callback = null;
         if ($classOrCallback instanceof Closure) {
-            $Class = $this->container->getCallbackArgumentType($classOrCallback);
-            $callback = $classOrCallback;
-        } else {
-            $Class = $classOrCallback;
+            return [null, $classOrCallback];
         }
-        return [$Class, $callback];
+        return [$classOrCallback, null];
     }
 
     public function toSchemaJson(): array

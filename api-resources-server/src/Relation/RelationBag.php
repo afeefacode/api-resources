@@ -3,6 +3,7 @@
 namespace Afeefa\ApiResources\Relation;
 
 use Afeefa\ApiResources\Bag\Bag;
+use Afeefa\ApiResources\DI\Injector;
 
 /**
  * @property Relation[] $entries
@@ -11,17 +12,28 @@ class RelationBag extends Bag
 {
     public function add(string $name, string $RelatedType, $classOrCallback): RelationBag
     {
-        [$Relation, $callback] = $this->resolveCallback($classOrCallback);
+        [$Relation, $callback] = $this->classOrCallback($classOrCallback);
 
-        $this->container->create($Relation, function (Relation $relation) use ($name, $RelatedType, $callback) {
+        $init = function (Relation $relation) use ($name, $RelatedType) {
             $relation
                 ->name($name)
                 ->relatedType($RelatedType);
-            if ($callback) {
-                $callback($relation);
-            }
             $this->entries[$name] = $relation;
-        });
+        };
+
+        if ($Relation) {
+            $this->container->create($Relation, null, $init);
+        }
+
+        if ($callback) {
+            $this->container->call(
+                $callback,
+                function (Injector $i) {
+                    $i->create = true;
+                },
+                $init
+            );
+        }
 
         return $this;
     }

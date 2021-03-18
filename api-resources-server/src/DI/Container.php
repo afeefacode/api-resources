@@ -2,25 +2,19 @@
 
 namespace Afeefa\ApiResources\DI;
 
-use Afeefa\ApiResources\Exception\Exceptions\MissingCallbackArgumentException;
 use Afeefa\ApiResources\Exception\Exceptions\MissingTypeHintException;
 use Closure;
+use Psr\Container\ContainerInterface;
 use ReflectionFunction;
 use ReflectionNamedType;
 
-class Container
+class Container implements ContainerInterface
 {
     private array $entries = [];
+
     private array $config = [];
 
-    public static function withConfig(array $config): Container
-    {
-        $container = new Container();
-        $container->config($config);
-        return $container;
-    }
-
-    public function config(array $config): void
+    public function __construct(array $config = [])
     {
         $this->config = $config;
     }
@@ -36,16 +30,81 @@ class Container
     /**
      * Returns a container entry and creates and adds it, if it not exists
      */
-    public function get(string $Class): object
+    public function get(string $Class, Closure $callback = null): object
     {
-        if (!isset($this->entries[$Class])) {
-            $args = $this->config[$Class] ?? [];
-            $instance = new $Class(...$args);
-            $this->entries[$Class] = $instance;
+        if (!$this->has($Class)) {
+            $this->create($Class, function (Injector $i) {
+                $i->register = true;
+            });
+        }
+
+        $instance = $this->entries[$Class];
+
+        if ($callback) {
+            $callback($instance);
+        }
+
+        return $instance;
+    }
+
+    public function has(string $Class): bool
+    {
+        return isset($this->entries[$Class]);
+    }
+
+    /**
+     * Creates a class but does not add it to the container
+     */
+    public function create(string $Class, Closure $injectorCallback = null, Closure $callback = null): object
+    {
+        $injector = new Injector();
+        if ($injectorCallback) {
+            $injectorCallback($injector, $Class);
+        }
+
+        $construct = $this->config[$Class] ?? null;
+
+        if ($injector->register) {
+            $instance = $construct ? $construct() : new $Class();
+            $this->register($Class, $instance);
             $this->bootstrapInstance($instance);
         }
 
-        return $this->entries[$Class];
+        $instance = $construct ? $construct() : new $Class();
+        $this->bootstrapInstance($instance);
+
+        if ($callback) {
+            $callback($instance);
+        }
+        return $instance;
+    }
+
+    /**
+     * Calls a function while injecting dependencies
+     */
+    public function call(Closure $callback, Closure $injectorCallback = null, Closure $typesCallback = null)
+    {
+        $argumentTypes = $this->getCallbackArgumentTypes($callback);
+
+        $arguments = array_map(function ($Type, $index) use ($injectorCallback) {
+            $injector = new Injector();
+            if ($injectorCallback) {
+                $injectorCallback($injector, $Type, $index);
+            }
+
+            if ($injector->instance) {
+                return $injector->instance;
+            } elseif ($injector->create) {
+                return $this->create($Type, $injectorCallback);
+            }
+            return $this->get($Type);
+        }, $argumentTypes, array_keys($argumentTypes));
+
+        if ($typesCallback) {
+            $typesCallback(...$arguments);
+        }
+
+        return $callback(...$arguments);
     }
 
     /**
@@ -56,49 +115,22 @@ class Container
         return $this->entries;
     }
 
-    /**
-     * Creates a class but does not add it to the container
-     */
-    public function create(string $Class, Closure $callback = null): object
+    public function dumpEntries()
     {
-        $instance = new $Class();
-        $this->bootstrapInstance($instance);
-        if ($callback) {
-            $callback($instance);
-        }
-        return $instance;
+        $dump = array_map(function ($key, $entry) {
+            return $key;
+        }, array_keys($this->entries), $this->entries);
+
+        sort($dump);
+
+        debug_dump($dump);
     }
 
-    /**
-     * Calls a function while injecting dependencies
-     */
-    public function call(Closure $callback, array $arguments = [])
+    private function register(string $Class, object $instance)
     {
-        if (!count($arguments)) {
-            $argumentTypes = $this->getCallbackArgumentTypes($callback);
-
-            $arguments = array_map(function ($argument) {
-                return $this->get($argument);
-            }, $argumentTypes);
+        if (!isset($this->entries[$Class])) {
+            $this->entries[$Class] = $instance;
         }
-
-        return $callback(...$arguments);
-    }
-
-    /**
-     * Returns the type of the first callback argument
-     */
-    public function getCallbackArgumentType(Closure $callback): string
-    {
-        $arguments = $this->getCallbackArgumentTypes($callback);
-
-        $type = $arguments[0] ?? null;
-
-        if (!$type) {
-            throw new MissingCallbackArgumentException('Callback does not provide an argument.');
-        }
-
-        return $type;
     }
 
     private function bootstrapInstance($instance): void

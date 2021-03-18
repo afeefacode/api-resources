@@ -3,6 +3,7 @@
 namespace Afeefa\ApiResources\Field;
 
 use Afeefa\ApiResources\Bag\BagEntry;
+use Afeefa\ApiResources\DI\Injector;
 use Afeefa\ApiResources\Exception\Exceptions\MissingTypeException;
 use Afeefa\ApiResources\Validator\Validator;
 use Closure;
@@ -35,14 +36,23 @@ class Field extends BagEntry
     public function validate(Closure $callback): Field
     {
         if ($this->validator) {
-            $callback($this->validator);
+            $this->container->call(
+                $callback,
+                function (Injector $i) {
+                    $i->instance = $this->validator;
+                }
+            );
         } else {
-            $Validator = $this->container->getCallbackArgumentType($callback);
-            $this->container->add($Validator); // register validator class
-            $this->container->create($Validator, function (Validator $validator) use ($callback) {
-                $callback($validator);
-                $this->validator = $validator;
-            });
+            $this->container->call(
+                $callback,
+                function (Injector $i) {
+                    $i->register = true;
+                    $i->create = true;
+                },
+                function (Validator $validator) {
+                    $this->validator = $validator;
+                }
+            );
         }
 
         return $this;
@@ -73,7 +83,7 @@ class Field extends BagEntry
 
     public function clone(): Field
     {
-        return $this->container->create(static::class, function (Field $field) {
+        return $this->container->create(static::class, null, function (Field $field) {
             $field
                 ->name($this->name)
                 ->required($this->required);

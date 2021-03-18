@@ -3,6 +3,7 @@
 namespace Afeefa\ApiResources\Resource;
 
 use Afeefa\ApiResources\Bag\Bag;
+use Afeefa\ApiResources\DI\Injector;
 
 /**
  * @property Resource[] $entries
@@ -12,14 +13,25 @@ class ResourceBag extends Bag
 {
     public function add($classOrCallback): ResourceBag
     {
-        [$Resource, $callback] = $this->resolveCallback($classOrCallback);
+        [$Resource, $callback] = $this->classOrCallback($classOrCallback);
 
-        $this->container->create($Resource, function (Resource $resource) use ($Resource, $callback) {
-            if ($callback) {
-                $callback($resource);
-            }
-            $this->entries[$Resource::$type] = $resource;
-        });
+        $init = function (Resource $resource) {
+            $this->entries[$resource::$type] = $resource;
+        };
+
+        if ($Resource) {
+            $this->container->create($Resource, null, $init);
+        }
+
+        if ($callback) {
+            $this->container->call(
+                $callback,
+                function (Injector $i) {
+                    $i->create = true;
+                },
+                $init
+            );
+        }
 
         return $this;
     }

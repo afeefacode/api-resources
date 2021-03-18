@@ -3,12 +3,12 @@
 namespace Afeefa\ApiResources\Api;
 
 use Afeefa\ApiResources\Action\Action;
-use Afeefa\ApiResources\DI\Container;
 use Afeefa\ApiResources\DI\ContainerAwareInterface;
 use Afeefa\ApiResources\DI\ContainerAwareTrait;
 use Afeefa\ApiResources\Resource\ResourceBag;
 use Afeefa\ApiResources\Type\Type;
 use Afeefa\ApiResources\Validator\Validator;
+use Closure;
 
 class Api implements ContainerAwareInterface
 {
@@ -16,15 +16,8 @@ class Api implements ContainerAwareInterface
 
     protected ResourceBag $resources;
 
-    public static function create(Container $container = null): Api
+    public function created(): void
     {
-        return new static($container);
-    }
-
-    public function __construct(Container $container = null)
-    {
-        $this->container($container ?? new Container());
-
         $this->resources = $this->container->create(ResourceBag::class);
         $this->resources($this->resources);
     }
@@ -39,11 +32,14 @@ class Api implements ContainerAwareInterface
         return $resource->getAction($actionName);
     }
 
-    public function request()
+    public function request(Closure $callback)
     {
         $request = new Request();
         $request->api($this);
-        return $request;
+
+        $callback($request);
+
+        return $request->send();
     }
 
     public function toSchemaJson(): array

@@ -3,6 +3,7 @@
 namespace Afeefa\ApiResources\Field;
 
 use Afeefa\ApiResources\Bag\Bag;
+use Afeefa\ApiResources\DI\Injector;
 use Closure;
 
 /**
@@ -12,19 +13,28 @@ class FieldBag extends Bag
 {
     public function add(string $name, $classOrCallback): FieldBag
     {
-        [$Field, $callback] = $this->resolveCallback($classOrCallback);
+        [$Field, $callback] = $this->classOrCallback($classOrCallback);
 
-        $this->container->add($Field); // register field class
-
-        $this->container->create($Field, function (Field $field) use ($name, $callback) {
+        $init = function (Field $field) use ($name) {
             $field
                 ->name($name)
                 ->allowed(true);
-            if ($callback) {
-                $callback($field);
-            }
             $this->entries[$name] = $field;
-        });
+        };
+
+        if ($Field) {
+            $this->container->create($Field, null, $init);
+        }
+
+        if ($callback) {
+            $this->container->call(
+                $callback,
+                function (Injector $i) {
+                    $i->create = true;
+                },
+                $init
+            );
+        }
 
         return $this;
     }
@@ -51,7 +61,7 @@ class FieldBag extends Bag
 
     public function clone(): FieldBag
     {
-        return $this->container->create(FieldBag::class, function (FieldBag $fieldBag) {
+        return $this->container->create(FieldBag::class, null, function (FieldBag $fieldBag) {
             foreach ($this->entries as $name => $field) {
                 $fieldBag->entries[$name] = $field->clone();
             }
