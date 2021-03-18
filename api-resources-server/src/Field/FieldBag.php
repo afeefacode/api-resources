@@ -16,8 +16,9 @@ class FieldBag extends Bag
         $this->container->add($Field); // register field class
 
         $this->container->create($Field, function (Field $field) use ($name, $callback) {
-            $field->name = $name;
-            $field->allowed = true;
+            $field
+                ->name($name)
+                ->allowed(true);
             if ($callback) {
                 $callback($field);
             }

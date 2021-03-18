@@ -25,6 +25,12 @@ class Field extends BagEntry
         };
     }
 
+    public function name(string $name): Field
+    {
+        $this->name = $name;
+        return $this;
+    }
+
     public function validate(callable $callback): Field
     {
         if ($this->validator) {

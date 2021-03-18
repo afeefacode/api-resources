@@ -14,8 +14,9 @@ class RelationBag extends Bag
         [$Relation, $callback] = $this->resolveCallback($classOrCallback);
 
         $this->container->create($Relation, function (Relation $relation) use ($name, $RelatedType, $callback) {
-            $relation->name = $name;
-            $relation->RelatedType = $RelatedType;
+            $relation
+                ->name($name)
+                ->relatedType($RelatedType);
             if ($callback) {
                 $callback($relation);
             }

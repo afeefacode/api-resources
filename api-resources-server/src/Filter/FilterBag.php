@@ -14,7 +14,7 @@ class FilterBag extends Bag
         [$Filter, $callback] = $this->resolveCallback($classOrCallback);
 
         $this->container->create($Filter, function (Filter $filter) use ($name, $callback) {
-            $filter->name = $name;
+            $filter->name($name);
             if ($callback) {
                 $callback($filter);
             }

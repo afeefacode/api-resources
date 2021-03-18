@@ -17,6 +17,12 @@ class Action extends BagEntry
 
     public ActionResponse $response;
 
+    public function name(string $name): Action
+    {
+        $this->name = $name;
+        return $this;
+    }
+
     public function params(callable $callback): Action
     {
         $this->container->create(ActionParams::class, function (ActionParams $params) use ($callback) {

@@ -18,6 +18,12 @@ class Filter extends BagEntry
         };
     }
 
+    public function name(string $name): Filter
+    {
+        $this->name = $name;
+        return $this;
+    }
+
     public function toSchemaJson(): array
     {
         $json = [
