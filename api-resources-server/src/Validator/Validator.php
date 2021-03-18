@@ -13,7 +13,7 @@ class Validator implements ToSchemaJsonInterface
 
     public array $params = [];
 
-    public RuleBag $rules;
+    protected RuleBag $rules;
 
     public function __construct()
     {

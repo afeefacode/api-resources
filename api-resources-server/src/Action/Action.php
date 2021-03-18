@@ -13,7 +13,7 @@ class Action extends BagEntry
 
     public ActionInput $input;
 
-    public FilterBag $filters;
+    protected FilterBag $filters;
 
     public ActionResponse $response;
 

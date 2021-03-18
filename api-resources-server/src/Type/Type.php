@@ -14,8 +14,8 @@ class Type implements ToSchemaJsonInterface, ContainerAwareInterface
 
     public string $type = 'Afeefa.Type';
 
-    public FieldBag $fields;
-    public RelationBag $relations;
+    protected FieldBag $fields;
+    protected RelationBag $relations;
 
     public function created(): void
     {
