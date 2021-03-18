@@ -12,7 +12,7 @@ class AuthorsResource extends Resource
 {
     public static string $type = 'Example.Authors';
 
-    public function actions(ActionBag $actions): void
+    protected function actions(ActionBag $actions): void
     {
         $actions->add('get_authors', function (Action $action) {
             $action->response(function (ActionResponse $response) {

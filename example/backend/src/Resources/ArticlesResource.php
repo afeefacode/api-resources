@@ -25,7 +25,7 @@ class ArticlesResource extends ModelResource
 
     protected string $ModelType = ArticleType::class;
 
-    public function actions(ActionBag $actions): void
+    protected function actions(ActionBag $actions): void
     {
         parent::actions($actions);
 

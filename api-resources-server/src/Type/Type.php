@@ -15,6 +15,7 @@ class Type implements ToSchemaJsonInterface, ContainerAwareInterface
     public static string $type = 'Afeefa.Type';
 
     protected FieldBag $fields;
+
     protected RelationBag $relations;
 
     public function created(): void
@@ -26,14 +27,6 @@ class Type implements ToSchemaJsonInterface, ContainerAwareInterface
         $this->relations($this->relations);
     }
 
-    public function fields(FieldBag $fields): void
-    {
-    }
-
-    public function relations(RelationBag $relations): void
-    {
-    }
-
     public function toSchemaJson(): array
     {
         return [
@@ -41,5 +34,13 @@ class Type implements ToSchemaJsonInterface, ContainerAwareInterface
             'fields' => $this->fields->toSchemaJson(),
             'relations' => $this->relations->toSchemaJson()
         ];
+    }
+
+    protected function fields(FieldBag $fields): void
+    {
+    }
+
+    protected function relations(RelationBag $relations): void
+    {
     }
 }

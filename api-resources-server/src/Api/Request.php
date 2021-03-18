@@ -12,6 +12,16 @@ class Request
 
     protected array $filters = [];
 
+    public function fromInput(): Request
+    {
+        $input = json_decode(file_get_contents('php://input'), false);
+
+        $this->resource = $input->resource;
+        $this->action = $input->action;
+
+        return $this;
+    }
+
     public function resource(string $resource): Request
     {
         $this->resource = $resource;

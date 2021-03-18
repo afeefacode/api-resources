@@ -29,7 +29,7 @@ class VarcharValidator extends Validator
         return $this->param('regex', $regex);
     }
 
-    public function rules(RuleBag $rules): void
+    protected function rules(RuleBag $rules): void
     {
         $rules->add('filled')
             ->message('{{ fieldName }} sollte einen Wert enthalten.')

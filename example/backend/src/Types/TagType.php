@@ -12,12 +12,12 @@ class TagType extends Type
 {
     public static string $type = 'Example.Tag';
 
-    public function fields(FieldBag $fields): void
+    protected function fields(FieldBag $fields): void
     {
         $fields->add('name', VarcharField::class);
     }
 
-    public function relations(RelationBag $relations): void
+    protected function relations(RelationBag $relations): void
     {
         $relations->add('users', Type::class, HasMany::class);
     }

@@ -14,7 +14,7 @@ class SearchResource extends Resource
 {
     public static string $type = 'Example.Authors';
 
-    public function actions(ActionBag $actions): void
+    protected function actions(ActionBag $actions): void
     {
         $actions->add('search', function (Action $action) {
             $action->filters(function (FilterBag $filters) {

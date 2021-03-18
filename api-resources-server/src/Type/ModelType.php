@@ -22,14 +22,6 @@ class ModelType extends Type
         $this->createFields($this->createFields);
     }
 
-    public function updateFields(FieldBag $fields): void
-    {
-    }
-
-    public function createFields(FieldBag $fields): void
-    {
-    }
-
     public function toSchemaJson(): array
     {
         $json = parent::toSchemaJson();
@@ -38,6 +30,14 @@ class ModelType extends Type
         $json = $this->insertAfter('update_fields', $json, 'create_fields', $this->createFields->toSchemaJson());
 
         return $json;
+    }
+
+    protected function updateFields(FieldBag $fields): void
+    {
+    }
+
+    protected function createFields(FieldBag $fields): void
+    {
     }
 
     private function insertAfter($afterKey, array $array, $newKey, $newValue)

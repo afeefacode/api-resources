@@ -40,7 +40,7 @@ class Validator implements ToSchemaJsonInterface
         return $validator;
     }
 
-    public function rules(RuleBag $rules): void
+    protected function rules(RuleBag $rules): void
     {
     }
 

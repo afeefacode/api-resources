@@ -22,10 +22,6 @@ class Api implements ContainerAwareInterface
         $this->resources($this->resources);
     }
 
-    public function resources(ResourceBag $resources): void
-    {
-    }
-
     public function getAction(string $resourceType, string $actionName): Action
     {
         $resource = $this->resources->get($resourceType);
@@ -38,6 +34,15 @@ class Api implements ContainerAwareInterface
         $request->api($this);
 
         $callback($request);
+
+        return $request->send();
+    }
+
+    public function requestFromInput()
+    {
+        $request = new Request();
+        $request->api($this);
+        $request->fromInput();
 
         return $request->send();
     }
@@ -71,5 +76,9 @@ class Api implements ContainerAwareInterface
             // 'fields' => $fields,
             // 'relations' => $relations,
         ];
+    }
+
+    protected function resources(ResourceBag $resources): void
+    {
     }
 }

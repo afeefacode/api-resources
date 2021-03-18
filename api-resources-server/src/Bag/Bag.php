@@ -21,11 +21,11 @@ class Bag implements ToSchemaJsonInterface, ContainerAwareInterface
         return $this->entries[$name];
     }
 
-    // public function remove(string $name): Bag
-    // {
-    //     unset($this->entries[$name]);
-    //     return $this;
-    // }
+    public function remove(string $name): Bag
+    {
+        unset($this->entries[$name]);
+        return $this;
+    }
 
     protected function classOrCallback($classOrCallback): array
     {

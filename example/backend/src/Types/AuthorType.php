@@ -13,14 +13,14 @@ class AuthorType extends Type
 {
     public static string $type = 'Example.Author';
 
-    public function fields(FieldBag $fields): void
+    protected function fields(FieldBag $fields): void
     {
         $fields->add('name', VarcharField::class);
 
         $fields->add('email', VarcharField::class);
     }
 
-    public function relations(RelationBag $relations): void
+    protected function relations(RelationBag $relations): void
     {
         $relations->add('articles', ArticleType::class, HasMany::class);
 

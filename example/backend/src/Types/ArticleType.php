@@ -16,7 +16,7 @@ class ArticleType extends ModelType
 {
     public static string $type = 'Example.Article';
 
-    public function fields(FieldBag $fields): void
+    protected function fields(FieldBag $fields): void
     {
         $fields->add('title', VarcharField::class);
 
@@ -27,7 +27,7 @@ class ArticleType extends ModelType
         $fields->add('date', DateField::class);
     }
 
-    public function updateFields(FieldBag $fields): void
+    protected function updateFields(FieldBag $fields): void
     {
         $fields->get('title')
             ->required()
@@ -53,7 +53,7 @@ class ArticleType extends ModelType
         ]);
     }
 
-    public function createFields(FieldBag $fields): void
+    protected function createFields(FieldBag $fields): void
     {
         $fields->get('title')
             ->required()
@@ -66,7 +66,7 @@ class ArticleType extends ModelType
         ]);
     }
 
-    public function relations(RelationBag $relations): void
+    protected function relations(RelationBag $relations): void
     {
         // $relations->add('author', AuthorType::class, function (LinkOne $relation) {
         //     $author->update(function (FieldBag $fields) {

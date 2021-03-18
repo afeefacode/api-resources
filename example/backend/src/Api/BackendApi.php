@@ -10,7 +10,7 @@ use Backend\Types\AuthorType;
 
 class BackendApi extends Api
 {
-    public function resources(ResourceBag $resources): void
+    protected function resources(ResourceBag $resources): void
     {
         $resources
             ->add(ArticlesResource::class)
@@ -19,7 +19,7 @@ class BackendApi extends Api
             });
     }
 
-    // public function types(TypeBag $types): void
+    // protected function types(TypeBag $types): void
     // {
     //     $types->get(function (AuthorType $authorType) {
     //         $authorType->removeRelation('articles');

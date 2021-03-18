@@ -23,20 +23,16 @@ class Resource extends BagEntry
         $this->actions($this->actions);
     }
 
-    public function actions(ActionBag $actions): void
-    {
-    }
-
     public function getAction(string $name): Action
     {
         return $this->actions->get($name);
     }
 
-    public function removeAction(string $name): Resource
-    {
-        $this->actions->remove($name);
-        return $this;
-    }
+    // public function removeAction(string $name): Resource
+    // {
+    //     $this->actions->remove($name);
+    //     return $this;
+    // }
 
     public function toSchemaJson(): array
     {
@@ -48,5 +44,9 @@ class Resource extends BagEntry
         ];
 
         return $json;
+    }
+
+    protected function actions(ActionBag $actions): void
+    {
     }
 }

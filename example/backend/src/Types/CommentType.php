@@ -14,7 +14,7 @@ class CommentType extends Type
 {
     public static string $type = 'Example.Comment';
 
-    public function fields(FieldBag $fields): void
+    protected function fields(FieldBag $fields): void
     {
         $fields->add('author_name', VarcharField::class);
 
@@ -23,7 +23,7 @@ class CommentType extends Type
         $fields->add('date', DateField::class);
     }
 
-    public function relations(RelationBag $relations): void
+    protected function relations(RelationBag $relations): void
     {
         $relations->add('article', ArticleType::class, LinkOne::class);
     }
