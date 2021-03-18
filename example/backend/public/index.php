@@ -38,11 +38,18 @@ $app->get('/backend-api/test', function (HttpRequest $request, Response $respons
     return $response->withJson($result);
 });
 
+$app->post('/backend-api', function (HttpRequest $request, Response $response, array $args) {
+    $result = $this->call(function (BackendApi $api) {
+        return $api->requestFromInput();
+    });
+    return $response->withJson($result);
+});
+
 $app->get('/backend-api/schema', function (HttpRequest $request, Response $response, array $args) {
     $result = $this->call(function (BackendApi $api) {
         return $api->toSchemaJson();
     });
-    $this->dumpEntries();
+    // $this->dumpEntries();
     return $response->withJson($result);
 });
 

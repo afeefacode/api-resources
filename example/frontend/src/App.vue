@@ -4,14 +4,14 @@
 
     <a href="/">Backend</a>
 
-    <h1>Tags</h1>
+    <h1>Articles</h1>
 
     <ul>
       <li
-        v-for="tag in tags"
-        :key="tag.id"
+        v-for="article in articles"
+        :key="article.id"
       >
-        {{ tag.id }} {{ tag.name }}
+        {{ article.id }} {{ article.title }}
       </li>
     </ul>
   </div>
@@ -23,17 +23,18 @@ import { Client } from '@afeefa/api-resources-client'
 
 @Component
 export default class App extends Vue {
-  tags = []
+  articles = []
 
   get url () {
-    const url = location.protocol + '//' + location.hostname + (location.port ? ':' + location.port : '')
-    return url
+    return location.protocol + '//' + location.hostname + (location.port ? ':' + location.port : '')
   }
 
   async created () {
-    const client = new Client()
-    const result = await client.get('/api')
-    this.tags = result.data
+    const result = await new Client().post('/backend-api', {
+      resource: 'Example.Articles',
+      action: 'get_articles'
+    })
+    this.articles = result.data
   }
 }
 </script>
@@ -41,6 +42,6 @@ export default class App extends Vue {
 
 <style lang="scss" scoped>
 p {
-  color: red;
+  color: blue;
 }
 </style>
