@@ -14,7 +14,7 @@ use Afeefa\ApiResources\Validator\Validators\VarcharValidator;
 
 class ArticleType extends ModelType
 {
-    public string $type = 'Example.Article';
+    public static string $type = 'Example.Article';
 
     public function fields(FieldBag $fields): void
     {
@@ -68,9 +68,7 @@ class ArticleType extends ModelType
 
     public function relations(RelationBag $relations): void
     {
-        // $relations->linkOne('author', AuthorType::class);
-
-        // $relations->linkOne('author', Author::class, function (Author $author) {
+        // $relations->add('author', AuthorType::class, function (LinkOne $relation) {
         //     $author->update(function (FieldBag $fields) {
         //         $fields->set([
         //             'title',

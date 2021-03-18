@@ -15,15 +15,19 @@ use Afeefa\ApiResources\Filter\Filters\IdFilter;
 use Afeefa\ApiResources\Filter\Filters\KeywordFilter;
 use Afeefa\ApiResources\Filter\Filters\OrderFilter;
 use Afeefa\ApiResources\Filter\Filters\PageFilter;
-use Afeefa\ApiResources\Resource\Resource;
+use Afeefa\ApiResources\Resource\ModelResource;
 use Backend\Types\ArticleType;
 
-class ArticlesResource extends Resource
+class ArticlesResource extends ModelResource
 {
-    public string $type = 'Example.Articles';
+    public static string $type = 'Example.Articles';
+
+    protected string $ModelType = ArticleType::class;
 
     public function actions(ActionBag $actions): void
     {
+        parent::actions($actions);
+
         $actions->add('get_articles', function (Action $action) {
             $action->filters(function (FilterBag $filters) {#
                 $filters->add('author_id', function (IdFilter $filter) {

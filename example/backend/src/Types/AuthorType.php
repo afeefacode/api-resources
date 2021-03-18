@@ -11,7 +11,7 @@ use Afeefa\ApiResources\Type\Type;
 
 class AuthorType extends Type
 {
-    public string $type = 'Example.Author';
+    public static string $type = 'Example.Author';
 
     public function fields(FieldBag $fields): void
     {

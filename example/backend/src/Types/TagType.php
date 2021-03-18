@@ -10,7 +10,7 @@ use Afeefa\ApiResources\Type\Type;
 
 class TagType extends Type
 {
-    public string $type = 'Example.Tag';
+    public static string $type = 'Example.Tag';
 
     public function fields(FieldBag $fields): void
     {
