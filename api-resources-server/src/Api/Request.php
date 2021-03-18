@@ -2,6 +2,8 @@
 
 namespace Afeefa\ApiResources\Api;
 
+use Closure;
+
 class Request
 {
     protected string $resource;
@@ -21,7 +23,7 @@ class Request
         return $this;
     }
 
-    public function action(callable $action): Request
+    public function action(Closure $action): Request
     {
         $this->action = $action;
         return $this;

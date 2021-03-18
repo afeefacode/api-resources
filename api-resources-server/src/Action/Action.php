@@ -4,6 +4,7 @@ namespace Afeefa\ApiResources\Action;
 
 use Afeefa\ApiResources\Bag\BagEntry;
 use Afeefa\ApiResources\Filter\FilterBag;
+use Closure;
 
 class Action extends BagEntry
 {
@@ -17,13 +18,15 @@ class Action extends BagEntry
 
     protected ActionResponse $response;
 
+    protected Closure $executor;
+
     public function name(string $name): Action
     {
         $this->name = $name;
         return $this;
     }
 
-    public function params(callable $callback): Action
+    public function params(Closure $callback): Action
     {
         $this->container->create(ActionParams::class, function (ActionParams $params) use ($callback) {
             $callback($params);
@@ -32,7 +35,7 @@ class Action extends BagEntry
         return $this;
     }
 
-    public function input(callable $callback): Action
+    public function input(Closure $callback): Action
     {
         $this->container->create(ActionInput::class, function (ActionInput $input) use ($callback) {
             $callback($input);
@@ -41,7 +44,7 @@ class Action extends BagEntry
         return $this;
     }
 
-    public function filters(callable $callback): Action
+    public function filters(Closure $callback): Action
     {
         $this->container->create(FilterBag::class, function (FilterBag $filters) use ($callback) {
             $callback($filters);
@@ -50,12 +53,18 @@ class Action extends BagEntry
         return $this;
     }
 
-    public function response(callable $callback): Action
+    public function response(Closure $callback): Action
     {
         $this->container->create(ActionResponse::class, function (ActionResponse $response) use ($callback) {
             $callback($response);
             $this->response = $response;
         });
+        return $this;
+    }
+
+    public function execute(Closure $callback): Action
+    {
+        $this->executor = $callback;
         return $this;
     }
 

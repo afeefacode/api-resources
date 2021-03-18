@@ -5,6 +5,7 @@ namespace Afeefa\ApiResources\Field;
 use Afeefa\ApiResources\Bag\BagEntry;
 use Afeefa\ApiResources\Exception\Exceptions\MissingTypeException;
 use Afeefa\ApiResources\Validator\Validator;
+use Closure;
 
 class Field extends BagEntry
 {
@@ -31,7 +32,7 @@ class Field extends BagEntry
         return $this;
     }
 
-    public function validate(callable $callback): Field
+    public function validate(Closure $callback): Field
     {
         if ($this->validator) {
             $callback($this->validator);

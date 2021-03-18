@@ -4,6 +4,7 @@ namespace Afeefa\ApiResources\Filter\Filters;
 
 use Afeefa\ApiResources\Api\Request;
 use Afeefa\ApiResources\Filter\Filter;
+use Closure;
 
 class IdFilter extends Filter
 {
@@ -11,7 +12,7 @@ class IdFilter extends Filter
 
     protected Request $request;
 
-    public function request(callable $callback): IdFilter
+    public function request(Closure $callback): IdFilter
     {
         $request = new Request();
         $callback($request);

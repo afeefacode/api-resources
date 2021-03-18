@@ -3,6 +3,7 @@
 namespace Afeefa\ApiResources\Field;
 
 use Afeefa\ApiResources\Bag\Bag;
+use Closure;
 
 /**
  * @property Field[] $entries
@@ -28,7 +29,7 @@ class FieldBag extends Bag
         return $this;
     }
 
-    public function update(string $name, callable $callback): FieldBag
+    public function update(string $name, Closure $callback): FieldBag
     {
         $field = $this->entries[$name];
         $callback($field);

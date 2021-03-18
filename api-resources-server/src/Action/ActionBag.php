@@ -3,13 +3,14 @@
 namespace Afeefa\ApiResources\Action;
 
 use Afeefa\ApiResources\Bag\Bag;
+use Closure;
 
 /**
  * @property Action[] $entries
  */
 class ActionBag extends Bag
 {
-    public function add(string $name, callable $callback): ActionBag
+    public function add(string $name, Closure $callback): ActionBag
     {
         $this->container->create(Action::class, function (Action $action) use ($name, $callback) {
             $action->name($name);

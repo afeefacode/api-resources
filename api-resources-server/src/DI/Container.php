@@ -4,6 +4,7 @@ namespace Afeefa\ApiResources\DI;
 
 use Afeefa\ApiResources\Exception\Exceptions\MissingCallbackArgumentException;
 use Afeefa\ApiResources\Exception\Exceptions\MissingTypeHintException;
+use Closure;
 use ReflectionFunction;
 use ReflectionNamedType;
 
@@ -44,7 +45,7 @@ class Container
     /**
      * Creates a class but does not add it to the container
      */
-    public function create(string $Class, callable $callback = null): object
+    public function create(string $Class, Closure $callback = null): object
     {
         $instance = new $Class();
         $this->bootstrap($instance);
@@ -57,7 +58,7 @@ class Container
     /**
      * Returns the type of the first callback argument
      */
-    public function getCallbackArgumentType(callable $callback): string
+    public function getCallbackArgumentType(Closure $callback): string
     {
         $f = new ReflectionFunction($callback);
         $param = $f->getParameters()[0] ?? null;
