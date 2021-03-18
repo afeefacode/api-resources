@@ -31,10 +31,8 @@ class ActionInput implements ToSchemaJsonInterface, ContainerAwareInterface
 
     public function toSchemaJson(): array
     {
-        $type = $this->container->get($this->Type);
-
         $json = [
-            'type' => $type->type
+            'type' => $this->Type::$type
         ];
 
         return $json;

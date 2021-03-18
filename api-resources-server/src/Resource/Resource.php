@@ -8,13 +8,13 @@ use Afeefa\ApiResources\Exception\Exceptions\MissingTypeException;
 
 class Resource extends BagEntry
 {
-    public string $type;
+    public static string $type;
 
     protected ActionBag $actions;
 
     public function created(): void
     {
-        if (!isset($this->type)) {
+        if (!static::$type) {
             throw new MissingTypeException('Missing type for resource of class ' . static::class);
         };
 
@@ -37,7 +37,7 @@ class Resource extends BagEntry
         return $this->actions->toSchemaJson();
 
         $json = [
-            // 'type' => $this->type,
+            // 'type' => static::$type,
             'actions' => $this->actions->toSchemaJson()
         ];
 

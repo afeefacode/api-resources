@@ -7,13 +7,13 @@ use Afeefa\ApiResources\Exception\Exceptions\MissingTypeException;
 
 class Filter extends BagEntry
 {
-    public string $type;
+    public static string $type;
 
     protected string $name;
 
     public function __construct()
     {
-        if (!isset($this->type)) {
+        if (!static::$type) {
             throw new MissingTypeException('Missing type for filter of class ' . static::class);
         };
     }
@@ -27,7 +27,7 @@ class Filter extends BagEntry
     public function toSchemaJson(): array
     {
         $json = [
-            'type' => $this->type
+            'type' => static::$type
         ];
 
         return $json;

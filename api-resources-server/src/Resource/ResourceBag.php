@@ -13,11 +13,11 @@ class ResourceBag extends Bag
     {
         [$Resource, $callback] = $this->resolveCallback($classOrCallback);
 
-        $this->container->create($Resource, function (Resource $resource) use ($callback) {
+        $this->container->create($Resource, function (Resource $resource) use ($Resource, $callback) {
             if ($callback) {
                 $callback($resource);
             }
-            $this->entries[$resource->type] = $resource;
+            $this->entries[$Resource::$type] = $resource;
         });
 
         return $this;

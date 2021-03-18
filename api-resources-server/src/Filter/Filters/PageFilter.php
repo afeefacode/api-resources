@@ -6,7 +6,7 @@ use Afeefa\ApiResources\Filter\Filter;
 
 class PageFilter extends Filter
 {
-    public string $type = 'Afeefa.Page';
+    public static string $type = 'Afeefa.Page';
 
     protected $defaultPageSize;
 

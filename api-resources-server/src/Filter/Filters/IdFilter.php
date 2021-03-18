@@ -7,7 +7,7 @@ use Afeefa\ApiResources\Filter\Filter;
 
 class IdFilter extends Filter
 {
-    public string $type = 'Afeefa.Id';
+    public static string $type = 'Afeefa.Id';
 
     protected Request $request;
 

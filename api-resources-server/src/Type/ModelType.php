@@ -6,7 +6,7 @@ use Afeefa\ApiResources\Field\FieldBag;
 
 class ModelType extends Type
 {
-    public string $type = 'Afeefa.ModelType';
+    public static string $type = 'Afeefa.ModelType';
 
     protected FieldBag $updateFields;
     protected FieldBag $createFields;

@@ -6,5 +6,5 @@ use Afeefa\ApiResources\Relation\Relation;
 
 class LinkMany extends Relation
 {
-    public string $type = 'Afeefa.LinkMany';
+    public static string $type = 'Afeefa.LinkMany';
 }

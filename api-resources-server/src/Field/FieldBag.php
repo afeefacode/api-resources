@@ -50,12 +50,11 @@ class FieldBag extends Bag
 
     public function clone(): FieldBag
     {
-        $fieldBag = $this->container->create(FieldBag::class, function (FieldBag $fieldBag) {
+        return $this->container->create(FieldBag::class, function (FieldBag $fieldBag) {
             foreach ($this->entries as $name => $field) {
                 $fieldBag->entries[$name] = $field->clone();
             }
         });
-        return $fieldBag;
     }
 
     public function toSchemaJson(): array

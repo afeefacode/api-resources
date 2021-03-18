@@ -6,5 +6,5 @@ use Afeefa\ApiResources\Field\Field;
 
 class IdField extends Field
 {
-    public string $type = 'Afeefa.Id';
+    public static string $type = 'Afeefa.Id';
 }

@@ -9,7 +9,7 @@ use ArrayObject;
 
 class Validator implements ToSchemaJsonInterface
 {
-    public string $type;
+    public static string $type;
 
     public array $params = [];
 
@@ -17,7 +17,7 @@ class Validator implements ToSchemaJsonInterface
 
     public function __construct()
     {
-        if (!isset($this->type)) {
+        if (!static::$type) {
             throw new MissingTypeException('Missing type for validator of class ' . static::class);
         };
 
@@ -47,7 +47,7 @@ class Validator implements ToSchemaJsonInterface
     public function toSchemaJson(): array
     {
         return [
-            'type' => $this->type,
+            'type' => static::$type,
             'params' => $this->params,
             'rules' => $this->rules->toSchemaJson(),
         ];

@@ -8,7 +8,7 @@ use Afeefa\ApiResources\Validator\Validator;
 
 class Field extends BagEntry
 {
-    public string $type;
+    public static string $type;
 
     protected string $name;
 
@@ -20,7 +20,7 @@ class Field extends BagEntry
 
     public function created(): void
     {
-        if (!isset($this->type)) {
+        if (!static::$type) {
             throw new MissingTypeException('Missing type for field of class ' . static::class);
         };
     }
@@ -38,16 +38,24 @@ class Field extends BagEntry
         } else {
             $Validator = $this->container->getCallbackArgumentType($callback);
             $this->container->add($Validator); // register validator class
-            $this->validator = $this->container->create($Validator);
-            $callback($this->validator);
+            $this->container->create($Validator, function (Validator $validator) use ($callback) {
+                $callback($validator);
+                $this->validator = $validator;
+            });
         }
 
         return $this;
     }
 
-    public function required(): Field
+    public function validator(Validator $validator): Field
     {
-        $this->required = true;
+        $this->validator = $validator;
+        return $this;
+    }
+
+    public function required(bool $required = true): Field
+    {
+        $this->required = $required;
         return $this;
     }
 
@@ -64,19 +72,20 @@ class Field extends BagEntry
 
     public function clone(): Field
     {
-        $field = $this->container->create(static::class);
-        $field->name = $this->name;
-        $field->required = $this->required;
-        if ($this->validator) {
-            $field->validator = $this->validator->clone();
-        }
-        return $field;
+        return $this->container->create(static::class, function (Field $field) {
+            $field
+                ->name($this->name)
+                ->required($this->required);
+            if ($this->validator) {
+                $field->validator($this->validator->clone());
+            }
+        });
     }
 
     public function toSchemaJson(): array
     {
         $json = [
-            'type' => $this->type,
+            'type' => static::$type,
             // 'name' => $this->name
         ];
 

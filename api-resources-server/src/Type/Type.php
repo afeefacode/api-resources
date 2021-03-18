@@ -12,7 +12,7 @@ class Type implements ToSchemaJsonInterface, ContainerAwareInterface
 {
     use ContainerAwareTrait;
 
-    public string $type = 'Afeefa.Type';
+    public static string $type = 'Afeefa.Type';
 
     protected FieldBag $fields;
     protected RelationBag $relations;
@@ -37,7 +37,7 @@ class Type implements ToSchemaJsonInterface, ContainerAwareInterface
     public function toSchemaJson(): array
     {
         return [
-            // 'type' => $this->type,
+            // 'type' => static::$type,
             'fields' => $this->fields->toSchemaJson(),
             'relations' => $this->relations->toSchemaJson()
         ];

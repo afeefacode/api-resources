@@ -7,7 +7,7 @@ use Afeefa\ApiResources\Exception\Exceptions\MissingTypeException;
 
 class Relation extends BagEntry
 {
-    public string $type;
+    public static string $type;
 
     protected string $name;
 
@@ -15,7 +15,7 @@ class Relation extends BagEntry
 
     public function created(): void
     {
-        if (!isset($this->type)) {
+        if (!static::$type) {
             throw new MissingTypeException('Missing type for relation of class ' . static::class);
         };
     }
@@ -35,11 +35,9 @@ class Relation extends BagEntry
 
     public function toSchemaJson(): array
     {
-        $relatedType = $this->container->get($this->RelatedType);
-
         return [
-            'type' => $this->type,
-            'related_type' => $relatedType->type
+            'type' => static::$type,
+            'related_type' => $this->RelatedType::$type
         ];
     }
 }

@@ -6,5 +6,5 @@ use Afeefa\ApiResources\Field\Field;
 
 class DateField extends Field
 {
-    public string $type = 'Afeefa.Date';
+    public static string $type = 'Afeefa.Date';
 }

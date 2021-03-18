@@ -6,5 +6,5 @@ use Afeefa\ApiResources\Field\Field;
 
 class VarcharField extends Field
 {
-    public string $type = 'Afeefa.Varchar';
+    public static string $type = 'Afeefa.Varchar';
 }

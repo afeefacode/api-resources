@@ -6,7 +6,7 @@ use Afeefa\ApiResources\Filter\Filter;
 
 class OrderFilter extends Filter
 {
-    public string $type = 'Afeefa.Order';
+    public static string $type = 'Afeefa.Order';
 
     protected array $values;
 

@@ -7,7 +7,7 @@ use Afeefa\ApiResources\Validator\Validator;
 
 class VarcharValidator extends Validator
 {
-    public string $type = 'Afeefa.Varchar';
+    public static string $type = 'Afeefa.Varchar';
 
     public function filled(): VarcharValidator
     {

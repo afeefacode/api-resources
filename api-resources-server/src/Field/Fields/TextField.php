@@ -6,5 +6,5 @@ use Afeefa\ApiResources\Field\Field;
 
 class TextField extends Field
 {
-    public string $type = 'Afeefa.Text';
+    public static string $type = 'Afeefa.Text';
 }
