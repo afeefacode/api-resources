@@ -36,32 +36,20 @@ class Field extends BagEntry
 
     public function validate(Closure $callback): Field
     {
-        if ($this->validator) {
+        if ($this->validator) { // cloned validator
             $this->container->call(
                 $callback,
                 function (Resolver $r) {
-                    $r
-                        ->fix($this->validator)
-                        ->resolved(function (Validator $validator) {
-                            $this->container->get(function (TypeRegistry $typeRegistry) use ($validator) {
-                                $typeRegistry->registerValidator(get_class($validator));
-                            });
-                        });
+                    $r->fix($this->validator);
                 }
             );
         } else {
-            $this->container->call(
+            $this->container->create(
                 $callback,
                 function (Resolver $r) {
-                    $r
-                        ->create()
-                        ->resolved(function (Validator $validator) {
-                            $this->validator = $validator;
-
-                            $this->container->get(function (TypeRegistry $typeRegistry) use ($validator) {
-                                $typeRegistry->registerValidator(get_class($validator));
-                            });
-                        });
+                    $r->resolved(function (Validator $validator) {
+                        $this->validator = $validator;
+                    });
                 }
             );
         }
@@ -118,6 +106,10 @@ class Field extends BagEntry
         }
 
         if ($this->validator) {
+            $this->container->get(function (TypeRegistry $typeRegistry) {
+                $typeRegistry->registerValidator(get_class($this->validator));
+            });
+
             $json['validator'] = $this->validator->toSchemaJson();
             unset($json['validator']['rules']);
         }

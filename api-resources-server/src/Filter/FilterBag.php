@@ -13,24 +13,12 @@ class FilterBag extends Bag
 {
     public function add(string $name, $classOrCallback): FilterBag
     {
-        [$Filter, $callback] = $this->classOrCallback($classOrCallback);
-
-        $resolve = function (Resolver $r) use ($name) {
-            $r
-                ->create()
-                ->resolved(function (Filter $filter) use ($name) {
-                    $filter->name($name);
-                    $this->set($name, $filter);
-                });
-        };
-
-        if ($Filter) {
-            $this->container->create($Filter, $resolve);
-        }
-
-        if ($callback) {
-            $this->container->call($callback, $resolve);
-        }
+        $this->container->create($classOrCallback, function (Resolver $r) use ($name) {
+            $r->resolved(function (Filter $filter) use ($name) {
+                $filter->name($name);
+                $this->set($name, $filter);
+            });
+        });
 
         return $this;
     }

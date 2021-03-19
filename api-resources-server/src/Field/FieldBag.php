@@ -15,30 +15,14 @@ class FieldBag extends Bag
 {
     public function add(string $name, $classOrCallback): FieldBag
     {
-        [$Field, $callback] = $this->classOrCallback($classOrCallback);
-
-        $resolve = function (Resolver $r) use ($name) {
-            $r
-                ->create()
-                ->resolved(function (Field $field) use ($name) {
-                    $field
-                        ->name($name)
-                        ->allowed(true);
-                    $this->set($name, $field);
-
-                    $this->container->get(function (TypeRegistry $typeRegistry) use ($field) {
-                        $typeRegistry->registerField(get_class($field));
-                    });
-                });
-        };
-
-        if ($Field) {
-            $this->container->create($Field, $resolve);
-        }
-
-        if ($callback) {
-            $this->container->call($callback, $resolve);
-        }
+        $this->container->create($classOrCallback, function (Resolver $r) use ($name) {
+            $r->resolved(function (Field $field) use ($name) {
+                $field
+                    ->name($name)
+                    ->allowed(true);
+                $this->set($name, $field);
+            });
+        });
 
         return $this;
     }
@@ -70,6 +54,10 @@ class FieldBag extends Bag
     public function toSchemaJson(): array
     {
         return array_filter(array_map(function (Field $field) {
+            $this->container->get(function (TypeRegistry $typeRegistry) use ($field) {
+                $typeRegistry->registerField(get_class($field));
+            });
+
             if ($field->isAllowed()) {
                 return $field->toSchemaJson();
             }
