@@ -12,19 +12,6 @@ class Resolver
 
     protected bool $create = false;
 
-    protected bool $register = false;
-
-    public function register(): Resolver
-    {
-        $this->register = true;
-        return $this;
-    }
-
-    public function shouldRegister(): bool
-    {
-        return $this->register;
-    }
-
     public function Type(string $Type): Resolver
     {
         $this->Type = $Type;

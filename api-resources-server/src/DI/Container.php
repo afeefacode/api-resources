@@ -94,12 +94,12 @@ class Container implements ContainerInterface
             $this->register($Type, $instance);
         }
 
-        if ($resolveCallback) {
-            $resolveCallback($instance);
-        }
-
         if ($callback) {
             $callback($instance);
+        }
+
+        if ($resolveCallback) {
+            $resolveCallback($instance);
         }
 
         return $instance;
@@ -130,7 +130,7 @@ class Container implements ContainerInterface
                     if ($resolver->getFix()) { // fix value
                         $instance = $resolver->getFix();
                     } elseif ($resolver->shouldCreate()) { // create instance
-                        $instance = $this->createInstance($Type, null, $resolver->shouldRegister());
+                        $instance = $this->createInstance($Type);
                     }
                 }
 
@@ -146,6 +146,8 @@ class Container implements ContainerInterface
 
         $arguments = array_values($argumentsMap);
 
+        $result = $callback(...$arguments);
+
         if ($resolveCallback && !$resolveCallbackExpectsResolver) {
             $resolveCallback(...$arguments);
         }
@@ -154,7 +156,7 @@ class Container implements ContainerInterface
             $resolveCallback2(...$arguments);
         }
 
-        return $callback(...$arguments);
+        return $result;
     }
 
     /**
