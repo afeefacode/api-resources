@@ -5,6 +5,7 @@ namespace Afeefa\ApiResources\DI;
 use Afeefa\ApiResources\Exception\Exceptions\MissingCallbackArgumentException;
 use Afeefa\ApiResources\Exception\Exceptions\MissingTypeHintException;
 use Afeefa\ApiResources\Exception\Exceptions\NotACallbackException;
+use Afeefa\ApiResources\Exception\Exceptions\NotATypeOrCallbackException;
 use Afeefa\ApiResources\Exception\Exceptions\TooManyCallbackArgumentsException;
 use Closure;
 use Psr\Container\ContainerInterface;
@@ -34,7 +35,7 @@ class Container implements ContainerInterface
         if ($Type) {
             $Types = [$Type];
         } else {
-            $Types = $this->getCallbackArgumentTypes($classOrCallback);
+            $Types = $this->getCallbackArgumentTypes($callback);
             if (!count($Types)) {
                 throw new MissingCallbackArgumentException('Get callback does not provide arguments.');
             }
@@ -169,9 +170,13 @@ class Container implements ContainerInterface
 
     public function dumpEntries($sort = false)
     {
-        $dump = array_map(function ($key, $entry) {
-            return $key;
-        }, array_keys($this->entries), $this->entries);
+        $dump = array_column(
+            array_map(function ($key, $entry) {
+                return [$key, get_class($entry)];
+            }, array_keys($this->entries), $this->entries),
+            1,
+            0
+        );
 
         if ($sort) {
             sort($dump);
@@ -180,17 +185,27 @@ class Container implements ContainerInterface
         debug_dump($dump);
     }
 
-    public function classOrCallback($classOrCallback): array
+    private function resolver(): Resolver
+    {
+        return new Resolver();
+    }
+
+    private function classOrCallback($classOrCallback): array
     {
         if ($classOrCallback instanceof Closure) {
             return [null, $classOrCallback];
         } elseif (is_callable($classOrCallback)) {
             return [null, Closure::fromCallable($classOrCallback)];
         }
+
+        if (!is_string($classOrCallback) || !class_exists($classOrCallback)) {
+            throw new NotATypeOrCallbackException('Argument is not a type nor a valid callback.');
+        }
+
         return [$classOrCallback, null];
     }
 
-    public function callback($callback): Closure
+    private function callback($callback): Closure
     {
         if ($callback instanceof Closure) {
             return $callback;
@@ -198,11 +213,6 @@ class Container implements ContainerInterface
             return Closure::fromCallable($callback);
         }
         throw new NotACallbackException('Argument is not a callback.');
-    }
-
-    protected function resolver(): Resolver
-    {
-        return new Resolver();
     }
 
     private function argumentIsResolver($callback): bool
