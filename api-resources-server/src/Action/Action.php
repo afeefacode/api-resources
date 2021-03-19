@@ -4,7 +4,7 @@ namespace Afeefa\ApiResources\Action;
 
 use Afeefa\ApiResources\Api\ApiRequest;
 use Afeefa\ApiResources\Bag\BagEntry;
-use Afeefa\ApiResources\DI\Injector;
+use Afeefa\ApiResources\DI\Resolver;
 use Afeefa\ApiResources\Filter\FilterBag;
 use Closure;
 
@@ -30,7 +30,7 @@ class Action extends BagEntry
 
     public function params(Closure $callback): Action
     {
-        $this->container->create(ActionParams::class, null, function (ActionParams $params) use ($callback) {
+        $this->container->create(function (ActionParams $params) use ($callback) {
             $callback($params);
             $this->params = $params;
         });
@@ -39,7 +39,7 @@ class Action extends BagEntry
 
     public function input(Closure $callback): Action
     {
-        $this->container->create(ActionInput::class, null, function (ActionInput $input) use ($callback) {
+        $this->container->create(function (ActionInput $input) use ($callback) {
             $callback($input);
             $this->input = $input;
         });
@@ -48,7 +48,7 @@ class Action extends BagEntry
 
     public function filters(Closure $callback): Action
     {
-        $this->container->create(FilterBag::class, null, function (FilterBag $filters) use ($callback) {
+        $this->container->create(function (FilterBag $filters) use ($callback) {
             $callback($filters);
             $this->filters = $filters;
         });
@@ -57,7 +57,7 @@ class Action extends BagEntry
 
     public function response(Closure $callback): Action
     {
-        $this->container->create(ActionResponse::class, null, function (ActionResponse $response) use ($callback) {
+        $this->container->create(function (ActionResponse $response) use ($callback) {
             $callback($response);
             $this->response = $response;
         });
@@ -72,12 +72,14 @@ class Action extends BagEntry
 
     public function call(ApiRequest $request)
     {
-        $executor = $this->executor;
-        return $this->container->call($executor, function (Injector $i, $Class) use ($request) {
-            if ($Class === ApiRequest::class) {
-                $i->instance = $request;
+        return $this->container->call(
+            $this->executor,
+            function (Resolver $r) use ($request) {
+                if ($r->isOf(ApiRequest::class)) {
+                    $r->fix($request);
+                }
             }
-        });
+        );
     }
 
     public function toSchemaJson(): array

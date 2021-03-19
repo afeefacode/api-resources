@@ -6,8 +6,6 @@ use Afeefa\ApiResources\Action\Action;
 use Afeefa\ApiResources\DI\ContainerAwareInterface;
 use Afeefa\ApiResources\DI\ContainerAwareTrait;
 use Afeefa\ApiResources\Resource\ResourceBag;
-use Afeefa\ApiResources\Type\Type;
-use Afeefa\ApiResources\Validator\Validator;
 use Closure;
 
 class Api implements ContainerAwareInterface
@@ -46,33 +44,32 @@ class Api implements ContainerAwareInterface
 
     public function toSchemaJson(): array
     {
-        $resources = $this->resources->toSchemaJson();
+        return $this->container->call(function (TypeRegistry $typeRegistry) {
+            $resources = $this->resources->toSchemaJson();
 
-        $types = array_map(
-            function (Type $type) {
-                return $type->toSchemaJson();
-            },
-            array_filter(
-                $this->container->entries(),
-                function ($object) {
-                    return $object instanceof Type;
-                }
-            )
-        );
+            // $typeRegistry->dumpEntries();
+            // $this->container->dumpEntries();
 
-        $validators = array_map(function (Validator $validator) {
-            return $validator->toSchemaJson();
-        }, array_filter($this->container->entries(), function ($object) {
-            return $object instanceof Validator;
-        }));
+            $types = [];
+            foreach ($typeRegistry->types() as $Type) {
+                $type = $this->container->get($Type);
+                $types[$type::$type] = $type->toSchemaJson();
+            }
 
-        return [
-            'types' => $types,
-            'resources' => $resources,
-            'validators' => $validators
-            // 'fields' => $fields,
-            // 'relations' => $relations,
-        ];
+            $validators = [];
+            foreach ($typeRegistry->validators() as $Validator) {
+                $validator = $this->container->get($Validator);
+                $validators[$validator::$type] = $validator->toSchemaJson();
+            }
+
+            return [
+                'types' => $types,
+                'resources' => $resources,
+                'validators' => $validators
+                // 'fields' => $fields,
+                // 'relations' => $relations,
+            ];
+        });
     }
 
     protected function resources(ResourceBag $resources): void

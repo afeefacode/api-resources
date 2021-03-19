@@ -2,6 +2,8 @@
 
 namespace Afeefa\ApiResources\Relation;
 
+use Afeefa\ApiResources\Api\RequestParams;
+use Afeefa\ApiResources\Api\TypeRegistry;
 use Afeefa\ApiResources\Bag\BagEntry;
 use Afeefa\ApiResources\Exception\Exceptions\MissingTypeException;
 
@@ -13,11 +15,15 @@ class Relation extends BagEntry
 
     protected string $RelatedType;
 
+    protected RequestParams $params;
+
     public function created(): void
     {
         if (!static::$type) {
             throw new MissingTypeException('Missing type for relation of class ' . static::class);
         };
+
+        $this->params = new RequestParams();
     }
 
     public function name(string $name): Relation
@@ -26,15 +32,24 @@ class Relation extends BagEntry
         return $this;
     }
 
+    public function params(): RequestParams
+    {
+        return $this->params;
+    }
+
     public function relatedType(string $RelatedType): Relation
     {
         $this->RelatedType = $RelatedType;
-        $this->container->add($this->RelatedType);
+
         return $this;
     }
 
     public function toSchemaJson(): array
     {
+        $this->container->get(function (TypeRegistry $typeRegistry) {
+            $typeRegistry->registerType($this->RelatedType);
+        });
+
         return [
             'type' => static::$type,
             'related_type' => $this->RelatedType::$type

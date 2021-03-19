@@ -2,8 +2,9 @@
 
 namespace Afeefa\ApiResources\Field;
 
+use Afeefa\ApiResources\Api\TypeRegistry;
 use Afeefa\ApiResources\Bag\Bag;
-use Afeefa\ApiResources\DI\Injector;
+use Afeefa\ApiResources\DI\Resolver;
 use Closure;
 
 /**
@@ -16,25 +17,27 @@ class FieldBag extends Bag
     {
         [$Field, $callback] = $this->classOrCallback($classOrCallback);
 
-        $init = function (Field $field) use ($name) {
-            $field
-                ->name($name)
-                ->allowed(true);
-            $this->set($name, $field);
+        $resolve = function (Resolver $r) use ($name) {
+            $r
+                ->create()
+                ->resolved(function (Field $field) use ($name) {
+                    $field
+                        ->name($name)
+                        ->allowed(true);
+                    $this->set($name, $field);
+
+                    $this->container->get(function (TypeRegistry $typeRegistry) use ($field) {
+                        $typeRegistry->registerField(get_class($field));
+                    });
+                });
         };
 
         if ($Field) {
-            $this->container->create($Field, null, $init);
+            $this->container->create($Field, $resolve);
         }
 
         if ($callback) {
-            $this->container->call(
-                $callback,
-                function (Injector $i) {
-                    $i->create = true;
-                },
-                $init
-            );
+            $this->container->call($callback, $resolve);
         }
 
         return $this;
@@ -57,7 +60,7 @@ class FieldBag extends Bag
 
     public function clone(): FieldBag
     {
-        return $this->container->create(FieldBag::class, null, function (FieldBag $fieldBag) {
+        return $this->container->create(function (FieldBag $fieldBag) {
             foreach ($this->entries() as $name => $field) {
                 $fieldBag->set($name, $field->clone());
             }

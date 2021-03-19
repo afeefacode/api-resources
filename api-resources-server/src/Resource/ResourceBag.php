@@ -3,7 +3,7 @@
 namespace Afeefa\ApiResources\Resource;
 
 use Afeefa\ApiResources\Bag\Bag;
-use Afeefa\ApiResources\DI\Injector;
+use Afeefa\ApiResources\DI\Resolver;
 
 /**
  * @method Resource get(string $name)
@@ -15,22 +15,20 @@ class ResourceBag extends Bag
     {
         [$Resource, $callback] = $this->classOrCallback($classOrCallback);
 
-        $init = function (Resource $resource) {
-            $this->set($resource::$type, $resource);
+        $resolve = function (Resolver $r) {
+            $r
+                ->create()
+                ->resolved(function (Resource $resource) {
+                    $this->set($resource::$type, $resource);
+                });
         };
 
         if ($Resource) {
-            $this->container->create($Resource, null, $init);
+            $this->container->create($Resource, $resolve);
         }
 
         if ($callback) {
-            $this->container->call(
-                $callback,
-                function (Injector $i) {
-                    $i->create = true;
-                },
-                $init
-            );
+            $this->container->call($callback, $resolve);
         }
 
         return $this;

@@ -3,6 +3,7 @@
 namespace Afeefa\ApiResources\Action;
 
 use Afeefa\ApiResources\Api\ToSchemaJsonInterface;
+use Afeefa\ApiResources\Api\TypeRegistry;
 use Afeefa\ApiResources\DI\ContainerAwareInterface;
 use Afeefa\ApiResources\DI\ContainerAwareTrait;
 
@@ -18,8 +19,6 @@ class ActionInput implements ToSchemaJsonInterface, ContainerAwareInterface
     {
         $this->Type = $Type;
 
-        $this->container->add($this->Type);
-
         return $this;
     }
 
@@ -31,6 +30,10 @@ class ActionInput implements ToSchemaJsonInterface, ContainerAwareInterface
 
     public function toSchemaJson(): array
     {
+        $this->container->get(function (TypeRegistry $typeRegistry) {
+            $typeRegistry->registerType($this->Type);
+        });
+
         $json = [
             'type' => $this->Type::$type
         ];

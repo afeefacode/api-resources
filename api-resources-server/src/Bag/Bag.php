@@ -43,18 +43,18 @@ class Bag implements ToSchemaJsonInterface, ContainerAwareInterface
         return $this->entries;
     }
 
+    public function toSchemaJson(): array
+    {
+        return array_map(function (BagEntryInterface $entry) {
+            return $entry->toSchemaJson();
+        }, $this->entries);
+    }
+
     protected function classOrCallback($classOrCallback): array
     {
         if ($classOrCallback instanceof Closure) {
             return [null, $classOrCallback];
         }
         return [$classOrCallback, null];
-    }
-
-    public function toSchemaJson(): array
-    {
-        return array_map(function (BagEntryInterface $entry) {
-            return $entry->toSchemaJson();
-        }, $this->entries);
     }
 }

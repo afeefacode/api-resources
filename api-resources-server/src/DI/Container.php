@@ -17,94 +17,132 @@ class Container implements ContainerInterface
     public function __construct(array $config = [])
     {
         $this->config = $config;
-    }
-
-    /**
-     * Creates and adds a container entry, if it not exists
-     */
-    public function add(string $Class): void
-    {
-        $this->get($Class);
+        $this->register(static::class, $this);
     }
 
     /**
      * Returns a container entry and creates and adds it, if it not exists
+     *
+     * @param mixed $classOrCallback
      */
-    public function get(string $Class, Closure $callback = null): object
+    public function get($classOrCallback, Closure $resolveCallback = null): object
     {
-        if (!$this->has($Class)) {
-            $this->create($Class, function (Injector $i) {
-                $i->register = true;
-            });
+        [$Type, $callback] = $this->classOrCallback($classOrCallback);
+        if ($Type) {
+            $Types = [$Type];
+        } else {
+            $Types = $this->getCallbackArgumentTypes($classOrCallback);
         }
 
-        $instance = $this->entries[$Class];
+        $arguments = [];
+
+        foreach ($Types as $Type) {
+            if (!$this->has($Type)) {
+                $this->create($Type, function (Resolver $r) {
+                    $r->register();
+                });
+            }
+            $arguments[] = $this->entries[$Type];
+        }
 
         if ($callback) {
-            $callback($instance);
+            $callback(...$arguments);
         }
 
-        return $instance;
+        if ($resolveCallback) {
+            foreach ($arguments as $index => $argument) {
+                $resolver = $this->resolver()
+                    ->Type(get_class($argument))
+                    ->index($index);
+                $resolveCallback($resolver);
+                $resolver->instance($argument);
+            }
+        }
+
+        return $arguments[0];
     }
 
-    public function has(string $Class): bool
+    public function has(string $Type): bool
     {
-        return isset($this->entries[$Class]);
+        return isset($this->entries[$Type]);
     }
 
     /**
      * Creates a class but does not add it to the container
      */
-    public function create(string $Class, Closure $injectorCallback = null, Closure $callback = null): object
+    public function create($classOrCallback, Closure $resolveCallback = null): object
     {
-        $injector = new Injector();
-        if ($injectorCallback) {
-            $injectorCallback($injector, $Class);
+        [$Type, $callback] = $this->classOrCallback($classOrCallback);
+        if ($callback) {
+            $Type = $this->getCallbackArgumentTypes($classOrCallback)[0];
         }
 
-        $construct = $this->config[$Class] ?? null;
+        $resolver = $this->resolver()
+            ->Type($Type);
 
-        if ($injector->register) {
-            $instance = $construct ? $construct() : new $Class();
-            $this->register($Class, $instance);
-            $this->bootstrapInstance($instance);
+        if ($resolveCallback) {
+            $resolveCallback($resolver);
         }
 
-        $instance = $construct ? $construct() : new $Class();
+        $construct = $this->config[$Type] ?? null;
+        $instance = $construct ? $construct() : new $Type();
+
+        if ($resolver->shouldRegister()) {
+            $this->register($Type, $instance);
+        }
+
         $this->bootstrapInstance($instance);
+
+        $resolver->instance($instance);
 
         if ($callback) {
             $callback($instance);
         }
+
         return $instance;
     }
 
     /**
      * Calls a function while injecting dependencies
      */
-    public function call(Closure $callback, Closure $injectorCallback = null, Closure $typesCallback = null)
+    public function call(Closure $callback, Closure $resolveCallback = null)
     {
         $argumentTypes = $this->getCallbackArgumentTypes($callback);
 
-        $arguments = array_map(function ($Type, $index) use ($injectorCallback) {
-            $injector = new Injector();
-            if ($injectorCallback) {
-                $injectorCallback($injector, $Type, $index);
-            }
+        $argumentsMap = array_column(
+            array_map(function ($Type, $index) use ($resolveCallback) {
+                $resolver = $this->resolver()
+                    ->Type($Type)
+                    ->index($index);
 
-            if ($injector->instance) {
-                return $injector->instance;
-            } elseif ($injector->create) {
-                return $this->create($Type, $injectorCallback);
-            }
-            return $this->get($Type);
-        }, $argumentTypes, array_keys($argumentTypes));
+                if ($resolveCallback) {
+                    $resolveCallback($resolver);
+                }
 
-        if ($typesCallback) {
-            $typesCallback(...$arguments);
-        }
+                $instance = null;
+                if ($resolver->getFix()) { // fix value
+                    $instance = $resolver->getFix();
+                } elseif ($resolver->shouldCreate()) { // create instance
+                    $instance = $this->create($Type, $resolveCallback);
+                } else { // get or create instance
+                    $instance = $this->get($Type);
+                }
 
+                $resolver->instance($instance);
+
+                return [$Type, $instance];
+            }, $argumentTypes, array_keys($argumentTypes)),
+            1,
+            0
+        );
+
+        $arguments = array_values($argumentsMap);
         return $callback(...$arguments);
+    }
+
+    protected function resolver(): Resolver
+    {
+        return new Resolver();
     }
 
     /**
@@ -115,21 +153,31 @@ class Container implements ContainerInterface
         return $this->entries;
     }
 
-    public function dumpEntries()
+    public function dumpEntries($sort = false)
     {
         $dump = array_map(function ($key, $entry) {
             return $key;
         }, array_keys($this->entries), $this->entries);
 
-        sort($dump);
+        if ($sort) {
+            sort($dump);
+        }
 
         debug_dump($dump);
     }
 
-    private function register(string $Class, object $instance)
+    public function classOrCallback($classOrCallback): array
     {
-        if (!isset($this->entries[$Class])) {
-            $this->entries[$Class] = $instance;
+        if ($classOrCallback instanceof Closure) {
+            return [null, $classOrCallback];
+        }
+        return [$classOrCallback, null];
+    }
+
+    private function register(string $Type, object $instance)
+    {
+        if (!isset($this->entries[$Type])) {
+            $this->entries[$Type] = $instance;
         }
     }
 

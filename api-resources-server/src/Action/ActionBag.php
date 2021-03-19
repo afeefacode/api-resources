@@ -13,7 +13,7 @@ class ActionBag extends Bag
 {
     public function add(string $name, Closure $callback): ActionBag
     {
-        $this->container->create(Action::class, null, function (Action $action) use ($name, $callback) {
+        $this->container->create(function (Action $action) use ($name, $callback) {
             $action->name($name);
             $callback($action);
             $this->set($name, $action);

@@ -2,8 +2,9 @@
 
 namespace Afeefa\ApiResources\Field;
 
+use Afeefa\ApiResources\Api\TypeRegistry;
 use Afeefa\ApiResources\Bag\BagEntry;
-use Afeefa\ApiResources\DI\Injector;
+use Afeefa\ApiResources\DI\Resolver;
 use Afeefa\ApiResources\Exception\Exceptions\MissingTypeException;
 use Afeefa\ApiResources\Validator\Validator;
 use Closure;
@@ -38,19 +39,29 @@ class Field extends BagEntry
         if ($this->validator) {
             $this->container->call(
                 $callback,
-                function (Injector $i) {
-                    $i->instance = $this->validator;
+                function (Resolver $r) {
+                    $r
+                        ->fix($this->validator)
+                        ->resolved(function (Validator $validator) {
+                            $this->container->get(function (TypeRegistry $typeRegistry) use ($validator) {
+                                $typeRegistry->registerValidator(get_class($validator));
+                            });
+                        });
                 }
             );
         } else {
             $this->container->call(
                 $callback,
-                function (Injector $i) {
-                    $i->register = true;
-                    $i->create = true;
-                },
-                function (Validator $validator) {
-                    $this->validator = $validator;
+                function (Resolver $r) {
+                    $r
+                        ->create()
+                        ->resolved(function (Validator $validator) {
+                            $this->validator = $validator;
+
+                            $this->container->get(function (TypeRegistry $typeRegistry) use ($validator) {
+                                $typeRegistry->registerValidator(get_class($validator));
+                            });
+                        });
                 }
             );
         }
@@ -83,13 +94,15 @@ class Field extends BagEntry
 
     public function clone(): Field
     {
-        return $this->container->create(static::class, null, function (Field $field) {
-            $field
-                ->name($this->name)
-                ->required($this->required);
-            if ($this->validator) {
-                $field->validator($this->validator->clone());
-            }
+        return $this->container->create(static::class, function (Resolver $r) {
+            $r->resolved(function (Field $field) {
+                $field
+                    ->name($this->name)
+                    ->required($this->required);
+                if ($this->validator) {
+                    $field->validator($this->validator->clone());
+                }
+            });
         });
     }
 

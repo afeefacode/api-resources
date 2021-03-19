@@ -3,7 +3,7 @@
 namespace Afeefa\ApiResources\Filter;
 
 use Afeefa\ApiResources\Bag\Bag;
-use Afeefa\ApiResources\DI\Injector;
+use Afeefa\ApiResources\DI\Resolver;
 
 /**
  * @method Filter get(string $name)
@@ -15,23 +15,21 @@ class FilterBag extends Bag
     {
         [$Filter, $callback] = $this->classOrCallback($classOrCallback);
 
-        $init = function (Filter $filter) use ($name) {
-            $filter->name($name);
-            $this->set($name, $filter);
+        $resolve = function (Resolver $r) use ($name) {
+            $r
+                ->create()
+                ->resolved(function (Filter $filter) use ($name) {
+                    $filter->name($name);
+                    $this->set($name, $filter);
+                });
         };
 
         if ($Filter) {
-            $this->container->create($Filter, null, $init);
+            $this->container->create($Filter, $resolve);
         }
 
         if ($callback) {
-            $this->container->call(
-                $callback,
-                function (Injector $i) {
-                    $i->create = true;
-                },
-                $init
-            );
+            $this->container->call($callback, $resolve);
         }
 
         return $this;
