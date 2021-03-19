@@ -14,8 +14,24 @@ class RequestParams extends Bag
         return $this;
     }
 
-    public function getDepends(): array
+    public function getDepends(string $root = null): array
     {
-        return $this->depends;
+        $depends = [];
+        foreach ($this->depends as $field) {
+            if ($root) {
+                if (is_array($field)) {
+                    foreach ($field as $subField => $subFields) {
+                        if ($subField === $root) {
+                            $depends = $subFields;
+                        }
+                    }
+                }
+            } else {
+                if (is_string($field)) {
+                    $depends[] = $field;
+                }
+            }
+        }
+        return $depends;
     }
 }

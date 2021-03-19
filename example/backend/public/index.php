@@ -32,7 +32,8 @@ $app->get('/backend-api/test', function (HttpRequest $request, Response $respons
         return $api->request(function (ApiRequest $request) {
             $request
                 ->resource(ArticlesResource::$type)
-                ->action('get_articles');
+                ->action('get_articles')
+                ->fields(['title', ['author' => ['name']]]);
         });
     });
     return $response->withJson($result);

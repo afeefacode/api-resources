@@ -58,6 +58,7 @@ class ArticleType extends ModelType
         $fields->get('title')
             ->required()
             ->validate(function (VarcharValidator $v) {
+                $v->min(20);
                 $v->max(50);
             });
 
@@ -81,7 +82,14 @@ class ArticleType extends ModelType
         //     });
         // });
 
-        $relations->add('author', AuthorType::class, LinkOne::class);
+        $relations->add('author', AuthorType::class, function (LinkOne $relation) {
+            $relation->params()->depends([
+                'id', 'author_id',
+                ['author' => ['id']]
+            ]);
+        });
+
+        // $relations->add('author', AuthorType::class, LinkOne::class);
 
         $relations->add('comments', CommentType::class, HasMany::class);
 

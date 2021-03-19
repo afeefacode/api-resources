@@ -69,12 +69,51 @@ class ArticlesResource extends ModelResource
                     ->list();
             });
 
-            $action->execute(function (Medoo $db) {
-                return $db->select(
+            $action->execute(function (Medoo $db, ArticleType $articleType, ApiRequest $request) {
+                $fields = $request->getFields();
+                $fieldsMap = [
+                    'article' => []
+                ];
+                foreach ($fields as $field) {
+                    if (is_array($field)) {
+                        foreach ($field as $subField => $subFields) {
+                            if ($articleType->hasRelation($subField)) {
+                                $relation = $articleType->getRelation($subField);
+
+                                $fieldsMap['article'] = array_merge($fieldsMap['article'], $relation->params()->getDepends());
+                                $fieldsMap[$subField] = array_merge($subFields, $relation->params()->getDepends($subField));
+                            }
+                        }
+                    } else {
+                        $fieldsMap['article'][] = $field;
+                    }
+                }
+
+                $articles = $db->select(
                     'articles',
-                    ['id', 'title'],
+                    $fieldsMap['article'],
                     ['ORDER' => 'id']
                 );
+
+                if (isset($fieldsMap['author'])) {
+                    $authorIds = array_map(function ($article) {
+                        return $article['author_id'];
+                    }, $articles);
+                    $authors = $db->select(
+                        'authors',
+                        $fieldsMap['author'],
+                        ['id' => $authorIds]
+                    );
+                    foreach ($articles as &$article) {
+                        foreach ($authors as $author) {
+                            if ($article['author_id'] === $author['id']) {
+                                $article['author'] = $author;
+                            }
+                        }
+                    }
+                }
+
+                return $articles;
             });
         });
 
