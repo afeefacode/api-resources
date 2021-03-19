@@ -12,6 +12,8 @@ class ApiRequest
 
     protected array $filters = [];
 
+    protected array $fields = [];
+
     public function fromInput(): ApiRequest
     {
         $input = json_decode(file_get_contents('php://input'), false);
@@ -46,11 +48,22 @@ class ApiRequest
         return $this;
     }
 
+    public function fields(array $fields): ApiRequest
+    {
+        $this->fields = $fields;
+        return $this;
+    }
+
+    public function getFields(): array
+    {
+        return $this->fields;
+    }
+
     public function send()
     {
         return $this
             ->api
             ->getAction($this->resource, $this->action)
-            ->call();
+            ->call($this);
     }
 }

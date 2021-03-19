@@ -2,7 +2,9 @@
 
 namespace Afeefa\ApiResources\Action;
 
+use Afeefa\ApiResources\Api\ApiRequest;
 use Afeefa\ApiResources\Bag\BagEntry;
+use Afeefa\ApiResources\DI\Injector;
 use Afeefa\ApiResources\Filter\FilterBag;
 use Closure;
 
@@ -68,10 +70,14 @@ class Action extends BagEntry
         return $this;
     }
 
-    public function call()
+    public function call(ApiRequest $request)
     {
         $executor = $this->executor;
-        return $this->container->call($executor);
+        return $this->container->call($executor, function (Injector $i, $Class) use ($request) {
+            if ($Class === ApiRequest::class) {
+                $i->instance = $request;
+            }
+        });
     }
 
     public function toSchemaJson(): array
