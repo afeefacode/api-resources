@@ -6,6 +6,7 @@ use Afeefa\ApiResources\Api\ToSchemaJsonInterface;
 use Afeefa\ApiResources\DI\ContainerAwareInterface;
 use Afeefa\ApiResources\DI\ContainerAwareTrait;
 use Afeefa\ApiResources\Field\FieldBag;
+use Afeefa\ApiResources\Relation\Relation;
 use Afeefa\ApiResources\Relation\RelationBag;
 
 class Type implements ToSchemaJsonInterface, ContainerAwareInterface
@@ -25,6 +26,16 @@ class Type implements ToSchemaJsonInterface, ContainerAwareInterface
 
         $this->relations = $this->container->create(RelationBag::class);
         $this->relations($this->relations);
+    }
+
+    public function hasRelation(string $name): bool
+    {
+        return $this->relations->has($name);
+    }
+
+    public function getRelation(string $name): Relation
+    {
+        return $this->relations->get($name);
     }
 
     public function toSchemaJson(): array
