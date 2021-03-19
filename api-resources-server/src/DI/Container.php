@@ -36,7 +36,7 @@ class Container implements ContainerInterface
         } else {
             $Types = $this->getCallbackArgumentTypes($classOrCallback);
             if (!count($Types)) {
-                throw new MissingCallbackArgumentException('Callback does not provide arguments.');
+                throw new MissingCallbackArgumentException('Get callback does not provide arguments.');
             }
         }
 
@@ -85,9 +85,9 @@ class Container implements ContainerInterface
         if ($callback) {
             $Types = $this->getCallbackArgumentTypes($classOrCallback);
             if (!count($Types)) {
-                throw new MissingCallbackArgumentException('Callback does not provide an argument.');
+                throw new MissingCallbackArgumentException('Create callback does not provide an argument.');
             } elseif (count($Types) > 1) {
-                throw new TooManyCallbackArgumentsException('Callback may only provide 1 argument.');
+                throw new TooManyCallbackArgumentsException('Create callback may only provide 1 argument.');
             }
             $Type = $Types[0];
         }
