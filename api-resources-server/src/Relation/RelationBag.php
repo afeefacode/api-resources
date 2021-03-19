@@ -28,13 +28,9 @@ class RelationBag extends Bag
         return $this;
     }
 
-    public function toSchemaJson(): array
+    public function getEntrySchemaJson(Relation $relation, TypeRegistry $typeRegistry): ?array
     {
-        return array_filter(array_map(function (Relation $relation) {
-            $this->container->get(function (TypeRegistry $typeRegistry) use ($relation) {
-                $typeRegistry->registerRelation(get_class($relation));
-            });
-            return $relation->toSchemaJson();
-        }, $this->entries()));
+        $typeRegistry->registerRelation(get_class($relation));
+        return $relation->toSchemaJson();
     }
 }

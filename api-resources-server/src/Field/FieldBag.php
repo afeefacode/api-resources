@@ -51,17 +51,12 @@ class FieldBag extends Bag
         });
     }
 
-    public function toSchemaJson(): array
+    public function getEntrySchemaJson(Field $field, TypeRegistry $typeRegistry): ?array
     {
-        return array_filter(array_map(function (Field $field) {
-            $this->container->get(function (TypeRegistry $typeRegistry) use ($field) {
-                $typeRegistry->registerField(get_class($field));
-            });
-
-            if ($field->isAllowed()) {
-                return $field->toSchemaJson();
-            }
-            return null;
-        }, $this->entries()));
+        $typeRegistry->registerField(get_class($field));
+        if ($field->isAllowed()) {
+            return $field->toSchemaJson();
+        }
+        return null;
     }
 }

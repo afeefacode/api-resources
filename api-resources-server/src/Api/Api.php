@@ -11,6 +11,7 @@ use Closure;
 class Api implements ContainerAwareInterface
 {
     use ContainerAwareTrait;
+    use ToSchemaJsonTrait;
 
     protected ResourceBag $resources;
 
@@ -42,34 +43,32 @@ class Api implements ContainerAwareInterface
         return $request->send();
     }
 
-    public function toSchemaJson(): array
+    public function getSchemaJson(TypeRegistry $typeRegistry): array
     {
-        return $this->container->call(function (TypeRegistry $typeRegistry) {
-            $resources = $this->resources->toSchemaJson();
+        $resources = $this->resources->toSchemaJson();
 
-            // $typeRegistry->dumpEntries();
-            // $this->container->dumpEntries();
+        // $typeRegistry->dumpEntries();
+        // $this->container->dumpEntries();
 
-            $types = [];
-            foreach ($typeRegistry->types() as $Type) {
-                $type = $this->container->get($Type);
-                $types[$type::$type] = $type->toSchemaJson();
-            }
+        $types = [];
+        foreach ($typeRegistry->types() as $Type) {
+            $type = $this->container->get($Type);
+            $types[$type::$type] = $type->toSchemaJson();
+        }
 
-            $validators = [];
-            foreach ($typeRegistry->validators() as $Validator) {
-                $validator = $this->container->get($Validator);
-                $validators[$validator::$type] = $validator->toSchemaJson();
-            }
+        $validators = [];
+        foreach ($typeRegistry->validators() as $Validator) {
+            $validator = $this->container->get($Validator);
+            $validators[$validator::$type] = $validator->toSchemaJson();
+        }
 
-            return [
-                'types' => $types,
-                'resources' => $resources,
-                'validators' => $validators
-                // 'fields' => $fields,
-                // 'relations' => $relations,
-            ];
-        });
+        return [
+            'types' => $types,
+            'resources' => $resources,
+            'validators' => $validators
+            // 'fields' => $fields,
+            // 'relations' => $relations,
+        ];
     }
 
     protected function resources(ResourceBag $resources): void

@@ -105,6 +105,14 @@ class Container implements ContainerInterface
     /**
      * Calls a function while injecting dependencies
      */
+    public function callMethod(callable $method, Closure $resolveCallback = null)
+    {
+        return $this->call(Closure::fromCallable($method), $resolveCallback);
+    }
+
+    /**
+     * Calls a function while injecting dependencies
+     */
     public function call(Closure $callback, Closure $resolveCallback = null)
     {
         $argumentTypes = $this->getCallbackArgumentTypes($callback);

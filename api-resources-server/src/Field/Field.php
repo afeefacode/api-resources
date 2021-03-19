@@ -2,6 +2,7 @@
 
 namespace Afeefa\ApiResources\Field;
 
+use Afeefa\ApiResources\Api\ToSchemaJsonTrait;
 use Afeefa\ApiResources\Api\TypeRegistry;
 use Afeefa\ApiResources\Bag\BagEntry;
 use Afeefa\ApiResources\DI\Resolver;
@@ -11,6 +12,8 @@ use Closure;
 
 class Field extends BagEntry
 {
+    use ToSchemaJsonTrait;
+
     public static string $type;
 
     protected string $name;
@@ -94,7 +97,7 @@ class Field extends BagEntry
         });
     }
 
-    public function toSchemaJson(): array
+    public function getSchemaJson(TypeRegistry $typeRegistry): array
     {
         $json = [
             'type' => static::$type,
@@ -106,9 +109,7 @@ class Field extends BagEntry
         }
 
         if ($this->validator) {
-            $this->container->get(function (TypeRegistry $typeRegistry) {
-                $typeRegistry->registerValidator(get_class($this->validator));
-            });
+            $typeRegistry->registerValidator(get_class($this->validator));
 
             $json['validator'] = $this->validator->toSchemaJson();
             unset($json['validator']['rules']);

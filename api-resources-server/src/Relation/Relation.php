@@ -44,12 +44,9 @@ class Relation extends BagEntry
         return $this;
     }
 
-    public function toSchemaJson(): array
+    public function getSchemaJson(TypeRegistry $typeRegistry): array
     {
-        $this->container->get(function (TypeRegistry $typeRegistry) {
-            $typeRegistry->registerType($this->RelatedType);
-        });
-
+        $typeRegistry->registerType($this->RelatedType);
         return [
             'type' => static::$type,
             'related_type' => $this->RelatedType::$type

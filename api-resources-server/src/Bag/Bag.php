@@ -3,12 +3,15 @@
 namespace Afeefa\ApiResources\Bag;
 
 use Afeefa\ApiResources\Api\ToSchemaJsonInterface;
+use Afeefa\ApiResources\Api\ToSchemaJsonTrait;
 use Afeefa\ApiResources\DI\ContainerAwareInterface;
 use Afeefa\ApiResources\DI\ContainerAwareTrait;
+use Afeefa\ApiResources\DI\Resolver;
 
 class Bag implements ToSchemaJsonInterface, ContainerAwareInterface
 {
     use ContainerAwareTrait;
+    use ToSchemaJsonTrait;
 
     /**
      * @var BagEntryInterface[]
@@ -42,10 +45,20 @@ class Bag implements ToSchemaJsonInterface, ContainerAwareInterface
         return $this->entries;
     }
 
-    public function toSchemaJson(): array
+    public function getSchemaJson(): array
     {
-        return array_map(function (BagEntryInterface $entry) {
+        return array_filter(array_map(function (BagEntryInterface $entry) {
+            if (method_exists($this, 'getEntrySchemaJson')) {
+                return $this->container->callMethod(
+                    [$this, 'getEntrySchemaJson'],
+                    function (Resolver $r) use ($entry) {
+                        if ($r->isOf(BagEntryInterface::class)) {
+                            $r->fix($entry);
+                        }
+                    }
+                );
+            }
             return $entry->toSchemaJson();
-        }, $this->entries);
+        }, $this->entries));
     }
 }
