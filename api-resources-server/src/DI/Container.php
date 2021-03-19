@@ -44,9 +44,7 @@ class Container implements ContainerInterface
         $arguments = [];
         foreach ($Types as $Type) {
             if (!$this->has($Type)) {
-                $this->create($Type, function (Resolver $r) {
-                    $r->register();
-                });
+                $this->createInstance($Type, null, true);
             }
             $arguments[] = $this->entries[$Type];
         }
@@ -56,17 +54,7 @@ class Container implements ContainerInterface
         }
 
         if ($resolveCallback) {
-            if ($this->argumentIsResolver($resolveCallback)) {
-                foreach ($arguments as $index => $argument) {
-                    $resolver = $this->resolver()
-                        ->Type(get_class($argument))
-                        ->index($index);
-                    $resolveCallback($resolver);
-                    $resolver->instance($argument);
-                }
-            } else {
-                $resolveCallback(...$arguments);
-            }
+            $resolveCallback(...$arguments);
         }
 
         return $arguments[0];
@@ -81,6 +69,11 @@ class Container implements ContainerInterface
      * Creates a class but does not add it to the container
      */
     public function create($classOrCallback, Closure $resolveCallback = null): object
+    {
+        return $this->createInstance($classOrCallback, $resolveCallback);
+    }
+
+    private function createInstance($classOrCallback, Closure $resolveCallback = null, $register = false): object
     {
         [$Type, $callback] = $this->classOrCallback($classOrCallback);
         if ($callback) {
@@ -97,21 +90,12 @@ class Container implements ContainerInterface
         $instance = $construct ? $construct() : new $Type();
         $this->bootstrapInstance($instance);
 
+        if ($register) {
+            $this->register($Type, $instance);
+        }
+
         if ($resolveCallback) {
-            if ($this->argumentIsResolver($resolveCallback)) {
-                $resolver = $this->resolver()
-                    ->Type($Type);
-
-                $resolveCallback($resolver);
-
-                if ($resolver->shouldRegister()) {
-                    $this->register($Type, $instance);
-                }
-
-                $resolver->instance($instance);
-            } else {
-                $resolveCallback($instance);
-            }
+            $resolveCallback($instance);
         }
 
         if ($callback) {
@@ -124,31 +108,35 @@ class Container implements ContainerInterface
     /**
      * Calls a function while injecting dependencies
      */
-    public function call($callback, Closure $resolveCallback = null)
+    public function call($callback, Closure $resolveCallback = null, Closure $resolveCallback2 = null)
     {
         $callback = $this->callback($callback);
         $Types = $this->getCallbackArgumentTypes($callback);
+        $resolveCallbackExpectsResolver = $resolveCallback && $this->argumentIsResolver($resolveCallback);
 
         $argumentsMap = array_column(
-            array_map(function ($Type, $index) use ($resolveCallback) {
-                $resolver = $this->resolver()
-                    ->Type($Type)
-                    ->index($index);
+            array_map(function ($Type, $index) use ($resolveCallback, $resolveCallbackExpectsResolver) {
+                $instance = null;
 
-                if ($resolveCallback) {
-                    $resolveCallback($resolver);
+                if ($resolveCallbackExpectsResolver) {
+                    $resolver = $this->resolver()
+                        ->Type($Type)
+                        ->index($index);
+
+                    if ($resolveCallback) {
+                        $resolveCallback($resolver);
+                    }
+
+                    if ($resolver->getFix()) { // fix value
+                        $instance = $resolver->getFix();
+                    } elseif ($resolver->shouldCreate()) { // create instance
+                        $instance = $this->createInstance($Type, null, $resolver->shouldRegister());
+                    }
                 }
 
-                $instance = null;
-                if ($resolver->getFix()) { // fix value
-                    $instance = $resolver->getFix();
-                } elseif ($resolver->shouldCreate()) { // create instance
-                    $instance = $this->create($Type, $resolveCallback);
-                } else { // get or create instance
+                if (!$instance) {
                     $instance = $this->get($Type);
                 }
-
-                $resolver->instance($instance);
 
                 return [$Type, $instance];
             }, $Types, array_keys($Types)),
@@ -157,6 +145,15 @@ class Container implements ContainerInterface
         );
 
         $arguments = array_values($argumentsMap);
+
+        if ($resolveCallback && !$resolveCallbackExpectsResolver) {
+            $resolveCallback(...$arguments);
+        }
+
+        if ($resolveCallback2) {
+            $resolveCallback2(...$arguments);
+        }
+
         return $callback(...$arguments);
     }
 
@@ -215,7 +212,7 @@ class Container implements ContainerInterface
         throw new NotACallbackException('Argument is not a callback.');
     }
 
-    private function argumentIsResolver($callback): bool
+    private function argumentIsResolver(Closure $callback): bool
     {
         $Types = $this->getCallbackArgumentTypes($callback);
         return (count($Types) === 1 && $Types[0] === Resolver::class);

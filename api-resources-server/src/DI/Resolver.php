@@ -2,8 +2,6 @@
 
 namespace Afeefa\ApiResources\DI;
 
-use Closure;
-
 class Resolver
 {
     protected string $Type;
@@ -12,13 +10,9 @@ class Resolver
 
     protected ?object $fix = null;
 
-    protected ?object $instance = null;
-
     protected bool $create = false;
 
     protected bool $register = false;
-
-    protected ?Closure $resolvedCallback = null;
 
     public function register(): Resolver
     {
@@ -31,22 +25,26 @@ class Resolver
         return $this->register;
     }
 
-    public function resolved(Closure $resolvedCallback): Resolver
-    {
-        $this->resolvedCallback = $resolvedCallback;
-        return $this;
-    }
-
-    public function type(string $Type): Resolver
+    public function Type(string $Type): Resolver
     {
         $this->Type = $Type;
         return $this;
+    }
+
+    public function getType(): string
+    {
+        return $this->Type;
     }
 
     public function index(int $index): Resolver
     {
         $this->index = $index;
         return $this;
+    }
+
+    public function getIndex(): int
+    {
+        return $this->index;
     }
 
     public function fix(object $fix): Resolver
@@ -58,16 +56,6 @@ class Resolver
     public function getFix(): ?object
     {
         return $this->fix;
-    }
-
-    public function instance(object $instance): Resolver
-    {
-        $this->instance = $instance;
-        if ($this->resolvedCallback) {
-            $callback = $this->resolvedCallback;
-            $callback($instance);
-        }
-        return $this;
     }
 
     public function create(): Resolver
