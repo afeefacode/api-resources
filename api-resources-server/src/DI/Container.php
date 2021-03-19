@@ -2,7 +2,10 @@
 
 namespace Afeefa\ApiResources\DI;
 
+use Afeefa\ApiResources\Exception\Exceptions\MissingCallbackArgumentException;
 use Afeefa\ApiResources\Exception\Exceptions\MissingTypeHintException;
+use Afeefa\ApiResources\Exception\Exceptions\NotACallbackException;
+use Afeefa\ApiResources\Exception\Exceptions\TooManyCallbackArgumentsException;
 use Closure;
 use Psr\Container\ContainerInterface;
 use ReflectionFunction;
@@ -32,10 +35,12 @@ class Container implements ContainerInterface
             $Types = [$Type];
         } else {
             $Types = $this->getCallbackArgumentTypes($classOrCallback);
+            if (!count($Types)) {
+                throw new MissingCallbackArgumentException('Callback does not provide arguments.');
+            }
         }
 
         $arguments = [];
-
         foreach ($Types as $Type) {
             if (!$this->has($Type)) {
                 $this->create($Type, function (Resolver $r) {
@@ -50,12 +55,16 @@ class Container implements ContainerInterface
         }
 
         if ($resolveCallback) {
-            foreach ($arguments as $index => $argument) {
-                $resolver = $this->resolver()
-                    ->Type(get_class($argument))
-                    ->index($index);
-                $resolveCallback($resolver);
-                $resolver->instance($argument);
+            if ($this->argumentIsResolver($resolveCallback)) {
+                foreach ($arguments as $index => $argument) {
+                    $resolver = $this->resolver()
+                        ->Type(get_class($argument))
+                        ->index($index);
+                    $resolveCallback($resolver);
+                    $resolver->instance($argument);
+                }
+            } else {
+                $resolveCallback(...$arguments);
             }
         }
 
@@ -74,26 +83,35 @@ class Container implements ContainerInterface
     {
         [$Type, $callback] = $this->classOrCallback($classOrCallback);
         if ($callback) {
-            $Type = $this->getCallbackArgumentTypes($classOrCallback)[0];
-        }
-
-        $resolver = $this->resolver()
-            ->Type($Type);
-
-        if ($resolveCallback) {
-            $resolveCallback($resolver);
+            $Types = $this->getCallbackArgumentTypes($classOrCallback);
+            if (!count($Types)) {
+                throw new MissingCallbackArgumentException('Callback does not provide an argument.');
+            } elseif (count($Types) > 1) {
+                throw new TooManyCallbackArgumentsException('Callback may only provide 1 argument.');
+            }
+            $Type = $Types[0];
         }
 
         $construct = $this->config[$Type] ?? null;
         $instance = $construct ? $construct() : new $Type();
-
-        if ($resolver->shouldRegister()) {
-            $this->register($Type, $instance);
-        }
-
         $this->bootstrapInstance($instance);
 
-        $resolver->instance($instance);
+        if ($resolveCallback) {
+            if ($this->argumentIsResolver($resolveCallback)) {
+                $resolver = $this->resolver()
+                    ->Type($Type);
+
+                $resolveCallback($resolver);
+
+                if ($resolver->shouldRegister()) {
+                    $this->register($Type, $instance);
+                }
+
+                $resolver->instance($instance);
+            } else {
+                $resolveCallback($instance);
+            }
+        }
 
         if ($callback) {
             $callback($instance);
@@ -105,17 +123,10 @@ class Container implements ContainerInterface
     /**
      * Calls a function while injecting dependencies
      */
-    public function callMethod(callable $method, Closure $resolveCallback = null)
+    public function call($callback, Closure $resolveCallback = null)
     {
-        return $this->call(Closure::fromCallable($method), $resolveCallback);
-    }
-
-    /**
-     * Calls a function while injecting dependencies
-     */
-    public function call(Closure $callback, Closure $resolveCallback = null)
-    {
-        $argumentTypes = $this->getCallbackArgumentTypes($callback);
+        $callback = $this->callback($callback);
+        $Types = $this->getCallbackArgumentTypes($callback);
 
         $argumentsMap = array_column(
             array_map(function ($Type, $index) use ($resolveCallback) {
@@ -139,18 +150,13 @@ class Container implements ContainerInterface
                 $resolver->instance($instance);
 
                 return [$Type, $instance];
-            }, $argumentTypes, array_keys($argumentTypes)),
+            }, $Types, array_keys($Types)),
             1,
             0
         );
 
         $arguments = array_values($argumentsMap);
         return $callback(...$arguments);
-    }
-
-    protected function resolver(): Resolver
-    {
-        return new Resolver();
     }
 
     /**
@@ -178,8 +184,31 @@ class Container implements ContainerInterface
     {
         if ($classOrCallback instanceof Closure) {
             return [null, $classOrCallback];
+        } elseif (is_callable($classOrCallback)) {
+            return [null, Closure::fromCallable($classOrCallback)];
         }
         return [$classOrCallback, null];
+    }
+
+    public function callback($callback): Closure
+    {
+        if ($callback instanceof Closure) {
+            return $callback;
+        } elseif (is_callable($callback)) {
+            return Closure::fromCallable($callback);
+        }
+        throw new NotACallbackException('Argument is not a callback.');
+    }
+
+    protected function resolver(): Resolver
+    {
+        return new Resolver();
+    }
+
+    private function argumentIsResolver($callback): bool
+    {
+        $Types = $this->getCallbackArgumentTypes($callback);
+        return (count($Types) === 1 && $Types[0] === Resolver::class);
     }
 
     private function register(string $Type, object $instance)
@@ -203,6 +232,7 @@ class Container implements ContainerInterface
 
         $f = new ReflectionFunction($callback);
         $params = $f->getParameters();
+
         foreach ($params as $param) {
             $type = $param->getType();
             if ($type instanceof ReflectionNamedType) {

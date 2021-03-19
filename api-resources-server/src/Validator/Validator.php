@@ -18,7 +18,7 @@ class Validator implements ToSchemaJsonInterface
     public function __construct()
     {
         if (!static::$type) {
-            throw new MissingTypeException('Missing type for validator of class ' . static::class);
+            throw new MissingTypeException('Missing type for validator of class ' . static::class . '.');
         };
 
         $this->rules = new RuleBag();

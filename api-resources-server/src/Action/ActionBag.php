@@ -13,9 +13,8 @@ class ActionBag extends Bag
 {
     public function add(string $name, Closure $callback): ActionBag
     {
-        $this->container->create(function (Action $action) use ($name, $callback) {
+        $this->container->create($callback, function (Action $action) use ($name) {
             $action->name($name);
-            $callback($action);
             $this->set($name, $action);
         });
         return $this;

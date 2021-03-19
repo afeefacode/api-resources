@@ -30,8 +30,7 @@ class Action extends BagEntry
 
     public function params(Closure $callback): Action
     {
-        $this->container->create(function (ActionParams $params) use ($callback) {
-            $callback($params);
+        $this->container->create($callback, function (ActionParams $params) {
             $this->params = $params;
         });
         return $this;
@@ -39,8 +38,7 @@ class Action extends BagEntry
 
     public function input(Closure $callback): Action
     {
-        $this->container->create(function (ActionInput $input) use ($callback) {
-            $callback($input);
+        $this->container->create($callback, function (ActionInput $input) {
             $this->input = $input;
         });
         return $this;
@@ -48,8 +46,7 @@ class Action extends BagEntry
 
     public function filters(Closure $callback): Action
     {
-        $this->container->create(function (FilterBag $filters) use ($callback) {
-            $callback($filters);
+        $this->container->create($callback, function (FilterBag $filters) {
             $this->filters = $filters;
         });
         return $this;
@@ -57,8 +54,7 @@ class Action extends BagEntry
 
     public function response(Closure $callback): Action
     {
-        $this->container->create(function (ActionResponse $response) use ($callback) {
-            $callback($response);
+        $this->container->create($callback, function (ActionResponse $response) {
             $this->response = $response;
         });
         return $this;

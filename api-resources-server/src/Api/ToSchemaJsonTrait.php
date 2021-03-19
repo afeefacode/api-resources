@@ -2,14 +2,17 @@
 
 namespace Afeefa\ApiResources\Api;
 
+use Afeefa\ApiResources\DI\ContainerAwareInterface;
+
 trait ToSchemaJsonTrait
 {
     public function toSchemaJson(): array
     {
-        if (isset($this->container)) {
-            if (method_exists($this, 'getSchemaJson')) {
-                return $this->container->callMethod([$this, 'getSchemaJson']);
+        if (method_exists($this, 'getSchemaJson')) {
+            if ($this instanceof ContainerAwareInterface && isset($this->container)) {
+                return $this->container->call([$this, 'getSchemaJson']);
             }
+            return $this->getSchemaJson();
         }
         return [];
     }

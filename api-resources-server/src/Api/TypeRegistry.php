@@ -4,7 +4,6 @@ namespace Afeefa\ApiResources\Api;
 
 use Afeefa\ApiResources\DI\ContainerAwareInterface;
 use Afeefa\ApiResources\DI\ContainerAwareTrait;
-use Afeefa\ApiResources\DI\Resolver;
 use Afeefa\ApiResources\Type\Type;
 
 class TypeRegistry implements ContainerAwareInterface
@@ -44,11 +43,9 @@ class TypeRegistry implements ContainerAwareInterface
     public function registerType(string $Type)
     {
         if (!isset($this->types[$Type])) {
-            $this->container->get($Type, function (Resolver $r) use ($Type) {
-                $r->resolved(function (Type $type) use ($Type) {
-                    $this->types[$Type] = $Type;
-                    $type->toSchemaJson();
-                });
+            $this->container->get($Type, function (Type $type) use ($Type) {
+                $this->types[$Type] = $Type;
+                $type->toSchemaJson();
             });
         }
     }

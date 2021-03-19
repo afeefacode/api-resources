@@ -16,7 +16,7 @@ class Resource extends BagEntry
     public function created(): void
     {
         if (!static::$type) {
-            throw new MissingTypeException('Missing type for resource of class ' . static::class);
+            throw new MissingTypeException('Missing type for resource of class ' . static::class . '.');
         };
 
         $this->actions = $this->container->create(ActionBag::class);

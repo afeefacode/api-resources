@@ -4,7 +4,6 @@ namespace Afeefa\ApiResources\Field;
 
 use Afeefa\ApiResources\Api\TypeRegistry;
 use Afeefa\ApiResources\Bag\Bag;
-use Afeefa\ApiResources\DI\Resolver;
 use Closure;
 
 /**
@@ -15,13 +14,11 @@ class FieldBag extends Bag
 {
     public function add(string $name, $classOrCallback): FieldBag
     {
-        $this->container->create($classOrCallback, function (Resolver $r) use ($name) {
-            $r->resolved(function (Field $field) use ($name) {
-                $field
-                    ->name($name)
-                    ->allowed(true);
-                $this->set($name, $field);
-            });
+        $this->container->create($classOrCallback, function (Field $field) use ($name) {
+            $field
+                ->name($name)
+                ->allowed(true);
+            $this->set($name, $field);
         });
 
         return $this;

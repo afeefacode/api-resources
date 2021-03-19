@@ -3,7 +3,6 @@
 namespace Afeefa\ApiResources\Resource;
 
 use Afeefa\ApiResources\Bag\Bag;
-use Afeefa\ApiResources\DI\Resolver;
 
 /**
  * @method Resource get(string $name)
@@ -13,10 +12,8 @@ class ResourceBag extends Bag
 {
     public function add($classOrCallback): ResourceBag
     {
-        $this->container->create($classOrCallback, function (Resolver $r) {
-            $r->resolved(function (Resource $resource) {
-                $this->set($resource::$type, $resource);
-            });
+        $this->container->create($classOrCallback, function (Resource $resource) {
+            $this->set($resource::$type, $resource);
         });
 
         return $this;

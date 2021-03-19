@@ -49,7 +49,7 @@ class Bag implements ToSchemaJsonInterface, ContainerAwareInterface
     {
         return array_filter(array_map(function (BagEntryInterface $entry) {
             if (method_exists($this, 'getEntrySchemaJson')) {
-                return $this->container->callMethod(
+                return $this->container->call(
                     [$this, 'getEntrySchemaJson'],
                     function (Resolver $r) use ($entry) {
                         if ($r->isOf(BagEntryInterface::class)) {

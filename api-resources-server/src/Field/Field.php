@@ -27,7 +27,7 @@ class Field extends BagEntry
     public function created(): void
     {
         if (!static::$type) {
-            throw new MissingTypeException('Missing type for field of class ' . static::class);
+            throw new MissingTypeException('Missing type for field of class ' . static::class . '.');
         };
     }
 
@@ -49,10 +49,8 @@ class Field extends BagEntry
         } else {
             $this->container->create(
                 $callback,
-                function (Resolver $r) {
-                    $r->resolved(function (Validator $validator) {
-                        $this->validator = $validator;
-                    });
+                function (Validator $validator) {
+                    $this->validator = $validator;
                 }
             );
         }
@@ -85,15 +83,13 @@ class Field extends BagEntry
 
     public function clone(): Field
     {
-        return $this->container->create(static::class, function (Resolver $r) {
-            $r->resolved(function (Field $field) {
-                $field
-                    ->name($this->name)
-                    ->required($this->required);
-                if ($this->validator) {
-                    $field->validator($this->validator->clone());
-                }
-            });
+        return $this->container->create(static::class, function (Field $field) {
+            $field
+                ->name($this->name)
+                ->required($this->required);
+            if ($this->validator) {
+                $field->validator($this->validator->clone());
+            }
         });
     }
 
