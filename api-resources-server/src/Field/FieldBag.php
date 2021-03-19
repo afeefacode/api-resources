@@ -7,7 +7,8 @@ use Afeefa\ApiResources\DI\Injector;
 use Closure;
 
 /**
- * @property Field[] $entries
+ * @method Field get(string $name)
+ * @method Field[] entries()
  */
 class FieldBag extends Bag
 {
@@ -19,7 +20,7 @@ class FieldBag extends Bag
             $field
                 ->name($name)
                 ->allowed(true);
-            $this->entries[$name] = $field;
+            $this->set($name, $field);
         };
 
         if ($Field) {
@@ -41,20 +42,15 @@ class FieldBag extends Bag
 
     public function update(string $name, Closure $callback): FieldBag
     {
-        $field = $this->entries[$name];
+        $field = $this->get($name);
         $callback($field);
         return $this;
-    }
-
-    public function get(string $name): Field
-    {
-        return $this->entries[$name];
     }
 
     public function allow(array $names): FieldBag
     {
         foreach ($names as $name) {
-            $this->entries[$name]->allowed(true);
+            $this->get($name)->allowed(true);
         }
         return $this;
     }
@@ -62,8 +58,8 @@ class FieldBag extends Bag
     public function clone(): FieldBag
     {
         return $this->container->create(FieldBag::class, null, function (FieldBag $fieldBag) {
-            foreach ($this->entries as $name => $field) {
-                $fieldBag->entries[$name] = $field->clone();
+            foreach ($this->entries() as $name => $field) {
+                $fieldBag->set($name, $field->clone());
             }
         });
     }
@@ -75,6 +71,6 @@ class FieldBag extends Bag
                 return $field->toSchemaJson();
             }
             return null;
-        }, $this->entries));
+        }, $this->entries()));
     }
 }

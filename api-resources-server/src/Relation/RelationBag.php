@@ -6,7 +6,8 @@ use Afeefa\ApiResources\Bag\Bag;
 use Afeefa\ApiResources\DI\Injector;
 
 /**
- * @property Relation[] $entries
+ * @method Relation get(string $name)
+ * @method Relation[] entries()
  */
 class RelationBag extends Bag
 {
@@ -18,7 +19,7 @@ class RelationBag extends Bag
             $relation
                 ->name($name)
                 ->relatedType($RelatedType);
-            $this->entries[$name] = $relation;
+            $this->set($name, $relation);
         };
 
         if ($Relation) {

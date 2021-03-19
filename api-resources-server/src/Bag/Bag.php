@@ -14,11 +14,17 @@ class Bag implements ToSchemaJsonInterface, ContainerAwareInterface
     /**
      * @var BagEntryInterface[]
      */
-    protected array $entries = [];
+    private array $entries = [];
 
     public function get(string $name): BagEntryInterface
     {
         return $this->entries[$name];
+    }
+
+    public function set(string $name, $value): Bag
+    {
+        $this->entries[$name] = $value;
+        return $this;
     }
 
     public function has(string $name): bool
@@ -30,6 +36,11 @@ class Bag implements ToSchemaJsonInterface, ContainerAwareInterface
     {
         unset($this->entries[$name]);
         return $this;
+    }
+
+    public function entries(): array
+    {
+        return $this->entries;
     }
 
     protected function classOrCallback($classOrCallback): array

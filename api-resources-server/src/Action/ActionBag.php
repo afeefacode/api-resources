@@ -6,8 +6,8 @@ use Afeefa\ApiResources\Bag\Bag;
 use Closure;
 
 /**
- * @property Action[] $entries
  * @method Action get(string $name)
+ * @method Action[] entries()
  */
 class ActionBag extends Bag
 {
@@ -16,7 +16,7 @@ class ActionBag extends Bag
         $this->container->create(Action::class, null, function (Action $action) use ($name, $callback) {
             $action->name($name);
             $callback($action);
-            $this->entries[$name] = $action;
+            $this->set($name, $action);
         });
         return $this;
     }

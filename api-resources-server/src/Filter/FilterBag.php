@@ -6,7 +6,8 @@ use Afeefa\ApiResources\Bag\Bag;
 use Afeefa\ApiResources\DI\Injector;
 
 /**
- * @property Filter[] $entries
+ * @method Filter get(string $name)
+ * @method Filter[] entries()
  */
 class FilterBag extends Bag
 {
@@ -16,7 +17,7 @@ class FilterBag extends Bag
 
         $init = function (Filter $filter) use ($name) {
             $filter->name($name);
-            $this->entries[$name] = $filter;
+            $this->set($name, $filter);
         };
 
         if ($Filter) {

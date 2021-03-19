@@ -6,8 +6,8 @@ use Afeefa\ApiResources\Bag\Bag;
 use Afeefa\ApiResources\DI\Injector;
 
 /**
- * @property Resource[] $entries
- * @method Resource get(string $type)
+ * @method Resource get(string $name)
+ * @method Resource[] entries()
  */
 class ResourceBag extends Bag
 {
@@ -16,7 +16,7 @@ class ResourceBag extends Bag
         [$Resource, $callback] = $this->classOrCallback($classOrCallback);
 
         $init = function (Resource $resource) {
-            $this->entries[$resource::$type] = $resource;
+            $this->set($resource::$type, $resource);
         };
 
         if ($Resource) {
