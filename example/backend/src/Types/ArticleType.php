@@ -84,8 +84,11 @@ class ArticleType extends ModelType
 
         $relations->add('author', AuthorType::class, function (LinkOne $relation) {
             $relation->params()->depends([
-                'id', 'author_id',
-                ['author' => ['id']]
+                'id' => true,
+                'author_id' => true,
+                'author' => [
+                    'id' => true
+                ]
             ]);
         });
 

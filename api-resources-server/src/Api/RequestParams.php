@@ -17,21 +17,15 @@ class RequestParams extends Bag
     public function getDepends(string $root = null): array
     {
         $depends = [];
-        foreach ($this->depends as $field) {
-            if ($root) {
-                if (is_array($field)) {
-                    foreach ($field as $subField => $subFields) {
-                        if ($subField === $root) {
-                            $depends = $subFields;
-                        }
-                    }
-                }
-            } else {
-                if (is_string($field)) {
-                    $depends[] = $field;
-                }
+
+        $base = $root ? $this->depends[$root] : $this->depends;
+
+        foreach ($base as $field => $nested) {
+            if ($nested === true) {
+                $depends[] = $field;
             }
         }
+
         return $depends;
     }
 }

@@ -33,7 +33,13 @@ $app->get('/backend-api/test', function (HttpRequest $request, Response $respons
             $request
                 ->resource(ArticlesResource::$type)
                 ->action('get_articles')
-                ->fields(['title', ['author' => ['name']]]);
+                ->fields([
+                    'title' => true,
+                    'author' => [
+                        'name' => true,
+                        'email' => true
+                    ]
+                ]);
         });
     });
     return $response->withJson($result);

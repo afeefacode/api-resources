@@ -15,7 +15,10 @@ use Afeefa\ApiResources\Filter\Filters\IdFilter;
 use Afeefa\ApiResources\Filter\Filters\KeywordFilter;
 use Afeefa\ApiResources\Filter\Filters\OrderFilter;
 use Afeefa\ApiResources\Filter\Filters\PageFilter;
+use Afeefa\ApiResources\Relation\Relations\HasOne;
+use Afeefa\ApiResources\Relation\Relations\LinkOne;
 use Afeefa\ApiResources\Resource\ModelResource;
+use Afeefa\ApiResources\Type\Type;
 use Backend\Types\ArticleType;
 use Medoo\Medoo;
 
@@ -70,22 +73,19 @@ class ArticlesResource extends ModelResource
             });
 
             $action->execute(function (Medoo $db, ArticleType $articleType, ApiRequest $request) {
-                $fields = $request->getFields();
+                $requestedFields = $request->getFields();
                 $fieldsMap = [
                     'article' => []
                 ];
-                foreach ($fields as $field) {
-                    if (is_array($field)) {
-                        foreach ($field as $subField => $subFields) {
-                            if ($articleType->hasRelation($subField)) {
-                                $relation = $articleType->getRelation($subField);
+                foreach ($requestedFields as $requestedField => $nested) {
+                    if ($articleType->hasField($requestedField)) {
+                        $fieldsMap['article'][] = $requestedField;
+                    }
 
-                                $fieldsMap['article'] = array_merge($fieldsMap['article'], $relation->params()->getDepends());
-                                $fieldsMap[$subField] = array_merge($subFields, $relation->params()->getDepends($subField));
-                            }
-                        }
-                    } else {
-                        $fieldsMap['article'][] = $field;
+                    if ($articleType->hasRelation($requestedField)) {
+                        $relation = $articleType->getRelation($requestedField);
+                        $fieldsMap['article'] = array_merge($fieldsMap['article'], $relation->params()->getDepends());
+                        $fieldsMap[$requestedField] = array_merge(array_keys($nested), $relation->params()->getDepends($requestedField));
                     }
                 }
 
@@ -112,6 +112,8 @@ class ArticlesResource extends ModelResource
                         }
                     }
                 }
+
+                $this->hideFields($articleType, $articles, $requestedFields);
 
                 return $articles;
             });
@@ -177,5 +179,27 @@ class ArticlesResource extends ModelResource
             $action->inputType = ArticleType::class;
             $action->outputType = 'test';
         });
+    }
+
+    private function hideFields(Type $modelType, array &$models, array $requestedFields)
+    {
+        foreach ($models as &$model) {
+            foreach ($model as $field => $value) {
+                if ($modelType->hasField($field)) {
+                    if (!in_array($field, array_keys($requestedFields))) {
+                        unset($model[$field]);
+                    }
+                } elseif ($modelType->hasRelation($field)) {
+                    $relation = $modelType->getRelation($field);
+                    $relatedType = $relation->getRelatedTypeInstance();
+
+                    $isSingle = ($relation instanceof HasOne || $relation instanceof LinkOne);
+                    $nestedModels = ($isSingle ? [&$model[$field]] : $model[$field]);
+                    $this->hideFields($relatedType, $nestedModels, $requestedFields[$field]);
+                } else {
+                    unset($model[$field]);
+                }
+            }
+        }
     }
 }

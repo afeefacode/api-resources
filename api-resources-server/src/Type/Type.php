@@ -5,6 +5,7 @@ namespace Afeefa\ApiResources\Type;
 use Afeefa\ApiResources\Api\ToSchemaJsonInterface;
 use Afeefa\ApiResources\DI\ContainerAwareInterface;
 use Afeefa\ApiResources\DI\ContainerAwareTrait;
+use Afeefa\ApiResources\Field\Field;
 use Afeefa\ApiResources\Field\FieldBag;
 use Afeefa\ApiResources\Relation\Relation;
 use Afeefa\ApiResources\Relation\RelationBag;
@@ -26,6 +27,16 @@ class Type implements ToSchemaJsonInterface, ContainerAwareInterface
 
         $this->relations = $this->container->create(RelationBag::class);
         $this->relations($this->relations);
+    }
+
+    public function hasField(string $name): bool
+    {
+        return $this->fields->has($name);
+    }
+
+    public function getField(string $name): Field
+    {
+        return $this->fields->get($name);
     }
 
     public function hasRelation(string $name): bool

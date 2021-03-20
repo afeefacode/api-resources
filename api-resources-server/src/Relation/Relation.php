@@ -6,6 +6,7 @@ use Afeefa\ApiResources\Api\RequestParams;
 use Afeefa\ApiResources\Api\TypeRegistry;
 use Afeefa\ApiResources\Bag\BagEntry;
 use Afeefa\ApiResources\Exception\Exceptions\MissingTypeException;
+use Afeefa\ApiResources\Type\Type;
 
 class Relation extends BagEntry
 {
@@ -42,6 +43,11 @@ class Relation extends BagEntry
         $this->RelatedType = $RelatedType;
 
         return $this;
+    }
+
+    public function getRelatedTypeInstance(): Type
+    {
+        return $this->container->get($this->RelatedType);
     }
 
     public function getSchemaJson(TypeRegistry $typeRegistry): array
