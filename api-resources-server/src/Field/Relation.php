@@ -19,11 +19,18 @@ class Relation extends Field
 
     protected RequestParams $params;
 
+    protected bool $isSingle = false;
+
     public function created(): void
     {
         parent::created();
 
         $this->params = new RequestParams();
+    }
+
+    public function isSingle(): bool
+    {
+        return $this->isSingle;
     }
 
     public function params(): RequestParams

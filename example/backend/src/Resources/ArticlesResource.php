@@ -8,9 +8,7 @@ use Afeefa\ApiResources\Action\ActionInput;
 use Afeefa\ApiResources\Action\ActionParams;
 use Afeefa\ApiResources\Action\ActionResponse;
 use Afeefa\ApiResources\Api\ApiRequest;
-use Afeefa\ApiResources\Field\Fields\HasOneRelation;
 use Afeefa\ApiResources\Field\Fields\IdAttribute;
-use Afeefa\ApiResources\Field\Fields\LinkOneRelation;
 use Afeefa\ApiResources\Filter\FilterBag;
 use Afeefa\ApiResources\Filter\Filters\BooleanFilter;
 use Afeefa\ApiResources\Filter\Filters\IdFilter;
@@ -193,8 +191,7 @@ class ArticlesResource extends ModelResource
                     $relation = $modelType->getRelation($field);
                     $relatedType = $relation->getRelatedTypeInstance();
 
-                    $isSingle = ($relation instanceof HasOneRelation || $relation instanceof LinkOneRelation);
-                    $nestedModels = ($isSingle ? [&$model[$field]] : $model[$field]);
+                    $nestedModels = $relation->isSingle() ? [&$model[$field]] : $model[$field];
                     $this->hideFields($relatedType, $nestedModels, $requestedFields[$field]);
                 } else {
                     unset($model[$field]);
