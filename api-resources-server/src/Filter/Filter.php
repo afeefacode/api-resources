@@ -11,7 +11,7 @@ class Filter extends BagEntry
 
     protected string $name;
 
-    public function __construct()
+    public function created(): void
     {
         if (!static::$type) {
             throw new MissingTypeException('Missing type for filter of class ' . static::class . '.');

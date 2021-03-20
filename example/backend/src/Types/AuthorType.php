@@ -3,27 +3,23 @@
 namespace Backend\Types;
 
 use Afeefa\ApiResources\Field\FieldBag;
-use Afeefa\ApiResources\Field\Fields\VarcharField;
-use Afeefa\ApiResources\Relation\RelationBag;
-use Afeefa\ApiResources\Relation\Relations\HasMany;
-use Afeefa\ApiResources\Relation\Relations\LinkMany;
+use Afeefa\ApiResources\Field\Fields\HasManyRelation;
+use Afeefa\ApiResources\Field\Fields\LinkManyRelation;
+use Afeefa\ApiResources\Field\Fields\VarcharAttribute;
 use Afeefa\ApiResources\Type\Type;
 
 class AuthorType extends Type
 {
-    public static string $type = 'Example.Author';
+    public static string $type = 'Example.AuthorType';
 
     protected function fields(FieldBag $fields): void
     {
-        $fields->add('name', VarcharField::class);
+        $fields->attribute('name', VarcharAttribute::class);
 
-        $fields->add('email', VarcharField::class);
-    }
+        $fields->attribute('email', VarcharAttribute::class);
 
-    protected function relations(RelationBag $relations): void
-    {
-        $relations->add('articles', ArticleType::class, HasMany::class);
+        $fields->relation('articles', ArticleType::class, HasManyRelation::class);
 
-        $relations->add('tags', TagType::class, LinkMany::class);
+        $fields->relation('tags', TagType::class, LinkManyRelation::class);
     }
 }

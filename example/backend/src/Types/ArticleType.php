@@ -3,72 +3,38 @@
 namespace Backend\Types;
 
 use Afeefa\ApiResources\Field\FieldBag;
-use Afeefa\ApiResources\Field\Fields\DateField;
-use Afeefa\ApiResources\Field\Fields\VarcharField;
-use Afeefa\ApiResources\Relation\RelationBag;
-use Afeefa\ApiResources\Relation\Relations\HasMany;
-use Afeefa\ApiResources\Relation\Relations\LinkMany;
-use Afeefa\ApiResources\Relation\Relations\LinkOne;
+use Afeefa\ApiResources\Field\Fields\DateAttribute;
+use Afeefa\ApiResources\Field\Fields\HasManyRelation;
+use Afeefa\ApiResources\Field\Fields\LinkManyRelation;
+use Afeefa\ApiResources\Field\Fields\LinkOneRelation;
+use Afeefa\ApiResources\Field\Fields\VarcharAttribute;
 use Afeefa\ApiResources\Type\ModelType;
 use Afeefa\ApiResources\Validator\Validators\VarcharValidator;
 
 class ArticleType extends ModelType
 {
-    public static string $type = 'Example.Article';
+    public static string $type = 'Example.ArticleType';
 
     protected function fields(FieldBag $fields): void
     {
-        $fields->add('title', VarcharField::class);
+        $fields->attribute('title', VarcharAttribute::class);
 
-        $fields->add('summary', VarcharField::class);
+        $fields->attribute('summary', VarcharAttribute::class);
 
-        $fields->add('content', VarcharField::class);
+        $fields->attribute('content', VarcharAttribute::class);
 
-        $fields->add('date', DateField::class);
-    }
+        $fields->attribute('date', DateAttribute::class);
 
-    protected function updateFields(FieldBag $fields): void
-    {
-        $fields->get('title')
-            ->required()
-            ->validate(function (VarcharValidator $v) {
-                $v
-                    ->filled()
-                    ->min(5)
-                    ->max(100);
-            });
+        $fields->relation('author', AuthorType::class, function (LinkOneRelation $author) {
+            $author->params()->depends([
+                'id' => true,
+                'author_id' => true,
+                'author' => [
+                    'id' => true
+                ]
+            ]);
+        });
 
-        $fields->get('summary')
-            ->validate(function (VarcharValidator $v) {
-                $v
-                    ->min(3)
-                    ->max(100);
-            });
-
-        $fields->allow([
-            'title',
-            'summary',
-            'content',
-            'date'
-        ]);
-    }
-
-    protected function createFields(FieldBag $fields): void
-    {
-        $fields->get('title')
-            ->required()
-            ->validate(function (VarcharValidator $v) {
-                $v->min(20);
-                $v->max(50);
-            });
-
-        $fields->allow([
-            'title'
-        ]);
-    }
-
-    protected function relations(RelationBag $relations): void
-    {
         // $relations->add('author', AuthorType::class, function (LinkOne $relation) {
         //     $author->update(function (FieldBag $fields) {
         //         $fields->set([
@@ -82,20 +48,55 @@ class ArticleType extends ModelType
         //     });
         // });
 
-        $relations->add('author', AuthorType::class, function (LinkOne $relation) {
-            $relation->params()->depends([
-                'id' => true,
-                'author_id' => true,
-                'author' => [
-                    'id' => true
-                ]
-            ]);
-        });
+        // $fields->relation('author', AuthorType::class, LinkOneRelation::class);
 
-        // $relations->add('author', AuthorType::class, LinkOne::class);
+        $fields->relation('comments', CommentType::class, HasManyRelation::class);
 
-        $relations->add('comments', CommentType::class, HasMany::class);
+        $fields->relation('tags', TagType::class, LinkManyRelation::class);
+    }
 
-        $relations->add('tags', TagType::class, LinkMany::class);
+    protected function updateFields(FieldBag $fields): void
+    {
+        $fields->get('title')
+            ->validate(function (VarcharValidator $v) {
+                $v
+                    ->filled()
+                    ->min(5)
+                    ->max(101);
+            });
+
+        $fields->get('summary')
+            ->validate(function (VarcharValidator $v) {
+                $v
+                    ->min(3)
+                    ->max(100);
+            });
+
+        $fields->allow([
+            'title',
+            'summary',
+            'content',
+            'date',
+            'author',
+            'tags'
+        ]);
+    }
+
+    protected function createFields(FieldBag $fields): void
+    {
+        $fields->get('title')
+            ->required()
+            ->validate(function (VarcharValidator $v) {
+                $v->min(20);
+                $v->max(50);
+            });
+
+        $fields->get('author')
+            ->required();
+
+        $fields->allow([
+            'title',
+            'author'
+        ]);
     }
 }

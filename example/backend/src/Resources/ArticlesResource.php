@@ -8,15 +8,15 @@ use Afeefa\ApiResources\Action\ActionInput;
 use Afeefa\ApiResources\Action\ActionParams;
 use Afeefa\ApiResources\Action\ActionResponse;
 use Afeefa\ApiResources\Api\ApiRequest;
-use Afeefa\ApiResources\Field\Fields\IdField;
+use Afeefa\ApiResources\Field\Fields\HasOneRelation;
+use Afeefa\ApiResources\Field\Fields\IdAttribute;
+use Afeefa\ApiResources\Field\Fields\LinkOneRelation;
 use Afeefa\ApiResources\Filter\FilterBag;
 use Afeefa\ApiResources\Filter\Filters\BooleanFilter;
 use Afeefa\ApiResources\Filter\Filters\IdFilter;
 use Afeefa\ApiResources\Filter\Filters\KeywordFilter;
 use Afeefa\ApiResources\Filter\Filters\OrderFilter;
 use Afeefa\ApiResources\Filter\Filters\PageFilter;
-use Afeefa\ApiResources\Relation\Relations\HasOne;
-use Afeefa\ApiResources\Relation\Relations\LinkOne;
 use Afeefa\ApiResources\Resource\ModelResource;
 use Afeefa\ApiResources\Type\Type;
 use Backend\Types\ArticleType;
@@ -24,7 +24,7 @@ use Medoo\Medoo;
 
 class ArticlesResource extends ModelResource
 {
-    public static string $type = 'Example.Articles';
+    public static string $type = 'Example.ArticlesResource';
 
     protected string $ModelType = ArticleType::class;
 
@@ -78,7 +78,7 @@ class ArticlesResource extends ModelResource
                     'article' => []
                 ];
                 foreach ($requestedFields as $requestedField => $nested) {
-                    if ($articleType->hasField($requestedField)) {
+                    if ($articleType->hasAttribute($requestedField)) {
                         $fieldsMap['article'][] = $requestedField;
                     }
 
@@ -121,7 +121,7 @@ class ArticlesResource extends ModelResource
 
         $actions->add('get_article', function (Action $action) {
             $action->params(function (ActionParams $params) {
-                $params->add('id', IdField::class);
+                $params->attribute('id', IdAttribute::class);
             });
 
             $action->response(function (ActionResponse $response) {
@@ -153,7 +153,7 @@ class ArticlesResource extends ModelResource
         $actions->add('update_articles', function (Action $action) {
             $action
                 ->params(function (ActionParams $params) {
-                    $params->add('id', IdField::class);
+                    $params->attribute('id', IdAttribute::class);
                     // $params->id('id')->list();
                 })
 
@@ -168,7 +168,7 @@ class ArticlesResource extends ModelResource
 
         $actions->add('delete_article', function (Action $action) {
             $action->params(function (ActionParams $params) {
-                $params->add('id', IdField::class);
+                $params->attribute('id', IdAttribute::class);
             });
 
             $action->inputType = ArticleType::class;
@@ -185,7 +185,7 @@ class ArticlesResource extends ModelResource
     {
         foreach ($models as &$model) {
             foreach ($model as $field => $value) {
-                if ($modelType->hasField($field)) {
+                if ($modelType->hasAttribute($field)) {
                     if (!in_array($field, array_keys($requestedFields))) {
                         unset($model[$field]);
                     }
@@ -193,7 +193,7 @@ class ArticlesResource extends ModelResource
                     $relation = $modelType->getRelation($field);
                     $relatedType = $relation->getRelatedTypeInstance();
 
-                    $isSingle = ($relation instanceof HasOne || $relation instanceof LinkOne);
+                    $isSingle = ($relation instanceof HasOneRelation || $relation instanceof LinkOneRelation);
                     $nestedModels = ($isSingle ? [&$model[$field]] : $model[$field]);
                     $this->hideFields($relatedType, $nestedModels, $requestedFields[$field]);
                 } else {

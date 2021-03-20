@@ -12,7 +12,7 @@ use Backend\Models\Comment;
 
 class SearchResource extends Resource
 {
-    public static string $type = 'Example.Authors';
+    public static string $type = 'Example.SearchResource';
 
     protected function actions(ActionBag $actions): void
     {

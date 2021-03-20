@@ -10,7 +10,7 @@ use Backend\Types\AuthorType;
 
 class AuthorsResource extends Resource
 {
-    public static string $type = 'Example.Authors';
+    public static string $type = 'Example.AuthorsResource';
 
     protected function actions(ActionBag $actions): void
     {

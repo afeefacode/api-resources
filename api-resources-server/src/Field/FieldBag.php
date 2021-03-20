@@ -4,7 +4,6 @@ namespace Afeefa\ApiResources\Field;
 
 use Afeefa\ApiResources\Api\TypeRegistry;
 use Afeefa\ApiResources\Bag\Bag;
-use Closure;
 
 /**
  * @method Field get(string $name)
@@ -12,7 +11,7 @@ use Closure;
  */
 class FieldBag extends Bag
 {
-    public function add(string $name, $classOrCallback): FieldBag
+    public function attribute(string $name, $classOrCallback): FieldBag
     {
         $this->container->create($classOrCallback, function (Field $field) use ($name) {
             $field
@@ -24,10 +23,16 @@ class FieldBag extends Bag
         return $this;
     }
 
-    public function update(string $name, Closure $callback): FieldBag
+    public function relation(string $name, string $RelatedType, $classOrCallback): FieldBag
     {
-        $field = $this->get($name);
-        $callback($field);
+        $this->container->create($classOrCallback, function (Relation $relation) use ($name, $RelatedType) {
+            $relation
+                ->name($name)
+                ->allowed(true)
+                ->relatedType($RelatedType);
+            $this->set($name, $relation);
+        });
+
         return $this;
     }
 

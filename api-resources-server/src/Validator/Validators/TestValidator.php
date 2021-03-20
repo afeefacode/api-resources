@@ -6,5 +6,5 @@ use Afeefa\ApiResources\Validator\Validator;
 
 class TestValidator extends Validator
 {
-    public static string $type = 'Afeefa.Test';
+    public static string $type = 'Afeefa.TestValidator';
 }

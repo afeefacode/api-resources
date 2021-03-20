@@ -7,6 +7,7 @@ use Afeefa\ApiResources\Api\ToSchemaJsonTrait;
 use Afeefa\ApiResources\DI\ContainerAwareInterface;
 use Afeefa\ApiResources\DI\ContainerAwareTrait;
 use Afeefa\ApiResources\DI\Resolver;
+use Closure;
 
 class Bag implements ToSchemaJsonInterface, ContainerAwareInterface
 {
@@ -18,9 +19,15 @@ class Bag implements ToSchemaJsonInterface, ContainerAwareInterface
      */
     private array $entries = [];
 
-    public function get(string $name): BagEntryInterface
+    public function get(string $name, Closure $callback = null): BagEntryInterface
     {
-        return $this->entries[$name];
+        $entry = $this->entries[$name];
+
+        if ($callback) {
+            $callback($entry);
+        }
+
+        return $entry;
     }
 
     public function set(string $name, $value): Bag

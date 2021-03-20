@@ -3,23 +3,19 @@
 namespace Backend\Types;
 
 use Afeefa\ApiResources\Field\FieldBag;
-use Afeefa\ApiResources\Field\Fields\VarcharField;
-use Afeefa\ApiResources\Relation\RelationBag;
-use Afeefa\ApiResources\Relation\Relations\HasMany;
+use Afeefa\ApiResources\Field\Fields\HasManyRelation;
+use Afeefa\ApiResources\Field\Fields\VarcharAttribute;
 use Afeefa\ApiResources\Type\Type;
 
 class TagType extends Type
 {
-    public static string $type = 'Example.Tag';
+    public static string $type = 'Example.TagType';
 
     protected function fields(FieldBag $fields): void
     {
-        $fields->add('name', VarcharField::class);
-    }
+        $fields->attribute('name', VarcharAttribute::class);
 
-    protected function relations(RelationBag $relations): void
-    {
-        $relations->add('users', Type::class, HasMany::class);
+        $fields->relation('users', Type::class, HasManyRelation::class);
     }
 }
 
