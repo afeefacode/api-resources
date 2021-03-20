@@ -72,9 +72,11 @@ class ArticlesResource extends ModelResource
 
             $action->execute(function (Medoo $db, ArticleType $articleType, ApiRequest $request) {
                 $requestedFields = $request->getFields();
+
                 $fieldsMap = [
                     'article' => []
                 ];
+
                 foreach ($requestedFields as $requestedField => $nested) {
                     if ($articleType->hasAttribute($requestedField)) {
                         $fieldsMap['article'][] = $requestedField;
@@ -97,11 +99,13 @@ class ArticlesResource extends ModelResource
                     $authorIds = array_map(function ($article) {
                         return $article['author_id'];
                     }, $articles);
+
                     $authors = $db->select(
                         'authors',
                         $fieldsMap['author'],
                         ['id' => $authorIds]
                     );
+
                     foreach ($articles as &$article) {
                         foreach ($authors as $author) {
                             if ($article['author_id'] === $author['id']) {

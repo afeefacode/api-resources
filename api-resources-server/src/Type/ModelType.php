@@ -16,10 +16,14 @@ class ModelType extends Type
     {
         parent::created();
 
-        $this->updateFields = $this->fields->clone();
+        $this->updateFields = $this->container->create(function (FieldBag $fieldBag) {
+            $fieldBag->original($this->fields);
+        });
         $this->updateFields($this->updateFields);
 
-        $this->createFields = $this->updateFields->clone();
+        $this->createFields = $this->container->create(function (FieldBag $fieldBag) {
+            $fieldBag->original($this->updateFields);
+        });
         $this->createFields($this->createFields);
     }
 

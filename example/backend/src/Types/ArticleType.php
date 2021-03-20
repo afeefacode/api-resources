@@ -77,7 +77,6 @@ class ArticleType extends ModelType
             'summary',
             'content',
             'date',
-            'author',
             'tags'
         ]);
     }
