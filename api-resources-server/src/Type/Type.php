@@ -18,6 +18,11 @@ class Type implements ToSchemaJsonInterface, ContainerAwareInterface
 
     protected FieldBag $fields;
 
+    public static function listOf(string $Type): string
+    {
+        return $Type;
+    }
+
     public function created(): void
     {
         $this->fields = $this->container->create(FieldBag::class);

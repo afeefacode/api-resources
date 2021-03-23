@@ -24,6 +24,11 @@ class Field extends BagEntry
 
     protected bool $allowed = false;
 
+    /**
+     * @var string|callable|Closure
+     */
+    protected $resolverCallback;
+
     public function created(): void
     {
         if (!static::$type) {
@@ -79,6 +84,27 @@ class Field extends BagEntry
     public function isAllowed(): bool
     {
         return $this->allowed;
+    }
+
+    /**
+     * @param string|callable|Closure $classOrCallback
+     */
+    public function resolver($classOrCallback): Relation
+    {
+        $this->resolverCallback = $classOrCallback;
+        return $this;
+    }
+
+    public function getResolver(): Closure
+    {
+        $callback = $this->resolverCallback;
+        if (is_array($callback) && is_string($callback[0])) {
+            $callback[0] = $this->container->create($callback[0]);
+        }
+        if (is_callable($callback)) {
+            return Closure::fromCallable($callback);
+        }
+        return $callback;
     }
 
     public function clone(): Field

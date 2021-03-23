@@ -4,5 +4,5 @@ namespace Afeefa\ApiResources\Tests\DI\Fixtures;
 
 class TestService
 {
-    public $name = 'TestService';
+    public string $name = 'TestService';
 }

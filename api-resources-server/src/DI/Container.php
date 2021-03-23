@@ -2,6 +2,7 @@
 
 namespace Afeefa\ApiResources\DI;
 
+use Afeefa\ApiResources\DB\TypeLoader;
 use Afeefa\ApiResources\Exception\Exceptions\MissingCallbackArgumentException;
 use Afeefa\ApiResources\Exception\Exceptions\MissingTypeHintException;
 use Afeefa\ApiResources\Exception\Exceptions\NotACallbackException;
@@ -20,6 +21,15 @@ class Container implements ContainerInterface
 
     public function __construct(array $config = [])
     {
+        // always create
+        $config[TypeLoader::class] = create()->call('request');
+
+        foreach ($config as $key => $value) {
+            if ($value instanceof Closure) {
+                $config[$key] = factory($value);
+            }
+        }
+
         $this->config = $config;
         $this->register(static::class, $this);
     }
@@ -43,10 +53,15 @@ class Container implements ContainerInterface
 
         $arguments = [];
         foreach ($Types as $Type) {
+            $instance = null;
             if (!$this->has($Type)) {
-                $this->createInstance($Type, null, true);
+                $definition = $this->config[$Type] ?? null;
+                $register = !($definition instanceof CreateDefinition);
+                $instance = $this->createInstance($Type, null, $register);
+            } else {
+                $instance = $this->entries[$Type];
             }
-            $arguments[] = $this->entries[$Type];
+            $arguments[] = $instance;
         }
 
         if ($callback) {
@@ -86,8 +101,20 @@ class Container implements ContainerInterface
             $Type = $Types[0];
         }
 
-        $construct = $this->config[$Type] ?? null;
-        $instance = $construct ? $construct() : new $Type();
+        $definition = $this->config[$Type] ?? null;
+        if ($definition instanceof FactoryDefinition) {
+            $instance = $definition();
+        } else {
+            $instance = new $Type();
+        }
+
+        if ($definition instanceof CreateDefinition) {
+            $initFunction = $definition->getInitFunction();
+            if ($initFunction) {
+                $this->call([$instance, $initFunction]);
+            }
+        }
+
         $this->bootstrapInstance($instance);
 
         if ($register) {

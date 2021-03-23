@@ -2,7 +2,14 @@
 
 namespace Afeefa\ApiResources\DI;
 
-function constructor()
+use Closure;
+
+function factory(Closure $factory)
 {
-    return func_get_args();
+    return new FactoryDefinition($factory);
+}
+
+function create()
+{
+    return new CreateDefinition();
 }

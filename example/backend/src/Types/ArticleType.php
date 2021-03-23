@@ -10,6 +10,7 @@ use Afeefa\ApiResources\Field\Fields\LinkOneRelation;
 use Afeefa\ApiResources\Field\Fields\VarcharAttribute;
 use Afeefa\ApiResources\Type\ModelType;
 use Afeefa\ApiResources\Validator\Validators\VarcharValidator;
+use Backend\Resolvers\AuthorsResolver;
 
 class ArticleType extends ModelType
 {
@@ -25,18 +26,12 @@ class ArticleType extends ModelType
 
         $fields->attribute('date', DateAttribute::class);
 
-        $fields->relation('author', AuthorType::class, function (LinkOneRelation $author) {
-            $author->params()->depends([
-                'id' => true,
-                'author_id' => true,
-                'author' => [
-                    'id' => true
-                ]
-            ]);
+        $fields->relation('author', AuthorType::class, function (LinkOneRelation $relation) {
+            $relation->resolver([AuthorsResolver::class, 'get_author_relation']);
         });
 
-        // $relations->add('author', AuthorType::class, function (LinkOne $relation) {
-        //     $author->update(function (FieldBag $fields) {
+        // $relations->relation('author', AuthorType::class, function (LinkOneRelation $relation) {
+        //     $relation->update(function (FieldBag $fields) {
         //         $fields->set([
         //             'title',
         //             'name'
@@ -47,8 +42,6 @@ class ArticleType extends ModelType
         //         $fields->update('test')->required();
         //     });
         // });
-
-        // $fields->relation('author', AuthorType::class, LinkOneRelation::class);
 
         $fields->relation('comments', CommentType::class, HasManyRelation::class);
 

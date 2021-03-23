@@ -18,7 +18,8 @@ $container = new Container([
             'database_name' => 'api',
             'server' => 'mysql',
             'username' => 'root',
-            'password' => 'root'
+            'password' => 'root',
+            'logging' => true
         ]);
     }
 ]);

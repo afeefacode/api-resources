@@ -3,6 +3,9 @@
 namespace Afeefa\ApiResources\Tests\DI;
 
 use Afeefa\ApiResources\DI\Container;
+
+use function Afeefa\ApiResources\DI\create;
+use function Afeefa\ApiResources\DI\factory;
 use Afeefa\ApiResources\DI\Resolver;
 use Afeefa\ApiResources\Exception\Exceptions\MissingCallbackArgumentException;
 use Afeefa\ApiResources\Exception\Exceptions\MissingTypeHintException;
@@ -11,6 +14,7 @@ use Afeefa\ApiResources\Exception\Exceptions\TooManyCallbackArgumentsException;
 use Afeefa\ApiResources\Tests\DI\Fixtures\TestModel;
 use Afeefa\ApiResources\Tests\DI\Fixtures\TestService;
 use Afeefa\ApiResources\Tests\DI\Fixtures\TestService2;
+
 use PHPUnit\Framework\TestCase;
 
 class ContainerTest extends TestCase
@@ -26,6 +30,85 @@ class ContainerTest extends TestCase
         $this->assertFalse($container->has(TestService::class));
 
         $this->assertSame($container, array_values($container->entries())[0]);
+    }
+
+    public function test_create_with_config()
+    {
+        $config = [
+            TestService::class => factory(function () {
+                $service = new TestService();
+                $service->name = 'My new Service';
+                return $service;
+            }),
+
+            TestService2::class => factory(function () {
+                $service = new TestService();
+                $service->name = 'My new Service2';
+                return $service;
+            })
+        ];
+
+        $container = new Container($config);
+
+        $this->assertTrue($container->has(Container::class));
+        $this->assertFalse($container->has(TestService::class));
+
+        $service = $container->create(TestService::class);
+
+        $this->assertSame('My new Service', $service->name);
+
+        $service2 = $container->create(TestService::class);
+
+        $this->assertNotSame($service, $service2);
+        $this->assertSame('My new Service', $service2->name);
+
+        $service3 = $container->get(TestService2::class);
+
+        $this->assertSame('My new Service2', $service3->name);
+
+        $service4 = $container->get(TestService2::class);
+
+        $this->assertSame('My new Service2', $service4->name);
+    }
+
+    public function test_create_with_config2()
+    {
+        $config = [
+            TestService::class => create(),
+            TestService2::class => create()->call('init')
+        ];
+
+        $container = new Container($config);
+
+        $this->assertCount(1, $container->entries());
+        $this->assertTrue($container->has(Container::class));
+        $this->assertFalse($container->has(TestService::class));
+        $this->assertFalse($container->has(TestService2::class));
+
+        $service = $container->get(TestService::class);
+        $service2 = $container->get(TestService::class);
+
+        $this->assertNotSame($service, $service2);
+
+        $service3 = $container->get(TestService2::class);
+        $service4 = $container->get(TestService2::class);
+
+        $this->assertNotSame($service3, $service4);
+
+        $this->assertSame('Another Name', $service3->name);
+        $service5 = $service3->testService;
+        $this->assertSame('TestService', $service5->name);
+
+        $this->assertSame('Another Name', $service4->name);
+        $service6 = $service4->testService;
+        $this->assertSame('TestService', $service6->name);
+
+        $this->assertNotSame($service5, $service6);
+
+        $this->assertCount(1, $container->entries());
+        $this->assertTrue($container->has(Container::class));
+        $this->assertFalse($container->has(TestService::class));
+        $this->assertFalse($container->has(TestService2::class));
     }
 
     public function test_get_creates_entry()

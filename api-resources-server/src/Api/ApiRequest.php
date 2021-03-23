@@ -2,6 +2,8 @@
 
 namespace Afeefa\ApiResources\Api;
 
+use Afeefa\ApiResources\Action\Action;
+
 class ApiRequest
 {
     protected Api $api;
@@ -42,6 +44,11 @@ class ApiRequest
         return $this;
     }
 
+    public function getAction(): Action
+    {
+        return $this->api->getAction($this->resource, $this->action);
+    }
+
     public function filter(string $name, string $value): ApiRequest
     {
         $this->filters[] = [$name => $value];
@@ -59,11 +66,10 @@ class ApiRequest
         return $this->fields;
     }
 
-    public function send()
+    public function dispatch()
     {
         return $this
-            ->api
-            ->getAction($this->resource, $this->action)
-            ->call($this);
+            ->getAction()
+            ->run();
     }
 }

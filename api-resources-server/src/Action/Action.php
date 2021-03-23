@@ -2,9 +2,8 @@
 
 namespace Afeefa\ApiResources\Action;
 
-use Afeefa\ApiResources\Api\ApiRequest;
 use Afeefa\ApiResources\Bag\BagEntry;
-use Afeefa\ApiResources\DI\Resolver;
+use Afeefa\ApiResources\Exception\Exceptions\NotATypeException;
 use Afeefa\ApiResources\Filter\FilterBag;
 use Closure;
 
@@ -22,6 +21,11 @@ class Action extends BagEntry
 
     protected Closure $executor;
 
+    /**
+     * @var string|callable|Closure
+     */
+    protected $resolverCallback;
+
     public function name(string $name): Action
     {
         $this->name = $name;
@@ -36,12 +40,26 @@ class Action extends BagEntry
         return $this;
     }
 
-    public function input(Closure $callback): Action
+    public function input(string $Type, Closure $callback = null): Action
     {
-        $this->container->create($callback, function (ActionInput $input) {
-            $this->input = $input;
-        });
+        if (!class_exists($Type)) {
+            throw new NotATypeException('Value for input $Type is not a type.');
+        }
+
+        $this->input = $this->container->create(ActionInput::class);
+
+        $this->input->type($Type);
+
+        if ($callback) {
+            $callback($this->input);
+        }
+
         return $this;
+    }
+
+    public function getInput(): ActionInput
+    {
+        return $this->input;
     }
 
     public function filters(Closure $callback): Action
@@ -52,30 +70,55 @@ class Action extends BagEntry
         return $this;
     }
 
-    public function response(Closure $callback): Action
+    public function response($TypeOrTypes, Closure $callback = null): Action
     {
-        $this->container->create($callback, function (ActionResponse $response) {
-            $this->response = $response;
-        });
-        return $this;
-    }
+        $this->response = $this->container->create(ActionResponse::class);
 
-    public function execute(Closure $callback): Action
-    {
-        $this->executor = $callback;
-        return $this;
-    }
-
-    public function call(ApiRequest $request)
-    {
-        return $this->container->call(
-            $this->executor,
-            function (Resolver $r) use ($request) {
-                if ($r->isOf(ApiRequest::class)) {
-                    $r->fix($request);
+        if (is_array($TypeOrTypes)) {
+            foreach ($TypeOrTypes as $Type) {
+                if (!class_exists($Type)) {
+                    throw new NotATypeException('Value for response $TypeOrTypes is not a list of types.');
                 }
             }
-        );
+            $this->response->types($TypeOrTypes);
+        } elseif (is_string($TypeOrTypes)) {
+            if (!class_exists($TypeOrTypes)) {
+                throw new NotATypeException('Value for response $TypeOrTypes is not a type.');
+            }
+            $this->response->type($TypeOrTypes);
+        } else {
+            throw new NotATypeException('Value for response $TypeOrTypes is not a type or a list of type.');
+        }
+
+        if ($callback) {
+            $callback($this->response);
+        }
+
+        return $this;
+    }
+
+    public function getResponse(): ActionResponse
+    {
+        return $this->response;
+    }
+
+    /**
+     * @param string|callable|Closure $classOrCallback
+     */
+    public function resolver($classOrCallback): Action
+    {
+        $this->resolverCallback = $classOrCallback;
+        return $this;
+    }
+
+    public function run()
+    {
+        $callback = $this->resolverCallback;
+        if (is_array($callback) && is_string($callback[0])) {
+            $callback[0] = $this->container->create($callback[0]);
+        }
+
+        return $this->container->call($callback);
     }
 
     public function toSchemaJson(): array

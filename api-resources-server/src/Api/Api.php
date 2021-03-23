@@ -29,18 +29,18 @@ class Api implements ContainerAwareInterface
 
     public function request(Closure $callback)
     {
-        $request = new ApiRequest();
+        $request = $this->container->get(ApiRequest::class);
         $request->api($this);
         $callback($request);
-        return $request->send();
+        return $request->dispatch();
     }
 
     public function requestFromInput()
     {
-        $request = new ApiRequest();
+        $request = $this->container->get(ApiRequest::class);
         $request->api($this);
         $request->fromInput();
-        return $request->send();
+        return $request->dispatch();
     }
 
     public function getSchemaJson(TypeRegistry $typeRegistry): array

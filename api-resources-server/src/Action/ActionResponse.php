@@ -19,11 +19,16 @@ class ActionResponse implements ToSchemaJsonInterface, ContainerAwareInterface
 
     protected array $Types;
 
-    public function type(string $Type)
+    public function type(string $Type): ActionResponse
     {
         $this->Type = $Type;
 
         return $this;
+    }
+
+    public function getType(): string
+    {
+        return $this->Type;
     }
 
     public function types(array $Types)
