@@ -38,7 +38,7 @@ class ArticleType extends ModelType
             $relation->resolve(function (RelationResolver $r) {
                 $r
                     ->load(function (array $owners, array $selectFields) {
-                        return Model::fromList([
+                        return Model::fromList('test', [
                             ['id' => '1', 'name' => 'jens'],
                             ['id' => '2', 'name' => 'jens2']
                         ]);

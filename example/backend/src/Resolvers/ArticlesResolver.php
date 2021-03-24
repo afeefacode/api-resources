@@ -6,6 +6,7 @@ use Afeefa\ApiResources\DB\RelationResolver;
 use Afeefa\ApiResources\DB\TypeLoader;
 use Afeefa\ApiResources\Model\Model;
 use Afeefa\ApiResources\Model\ModelInterface;
+use Backend\Types\ArticleType;
 use Medoo\Medoo;
 
 class ArticlesResolver
@@ -22,7 +23,7 @@ class ArticlesResolver
                         'LIMIT' => 10
                     ]
                 );
-                return Model::fromList($objects);
+                return Model::fromList(ArticleType::$type, $objects);
             });
     }
 
@@ -53,7 +54,7 @@ class ArticlesResolver
                 $objects = [];
                 foreach ($result as $row) {
                     $key = $row['author_id'];
-                    $objects[$key][] = Model::fromSingle($row);
+                    $objects[$key][] = Model::fromSingle(ArticleType::$type, $row);
                 }
                 return $objects;
             })

@@ -5,6 +5,7 @@ namespace Backend\Resolvers;
 use Afeefa\ApiResources\DB\RelationResolver;
 use Afeefa\ApiResources\Model\Model;
 use Afeefa\ApiResources\Model\ModelInterface;
+use Backend\Types\AuthorType;
 use Medoo\Medoo;
 
 class AuthorsResolver
@@ -33,7 +34,7 @@ class AuthorsResolver
 
                 $models = [];
                 foreach ($result as $row) {
-                    $models[$row['id']] = Model::fromSingle($row);
+                    $models[$row['id']] = Model::fromSingle(AuthorType::$type, $row);
                 }
                 return $models;
             })

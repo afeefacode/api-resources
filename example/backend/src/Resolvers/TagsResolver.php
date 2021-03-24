@@ -5,6 +5,7 @@ namespace Backend\Resolvers;
 use Afeefa\ApiResources\DB\RelationResolver;
 use Afeefa\ApiResources\Model\Model;
 use Afeefa\ApiResources\Model\ModelInterface;
+use Backend\Types\TagType;
 use Medoo\Medoo;
 
 class TagsResolver
@@ -32,7 +33,8 @@ class TagsResolver
 
                 $ownerTagMap = [];
                 foreach ($result as $row) {
-                    $key = $row['user_type'] . ':' . $row['user_id'];
+                    $type = 'Example.' . $row['user_type'] . 'Type';
+                    $key = $type . ':' . $row['user_id'];
                     $ownerTagMap[$key] = $row['tag_id'];
                 }
 
@@ -40,6 +42,7 @@ class TagsResolver
 
                 foreach ($ownerIdsByType as $type => $ids) {
                     $table = $type === 'Article' ? 'articles' : 'authors';
+                    $type = 'Example.' . $type . 'Type';
 
                     $result = $db->select(
                         $table,
@@ -52,7 +55,8 @@ class TagsResolver
                     foreach ($result as $row) {
                         $key = $type . ':' . $row['id'];
                         $tagId = $ownerTagMap[$key];
-                        $models[$tagId][] = Model::fromSingle($row);
+
+                        $models[$tagId][] = Model::fromSingle($type, $row);
                     }
                 }
 
@@ -113,7 +117,7 @@ class TagsResolver
                     foreach ($selectFields as $selectField) {
                         $object[$selectField] = $row[$fieldMap[$selectField]];
                     }
-                    $models[$key][] = Model::fromSingle($object);
+                    $models[$key][] = Model::fromSingle(TagType::$type, $object);
                 }
                 return $models;
             })

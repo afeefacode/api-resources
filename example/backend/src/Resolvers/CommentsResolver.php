@@ -5,6 +5,7 @@ namespace Backend\Resolvers;
 use Afeefa\ApiResources\DB\RelationResolver;
 use Afeefa\ApiResources\Model\Model;
 use Afeefa\ApiResources\Model\ModelInterface;
+use Backend\Types\CommentType;
 use Medoo\Medoo;
 
 class CommentsResolver
@@ -43,7 +44,7 @@ class CommentsResolver
                 $objects = [];
                 foreach ($result as $row) {
                     $key = $row['owner_type'] . ':' . $row['owner_id'];
-                    $objects[$key][] = Model::fromSingle($row);
+                    $objects[$key][] = Model::fromSingle(CommentType::$type, $row);
                 }
                 return $objects;
             })

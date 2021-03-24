@@ -86,8 +86,12 @@ $app->get('/backend-api/tags', function (HttpRequest $request, Response $respons
                     'tags' => [
                         'name' => true,
                         'users' => [
-                            'name' => true,
-                            'title' => true
+                            '@Example.ArticleType' => [
+                                'title' => true
+                            ],
+                            '@Example.AuthorType' => [
+                                'name' => true
+                            ]
                         ]
                     ],
                 ]);
