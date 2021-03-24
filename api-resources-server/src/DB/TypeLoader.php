@@ -65,6 +65,9 @@ class TypeLoader implements ContainerAwareInterface
                 if (is_array($nested)) {
                     $normalizedFields[$requestedField] = $nested;
                 }
+                if ($nested === true) {
+                    $normalizedFields[$requestedField] = [];
+                }
             }
         }
 
