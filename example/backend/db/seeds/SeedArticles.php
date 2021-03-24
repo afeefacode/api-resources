@@ -40,7 +40,11 @@ class SeedArticles extends BaseSeeder
         // add tags
 
         foreach ($articles as $article) {
-            $tags = $this->fetchAll('select * from tags order by RAND() limit 3');
+            $numTags = random_int(0, 5);
+            if (!$numTags) {
+                continue;
+            }
+            $tags = $this->fetchAll('select * from tags order by RAND() limit ' . $numTags);
             $tags = array_map(function ($tag) use ($article) {
                 return '(' . implode(', ', [$tag['id'], $article['id'], "'Article'"]) . ')';
             }, $tags);
@@ -56,5 +60,6 @@ class SeedArticles extends BaseSeeder
     public function truncate()
     {
         $this->table('articles')->truncate();
+        $this->table('tag_users')->truncate();
     }
 }

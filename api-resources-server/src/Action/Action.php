@@ -24,7 +24,7 @@ class Action extends BagEntry
     /**
      * @var string|callable|Closure
      */
-    protected $resolverCallback;
+    protected $resolveCallback;
 
     public function name(string $name): Action
     {
@@ -105,15 +105,15 @@ class Action extends BagEntry
     /**
      * @param string|callable|Closure $classOrCallback
      */
-    public function resolver($classOrCallback): Action
+    public function resolve($classOrCallback): Action
     {
-        $this->resolverCallback = $classOrCallback;
+        $this->resolveCallback = $classOrCallback;
         return $this;
     }
 
     public function run()
     {
-        $callback = $this->resolverCallback;
+        $callback = $this->resolveCallback;
         if (is_array($callback) && is_string($callback[0])) {
             $callback[0] = $this->container->create($callback[0]);
         }

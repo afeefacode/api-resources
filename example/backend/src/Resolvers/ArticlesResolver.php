@@ -15,7 +15,10 @@ class ArticlesResolver
                 $objects = $db->select(
                     'articles',
                     $selectFields,
-                    ['ORDER' => 'id']
+                    [
+                        'ORDER' => 'id',
+                        'LIMIT' => 10
+                    ]
                 );
                 return Model::fromList($objects);
             });

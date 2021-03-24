@@ -64,7 +64,7 @@ class ArticlesResource extends ModelResource
 
             $action->response(Type::listOf(ArticleType::class));
 
-            $action->resolver([ArticlesResolver::class, 'get_articles']);
+            $action->resolve([ArticlesResolver::class, 'get_articles']);
         });
 
         $actions->add('get_article', function (Action $action) {

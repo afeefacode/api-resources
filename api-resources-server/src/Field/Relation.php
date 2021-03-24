@@ -13,7 +13,7 @@ use Closure;
  * @method Relation validator(Validator $validator)
  * @method Relation required(bool $required = true)
  * @method Relation allowed()
- * @method Relation resolver(string|callable|Closure $classOrCallback)
+ * @method Relation resolve(string|callable|Closure $classOrCallback)
  */
 class Relation extends Field
 {

@@ -6,6 +6,7 @@ use Afeefa\ApiResources\Api\ApiRequest;
 use Afeefa\ApiResources\DI\ContainerAwareInterface;
 use Afeefa\ApiResources\DI\ContainerAwareTrait;
 use Afeefa\ApiResources\DI\Resolver;
+use Afeefa\ApiResources\Exception\Exceptions\InvalidConfigurationException;
 use Afeefa\ApiResources\Model\ModelInterface;
 use Afeefa\ApiResources\Type\Type;
 use Closure;
@@ -31,26 +32,20 @@ class TypeLoader implements ContainerAwareInterface
         $Type = $this->request->getAction()->getResponse()->getType();
         /** @var Type */
         $type = $this->container->get($Type);
-        $requestedFields = $this->request->getFields();
+        $requestedFields = $this->getNormalizedRequestedFields($type, $this->request->getFields());
 
-        $relationLoaders = $this->createRelationLoaders($type, $requestedFields);
-        $selectFields = $this->getSelectFields($type, $requestedFields, $relationLoaders);
+        $relationResolvers = $this->createRelationResolvers($type, $requestedFields);
+        $selectFields = $this->getSelectFields($type, $requestedFields, $relationResolvers);
 
-        $models = $callback($selectFields['this']);
+        $models = $callback($selectFields);
 
-        foreach ($relationLoaders as $requestedField => $relationLoader) {
+        foreach ($relationResolvers as $requestedField => $relationResolver) {
             foreach ($models as $model) {
-                $relationLoader->owner($model);
+                $relationResolver->addOwner($model);
             }
 
-            $relationLoader->selectFields($selectFields[$requestedField]);
-            $value = $relationLoader->get();
-
-            $owners = $relationLoader->getOwners();
-            foreach ($owners as $owner) {
-                $relatedId = $owner->{$relationLoader->getOwnerKey()};
-                $owner->apiResourcesSetRelation($requestedField, $value[$relatedId]);
-            }
+            $relationResolver->requestedFields($requestedFields[$requestedField]);
+            $relationResolver->fetch();
         }
 
         $models = $this->setVisibleFields($type, $models, $requestedFields);
@@ -58,28 +53,68 @@ class TypeLoader implements ContainerAwareInterface
         return array_values($models);
     }
 
-    /**
-     * @return RelationLoader[]
-     */
-    protected function createRelationLoaders(Type $type, array $requestedFields): array
+    protected function getNormalizedRequestedFields(Type $type, array $requestedFields): array
     {
-        $relationLoaders = [];
+        $normalizedFields = [];
+        foreach ($requestedFields as $requestedField => $nested) {
+            if ($type->hasAttribute($requestedField)) {
+                $normalizedFields[$requestedField] = true;
+            }
+
+            if ($type->hasRelation($requestedField)) {
+                if (is_array($nested)) {
+                    $normalizedFields[$requestedField] = $nested;
+                }
+            }
+        }
+
+        return $normalizedFields;
+    }
+
+    /**
+     * @return RelationResolver[]
+     */
+    protected function createRelationResolvers(Type $type, array $requestedFields): array
+    {
+        $relationResolvers = [];
         foreach (array_keys($requestedFields) as $requestedField) {
             if ($type->hasRelation($requestedField)) {
                 $relation = $type->getRelation($requestedField);
-                $resolver = $relation->getResolver();
+                $resolveCallback = $relation->getResolve();
 
-                $relationLoader = new RelationLoader();
-                $this->container->call($resolver, function (Resolver $r) use ($relationLoader) {
-                    if ($r->isOf(RelationLoader::class)) {
-                        $r->fix($relationLoader);
+                /** @var RelationResolver */
+                $relationResolver = null;
+
+                if ($resolveCallback) {
+                    $this->container->call(
+                        $resolveCallback,
+                        function (Resolver $r) {
+                            if ($r->isOf(RelationResolver::class)) {
+                                $r->create();
+                            }
+                        },
+                        function () use (&$relationResolver) {
+                            $arguments = func_get_args();
+                            foreach ($arguments as $argument) {
+                                if ($argument instanceof RelationResolver) {
+                                    $relationResolver = $argument;
+                                }
+                            }
+                        }
+                    );
+
+                    if (!$relationResolver) {
+                        throw new InvalidConfigurationException("Resolve callback for relation {$requestedField} on type {$type::$type} must receive RelationResolver argument.");
                     }
-                });
 
-                $relationLoaders[$requestedField] = $relationLoader;
+                    $relationResolver->relation($relation);
+                    $relationResolvers[$requestedField] = $relationResolver;
+                } else {
+                    throw new InvalidConfigurationException("Relation {$requestedField} on type {$type::$type} does not have a relation resolver.");
+                }
             }
         }
-        return $relationLoaders;
+        return $relationResolvers;
     }
 
     /**
@@ -118,45 +153,28 @@ class TypeLoader implements ContainerAwareInterface
     }
 
     /**
-     * @param RelationLoader[] $relationLoaders
+     * @param RelationResolver[] $relationResolvers
      */
-    protected function getSelectFields(Type $type, array $requestedFields, array $relationLoaders): array
+    protected function getSelectFields(Type $type, array $requestedFields, array $relationResolvers): array
     {
-        $fieldsMap = [
-            'this' => ['id']
-        ];
+        $selectFields = ['id'];
 
-        foreach ($requestedFields as $requestedField => $nested) {
+        foreach (array_keys($requestedFields) as $requestedField) {
             if ($type->hasAttribute($requestedField)) {
-                $fieldsMap['this'][] = $requestedField;
+                $selectFields[] = $requestedField;
             }
 
             if ($type->hasRelation($requestedField)) {
-                $relationLoader = $relationLoaders[$requestedField];
-
-                $ownerKey = $relationLoader->getOwnerKey();
-                if ($ownerKey) {
-                    $fieldsMap['this'] = array_unique(
-                        array_merge(
-                            $fieldsMap['this'],
-                            [$ownerKey]
-                        )
-                    );
-                }
-
-                $relatedKey = $relationLoader->getRelatedKey();
-                if ($relatedKey) {
-                    $fieldsMap[$requestedField] = array_unique(
-                        array_merge(
-                            ['id'],
-                            array_keys($nested),
-                            [$relatedKey]
-                        )
-                    );
-                }
+                $relationResolver = $relationResolvers[$requestedField];
+                $selectFields = array_unique(
+                    array_merge(
+                        $selectFields,
+                        $relationResolver->getOwnerIdFields()
+                    )
+                );
             }
         }
 
-        return $fieldsMap;
+        return $selectFields;
     }
 }

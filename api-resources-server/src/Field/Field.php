@@ -27,7 +27,7 @@ class Field extends BagEntry
     /**
      * @var string|callable|Closure
      */
-    protected $resolverCallback;
+    protected $resolveCallback = null;
 
     public function created(): void
     {
@@ -40,6 +40,11 @@ class Field extends BagEntry
     {
         $this->name = $name;
         return $this;
+    }
+
+    public function getName(): string
+    {
+        return $this->name;
     }
 
     public function validate(Closure $callback): Field
@@ -89,15 +94,15 @@ class Field extends BagEntry
     /**
      * @param string|callable|Closure $classOrCallback
      */
-    public function resolver($classOrCallback): Relation
+    public function resolve($classOrCallback): Relation
     {
-        $this->resolverCallback = $classOrCallback;
+        $this->resolveCallback = $classOrCallback;
         return $this;
     }
 
-    public function getResolver(): Closure
+    public function getResolve(): ?Closure
     {
-        $callback = $this->resolverCallback;
+        $callback = $this->resolveCallback;
         if (is_array($callback) && is_string($callback[0])) {
             $callback[0] = $this->container->create($callback[0]);
         }

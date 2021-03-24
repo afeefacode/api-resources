@@ -36,13 +36,29 @@ $app->get('/backend-api/test', function (HttpRequest $request, Response $respons
                 ->action('get_articles')
                 ->fields([
                     'title' => true,
+                    'date' => true,
+                    'summary' => true,
                     'author' => [
                         'name' => true,
                         'email' => true
+                    ],
+                    'tags' => [
+                        'name' => true
+                    ],
+                    'comments' => [
+                        'author_name' => true,
+                        'date' => true
+                    ],
+                    'author2' => [
+                        'name' => true
                     ]
                 ]);
         });
     });
+
+    // debug_dump($this->get(Medoo::class)->log());
+    // exit;
+
     return $response->withJson($result);
 });
 

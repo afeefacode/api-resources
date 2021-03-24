@@ -2,15 +2,19 @@
 
 namespace Backend\Types;
 
+use Afeefa\ApiResources\DB\RelationResolver;
 use Afeefa\ApiResources\Field\FieldBag;
 use Afeefa\ApiResources\Field\Fields\DateAttribute;
 use Afeefa\ApiResources\Field\Fields\HasManyRelation;
 use Afeefa\ApiResources\Field\Fields\LinkManyRelation;
 use Afeefa\ApiResources\Field\Fields\LinkOneRelation;
 use Afeefa\ApiResources\Field\Fields\VarcharAttribute;
+use Afeefa\ApiResources\Model\Model;
 use Afeefa\ApiResources\Type\ModelType;
 use Afeefa\ApiResources\Validator\Validators\VarcharValidator;
 use Backend\Resolvers\AuthorsResolver;
+use Backend\Resolvers\CommentsResolver;
+use Backend\Resolvers\TagsResolver;
 
 class ArticleType extends ModelType
 {
@@ -27,7 +31,23 @@ class ArticleType extends ModelType
         $fields->attribute('date', DateAttribute::class);
 
         $fields->relation('author', AuthorType::class, function (LinkOneRelation $relation) {
-            $relation->resolver([AuthorsResolver::class, 'get_author_relation']);
+            $relation->resolve([AuthorsResolver::class, 'resolve_author_relation']);
+        });
+
+        $fields->relation('author2', AuthorType::class, function (LinkOneRelation $relation) {
+            $relation->resolve(function (RelationResolver $r) {
+                $r
+                    // ->mapKeys('author_id', null, 'id', null)
+                    ->load(function (array $owners, array $selectFields) {
+                        return Model::fromList([
+                            ['id' => '1', 'name' => 'jens'],
+                            ['id' => '2', 'name' => 'jens2']
+                        ]);
+                    })
+                    ->map(function ($models, $owner) {
+                        return $models[0];
+                    });
+            });
         });
 
         // $relations->relation('author', AuthorType::class, function (LinkOneRelation $relation) {
@@ -43,9 +63,13 @@ class ArticleType extends ModelType
         //     });
         // });
 
-        $fields->relation('comments', CommentType::class, HasManyRelation::class);
+        $fields->relation('comments', CommentType::class, function (HasManyRelation $relation) {
+            $relation->resolve([CommentsResolver::class, 'resolve_comments_relation']);
+        });
 
-        $fields->relation('tags', TagType::class, LinkManyRelation::class);
+        $fields->relation('tags', TagType::class, function (LinkManyRelation $relation) {
+            $relation->resolve([TagsResolver::class, 'resolve_tags_relation']);
+        });
     }
 
     protected function updateFields(FieldBag $fields): void
