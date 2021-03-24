@@ -9,6 +9,62 @@ use Medoo\Medoo;
 
 class TagsResolver
 {
+    public function resolve_tag_users_relation(RelationResolver $r, Medoo $db)
+    {
+        $r
+            ->load(function (array $owners, array $selectFields) use ($db) {
+                $tagIds = array_unique(
+                    array_map(function (ModelInterface $owner) {
+                        return $owner->id;
+                    }, $owners)
+                );
+
+                $result = $db->select(
+                    'tag_users',
+                    '*',
+                    ['tag_id' => $tagIds]
+                );
+
+                $ownerIdsByType = [];
+                foreach ($result as $row) {
+                    $ownerIdsByType[$row['user_type']][] = $row['user_id'];
+                }
+
+                $ownerTagMap = [];
+                foreach ($result as $row) {
+                    $key = $row['user_type'] . ':' . $row['user_id'];
+                    $ownerTagMap[$key] = $row['tag_id'];
+                }
+
+                $models = [];
+
+                foreach ($ownerIdsByType as $type => $ids) {
+                    $table = $type === 'Article' ? 'articles' : 'authors';
+
+                    $result = $db->select(
+                        $table,
+                        $selectFields,
+                        [
+                            'id' => $ids
+                        ]
+                    );
+
+                    foreach ($result as $row) {
+                        $key = $type . ':' . $row['id'];
+                        $tagId = $ownerTagMap[$key];
+                        $models[$tagId][] = Model::fromSingle($row);
+                    }
+                }
+
+                return $models;
+            })
+
+            ->map(function (array $objects, ModelInterface $owner) {
+                $key = $owner->id;
+                return $objects[$key];
+            });
+    }
+
     public function resolve_tags_relation(RelationResolver $r, Medoo $db)
     {
         $r
@@ -50,16 +106,16 @@ class TagsResolver
                     ]
                 );
 
-                $objects = [];
+                $models = [];
                 foreach ($result as $row) {
                     $key = $row['user_type'] . ':' . $row['user_id'];
                     $object = [];
                     foreach ($selectFields as $selectField) {
                         $object[$selectField] = $row[$fieldMap[$selectField]];
                     }
-                    $objects[$key][] = Model::fromSingle($object);
+                    $models[$key][] = Model::fromSingle($object);
                 }
-                return $objects;
+                return $models;
             })
 
             ->map(function (array $objects, ModelInterface $owner) {

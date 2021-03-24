@@ -6,6 +6,7 @@ use Afeefa\ApiResources\Field\FieldBag;
 use Afeefa\ApiResources\Field\Fields\HasManyRelation;
 use Afeefa\ApiResources\Field\Fields\VarcharAttribute;
 use Afeefa\ApiResources\Type\Type;
+use Backend\Resolvers\TagsResolver;
 
 class TagType extends Type
 {
@@ -15,7 +16,9 @@ class TagType extends Type
     {
         $fields->attribute('name', VarcharAttribute::class);
 
-        $fields->relation('users', Type::class, HasManyRelation::class);
+        $fields->relation('users', Type::class, function (HasManyRelation $relation) {
+            $relation->resolve([TagsResolver::class, 'resolve_tag_users_relation']);
+        });
     }
 }
 

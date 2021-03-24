@@ -6,6 +6,7 @@ use Afeefa\ApiResources\Api\ToSchemaJsonTrait;
 use Afeefa\ApiResources\Api\TypeRegistry;
 use Afeefa\ApiResources\Bag\BagEntry;
 use Afeefa\ApiResources\DI\Resolver;
+use Afeefa\ApiResources\Exception\Exceptions\InvalidConfigurationException;
 use Afeefa\ApiResources\Exception\Exceptions\MissingTypeException;
 use Afeefa\ApiResources\Exception\Exceptions\NotACallbackException;
 use Afeefa\ApiResources\Validator\Validator;
@@ -104,15 +105,22 @@ class Field extends BagEntry
     public function getResolve(): ?Closure
     {
         $callback = $this->resolveCallback;
-        if (is_array($callback) && is_string($callback[0])) {
+
+        if (!$callback) {
+            throw new InvalidConfigurationException("Field {$this->name} does not have a field resolver.");
+        }
+
+        if (is_array($callback) && is_string($callback[0])) { // static class -> create instance
             $callback[0] = $this->container->create($callback[0]);
         }
+
         if (is_callable($callback)) {
             return Closure::fromCallable($callback);
         } elseif ($callback instanceof Closure) {
             return $callback;
         }
-        throw new NotACallbackException('Resolve callback cannot be called.');
+
+        throw new NotACallbackException('Resolve callback for field {$this->field} is not callable.');
     }
 
     public function clone(): Field

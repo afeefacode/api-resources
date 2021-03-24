@@ -102,6 +102,10 @@ class RelationResolver extends RelationLoader
                 }
             }
 
+            if (!$value) {
+                $value = $this->relation->isSingle() ? null : [];
+            }
+
             $owner->apiResourcesSetRelation($relationName, $value);
         }
 

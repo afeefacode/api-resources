@@ -75,6 +75,31 @@ $app->get('/backend-api/test', function (HttpRequest $request, Response $respons
     return $response->withJson($result);
 });
 
+$app->get('/backend-api/tags', function (HttpRequest $request, Response $response, array $args) {
+    $result = $this->call(function (BackendApi $api) {
+        return $api->request(function (ApiRequest $request) {
+            $request
+                ->resource(ArticlesResource::$type)
+                ->action('get_articles')
+                ->fields([
+                    'title' => true,
+                    'tags' => [
+                        'name' => true,
+                        'users' => [
+                            'name' => true,
+                            'title' => true
+                        ]
+                    ],
+                ]);
+        });
+    });
+
+    // debug_dump($this->get(Medoo::class)->log());
+    // exit;
+
+    return $response->withJson($result);
+});
+
 $app->post('/backend-api', function (HttpRequest $request, Response $response, array $args) {
     $result = $this->call(function (BackendApi $api) {
         return $api->requestFromInput();
