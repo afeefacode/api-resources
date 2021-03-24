@@ -79,6 +79,18 @@ class RelationLoader implements ContainerAwareInterface
                     )
                 );
             }
+
+            if (preg_match('/^\@(.+)/', $requestedField, $matches)) {
+                $onTypeName = $matches[1];
+                if ($type::$type === $onTypeName) {
+                    $selectFields = array_unique(
+                        array_merge(
+                            $selectFields,
+                            $this->getSelectFields($type, $requestedFields[$requestedField], $relationResolvers)
+                        )
+                    );
+                }
+            }
         }
 
         return $selectFields;

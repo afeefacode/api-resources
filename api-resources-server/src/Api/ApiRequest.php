@@ -3,6 +3,7 @@
 namespace Afeefa\ApiResources\Api;
 
 use Afeefa\ApiResources\Action\Action;
+use Afeefa\ApiResources\DB\TypeClassMap;
 use Afeefa\ApiResources\DI\ContainerAwareInterface;
 use Afeefa\ApiResources\DI\ContainerAwareTrait;
 use Afeefa\ApiResources\Type\Type;
@@ -100,8 +101,18 @@ class ApiRequest implements ContainerAwareInterface
                 }
             }
 
-            if (preg_match('/^\@/', $requestedField)) {
-                // $normalizedFields[$requestedField] = $nested;
+            if (preg_match('/^\@(.+)/', $requestedField, $matches)) {
+                if ($nested === true) {
+                    $nested = [];
+                }
+                if (is_array($nested)) {
+                    $onTypeName = $matches[1];
+                    $OnType = $this->container->call(function (TypeClassMap $typeClassMap) use ($onTypeName) {
+                        return $typeClassMap->getClass($onTypeName);
+                    });
+                    $onType = $this->container->get($OnType);
+                    $normalizedFields[$requestedField] = $this->normalizeFields($onType, $nested);
+                }
             }
         }
 

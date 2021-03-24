@@ -73,17 +73,37 @@ class RelationResolver extends RelationLoader
         return $this;
     }
 
+    public function getSelectFields2(string $typeName = null): array
+    {
+        $Type = $this->container->call(function (TypeClassMap $typeClassMap) use ($typeName) {
+            return $typeClassMap->getClass($typeName);
+        });
+        $type = $this->container->get($Type);
+        $relationResolvers = $this->createRelationResolvers($type, $this->requestedFields);
+        return $this->getSelectFields($type, $this->requestedFields, $relationResolvers);
+    }
+
     public function fetch()
     {
         $loadCallback = $this->loadCallback;
 
         $type = $this->relation->getRelatedTypeInstance();
         $requestedFields = $this->requestedFields;
-
         $relationResolvers = $this->createRelationResolvers($type, $requestedFields);
-        $selectFields = $this->getSelectFields($type, $requestedFields, $relationResolvers);
 
-        $objects = $loadCallback($this->owners, $selectFields);
+        $selectFieldsCallback = function (string $typeName = null) use ($relationResolvers) {
+            if ($typeName) {
+                $Type = $this->container->call(function (TypeClassMap $typeClassMap) use ($typeName) {
+                    return $typeClassMap->getClass($typeName);
+                });
+                $type = $this->container->get($Type);
+            } else {
+                $type = $this->relation->getRelatedTypeInstance();
+            }
+            return $this->getSelectFields($type, $this->requestedFields, $relationResolvers);
+        };
+
+        $objects = $loadCallback($this->owners, $selectFieldsCallback);
 
         $mapCallback = $this->mapCallback;
 

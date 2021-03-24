@@ -6,6 +6,7 @@ use Afeefa\ApiResources\DB\RelationResolver;
 use Afeefa\ApiResources\Model\Model;
 use Afeefa\ApiResources\Model\ModelInterface;
 use Backend\Types\TagType;
+use Closure;
 use Medoo\Medoo;
 
 class TagsResolver
@@ -13,7 +14,7 @@ class TagsResolver
     public function resolve_tag_users_relation(RelationResolver $r, Medoo $db)
     {
         $r
-            ->load(function (array $owners, array $selectFields) use ($db) {
+            ->load(function (array $owners, Closure $getSelectFields) use ($db) {
                 $tagIds = array_unique(
                     array_map(function (ModelInterface $owner) {
                         return $owner->id;
@@ -41,6 +42,8 @@ class TagsResolver
 
                 foreach ($ownerIdsByType as $type => $ids) {
                     $table = $type === 'Example.ArticleType' ? 'articles' : 'authors';
+
+                    $selectFields = $getSelectFields($type);
 
                     $result = $db->select(
                         $table,
@@ -71,7 +74,9 @@ class TagsResolver
     public function resolve_tags_relation(RelationResolver $r, Medoo $db)
     {
         $r
-            ->load(function (array $owners, array $selectFields) use ($r, $db) {
+            ->load(function (array $owners, Closure $getSelectFields) use ($db) {
+                $selectFields = $getSelectFields();
+
                 /** @var ModelInterface[] $owners */
                 $fieldMap = [];
                 $queryFields = [];

@@ -42,7 +42,7 @@ class TypeLoader extends RelationLoader
             $relationResolver->fetch();
         }
 
-        $models = $this->setVisibleFields($type, $models, $requestedFields);
+        $this->setVisibleFields($type, $models, $requestedFields);
 
         return array_values($models);
     }
@@ -50,22 +50,16 @@ class TypeLoader extends RelationLoader
     /**
      * @param ModelInterface[] $models
      */
-    protected function setVisibleFields(Type $type, array $models, array $requestedFields)
+    protected function setVisibleFields(Type $type, array $models, array $requestedFields): void
     {
         foreach ($models as $model) {
-            $visibleFields = ['id', 'type'];
+            $visibleFields = $this->getVisibleFields($type, $model, $requestedFields);
+            $model->apiResourcesSetVisibleFields($visibleFields);
 
             foreach (array_keys($requestedFields) as $requestedField) {
-                if ($type->hasAttribute($requestedField)) {
-                    $visibleFields[] = $requestedField;
-                }
-
                 if ($type->hasRelation($requestedField)) {
-                    $visibleFields[] = $requestedField;
-
                     $relation = $type->getRelation($requestedField);
                     $relatedType = $relation->getRelatedTypeInstance();
-
                     if ($relation->isSingle()) {
                         if ($model->$requestedField) {
                             $this->setVisibleFields($relatedType, [$model->$requestedField], $requestedFields[$requestedField]);
@@ -77,10 +71,40 @@ class TypeLoader extends RelationLoader
                     }
                 }
             }
+        }
+    }
 
-            $model->apiResourcesSetVisibleFields($visibleFields);
+    protected function getVisibleFields(Type $type, ModelInterface $model, array $requestedFields): array
+    {
+        $visibleFields = ['id', 'type'];
+
+        foreach (array_keys($requestedFields) as $requestedField) {
+            if ($type->hasAttribute($requestedField)) {
+                $visibleFields[] = $requestedField;
+            }
+
+            if ($type->hasRelation($requestedField)) {
+                $visibleFields[] = $requestedField;
+            }
+
+            if (preg_match('/^\@(.+)/', $requestedField, $matches)) {
+                $onTypeName = $matches[1];
+                if ($model->apiResourcesGetType() === $onTypeName) {
+                    $OnType = $this->container->call(function (TypeClassMap $typeClassMap) use ($onTypeName) {
+                        return $typeClassMap->getClass($onTypeName);
+                    });
+                    $onType = $this->container->get($OnType);
+
+                    $visibleFields = array_unique(
+                        array_merge(
+                            $visibleFields,
+                            $this->getVisibleFields($onType, $model, $requestedFields[$requestedField])
+                        )
+                    );
+                }
+            }
         }
 
-        return $models;
+        return $visibleFields;
     }
 }

@@ -6,6 +6,7 @@ use Afeefa\ApiResources\DB\RelationResolver;
 use Afeefa\ApiResources\Model\Model;
 use Afeefa\ApiResources\Model\ModelInterface;
 use Backend\Types\CommentType;
+use Closure;
 use Medoo\Medoo;
 
 class CommentsResolver
@@ -13,13 +14,13 @@ class CommentsResolver
     public function resolve_comments_relation(RelationResolver $r, Medoo $db)
     {
         $r
-            ->load(function (array $owners, array $selectFields) use ($db) {
+            ->load(function (array $owners, Closure $getSelectFields) use ($db) {
                 /** @var ModelInterface[] $owners */
-                $selectFields = array_merge($selectFields, ['owner_type', 'owner_id']);
+                $selectFields = array_merge($getSelectFields(), ['owner_type', 'owner_id']);
 
                 $ownerIdsByType = [];
                 foreach ($owners as $owner) {
-                    $ownerIdsByType['Article'][] = $owner->id;
+                    $ownerIdsByType[$owner->type][] = $owner->id;
                 }
 
                 foreach ($ownerIdsByType as $type => $ids) {
@@ -50,7 +51,7 @@ class CommentsResolver
             })
 
             ->map(function (array $objects, ModelInterface $owner) {
-                $key = 'Article:' . $owner->id;
+                $key = $owner->type . ':' . $owner->id;
                 return $objects[$key];
             });
     }

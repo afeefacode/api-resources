@@ -7,6 +7,7 @@ use Afeefa\ApiResources\DB\TypeLoader;
 use Afeefa\ApiResources\Model\Model;
 use Afeefa\ApiResources\Model\ModelInterface;
 use Backend\Types\ArticleType;
+use Closure;
 use Medoo\Medoo;
 
 class ArticlesResolver
@@ -20,7 +21,9 @@ class ArticlesResolver
                     $selectFields,
                     [
                         'ORDER' => 'id',
-                        'LIMIT' => 10
+                        'LIMIT' => 15,
+                        'id' => '199'
+                        // 'id' => '10'
                     ]
                 );
                 return Model::fromList(ArticleType::$type, $objects);
@@ -30,9 +33,9 @@ class ArticlesResolver
     public function resolve_articles_relation(RelationResolver $r, Medoo $db)
     {
         $r
-            ->load(function (array $owners, array $selectFields) use ($db) {
+            ->load(function (array $owners, Closure $getSelectFields) use ($db) {
                 /** @var ModelInterface[] $owners */
-                $selectFields = array_merge($selectFields, ['author_id']);
+                $selectFields = array_merge($getSelectFields(), ['author_id']);
 
                 $authorIds = array_unique(
                     array_map(function (ModelInterface $owner) {

@@ -1,9 +1,14 @@
 <?php
 
 use Afeefa\ApiResources\Api\ApiRequest;
+use Afeefa\ApiResources\DB\TypeClassMap;
 use Afeefa\ApiResources\DI\Container;
 use Backend\Api\BackendApi;
 use Backend\Resources\ArticlesResource;
+use Backend\Types\ArticleType;
+use Backend\Types\AuthorType;
+use Backend\Types\CommentType;
+use Backend\Types\TagType;
 use Medoo\Medoo;
 use Slim\Factory\AppFactory;
 use Slim\Http\Response;
@@ -20,6 +25,15 @@ $container = new Container([
             'username' => 'root',
             'password' => 'root',
             'logging' => true
+        ]);
+    },
+
+    TypeClassMap::class => function () {
+        return new TypeClassMap([
+            'Example.ArticleType' => ArticleType::class,
+            'Example.AuthorType' => AuthorType::class,
+            'Example.CommentType' => CommentType::class,
+            'Example.TagType' => TagType::class
         ]);
     }
 ]);
