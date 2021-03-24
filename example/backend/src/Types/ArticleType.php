@@ -37,7 +37,6 @@ class ArticleType extends ModelType
         $fields->relation('author2', AuthorType::class, function (LinkOneRelation $relation) {
             $relation->resolve(function (RelationResolver $r) {
                 $r
-                    // ->mapKeys('author_id', null, 'id', null)
                     ->load(function (array $owners, array $selectFields) {
                         return Model::fromList([
                             ['id' => '1', 'name' => 'jens'],

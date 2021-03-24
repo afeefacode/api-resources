@@ -21,25 +21,25 @@ class AuthorsResolver
                         return $owner->author_id;
                     }, $owners)
                 );
-                sort($authorIds);
 
-                $objects = $db->select(
+                $result = $db->select(
                     'authors',
-                    ['id' => $selectFields],
+                    $selectFields,
                     [
                         'id' => $authorIds,
                         'ORDER' => 'id'
                     ]
                 );
-                return $objects;
+
+                $models = [];
+                foreach ($result as $row) {
+                    $models[$row['id']] = Model::fromSingle($row);
+                }
+                return $models;
             })
 
             ->map(function (array $objects, ModelInterface $owner) {
-                $key = intval($owner->author_id);
-                $object = $objects[$key] ?? null;
-                if ($object) {
-                    return Model::fromSingle($objects[$key]);
-                }
+                return $objects[$owner->author_id];
             });
     }
 }

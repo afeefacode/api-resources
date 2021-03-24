@@ -57,15 +57,14 @@ class TagsResolver
                     foreach ($selectFields as $selectField) {
                         $object[$selectField] = $row[$fieldMap[$selectField]];
                     }
-                    $objects[$key][] = $object;
+                    $objects[$key][] = Model::fromSingle($object);
                 }
                 return $objects;
             })
 
             ->map(function (array $objects, ModelInterface $owner) {
                 $key = 'Article:' . $owner->id;
-                $objects = $objects[$key] ?? [];
-                return Model::fromList($objects);
+                return $objects[$key];
             });
     }
 }

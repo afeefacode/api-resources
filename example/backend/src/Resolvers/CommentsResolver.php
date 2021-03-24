@@ -43,15 +43,14 @@ class CommentsResolver
                 $objects = [];
                 foreach ($result as $row) {
                     $key = $row['owner_type'] . ':' . $row['owner_id'];
-                    $objects[$key][] = $row;
+                    $objects[$key][] = Model::fromSingle($row);
                 }
                 return $objects;
             })
 
             ->map(function (array $objects, ModelInterface $owner) {
                 $key = 'Article:' . $owner->id;
-                $objects = $objects[$key] ?? [];
-                return Model::fromList($objects);
+                return $objects[$key];
             });
     }
 }

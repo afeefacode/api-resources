@@ -7,8 +7,7 @@ class SeedArticles extends BaseSeeder
     public function getDependencies()
     {
         return [
-            'SeedAuthors',
-            'SeedTags'
+            'SeedAuthors'
         ];
     }
 
@@ -35,9 +34,9 @@ class SeedArticles extends BaseSeeder
 
         $this->table('articles')->insert($articles)->save();
 
-        $articles = $this->fetchAll('select * from articles');
-
         // add tags
+
+        $articles = $this->fetchAll('select * from articles');
 
         foreach ($articles as $article) {
             $numTags = random_int(0, 5);
@@ -60,6 +59,6 @@ class SeedArticles extends BaseSeeder
     public function truncate()
     {
         $this->table('articles')->truncate();
-        $this->table('tag_users')->truncate();
+        $this->execute("delete from tag_users where user_type = 'Article'");
     }
 }

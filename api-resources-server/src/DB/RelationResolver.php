@@ -4,10 +4,9 @@ namespace Afeefa\ApiResources\DB;
 
 use Afeefa\ApiResources\Field\Relation;
 use Afeefa\ApiResources\Model\ModelInterface;
-use Afeefa\ApiResources\Type\Type;
 use Closure;
 
-class RelationResolver
+class RelationResolver extends RelationLoader
 {
     protected Relation $relation;
 
@@ -79,31 +78,35 @@ class RelationResolver
         $loadCallback = $this->loadCallback;
 
         $type = $this->relation->getRelatedTypeInstance();
-        $selectFields = $this->getSelectFields($type, $this->requestedFields);
-        $models = $loadCallback($this->owners, $selectFields);
+        $requestedFields = $this->requestedFields;
+
+        $relationResolvers = $this->createRelationResolvers($type, $requestedFields);
+        $selectFields = $this->getSelectFields($type, $requestedFields, $relationResolvers);
+
+        $objects = $loadCallback($this->owners, $selectFields);
 
         $mapCallback = $this->mapCallback;
 
         $relationName = $this->relation->getName();
+
         foreach ($this->owners as $owner) {
-            $value = $mapCallback($models, $owner);
+            $value = $mapCallback($objects, $owner);
+
+            if ($value) {
+                $models = $this->relation->isSingle() ? [$value] : $value;
+                foreach ($relationResolvers as $requestedField => $relationResolver) {
+                    foreach ($models as $model) {
+                        $relationResolver->addOwner($model);
+                    }
+                    $relationResolver->requestedFields($requestedFields[$requestedField]);
+                }
+            }
+
             $owner->apiResourcesSetRelation($relationName, $value);
         }
-    }
 
-    /**
-     * @param RelationResolver[] $relationResolvers
-     */
-    protected function getSelectFields(Type $type, array $requestedFields): array
-    {
-        $selectFields = ['id'];
-
-        foreach (array_keys($requestedFields) as $requestedField) {
-            if ($type->hasAttribute($requestedField)) {
-                $selectFields[] = $requestedField;
-            }
+        foreach ($relationResolvers as $requestedField => $relationResolver) {
+            $relationResolver->fetch();
         }
-
-        return $selectFields;
     }
 }

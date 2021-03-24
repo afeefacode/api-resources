@@ -7,6 +7,7 @@ use Afeefa\ApiResources\Api\TypeRegistry;
 use Afeefa\ApiResources\Bag\BagEntry;
 use Afeefa\ApiResources\DI\Resolver;
 use Afeefa\ApiResources\Exception\Exceptions\MissingTypeException;
+use Afeefa\ApiResources\Exception\Exceptions\NotACallbackException;
 use Afeefa\ApiResources\Validator\Validator;
 use Closure;
 
@@ -108,8 +109,10 @@ class Field extends BagEntry
         }
         if (is_callable($callback)) {
             return Closure::fromCallable($callback);
+        } elseif ($callback instanceof Closure) {
+            return $callback;
         }
-        return $callback;
+        throw new NotACallbackException('Resolve callback cannot be called.');
     }
 
     public function clone(): Field

@@ -40,7 +40,20 @@ $app->get('/backend-api/test', function (HttpRequest $request, Response $respons
                     'summary' => true,
                     'author' => [
                         'name' => true,
-                        'email' => true
+                        'email' => true,
+                        'tags' => [
+                            'name' => true
+                        ],
+                        'articles' => [
+                            'title' => true,
+                            'author' => [
+                                'name' => true,
+                                'email' => true,
+                            ],
+                            'tags' => [
+                                'name' => true
+                            ]
+                        ]
                     ],
                     'tags' => [
                         'name' => true

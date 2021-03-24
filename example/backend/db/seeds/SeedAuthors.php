@@ -4,6 +4,13 @@ use Backend\Seeds\BaseSeeder;
 
 class SeedAuthors extends BaseSeeder
 {
+    public function getDependencies()
+    {
+        return [
+            'SeedTags'
+        ];
+    }
+
     public function seed()
     {
         $authors = [];
@@ -19,11 +26,33 @@ class SeedAuthors extends BaseSeeder
         }
 
         $this->table('authors')->insert($authors)->save();
+
+        // add tags
+
+        $authors = $this->fetchAll('select * from authors');
+
+        foreach ($authors as $author) {
+            $numTags = random_int(0, 2);
+            if (!$numTags) {
+                continue;
+            }
+            $tags = $this->fetchAll('select * from tags order by RAND() limit ' . $numTags);
+            $tags = array_map(function ($tag) use ($author) {
+                return '(' . implode(', ', [$tag['id'], $author['id'], "'Author'"]) . ')';
+            }, $tags);
+            $tags = implode(', ', $tags);
+
+            $this->execute(
+                'insert into tag_users (tag_id, user_id, user_type)
+                values ' . $tags
+            );
+        }
     }
 
     public function truncate()
     {
         $this->table('authors')->truncate();
+        $this->execute("delete from tag_users where user_type = 'Author'");
     }
 
     protected function slugifyName($name)
