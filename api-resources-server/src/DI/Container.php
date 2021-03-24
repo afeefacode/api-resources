@@ -88,50 +88,6 @@ class Container implements ContainerInterface
         return $this->createInstance($classOrCallback, $resolveCallback);
     }
 
-    private function createInstance($classOrCallback, Closure $resolveCallback = null, $register = false): object
-    {
-        [$Type, $callback] = $this->classOrCallback($classOrCallback);
-        if ($callback) {
-            $Types = $this->getCallbackArgumentTypes($classOrCallback);
-            if (!count($Types)) {
-                throw new MissingCallbackArgumentException('Create callback does not provide an argument.');
-            } elseif (count($Types) > 1) {
-                throw new TooManyCallbackArgumentsException('Create callback may only provide 1 argument.');
-            }
-            $Type = $Types[0];
-        }
-
-        $definition = $this->config[$Type] ?? null;
-        if ($definition instanceof FactoryDefinition) {
-            $instance = $definition();
-        } else {
-            $instance = new $Type();
-        }
-
-        if ($definition instanceof CreateDefinition) {
-            $initFunction = $definition->getInitFunction();
-            if ($initFunction) {
-                $this->call([$instance, $initFunction]);
-            }
-        }
-
-        $this->bootstrapInstance($instance);
-
-        if ($register) {
-            $this->register($Type, $instance);
-        }
-
-        if ($callback) {
-            $callback($instance);
-        }
-
-        if ($resolveCallback) {
-            $resolveCallback($instance);
-        }
-
-        return $instance;
-    }
-
     /**
      * Calls a function while injecting dependencies
      */
@@ -209,6 +165,50 @@ class Container implements ContainerInterface
         }
 
         debug_dump($dump);
+    }
+
+    private function createInstance($classOrCallback, Closure $resolveCallback = null, $register = false): object
+    {
+        [$Type, $callback] = $this->classOrCallback($classOrCallback);
+        if ($callback) {
+            $Types = $this->getCallbackArgumentTypes($classOrCallback);
+            if (!count($Types)) {
+                throw new MissingCallbackArgumentException('Create callback does not provide an argument.');
+            } elseif (count($Types) > 1) {
+                throw new TooManyCallbackArgumentsException('Create callback may only provide 1 argument.');
+            }
+            $Type = $Types[0];
+        }
+
+        $definition = $this->config[$Type] ?? null;
+        if ($definition instanceof FactoryDefinition) {
+            $instance = $definition();
+        } else {
+            $instance = new $Type();
+        }
+
+        if ($definition instanceof CreateDefinition) {
+            $initFunction = $definition->getInitFunction();
+            if ($initFunction) {
+                $this->call([$instance, $initFunction]);
+            }
+        }
+
+        $this->bootstrapInstance($instance);
+
+        if ($register) {
+            $this->register($Type, $instance);
+        }
+
+        if ($callback) {
+            $callback($instance);
+        }
+
+        if ($resolveCallback) {
+            $resolveCallback($instance);
+        }
+
+        return $instance;
     }
 
     private function resolver(): Resolver
