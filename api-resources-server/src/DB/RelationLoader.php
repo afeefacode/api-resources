@@ -12,28 +12,6 @@ class RelationLoader implements ContainerAwareInterface
 {
     use ContainerAwareTrait;
 
-    protected function getNormalizedRequestedFields(Type $type, array $requestedFields): array
-    {
-        $normalizedFields = [];
-        foreach ($requestedFields as $requestedField => $nested) {
-            if ($type->hasAttribute($requestedField)) {
-                $normalizedFields[$requestedField] = true;
-            }
-
-            if ($type->hasRelation($requestedField)) {
-                if ($nested === true) {
-                    $nested = [];
-                }
-                if (is_array($nested)) {
-                    $relatedType = $type->getRelation($requestedField)->getRelatedTypeInstance();
-                    $normalizedFields[$requestedField] = $this->getNormalizedRequestedFields($relatedType, $nested);
-                }
-            }
-        }
-
-        return $normalizedFields;
-    }
-
     /**
      * @return RelationResolver[]
      */

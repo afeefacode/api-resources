@@ -3,9 +3,14 @@
 namespace Afeefa\ApiResources\Api;
 
 use Afeefa\ApiResources\Action\Action;
+use Afeefa\ApiResources\DI\ContainerAwareInterface;
+use Afeefa\ApiResources\DI\ContainerAwareTrait;
+use Afeefa\ApiResources\Type\Type;
 
-class ApiRequest
+class ApiRequest implements ContainerAwareInterface
 {
+    use ContainerAwareTrait;
+
     protected Api $api;
 
     protected string $resource;
@@ -57,7 +62,11 @@ class ApiRequest
 
     public function fields(array $fields): ApiRequest
     {
-        $this->fields = $fields;
+        $Type = $this->getAction()->getResponse()->getType();
+        $type = $this->container->get($Type);
+
+        $this->fields = $this->normalizeFields($type, $fields);
+
         return $this;
     }
 
@@ -71,5 +80,31 @@ class ApiRequest
         return $this
             ->getAction()
             ->run();
+    }
+
+    protected function normalizeFields(Type $type, array $requestedFields): array
+    {
+        $normalizedFields = [];
+        foreach ($requestedFields as $requestedField => $nested) {
+            if ($type->hasAttribute($requestedField)) {
+                $normalizedFields[$requestedField] = true;
+            }
+
+            if ($type->hasRelation($requestedField)) {
+                if ($nested === true) {
+                    $nested = [];
+                }
+                if (is_array($nested)) {
+                    $relatedType = $type->getRelation($requestedField)->getRelatedTypeInstance();
+                    $normalizedFields[$requestedField] = $this->normalizeFields($relatedType, $nested);
+                }
+            }
+
+            if (preg_match('/^\@/', $requestedField)) {
+                // $normalizedFields[$requestedField] = $nested;
+            }
+        }
+
+        return $normalizedFields;
     }
 }

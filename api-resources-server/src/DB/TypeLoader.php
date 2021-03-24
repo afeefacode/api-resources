@@ -23,10 +23,10 @@ class TypeLoader extends RelationLoader
      */
     public function load(Closure $callback): array
     {
+        $requestedFields = $this->request->getFields();
+
         $Type = $this->request->getAction()->getResponse()->getType();
-        /** @var Type */
         $type = $this->container->get($Type);
-        $requestedFields = $this->getNormalizedRequestedFields($type, $this->request->getFields());
 
         $relationResolvers = $this->createRelationResolvers($type, $requestedFields);
         $selectFields = $this->getSelectFields($type, $requestedFields, $relationResolvers);
