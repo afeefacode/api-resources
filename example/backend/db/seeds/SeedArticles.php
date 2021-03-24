@@ -45,7 +45,7 @@ class SeedArticles extends BaseSeeder
             }
             $tags = $this->fetchAll('select * from tags order by RAND() limit ' . $numTags);
             $tags = array_map(function ($tag) use ($article) {
-                return '(' . implode(', ', [$tag['id'], $article['id'], "'Article'"]) . ')';
+                return '(' . implode(', ', [$tag['id'], $article['id'], "'Example.ArticleType'"]) . ')';
             }, $tags);
             $tags = implode(', ', $tags);
 

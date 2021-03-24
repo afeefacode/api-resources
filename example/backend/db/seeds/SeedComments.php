@@ -32,7 +32,7 @@ class SeedComments extends BaseSeeder
 
                 $comments[] = [
                     'owner_id' => $article['id'],
-                    'owner_type' => 'Article',
+                    'owner_type' => 'Example.ArticleType',
                     'author_name' => $this->faker->name(),
                     'content' => implode("\n\n", $content),
                     'date' => $this->faker->dateTimeBetween($article['date'])->format('Y-m-d H:i:s')

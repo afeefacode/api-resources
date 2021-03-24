@@ -31,18 +31,16 @@ class TagsResolver
                     $ownerIdsByType[$row['user_type']][] = $row['user_id'];
                 }
 
-                $ownerTagMap = [];
+                $ownersTagMap = [];
                 foreach ($result as $row) {
-                    $type = 'Example.' . $row['user_type'] . 'Type';
-                    $key = $type . ':' . $row['user_id'];
-                    $ownerTagMap[$key] = $row['tag_id'];
+                    $key = $row['user_type'] . ':' . $row['user_id'];
+                    $ownersTagMap[$key][] = $row['tag_id'];
                 }
 
                 $models = [];
 
                 foreach ($ownerIdsByType as $type => $ids) {
-                    $table = $type === 'Article' ? 'articles' : 'authors';
-                    $type = 'Example.' . $type . 'Type';
+                    $table = $type === 'Example.ArticleType' ? 'articles' : 'authors';
 
                     $result = $db->select(
                         $table,
@@ -54,9 +52,10 @@ class TagsResolver
 
                     foreach ($result as $row) {
                         $key = $type . ':' . $row['id'];
-                        $tagId = $ownerTagMap[$key];
-
-                        $models[$tagId][] = Model::fromSingle($type, $row);
+                        $tagIds = $ownersTagMap[$key];
+                        foreach ($tagIds as $tagId) {
+                            $models[$tagId][] = Model::fromSingle($type, $row);
+                        }
                     }
                 }
 
@@ -86,7 +85,7 @@ class TagsResolver
 
                 $ownerIdsByType = [];
                 foreach ($owners as $owner) {
-                    $ownerIdsByType['Article'][] = $owner->id;
+                    $ownerIdsByType[$owner->type][] = $owner->id;
                 }
 
                 foreach ($ownerIdsByType as $type => $ids) {
@@ -123,7 +122,7 @@ class TagsResolver
             })
 
             ->map(function (array $objects, ModelInterface $owner) {
-                $key = 'Article:' . $owner->id;
+                $key = $owner->type . ':' . $owner->id;
                 return $objects[$key];
             });
     }
