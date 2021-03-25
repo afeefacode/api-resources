@@ -30,8 +30,9 @@
             v-for="article in articles"
             :key="article.id"
           >
-            <p># {{ article.id }} | Am {{ article.date }}</p>
-            <p>{{ article.title }}</p>
+            <div class="meta"># {{ article.id }} | Am {{ article.date }}</div>
+            <div class="author">{{ article.author.name }}</div>
+            <div class="title">{{ article.title }}</div>
           </li>
         </ul>
       </v-container>
@@ -80,7 +81,9 @@ export default class App extends Vue {
       fields: {
         title: true,
         date: true,
-        name: true
+        author: {
+          name: true
+        }
       },
       filters: {
         keyword: this.keyword,
@@ -99,7 +102,16 @@ export default class App extends Vue {
 
 
 <style lang="scss" scoped>
-p {
-  color: blue;
+.meta {
+  color: gray;
+  font-size: .7rem;
+}
+
+.author {
+  font-size: .9rem;
+}
+
+.title {
+  font-weight: bold;
 }
 </style>
