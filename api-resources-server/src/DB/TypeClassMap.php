@@ -11,8 +11,8 @@ class TypeClassMap
         $this->map = $map;
     }
 
-    public function getClass(string $type): string
+    public function getClass(string $type): ?string
     {
-        return $this->map[$type];
+        return $this->map[$type] ?? null;
     }
 }

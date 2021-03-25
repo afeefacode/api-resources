@@ -3,6 +3,8 @@
 namespace Afeefa\ApiResources\Action;
 
 use Afeefa\ApiResources\Bag\BagEntry;
+use Afeefa\ApiResources\Exception\Exceptions\InvalidConfigurationException;
+use Afeefa\ApiResources\Exception\Exceptions\NotACallbackException;
 use Afeefa\ApiResources\Exception\Exceptions\NotATypeException;
 use Afeefa\ApiResources\Filter\FilterBag;
 use Closure;
@@ -30,6 +32,11 @@ class Action extends BagEntry
     {
         $this->name = $name;
         return $this;
+    }
+
+    public function getName(): string
+    {
+        return $this->name;
     }
 
     public function params(Closure $callback): Action
@@ -111,12 +118,57 @@ class Action extends BagEntry
         return $this;
     }
 
-    public function run()
+    public function getResolve(): ?Closure
     {
         $callback = $this->resolveCallback;
-        if (is_array($callback) && is_string($callback[0])) {
+
+        if (!$callback) {
+            throw new InvalidConfigurationException("Action {$this->name} does not have a field resolver.");
+        }
+
+        if (is_array($callback) && is_string($callback[0])) { // static class -> create instance
             $callback[0] = $this->container->create($callback[0]);
         }
+
+        if (is_callable($callback)) {
+            return Closure::fromCallable($callback);
+        } elseif ($callback instanceof Closure) {
+            return $callback;
+        }
+
+        throw new NotACallbackException("Resolve callback for action {$this->name} is not callable.");
+    }
+
+    public function run22()
+    {
+        $resolveCallback = $this->resolveCallback;
+        if (is_array($resolveCallback) && is_string($resolveCallback[0])) {
+            $resolveCallback[0] = $this->container->create($resolveCallback[0]);
+        }
+
+        $this->container->call(
+            $resolveCallback,
+            function (Resolver $r) {
+                if ($r->isOf(RelationResolver::class)) {
+                    $r->create();
+                }
+            },
+            function () use (&$relationResolver) {
+                $arguments = func_get_args();
+                foreach ($arguments as $argument) {
+                    if ($argument instanceof RelationResolver) {
+                        $relationResolver = $argument;
+                    }
+                }
+            }
+        );
+
+        if (!$relationResolver) {
+            throw new InvalidConfigurationException("Resolve callback for relation {$fieldName} on type {$type::$type} must receive a RelationResolver as argument.");
+        }
+
+        $relationResolver->relation($relation);
+        $relationResolvers[$fieldName] = $relationResolver;
 
         return $this->container->call($callback);
     }

@@ -5,14 +5,13 @@ namespace Afeefa\ApiResources\Api;
 use Afeefa\ApiResources\DB\TypeClassMap;
 use Afeefa\ApiResources\DI\ContainerAwareInterface;
 use Afeefa\ApiResources\DI\ContainerAwareTrait;
-use Afeefa\ApiResources\Model\ModelInterface;
 use Afeefa\ApiResources\Type\Type;
 
 class RequestedFields implements ContainerAwareInterface
 {
     use ContainerAwareTrait;
 
-    protected string $TypeClass;
+    protected Type $type;
 
     /**
      * @var RequestedFields[]
@@ -21,18 +20,18 @@ class RequestedFields implements ContainerAwareInterface
 
     public function typeClass(string $TypeClass): RequestedFields
     {
-        $this->TypeClass = $TypeClass;
+        $this->type = $this->getTypeByClass($TypeClass);
         return $this;
     }
 
     public function getType(): Type
     {
-        return $this->getTypeByClass();
+        return $this->type;
     }
 
     public function fields(array $fields): RequestedFields
     {
-        $this->fields = $this->normalize($this->getTypeByClass(), $fields);
+        $this->fields = $this->normalize($fields);
         return $this;
     }
 
@@ -41,71 +40,46 @@ class RequestedFields implements ContainerAwareInterface
         return array_keys($this->fields);
     }
 
+    /**
+     * @return Relation[]
+     */
+    public function getRelations(): array
+    {
+        $type = $this->type;
+        $relations = [];
+        foreach ($this->getFieldNames() as $fieldName) {
+            if ($type->hasRelation($fieldName)) {
+                $relations[$fieldName] = $type->getRelation($fieldName);
+            }
+        }
+        return $relations;
+    }
+
+    public function getFieldNamesForType(Type $type): array
+    {
+        $fieldNames = [];
+        foreach ($this->fields as $fieldName => $nested) {
+            if (preg_match('/^\@(.+)/', $fieldName, $matches)) {
+                if ($type::$type === $matches[1]) {
+                    $fieldNames = array_merge($fieldNames, $nested->getFieldNames());
+                }
+            } else {
+                $fieldNames[] = $fieldName;
+            }
+        }
+        return $fieldNames;
+    }
+
     public function getNestedField($fieldName): RequestedFields
     {
         return $this->fields[$fieldName];
     }
 
-    /**
-     * @param ModelInterface[] $models
-     */
-    public function setVisibleFields(Type $type, array $models, RequestedFields $fields): void
+    protected function normalize(array $fields): array
     {
-        foreach ($models as $model) {
-            $visibleFields = $this->getVisibleFields($type, $model, $fields);
-            $model->apiResourcesSetVisibleFields($visibleFields);
-
-            foreach ($fields->getFieldNames() as $fieldName) {
-                if ($type->hasRelation($fieldName)) {
-                    $relation = $type->getRelation($fieldName);
-                    $relatedType = $relation->getRelatedTypeInstance();
-                    if ($relation->isSingle()) {
-                        if ($model->$fieldName) {
-                            $this->setVisibleFields($relatedType, [$model->$fieldName], $fields->getNestedField($fieldName));
-                        }
-                    } else {
-                        if (is_array($model->$fieldName)) {
-                            $this->setVisibleFields($relatedType, $model->$fieldName, $fields->getNestedField($fieldName));
-                        }
-                    }
-                }
-            }
-        }
-    }
-
-    protected function getVisibleFields(Type $type, ModelInterface $model, RequestedFields $fields): array
-    {
-        $visibleFields = ['id', 'type'];
-
-        foreach ($fields->getFieldNames() as $fieldName) {
-            if ($type->hasAttribute($fieldName)) {
-                $visibleFields[] = $fieldName;
-            }
-
-            if ($type->hasRelation($fieldName)) {
-                $visibleFields[] = $fieldName;
-            }
-
-            if (preg_match('/^\@(.+)/', $fieldName, $matches)) {
-                $onTypeName = $matches[1];
-                if ($model->apiResourcesGetType() === $onTypeName) {
-                    $onType = $this->getTypeByName($onTypeName);
-                    $visibleFields = array_unique(
-                        array_merge(
-                            $visibleFields,
-                            $this->getVisibleFields($onType, $model, $fields->getNestedField($fieldName))
-                        )
-                    );
-                }
-            }
-        }
-
-        return $visibleFields;
-    }
-
-    protected function normalize(Type $type, array $fields): array
-    {
+        $type = $this->type;
         $normalizedFields = [];
+
         foreach ($fields as $fieldName => $nested) {
             if ($type->hasAttribute($fieldName)) {
                 $normalizedFields[$fieldName] = true;
@@ -139,12 +113,6 @@ class RequestedFields implements ContainerAwareInterface
     {
         $TypeClass = $TypeClass ?: $this->TypeClass;
         return $this->container->get($TypeClass);
-    }
-
-    protected function getTypeByName(string $typeName): Type
-    {
-        $TypeClass = $this->getTypeClassByName($typeName);
-        return $this->getTypeByClass($TypeClass);
     }
 
     protected function getTypeClassByName(string $typeName = null): string

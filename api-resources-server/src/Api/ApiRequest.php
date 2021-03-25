@@ -3,8 +3,10 @@
 namespace Afeefa\ApiResources\Api;
 
 use Afeefa\ApiResources\Action\Action;
+use Afeefa\ApiResources\DB\ActionResolver;
 use Afeefa\ApiResources\DI\ContainerAwareInterface;
 use Afeefa\ApiResources\DI\ContainerAwareTrait;
+use Afeefa\ApiResources\DI\Resolver;
 
 class ApiRequest implements ContainerAwareInterface
 {
@@ -78,8 +80,25 @@ class ApiRequest implements ContainerAwareInterface
 
     public function dispatch()
     {
-        return $this
-            ->getAction()
-            ->run();
+        $action = $this->getAction();
+
+        $actionResolver = $this->container->create(function (ActionResolver $actionResolver) use ($action) {
+            $actionResolver
+                ->action($action)
+                ->request($this);
+        });
+
+        $resolveCallback = $action->getResolve();
+
+        $this->container->call(
+            $resolveCallback,
+            function (Resolver $r) use ($actionResolver) {
+                if ($r->isOf(ActionResolver::class)) {
+                    $r->fix($actionResolver);
+                }
+            }
+        );
+
+        return $actionResolver->fetch();
     }
 }

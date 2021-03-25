@@ -2,8 +2,9 @@
 
 namespace Backend\Resolvers;
 
+use Afeefa\ApiResources\DB\ActionResolver;
 use Afeefa\ApiResources\DB\RelationResolver;
-use Afeefa\ApiResources\DB\TypeLoader;
+use Afeefa\ApiResources\DB\ResolveContext;
 use Afeefa\ApiResources\Model\Model;
 use Afeefa\ApiResources\Model\ModelInterface;
 use Backend\Types\ArticleType;
@@ -12,13 +13,15 @@ use Medoo\Medoo;
 
 class ArticlesResolver
 {
-    public function get_articles(TypeLoader $typeLoader, Medoo $db)
+    public function get_articles(ActionResolver $r, Medoo $db)
     {
-        return $typeLoader
-            ->load(function (array $selectFields) use ($db) {
+        $r->getAction();
+
+        $r
+            ->load(function (ResolveContext $c) use ($db) {
                 $objects = $db->select(
                     'articles',
-                    $selectFields,
+                    $c->getSelectFields(),
                     [
                         'ORDER' => 'id',
                         'LIMIT' => 15,

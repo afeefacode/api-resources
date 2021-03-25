@@ -2,7 +2,6 @@
 
 namespace Afeefa\ApiResources\DI;
 
-use Afeefa\ApiResources\DB\TypeLoader;
 use Afeefa\ApiResources\Exception\Exceptions\MissingCallbackArgumentException;
 use Afeefa\ApiResources\Exception\Exceptions\MissingTypeHintException;
 use Afeefa\ApiResources\Exception\Exceptions\NotACallbackException;
@@ -21,9 +20,6 @@ class Container implements ContainerInterface
 
     public function __construct(array $config = [])
     {
-        // always create
-        $config[TypeLoader::class] = create()->call('request');
-
         foreach ($config as $key => $value) {
             if ($value instanceof Closure) {
                 $config[$key] = factory($value);
