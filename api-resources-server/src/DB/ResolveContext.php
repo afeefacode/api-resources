@@ -37,14 +37,29 @@ class ResolveContext implements ContainerAwareInterface
     /**
      * @param RelationResolver[] $relationResolvers
      */
-    public function getSelectFields(Type $type = null): array
+    public function getSelectFields(string $typeName = null): array
     {
         if (!isset($this->relationResolvers)) {
             $this->createRelationResolvers();
         }
 
         $requestedFields = $this->requestedFields;
-        $type = $type ?: $requestedFields->getType();
+        $type = $typeName ? $this->getTypeByName($typeName) : $requestedFields->getType();
+
+        return $this->calculateSelectFields($type, $requestedFields);
+    }
+
+    public function getRelationResolvers(): array
+    {
+        if (!isset($this->relationResolvers)) {
+            $this->createRelationResolvers();
+        }
+
+        return $this->relationResolvers;
+    }
+
+    protected function calculateSelectFields(Type $type, RequestedFields $requestedFields): array
+    {
         $relationResolvers = $this->relationResolvers;
 
         $selectFields = ['id'];
@@ -70,7 +85,7 @@ class ResolveContext implements ContainerAwareInterface
                     $selectFields = array_unique(
                         array_merge(
                             $selectFields,
-                            $this->getSelectFields($type, $requestedFields->getNestedField($fieldName), $relationResolvers)
+                            $this->calculateSelectFields($type, $requestedFields->getNestedField($fieldName))
                         )
                     );
                 }
@@ -80,9 +95,12 @@ class ResolveContext implements ContainerAwareInterface
         return $selectFields;
     }
 
-    public function getRelationResolvers(): array
+    protected function getTypeByName(string $typeName): Type
     {
-        return $this->relationResolvers;
+        return $this->container->call(function (TypeClassMap $typeClassMap) use ($typeName) {
+            $TypeClass = $typeClassMap->getClass($typeName) ?? Type::class;
+            return $this->container->get($TypeClass);
+        });
     }
 
     /**

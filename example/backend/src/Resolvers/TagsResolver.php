@@ -3,10 +3,10 @@
 namespace Backend\Resolvers;
 
 use Afeefa\ApiResources\DB\RelationResolver;
+use Afeefa\ApiResources\DB\ResolveContext;
 use Afeefa\ApiResources\Model\Model;
 use Afeefa\ApiResources\Model\ModelInterface;
 use Backend\Types\TagType;
-use Closure;
 use Medoo\Medoo;
 
 class TagsResolver
@@ -14,7 +14,7 @@ class TagsResolver
     public function resolve_tag_users_relation(RelationResolver $r, Medoo $db)
     {
         $r
-            ->load(function (array $owners, Closure $getSelectFields) use ($db) {
+            ->load(function (array $owners, ResolveContext $c) use ($db) {
                 $tagIds = array_unique(
                     array_map(function (ModelInterface $owner) {
                         return $owner->id;
@@ -40,10 +40,10 @@ class TagsResolver
 
                 $models = [];
 
-                foreach ($ownerIdsByType as $type => $ids) {
-                    $table = $type === 'Example.ArticleType' ? 'articles' : 'authors';
+                foreach ($ownerIdsByType as $typeName => $ids) {
+                    $table = $typeName === 'Example.ArticleType' ? 'articles' : 'authors';
 
-                    $selectFields = $getSelectFields($type);
+                    $selectFields = $c->getSelectFields($typeName);
 
                     $result = $db->select(
                         $table,
@@ -54,10 +54,10 @@ class TagsResolver
                     );
 
                     foreach ($result as $row) {
-                        $key = $type . ':' . $row['id'];
+                        $key = $typeName . ':' . $row['id'];
                         $tagIds = $ownersTagMap[$key];
                         foreach ($tagIds as $tagId) {
-                            $models[$tagId][] = Model::fromSingle($type, $row);
+                            $models[$tagId][] = Model::fromSingle($typeName, $row);
                         }
                     }
                 }
@@ -74,8 +74,8 @@ class TagsResolver
     public function resolve_tags_relation(RelationResolver $r, Medoo $db)
     {
         $r
-            ->load(function (array $owners, Closure $getSelectFields) use ($db) {
-                $selectFields = $getSelectFields();
+            ->load(function (array $owners, ResolveContext $c) use ($db) {
+                $selectFields = $c->getSelectFields();
 
                 /** @var ModelInterface[] $owners */
                 $fieldMap = [];

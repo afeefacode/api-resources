@@ -3,10 +3,10 @@
 namespace Backend\Resolvers;
 
 use Afeefa\ApiResources\DB\RelationResolver;
+use Afeefa\ApiResources\DB\ResolveContext;
 use Afeefa\ApiResources\Model\Model;
 use Afeefa\ApiResources\Model\ModelInterface;
 use Backend\Types\AuthorType;
-use Closure;
 use Medoo\Medoo;
 
 class AuthorsResolver
@@ -16,7 +16,7 @@ class AuthorsResolver
         $r
             ->ownerIdFields(['author_id'])
 
-            ->load(function (array $owners, Closure $getSelectFields) use ($db) {
+            ->load(function (array $owners, ResolveContext $c) use ($db) {
                 /** @var ModelInterface[] $owners */
                 $authorIds = array_unique(
                     array_map(function (ModelInterface $owner) {
@@ -26,7 +26,7 @@ class AuthorsResolver
 
                 $result = $db->select(
                     'authors',
-                    $getSelectFields(),
+                    $c->getSelectFields(),
                     [
                         'id' => $authorIds,
                         'ORDER' => 'id'

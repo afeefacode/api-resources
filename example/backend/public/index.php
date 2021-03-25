@@ -16,7 +16,7 @@ use Slim\Http\ServerRequest as HttpRequest;
 
 require __DIR__ . '/../vendor/autoload.php';
 
-error_reporting(E_ALL);
+// error_reporting(E_ALL);
 
 $container = new Container([
     Medoo::class => function () {

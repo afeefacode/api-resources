@@ -8,7 +8,6 @@ use Afeefa\ApiResources\DB\ResolveContext;
 use Afeefa\ApiResources\Model\Model;
 use Afeefa\ApiResources\Model\ModelInterface;
 use Backend\Types\ArticleType;
-use Closure;
 use Medoo\Medoo;
 
 class ArticlesResolver
@@ -24,8 +23,8 @@ class ArticlesResolver
                     $c->getSelectFields(),
                     [
                         'ORDER' => 'id',
-                        'LIMIT' => 15,
-                        'id' => '199'
+                        'LIMIT' => 5,
+                        'id[>=]' => '199'
                         // 'id' => '10'
                     ]
                 );
@@ -36,9 +35,9 @@ class ArticlesResolver
     public function resolve_articles_relation(RelationResolver $r, Medoo $db)
     {
         $r
-            ->load(function (array $owners, Closure $getSelectFields) use ($db) {
+            ->load(function (array $owners, ResolveContext $c) use ($db) {
                 /** @var ModelInterface[] $owners */
-                $selectFields = array_merge($getSelectFields(), ['author_id']);
+                $selectFields = array_merge($c->getSelectFields(), ['author_id']);
 
                 $authorIds = array_unique(
                     array_map(function (ModelInterface $owner) {
@@ -59,7 +58,7 @@ class ArticlesResolver
 
                 $objects = [];
                 foreach ($result as $row) {
-                    $key = $row['author_id'];
+                    $key = 'Author:' . $row['author_id'];
                     $objects[$key][] = Model::fromSingle(ArticleType::$type, $row);
                 }
                 return $objects;
@@ -67,7 +66,7 @@ class ArticlesResolver
 
             ->map(function (array $objects, ModelInterface $owner) {
                 $key = $owner->id;
-                return $objects[$key];
+                return $objects['Author:' . $key];
             });
     }
 }

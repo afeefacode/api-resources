@@ -6,7 +6,7 @@ use Afeefa\ApiResources\Action\Action;
 use Afeefa\ApiResources\Api\ApiRequest;
 use Closure;
 
-class ActionResolver extends RelationLoader
+class ActionResolver extends DataResolver
 {
     protected Action $action;
 
@@ -45,8 +45,12 @@ class ActionResolver extends RelationLoader
             ->resolveContext()
             ->requestedFields($requestedFields);
 
+        // query db
+
         $loadCallback = $this->loadCallback;
         $models = $loadCallback($resolveContext);
+
+        // resolve relations
 
         foreach ($resolveContext->getRelationResolvers() as $relationResolver) {
             foreach ($models as $model) {
@@ -55,6 +59,8 @@ class ActionResolver extends RelationLoader
             $relationResolver->fetch();
         }
 
+        // mark visible fields
+
         $this->container->create(function (VisibleFields $visibleFields) use ($models, $requestedFields) {
             $visibleFields
                 ->requestedFields($requestedFields)
@@ -62,10 +68,5 @@ class ActionResolver extends RelationLoader
         });
 
         return array_values($models);
-    }
-
-    protected function resolveContext(): ResolveContext
-    {
-        return $this->container->create(ResolveContext::class);
     }
 }
