@@ -90,7 +90,7 @@ class Container implements ContainerInterface
     public function call($callback, Closure $resolveCallback = null, Closure $resolveCallback2 = null)
     {
         $callback = $this->callback($callback);
-        $Types = $this->getCallbackArgumentTypes($callback);
+        $TypeClasses = $this->getCallbackArgumentTypes($callback);
         $resolveCallbackExpectsResolver = $resolveCallback && $this->argumentIsResolver($resolveCallback);
 
         $argumentsMap = array_column(
@@ -118,7 +118,7 @@ class Container implements ContainerInterface
                 }
 
                 return [$TypeClass, $instance];
-            }, $Types, array_keys($Types)),
+            }, $TypeClasses, array_keys($TypeClasses)),
             1,
             0
         );
@@ -167,13 +167,13 @@ class Container implements ContainerInterface
     {
         [$TypeClass, $callback] = $this->classOrCallback($classOrCallback);
         if ($callback) {
-            $Types = $this->getCallbackArgumentTypes($classOrCallback);
-            if (!count($Types)) {
+            $TypeClasses = $this->getCallbackArgumentTypes($classOrCallback);
+            if (!count($TypeClasses)) {
                 throw new MissingCallbackArgumentException('Create callback does not provide an argument.');
-            } elseif (count($Types) > 1) {
+            } elseif (count($TypeClasses) > 1) {
                 throw new TooManyCallbackArgumentsException('Create callback may only provide 1 argument.');
             }
-            $TypeClass = $Types[0];
+            $TypeClass = $TypeClasses[0];
         }
 
         $definition = $this->config[$TypeClass] ?? null;
@@ -239,8 +239,8 @@ class Container implements ContainerInterface
 
     private function argumentIsResolver(Closure $callback): bool
     {
-        $Types = $this->getCallbackArgumentTypes($callback);
-        return (count($Types) === 1 && $Types[0] === DependencyResolver::class);
+        $TypeClasses = $this->getCallbackArgumentTypes($callback);
+        return (count($TypeClasses) === 1 && $TypeClasses[0] === DependencyResolver::class);
     }
 
     private function register(string $TypeClass, object $instance)
