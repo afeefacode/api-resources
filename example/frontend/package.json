@@ -6,6 +6,10 @@
   },
   "dependencies": {
     "@afeefa/api-resources-client": "file:../../api-resources-client",
-    "@afeefa/vue2-bootstrap": "^1.0"
+    "@afeefa/vue2-bootstrap": "^1.0",
+    "vuetify": "^2.4.8"
+  },
+  "devDependencies": {
+    "vuetify-loader": "^1.7.2"
   }
 }
