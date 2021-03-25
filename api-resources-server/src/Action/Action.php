@@ -139,40 +139,6 @@ class Action extends BagEntry
         throw new NotACallbackException("Resolve callback for action {$this->name} is not callable.");
     }
 
-    public function run22()
-    {
-        $resolveCallback = $this->resolveCallback;
-        if (is_array($resolveCallback) && is_string($resolveCallback[0])) {
-            $resolveCallback[0] = $this->container->create($resolveCallback[0]);
-        }
-
-        $this->container->call(
-            $resolveCallback,
-            function (Resolver $r) {
-                if ($r->isOf(RelationResolver::class)) {
-                    $r->create();
-                }
-            },
-            function () use (&$relationResolver) {
-                $arguments = func_get_args();
-                foreach ($arguments as $argument) {
-                    if ($argument instanceof RelationResolver) {
-                        $relationResolver = $argument;
-                    }
-                }
-            }
-        );
-
-        if (!$relationResolver) {
-            throw new InvalidConfigurationException("Resolve callback for relation {$fieldName} on type {$type::$type} must receive a RelationResolver as argument.");
-        }
-
-        $relationResolver->relation($relation);
-        $relationResolvers[$fieldName] = $relationResolver;
-
-        return $this->container->call($callback);
-    }
-
     public function toSchemaJson(): array
     {
         $json = [

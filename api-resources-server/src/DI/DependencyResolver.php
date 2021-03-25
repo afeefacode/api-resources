@@ -2,7 +2,7 @@
 
 namespace Afeefa\ApiResources\DI;
 
-class Resolver
+class DependencyResolver
 {
     protected string $TypeClass;
 
@@ -12,7 +12,7 @@ class Resolver
 
     protected bool $create = false;
 
-    public function typeClass(string $TypeClass): Resolver
+    public function typeClass(string $TypeClass): DependencyResolver
     {
         $this->TypeClass = $TypeClass;
         return $this;
@@ -23,7 +23,7 @@ class Resolver
         return $this->TypeClass;
     }
 
-    public function index(int $index): Resolver
+    public function index(int $index): DependencyResolver
     {
         $this->index = $index;
         return $this;
@@ -34,7 +34,7 @@ class Resolver
         return $this->index;
     }
 
-    public function fix(object $fix): Resolver
+    public function fix(object $fix): DependencyResolver
     {
         $this->fix = $fix;
         return $this;
@@ -45,7 +45,7 @@ class Resolver
         return $this->fix;
     }
 
-    public function create(): Resolver
+    public function create(): DependencyResolver
     {
         $this->create = true;
         return $this;

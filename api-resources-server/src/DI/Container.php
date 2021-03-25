@@ -207,9 +207,9 @@ class Container implements ContainerInterface
         return $instance;
     }
 
-    private function resolver(): Resolver
+    private function resolver(): DependencyResolver
     {
-        return new Resolver();
+        return new DependencyResolver();
     }
 
     private function classOrCallback($classOrCallback): array
@@ -240,7 +240,7 @@ class Container implements ContainerInterface
     private function argumentIsResolver(Closure $callback): bool
     {
         $Types = $this->getCallbackArgumentTypes($callback);
-        return (count($Types) === 1 && $Types[0] === Resolver::class);
+        return (count($Types) === 1 && $Types[0] === DependencyResolver::class);
     }
 
     private function register(string $TypeClass, object $instance)

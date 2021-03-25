@@ -5,8 +5,8 @@ namespace Afeefa\ApiResources\Tests\DI;
 use Afeefa\ApiResources\DI\Container;
 
 use function Afeefa\ApiResources\DI\create;
+use Afeefa\ApiResources\DI\DependencyResolver;
 use function Afeefa\ApiResources\DI\factory;
-use Afeefa\ApiResources\DI\Resolver;
 use Afeefa\ApiResources\Exception\Exceptions\MissingCallbackArgumentException;
 use Afeefa\ApiResources\Exception\Exceptions\MissingTypeHintException;
 use Afeefa\ApiResources\Exception\Exceptions\NotATypeOrCallbackException;
@@ -633,7 +633,7 @@ class ContainerTest extends TestCase
         $container->call(
             function (TestModel $model, TestService2 $service) {
             },
-            function (Resolver $r) use (&$resolverTypes, &$resolverIndexes) {
+            function (DependencyResolver $r) use (&$resolverTypes, &$resolverIndexes) {
                 $resolverTypes[] = $r->getTypeClass();
                 $resolverIndexes[] = $r->getIndex();
 
@@ -668,7 +668,7 @@ class ContainerTest extends TestCase
                 $s = $service;
                 return [$model, $service];
             },
-            function (Resolver $r) {
+            function (DependencyResolver $r) {
                 if ($r->isOf(TestModel::class)) {
                     $r->create();
                 }
@@ -689,7 +689,7 @@ class ContainerTest extends TestCase
             function (TestModel $model, TestService $service) use (&$m, &$s) {
                 return [$model, $service];
             },
-            function (Resolver $r) {
+            function (DependencyResolver $r) {
                 if ($r->isOf(TestModel::class)) {
                     $r->create();
                 }
@@ -719,7 +719,7 @@ class ContainerTest extends TestCase
                 $s = $service;
                 return [$model, $service];
             },
-            function (Resolver $r) use ($mFix) {
+            function (DependencyResolver $r) use ($mFix) {
                 if ($r->isOf(TestModel::class)) {
                     $r->fix($mFix);
                 }
@@ -740,7 +740,7 @@ class ContainerTest extends TestCase
             function (TestModel $model, TestService $service) use (&$m, &$s) {
                 return [$model, $service];
             },
-            function (Resolver $r) use ($mFix) {
+            function (DependencyResolver $r) use ($mFix) {
                 if ($r->isOf(TestModel::class)) {
                     $r->fix($mFix);
                 }
@@ -755,7 +755,7 @@ class ContainerTest extends TestCase
             function (TestModel $model, TestService $service) use (&$m, &$s) {
                 return [$model, $service];
             },
-            function (Resolver $r) use ($mFix) {
+            function (DependencyResolver $r) use ($mFix) {
             }
         );
 

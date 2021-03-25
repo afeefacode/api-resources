@@ -6,7 +6,7 @@ use Afeefa\ApiResources\Api\ToSchemaJsonInterface;
 use Afeefa\ApiResources\Api\ToSchemaJsonTrait;
 use Afeefa\ApiResources\DI\ContainerAwareInterface;
 use Afeefa\ApiResources\DI\ContainerAwareTrait;
-use Afeefa\ApiResources\DI\Resolver;
+use Afeefa\ApiResources\DI\DependencyResolver;
 use Closure;
 
 class Bag implements ToSchemaJsonInterface, ContainerAwareInterface
@@ -58,7 +58,7 @@ class Bag implements ToSchemaJsonInterface, ContainerAwareInterface
             if (method_exists($this, 'getEntrySchemaJson')) {
                 return $this->container->call(
                     [$this, 'getEntrySchemaJson'],
-                    function (Resolver $r) use ($entry) {
+                    function (DependencyResolver $r) use ($entry) {
                         if ($r->isOf(BagEntryInterface::class)) {
                             $r->fix($entry);
                         }

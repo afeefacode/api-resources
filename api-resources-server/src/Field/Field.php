@@ -5,7 +5,7 @@ namespace Afeefa\ApiResources\Field;
 use Afeefa\ApiResources\Api\ToSchemaJsonTrait;
 use Afeefa\ApiResources\Api\TypeRegistry;
 use Afeefa\ApiResources\Bag\BagEntry;
-use Afeefa\ApiResources\DI\Resolver;
+use Afeefa\ApiResources\DI\DependencyResolver;
 use Afeefa\ApiResources\Exception\Exceptions\InvalidConfigurationException;
 use Afeefa\ApiResources\Exception\Exceptions\MissingTypeException;
 use Afeefa\ApiResources\Exception\Exceptions\NotACallbackException;
@@ -54,7 +54,7 @@ class Field extends BagEntry
         if ($this->validator) { // cloned validator
             $this->container->call(
                 $callback,
-                function (Resolver $r) {
+                function (DependencyResolver $r) {
                     $r->fix($this->validator);
                 }
             );

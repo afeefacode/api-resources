@@ -6,7 +6,7 @@ use Afeefa\ApiResources\Action\Action;
 use Afeefa\ApiResources\DB\ActionResolver;
 use Afeefa\ApiResources\DI\ContainerAwareInterface;
 use Afeefa\ApiResources\DI\ContainerAwareTrait;
-use Afeefa\ApiResources\DI\Resolver;
+use Afeefa\ApiResources\DI\DependencyResolver;
 
 class ApiRequest implements ContainerAwareInterface
 {
@@ -92,7 +92,7 @@ class ApiRequest implements ContainerAwareInterface
 
         $this->container->call(
             $resolveCallback,
-            function (Resolver $r) use ($actionResolver) {
+            function (DependencyResolver $r) use ($actionResolver) {
                 if ($r->isOf(ActionResolver::class)) {
                     $r->fix($actionResolver);
                 }

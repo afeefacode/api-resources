@@ -5,7 +5,7 @@ namespace Afeefa\ApiResources\DB;
 use Afeefa\ApiResources\Api\RequestedFields;
 use Afeefa\ApiResources\DI\ContainerAwareInterface;
 use Afeefa\ApiResources\DI\ContainerAwareTrait;
-use Afeefa\ApiResources\DI\Resolver;
+use Afeefa\ApiResources\DI\DependencyResolver;
 use Afeefa\ApiResources\Exception\Exceptions\InvalidConfigurationException;
 use Afeefa\ApiResources\Type\Type;
 
@@ -30,7 +30,7 @@ class RelationLoader implements ContainerAwareInterface
                 if ($resolveCallback) {
                     $this->container->call(
                         $resolveCallback,
-                        function (Resolver $r) {
+                        function (DependencyResolver $r) {
                             if ($r->isOf(RelationResolver::class)) {
                                 $r->create();
                             }
