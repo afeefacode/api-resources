@@ -22,7 +22,7 @@ class ArticlesResource extends ModelResource
 {
     public static string $type = 'Example.ArticlesResource';
 
-    protected string $ModelType = ArticleType::class;
+    protected string $ModelTypeClass = ArticleType::class;
 
     protected function actions(ActionBag $actions): void
     {

@@ -40,15 +40,15 @@ class Action extends BagEntry
         return $this;
     }
 
-    public function input(string $Type, Closure $callback = null): Action
+    public function input(string $TypeClass, Closure $callback = null): Action
     {
-        if (!class_exists($Type)) {
-            throw new NotATypeException('Value for input $Type is not a type.');
+        if (!class_exists($TypeClass)) {
+            throw new NotATypeException('Value for input $TypeClass is not a type.');
         }
 
         $this->input = $this->container->create(ActionInput::class);
 
-        $this->input->type($Type);
+        $this->input->typeClass($TypeClass);
 
         if ($callback) {
             $callback($this->input);
@@ -70,24 +70,24 @@ class Action extends BagEntry
         return $this;
     }
 
-    public function response($TypeOrTypes, Closure $callback = null): Action
+    public function response($TypeClassOrClasses, Closure $callback = null): Action
     {
         $this->response = $this->container->create(ActionResponse::class);
 
-        if (is_array($TypeOrTypes)) {
-            foreach ($TypeOrTypes as $Type) {
-                if (!class_exists($Type)) {
-                    throw new NotATypeException('Value for response $TypeOrTypes is not a list of types.');
+        if (is_array($TypeClassOrClasses)) {
+            foreach ($TypeClassOrClasses as $TypeClass) {
+                if (!class_exists($TypeClass)) {
+                    throw new NotATypeException('Value for response $TypeClassOrClasses is not a list of types.');
                 }
             }
-            $this->response->types($TypeOrTypes);
-        } elseif (is_string($TypeOrTypes)) {
-            if (!class_exists($TypeOrTypes)) {
-                throw new NotATypeException('Value for response $TypeOrTypes is not a type.');
+            $this->response->types($TypeClassOrClasses);
+        } elseif (is_string($TypeClassOrClasses)) {
+            if (!class_exists($TypeClassOrClasses)) {
+                throw new NotATypeException('Value for response $TypeClassOrClasses is not a type.');
             }
-            $this->response->type($TypeOrTypes);
+            $this->response->typeClass($TypeClassOrClasses);
         } else {
-            throw new NotATypeException('Value for response $TypeOrTypes is not a type or a list of type.');
+            throw new NotATypeException('Value for response $TypeClassOrClasses is not a type or a list of type.');
         }
 
         if ($callback) {

@@ -51,14 +51,14 @@ class Api implements ContainerAwareInterface
         // $this->container->dumpEntries();
 
         $types = [];
-        foreach ($typeRegistry->types() as $Type) {
-            $type = $this->container->get($Type);
+        foreach ($typeRegistry->getTypeClasses() as $TypeClass) {
+            $type = $this->container->get($TypeClass);
             $types[$type::$type] = $type->toSchemaJson();
         }
 
         $validators = [];
-        foreach ($typeRegistry->validators() as $Validator) {
-            $validator = $this->container->get($Validator);
+        foreach ($typeRegistry->validators() as $ValidatorClass) {
+            $validator = $this->container->get($ValidatorClass);
             $validators[$validator::$type] = $validator->toSchemaJson();
         }
 

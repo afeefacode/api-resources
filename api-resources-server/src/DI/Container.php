@@ -41,9 +41,9 @@ class Container implements ContainerInterface
      */
     public function get($classOrCallback, Closure $resolveCallback = null): object
     {
-        [$Type, $callback] = $this->classOrCallback($classOrCallback);
-        if ($Type) {
-            $Types = [$Type];
+        [$TypeClass, $callback] = $this->classOrCallback($classOrCallback);
+        if ($TypeClass) {
+            $Types = [$TypeClass];
         } else {
             $Types = $this->getCallbackArgumentTypes($callback);
             if (!count($Types)) {
@@ -52,14 +52,14 @@ class Container implements ContainerInterface
         }
 
         $arguments = [];
-        foreach ($Types as $Type) {
+        foreach ($Types as $TypeClass) {
             $instance = null;
-            if (!$this->has($Type)) {
-                $definition = $this->config[$Type] ?? null;
+            if (!$this->has($TypeClass)) {
+                $definition = $this->config[$TypeClass] ?? null;
                 $register = !($definition instanceof CreateDefinition);
-                $instance = $this->createInstance($Type, null, $register);
+                $instance = $this->createInstance($TypeClass, null, $register);
             } else {
-                $instance = $this->entries[$Type];
+                $instance = $this->entries[$TypeClass];
             }
             $arguments[] = $instance;
         }
@@ -75,9 +75,9 @@ class Container implements ContainerInterface
         return $arguments[0];
     }
 
-    public function has(string $Type): bool
+    public function has(string $TypeClass): bool
     {
-        return isset($this->entries[$Type]);
+        return isset($this->entries[$TypeClass]);
     }
 
     /**
@@ -98,12 +98,12 @@ class Container implements ContainerInterface
         $resolveCallbackExpectsResolver = $resolveCallback && $this->argumentIsResolver($resolveCallback);
 
         $argumentsMap = array_column(
-            array_map(function ($Type, $index) use ($resolveCallback, $resolveCallbackExpectsResolver) {
+            array_map(function ($TypeClass, $index) use ($resolveCallback, $resolveCallbackExpectsResolver) {
                 $instance = null;
 
                 if ($resolveCallbackExpectsResolver) {
                     $resolver = $this->resolver()
-                        ->Type($Type)
+                        ->typeClass($TypeClass)
                         ->index($index);
 
                     if ($resolveCallback) {
@@ -113,15 +113,15 @@ class Container implements ContainerInterface
                     if ($resolver->getFix()) { // fix value
                         $instance = $resolver->getFix();
                     } elseif ($resolver->shouldCreate()) { // create instance
-                        $instance = $this->createInstance($Type);
+                        $instance = $this->createInstance($TypeClass);
                     }
                 }
 
                 if (!$instance) {
-                    $instance = $this->get($Type);
+                    $instance = $this->get($TypeClass);
                 }
 
-                return [$Type, $instance];
+                return [$TypeClass, $instance];
             }, $Types, array_keys($Types)),
             1,
             0
@@ -169,7 +169,7 @@ class Container implements ContainerInterface
 
     private function createInstance($classOrCallback, Closure $resolveCallback = null, $register = false): object
     {
-        [$Type, $callback] = $this->classOrCallback($classOrCallback);
+        [$TypeClass, $callback] = $this->classOrCallback($classOrCallback);
         if ($callback) {
             $Types = $this->getCallbackArgumentTypes($classOrCallback);
             if (!count($Types)) {
@@ -177,14 +177,14 @@ class Container implements ContainerInterface
             } elseif (count($Types) > 1) {
                 throw new TooManyCallbackArgumentsException('Create callback may only provide 1 argument.');
             }
-            $Type = $Types[0];
+            $TypeClass = $Types[0];
         }
 
-        $definition = $this->config[$Type] ?? null;
+        $definition = $this->config[$TypeClass] ?? null;
         if ($definition instanceof FactoryDefinition) {
             $instance = $definition();
         } else {
-            $instance = new $Type();
+            $instance = new $TypeClass();
         }
 
         if ($definition instanceof CreateDefinition) {
@@ -197,7 +197,7 @@ class Container implements ContainerInterface
         $this->bootstrapInstance($instance);
 
         if ($register) {
-            $this->register($Type, $instance);
+            $this->register($TypeClass, $instance);
         }
 
         if ($callback) {
@@ -247,10 +247,10 @@ class Container implements ContainerInterface
         return (count($Types) === 1 && $Types[0] === Resolver::class);
     }
 
-    private function register(string $Type, object $instance)
+    private function register(string $TypeClass, object $instance)
     {
-        if (!isset($this->entries[$Type])) {
-            $this->entries[$Type] = $instance;
+        if (!isset($this->entries[$TypeClass])) {
+            $this->entries[$TypeClass] = $instance;
         }
     }
 

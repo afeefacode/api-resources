@@ -2,6 +2,7 @@
 
 namespace Afeefa\ApiResources\DB;
 
+use Afeefa\ApiResources\Api\RequestedFields;
 use Afeefa\ApiResources\DI\ContainerAwareInterface;
 use Afeefa\ApiResources\DI\ContainerAwareTrait;
 use Afeefa\ApiResources\DI\Resolver;
@@ -15,12 +16,12 @@ class RelationLoader implements ContainerAwareInterface
     /**
      * @return RelationResolver[]
      */
-    protected function createRelationResolvers(Type $type, array $requestedFields): array
+    protected function createRelationResolvers(Type $type, RequestedFields $fields): array
     {
         $relationResolvers = [];
-        foreach (array_keys($requestedFields) as $requestedField) {
-            if ($type->hasRelation($requestedField)) {
-                $relation = $type->getRelation($requestedField);
+        foreach ($fields->getFieldNames() as $fieldName) {
+            if ($type->hasRelation($fieldName)) {
+                $relation = $type->getRelation($fieldName);
                 $resolveCallback = $relation->getResolve();
 
                 /** @var RelationResolver */
@@ -45,13 +46,13 @@ class RelationLoader implements ContainerAwareInterface
                     );
 
                     if (!$relationResolver) {
-                        throw new InvalidConfigurationException("Resolve callback for relation {$requestedField} on type {$type::$type} must receive RelationResolver argument.");
+                        throw new InvalidConfigurationException("Resolve callback for relation {$fieldName} on type {$type::$type} must receive a RelationResolver as argument.");
                     }
 
                     $relationResolver->relation($relation);
-                    $relationResolvers[$requestedField] = $relationResolver;
+                    $relationResolvers[$fieldName] = $relationResolver;
                 } else {
-                    throw new InvalidConfigurationException("Relation {$requestedField} on type {$type::$type} does not have a relation resolver.");
+                    throw new InvalidConfigurationException("Relation {$fieldName} on type {$type::$type} does not have a relation resolver.");
                 }
             }
         }
@@ -61,17 +62,17 @@ class RelationLoader implements ContainerAwareInterface
     /**
      * @param RelationResolver[] $relationResolvers
      */
-    protected function getSelectFields(Type $type, array $requestedFields, array $relationResolvers): array
+    protected function getSelectFields(Type $type, RequestedFields $fields, array $relationResolvers): array
     {
         $selectFields = ['id'];
 
-        foreach (array_keys($requestedFields) as $requestedField) {
-            if ($type->hasAttribute($requestedField)) {
-                $selectFields[] = $requestedField;
+        foreach ($fields->getFieldNames() as $fieldName) {
+            if ($type->hasAttribute($fieldName)) {
+                $selectFields[] = $fieldName;
             }
 
-            if ($type->hasRelation($requestedField)) {
-                $relationResolver = $relationResolvers[$requestedField];
+            if ($type->hasRelation($fieldName)) {
+                $relationResolver = $relationResolvers[$fieldName];
                 $selectFields = array_unique(
                     array_merge(
                         $selectFields,
@@ -80,13 +81,13 @@ class RelationLoader implements ContainerAwareInterface
                 );
             }
 
-            if (preg_match('/^\@(.+)/', $requestedField, $matches)) {
+            if (preg_match('/^\@(.+)/', $fieldName, $matches)) {
                 $onTypeName = $matches[1];
                 if ($type::$type === $onTypeName) {
                     $selectFields = array_unique(
                         array_merge(
                             $selectFields,
-                            $this->getSelectFields($type, $requestedFields[$requestedField], $relationResolvers)
+                            $this->getSelectFields($type, $fields->getNestedField($fieldName), $relationResolvers)
                         )
                     );
                 }

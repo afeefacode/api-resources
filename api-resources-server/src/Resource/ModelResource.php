@@ -7,12 +7,12 @@ use Afeefa\ApiResources\Action\ActionBag;
 
 class ModelResource extends Resource
 {
-    protected string $ModelType;
+    protected string $ModelTypeClass;
 
     protected function actions(ActionBag $actions): void
     {
         $actions->add('list', function (Action $action) {
-            $action->response($this->ModelType);
+            $action->response($this->ModelTypeClass);
         });
     }
 }

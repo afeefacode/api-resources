@@ -16,13 +16,13 @@ class TypeRegistry implements ContainerAwareInterface
 
     protected array $relations = [];
 
-    protected array $types = [];
+    protected array $TypeClasses = [];
 
     protected array $resources = [];
 
-    public function registerValidator(string $Validator)
+    public function registerValidator(string $ValidatorClass)
     {
-        $this->validators[$Validator] = $Validator;
+        $this->validators[$ValidatorClass] = $ValidatorClass;
     }
 
     public function validators()
@@ -30,40 +30,40 @@ class TypeRegistry implements ContainerAwareInterface
         return $this->validators;
     }
 
-    public function registerField(string $Field)
+    public function registerField(string $FieldClass)
     {
-        $this->fields[$Field] = $Field;
+        $this->fields[$FieldClass] = $FieldClass;
     }
 
-    public function registerRelation(string $Relation)
+    public function registerRelation(string $RelationClass)
     {
-        $this->relations[$Relation] = $Relation;
+        $this->relations[$RelationClass] = $RelationClass;
     }
 
-    public function registerType(string $Type)
+    public function registerType(string $TypeClass)
     {
-        if (!isset($this->types[$Type])) {
-            $this->container->get($Type, function (Type $type) use ($Type) {
-                $this->types[$Type] = $Type;
+        if (!isset($this->TypeClasses[$TypeClass])) {
+            $this->container->get($TypeClass, function (Type $type) use ($TypeClass) {
+                $this->TypeClasses[$TypeClass] = $TypeClass;
                 $type->toSchemaJson();
             });
         }
     }
 
-    public function types()
+    public function getTypeClasses()
     {
-        return $this->types;
+        return $this->TypeClasses;
     }
 
-    public function registerResource(string $Resource)
+    public function registerResource(string $ResourceClass)
     {
-        $this->resources[$Resource] = $Resource;
+        $this->resources[$ResourceClass] = $ResourceClass;
     }
 
     public function dumpEntries()
     {
         debug_dump([
-            'types' => $this->types,
+            'TypeClasses' => $this->TypeClasses,
             'fields' => $this->fields,
             'validators' => $this->validators,
             'relations' => $this->relations,

@@ -3,10 +3,8 @@
 namespace Afeefa\ApiResources\Api;
 
 use Afeefa\ApiResources\Action\Action;
-use Afeefa\ApiResources\DB\TypeClassMap;
 use Afeefa\ApiResources\DI\ContainerAwareInterface;
 use Afeefa\ApiResources\DI\ContainerAwareTrait;
-use Afeefa\ApiResources\Type\Type;
 
 class ApiRequest implements ContainerAwareInterface
 {
@@ -20,7 +18,7 @@ class ApiRequest implements ContainerAwareInterface
 
     protected array $filters = [];
 
-    protected array $fields = [];
+    protected RequestedFields $fields;
 
     public function fromInput(): ApiRequest
     {
@@ -63,15 +61,17 @@ class ApiRequest implements ContainerAwareInterface
 
     public function fields(array $fields): ApiRequest
     {
-        $Type = $this->getAction()->getResponse()->getType();
-        $type = $this->container->get($Type);
-
-        $this->fields = $this->normalizeFields($type, $fields);
+        $this->fields = $this->container->create(function (RequestedFields $requestedFields) use ($fields) {
+            $TypeClass = $this->getAction()->getResponse()->getTypeClass();
+            $requestedFields
+                ->typeClass($TypeClass)
+                ->fields($fields);
+        });
 
         return $this;
     }
 
-    public function getFields(): array
+    public function getFields(): RequestedFields
     {
         return $this->fields;
     }
@@ -81,41 +81,5 @@ class ApiRequest implements ContainerAwareInterface
         return $this
             ->getAction()
             ->run();
-    }
-
-    protected function normalizeFields(Type $type, array $requestedFields): array
-    {
-        $normalizedFields = [];
-        foreach ($requestedFields as $requestedField => $nested) {
-            if ($type->hasAttribute($requestedField)) {
-                $normalizedFields[$requestedField] = true;
-            }
-
-            if ($type->hasRelation($requestedField)) {
-                if ($nested === true) {
-                    $nested = [];
-                }
-                if (is_array($nested)) {
-                    $relatedType = $type->getRelation($requestedField)->getRelatedTypeInstance();
-                    $normalizedFields[$requestedField] = $this->normalizeFields($relatedType, $nested);
-                }
-            }
-
-            if (preg_match('/^\@(.+)/', $requestedField, $matches)) {
-                if ($nested === true) {
-                    $nested = [];
-                }
-                if (is_array($nested)) {
-                    $onTypeName = $matches[1];
-                    $OnType = $this->container->call(function (TypeClassMap $typeClassMap) use ($onTypeName) {
-                        return $typeClassMap->getClass($onTypeName);
-                    });
-                    $onType = $this->container->get($OnType);
-                    $normalizedFields[$requestedField] = $this->normalizeFields($onType, $nested);
-                }
-            }
-        }
-
-        return $normalizedFields;
     }
 }

@@ -18,9 +18,9 @@ class Type implements ToSchemaJsonInterface, ContainerAwareInterface
 
     protected FieldBag $fields;
 
-    public static function listOf(string $Type): string
+    public static function listOf(string $TypeClass): string
     {
-        return $Type;
+        return $TypeClass;
     }
 
     public function created(): void

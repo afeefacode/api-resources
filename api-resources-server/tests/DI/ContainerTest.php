@@ -415,12 +415,12 @@ class ContainerTest extends TestCase
     {
         $container = new Container();
 
-        $Service = TestService::class;
+        $ServiceClass = TestService::class;
 
         $called = false;
         $s = null;
 
-        $service = $container->create($Service, function (TestService $service) use (&$called, &$s) {
+        $service = $container->create($ServiceClass, function (TestService $service) use (&$called, &$s) {
             $called = true;
             $s = $service;
         });
@@ -634,7 +634,7 @@ class ContainerTest extends TestCase
             function (TestModel $model, TestService2 $service) {
             },
             function (Resolver $r) use (&$resolverTypes, &$resolverIndexes) {
-                $resolverTypes[] = $r->getType();
+                $resolverTypes[] = $r->getTypeClass();
                 $resolverIndexes[] = $r->getIndex();
 
                 if ($r->getIndex() === 0) {

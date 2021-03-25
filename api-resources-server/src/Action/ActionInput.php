@@ -15,11 +15,11 @@ class ActionInput implements ToSchemaJsonInterface, ContainerAwareInterface
 
     protected bool $list = false;
 
-    protected string $Type;
+    protected string $TypeClass;
 
-    public function type(string $Type)
+    public function typeClass(string $TypeClass)
     {
-        $this->Type = $Type;
+        $this->TypeClass = $TypeClass;
 
         return $this;
     }
@@ -32,10 +32,10 @@ class ActionInput implements ToSchemaJsonInterface, ContainerAwareInterface
 
     public function getSchemaJson(TypeRegistry $typeRegistry): array
     {
-        $typeRegistry->registerType($this->Type);
+        $typeRegistry->registerType($this->TypeClass);
 
         $json = [
-            'type' => $this->Type::$type
+            'type' => $this->TypeClass::$type
         ];
 
         return $json;

@@ -17,7 +17,7 @@ use Closure;
  */
 class Relation extends Field
 {
-    protected string $RelatedType;
+    protected string $RelatedTypeClass;
 
     protected RequestParams $params;
 
@@ -40,28 +40,28 @@ class Relation extends Field
         return $this->params;
     }
 
-    public function relatedType(string $RelatedType): Relation
+    public function relatedTypeClass(string $RelatedTypeClass): Relation
     {
-        $this->RelatedType = $RelatedType;
+        $this->RelatedTypeClass = $RelatedTypeClass;
 
         return $this;
     }
 
     public function getRelatedType(): string
     {
-        return $this->RelatedType;
+        return $this->RelatedTypeClass;
     }
 
     public function getRelatedTypeInstance(): Type
     {
-        return $this->container->get($this->RelatedType);
+        return $this->container->get($this->RelatedTypeClass);
     }
 
     public function clone(): Relation
     {
         /** @var Relation */
         $relation = parent::clone();
-        $relation->relatedType($this->RelatedType);
+        $relation->relatedTypeClass($this->RelatedTypeClass);
         return $relation;
     }
 
@@ -69,12 +69,12 @@ class Relation extends Field
     {
         $json = parent::getSchemaJson($typeRegistry);
 
-        $typeRegistry->registerType($this->RelatedType);
+        $typeRegistry->registerType($this->RelatedTypeClass);
 
         return array_merge(
             $json,
             [
-                'related_type' => $this->RelatedType::$type
+                'related_type' => $this->RelatedTypeClass::$type
             ]
         );
     }

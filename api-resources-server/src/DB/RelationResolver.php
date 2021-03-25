@@ -2,6 +2,7 @@
 
 namespace Afeefa\ApiResources\DB;
 
+use Afeefa\ApiResources\Api\RequestedFields;
 use Afeefa\ApiResources\Field\Relation;
 use Afeefa\ApiResources\Model\ModelInterface;
 use Closure;
@@ -10,7 +11,7 @@ class RelationResolver extends RelationLoader
 {
     protected Relation $relation;
 
-    protected array $requestedFields = [];
+    protected RequestedFields $requestedFields;
 
     protected ?ModelInterface $owner = null;
 
@@ -31,9 +32,9 @@ class RelationResolver extends RelationLoader
         return $this;
     }
 
-    public function requestedFields(array $requestedFields): RelationResolver
+    public function requestedFields(RequestedFields $fields): RelationResolver
     {
-        $this->requestedFields = $requestedFields;
+        $this->requestedFields = $fields;
         return $this;
     }
 
@@ -73,16 +74,6 @@ class RelationResolver extends RelationLoader
         return $this;
     }
 
-    public function getSelectFields2(string $typeName = null): array
-    {
-        $Type = $this->container->call(function (TypeClassMap $typeClassMap) use ($typeName) {
-            return $typeClassMap->getClass($typeName);
-        });
-        $type = $this->container->get($Type);
-        $relationResolvers = $this->createRelationResolvers($type, $this->requestedFields);
-        return $this->getSelectFields($type, $this->requestedFields, $relationResolvers);
-    }
-
     public function fetch()
     {
         $loadCallback = $this->loadCallback;
@@ -93,10 +84,10 @@ class RelationResolver extends RelationLoader
 
         $selectFieldsCallback = function (string $typeName = null) use ($relationResolvers) {
             if ($typeName) {
-                $Type = $this->container->call(function (TypeClassMap $typeClassMap) use ($typeName) {
+                $TypeClass = $this->container->call(function (TypeClassMap $typeClassMap) use ($typeName) {
                     return $typeClassMap->getClass($typeName);
                 });
-                $type = $this->container->get($Type);
+                $type = $this->container->get($TypeClass);
             } else {
                 $type = $this->relation->getRelatedTypeInstance();
             }
@@ -118,7 +109,7 @@ class RelationResolver extends RelationLoader
                     foreach ($models as $model) {
                         $relationResolver->addOwner($model);
                     }
-                    $relationResolver->requestedFields($requestedFields[$requestedField]);
+                    $relationResolver->requestedFields($requestedFields->getNestedField($requestedField));
                 }
             }
 

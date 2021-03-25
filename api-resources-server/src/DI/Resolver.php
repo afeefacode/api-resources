@@ -4,7 +4,7 @@ namespace Afeefa\ApiResources\DI;
 
 class Resolver
 {
-    protected string $Type;
+    protected string $TypeClass;
 
     protected int $index = 0;
 
@@ -12,15 +12,15 @@ class Resolver
 
     protected bool $create = false;
 
-    public function Type(string $Type): Resolver
+    public function typeClass(string $TypeClass): Resolver
     {
-        $this->Type = $Type;
+        $this->TypeClass = $TypeClass;
         return $this;
     }
 
-    public function getType(): string
+    public function getTypeClass(): string
     {
-        return $this->Type;
+        return $this->TypeClass;
     }
 
     public function index(int $index): Resolver
@@ -56,13 +56,13 @@ class Resolver
         return $this->create;
     }
 
-    public function isOf(string $Type): bool
+    public function isOf(string $TypeClass): bool
     {
-        if ($this->Type === $Type) {
+        if ($this->TypeClass === $TypeClass) {
             return true;
         }
 
-        $isSubclass = is_subclass_of($this->Type, $Type);
+        $isSubclass = is_subclass_of($this->TypeClass, $TypeClass);
         return $isSubclass;
     }
 }

@@ -42,13 +42,13 @@ class FieldBag extends Bag
         return $this;
     }
 
-    public function relation(string $name, string $RelatedType, $classOrCallback): FieldBag
+    public function relation(string $name, string $RelatedTypeClass, $classOrCallback): FieldBag
     {
-        $this->container->create($classOrCallback, function (Relation $relation) use ($name, $RelatedType) {
+        $this->container->create($classOrCallback, function (Relation $relation) use ($name, $RelatedTypeClass) {
             $relation
                 ->name($name)
                 ->allowed(true)
-                ->relatedType($RelatedType);
+                ->relatedTypeClass($RelatedTypeClass);
             $this->set($name, $relation);
         });
 
