@@ -22,6 +22,8 @@ class ResolveContext implements ContainerAwareInterface
      */
     protected array $relationResolvers;
 
+    protected array $meta = [];
+
     public function type(Type $type): ResolveContext
     {
         $this->type = $type;
@@ -32,6 +34,17 @@ class ResolveContext implements ContainerAwareInterface
     {
         $this->requestedFields = $requestedFields;
         return $this;
+    }
+
+    public function meta(array $meta): ResolveContext
+    {
+        $this->meta = $meta;
+        return $this;
+    }
+
+    public function getMeta(): array
+    {
+        return $this->meta;
     }
 
     /**

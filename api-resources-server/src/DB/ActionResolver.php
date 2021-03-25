@@ -20,6 +20,11 @@ class ActionResolver extends DataResolver
         return $this;
     }
 
+    public function getRequest(): ApiRequest
+    {
+        return $this->request;
+    }
+
     public function action(Action $action): ActionResolver
     {
         $this->action = $action;
@@ -67,6 +72,10 @@ class ActionResolver extends DataResolver
                 ->makeVisible($models);
         });
 
-        return array_values($models);
+        return [
+            'data' => array_values($models),
+            'meta' => $resolveContext->getMeta(),
+            'request' => $this->request
+        ];
     }
 }

@@ -48,8 +48,8 @@ $app->get('/backend-api/test', function (HttpRequest $request, Response $respons
     $result = $this->call(function (BackendApi $api) {
         return $api->request(function (ApiRequest $request) {
             $request
-                ->resource(ArticlesResource::$type)
-                ->action('get_articles')
+                ->resourceName(ArticlesResource::$type)
+                ->actionName('get_articles')
                 ->fields([
                     'title' => true,
                     'date' => true,
@@ -95,8 +95,8 @@ $app->get('/backend-api/tags', function (HttpRequest $request, Response $respons
     $result = $this->call(function (BackendApi $api) {
         return $api->request(function (ApiRequest $request) {
             $request
-                ->resource(ArticlesResource::$type)
-                ->action('get_articles')
+                ->resourceName(ArticlesResource::$type)
+                ->actionName('get_articles')
                 ->fields([
                     'title' => true,
                     'tags' => [

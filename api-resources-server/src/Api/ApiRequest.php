@@ -7,16 +7,17 @@ use Afeefa\ApiResources\DB\ActionResolver;
 use Afeefa\ApiResources\DI\ContainerAwareInterface;
 use Afeefa\ApiResources\DI\ContainerAwareTrait;
 use Afeefa\ApiResources\DI\DependencyResolver;
+use JsonSerializable;
 
-class ApiRequest implements ContainerAwareInterface
+class ApiRequest implements ContainerAwareInterface, JsonSerializable
 {
     use ContainerAwareTrait;
 
     protected Api $api;
 
-    protected string $resource;
+    protected string $resourceName;
 
-    protected string $action;
+    protected string $actionName;
 
     protected array $filters = [];
 
@@ -24,17 +25,19 @@ class ApiRequest implements ContainerAwareInterface
 
     public function fromInput(): ApiRequest
     {
-        $input = json_decode(file_get_contents('php://input'), false);
+        $input = json_decode(file_get_contents('php://input'), true);
 
-        $this->resource = $input->resource;
-        $this->action = $input->action;
+        $this->resourceName = $input['resource'];
+        $this->actionName = $input['action'];
+        $this->fields($input['fields'] ?? []);
+        $this->filters = $input['filters'] ?? [];
 
         return $this;
     }
 
-    public function resource(string $resource): ApiRequest
+    public function resourceName(string $resourceName): ApiRequest
     {
-        $this->resource = $resource;
+        $this->resourceName = $resourceName;
         return $this;
     }
 
@@ -44,21 +47,26 @@ class ApiRequest implements ContainerAwareInterface
         return $this;
     }
 
-    public function action(string $action): ApiRequest
+    public function actionName(string $actionName): ApiRequest
     {
-        $this->action = $action;
+        $this->actionName = $actionName;
         return $this;
     }
 
     public function getAction(): Action
     {
-        return $this->api->getAction($this->resource, $this->action);
+        return $this->api->getAction($this->resourceName, $this->actionName);
     }
 
     public function filter(string $name, string $value): ApiRequest
     {
         $this->filters[] = [$name => $value];
         return $this;
+    }
+
+    public function getFilters(): array
+    {
+        return $this->filters;
     }
 
     public function fields(array $fields): ApiRequest
@@ -80,6 +88,10 @@ class ApiRequest implements ContainerAwareInterface
 
     public function dispatch()
     {
+        if (!isset($this->fields)) {
+            $this->fields([]);
+        }
+
         $action = $this->getAction();
 
         $actionResolver = $this->container->create(function (ActionResolver $actionResolver) use ($action) {
@@ -100,5 +112,16 @@ class ApiRequest implements ContainerAwareInterface
         );
 
         return $actionResolver->fetch();
+    }
+
+    public function jsonSerialize()
+    {
+        $json = [
+            'resource' => $this->resourceName,
+            'action' => $this->actionName,
+            'fields' => $this->fields,
+            'filters' => $this->filters,
+        ];
+        return $json;
     }
 }

@@ -29,6 +29,7 @@ class Api implements ContainerAwareInterface
 
     public function request(Closure $callback)
     {
+        /** @var ApiRequest */
         $request = $this->container->get(ApiRequest::class);
         $request->api($this);
         $callback($request);
@@ -37,6 +38,7 @@ class Api implements ContainerAwareInterface
 
     public function requestFromInput()
     {
+        /** @var ApiRequest */
         $request = $this->container->get(ApiRequest::class);
         $request->api($this);
         $request->fromInput();
