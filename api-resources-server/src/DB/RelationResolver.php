@@ -95,6 +95,11 @@ class RelationResolver extends DataResolver
             $owner->apiResourcesSetRelation($relationName, $value);
         }
 
+        // no objects -> no relations
+        if (!count($objects)) {
+            return;
+        }
+
         // resolve sub relations
 
         if ($this->relation->isSingle()) {

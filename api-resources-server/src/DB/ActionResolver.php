@@ -55,22 +55,24 @@ class ActionResolver extends DataResolver
         $loadCallback = $this->loadCallback;
         $models = $loadCallback($resolveContext);
 
-        // resolve relations
+        if (count($models)) {
+            // resolve relations
 
-        foreach ($resolveContext->getRelationResolvers() as $relationResolver) {
-            foreach ($models as $model) {
-                $relationResolver->addOwner($model);
+            foreach ($resolveContext->getRelationResolvers() as $relationResolver) {
+                foreach ($models as $model) {
+                    $relationResolver->addOwner($model);
+                }
+                $relationResolver->fetch();
             }
-            $relationResolver->fetch();
+
+            // mark visible fields
+
+            $this->container->create(function (VisibleFields $visibleFields) use ($models, $requestedFields) {
+                $visibleFields
+                    ->requestedFields($requestedFields)
+                    ->makeVisible($models);
+            });
         }
-
-        // mark visible fields
-
-        $this->container->create(function (VisibleFields $visibleFields) use ($models, $requestedFields) {
-            $visibleFields
-                ->requestedFields($requestedFields)
-                ->makeVisible($models);
-        });
 
         return [
             'data' => array_values($models),
