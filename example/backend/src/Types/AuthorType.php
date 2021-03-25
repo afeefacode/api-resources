@@ -2,12 +2,12 @@
 
 namespace Backend\Types;
 
+use Afeefa\ApiResources\DB\Medoo\B_a_id_Resolver;
 use Afeefa\ApiResources\Field\FieldBag;
 use Afeefa\ApiResources\Field\Fields\HasManyRelation;
 use Afeefa\ApiResources\Field\Fields\LinkManyRelation;
 use Afeefa\ApiResources\Field\Fields\VarcharAttribute;
 use Afeefa\ApiResources\Type\Type;
-use Backend\Resolvers\ArticlesResolver;
 use Backend\Resolvers\TagsResolver;
 
 class AuthorType extends Type
@@ -21,7 +21,11 @@ class AuthorType extends Type
         $fields->attribute('email', VarcharAttribute::class);
 
         $fields->relation('articles', ArticleType::class, function (HasManyRelation $relation) {
-            $relation->resolve([ArticlesResolver::class, 'resolve_articles_relation']);
+            $relation->resolve(function (B_a_id_Resolver $r) {
+                $r
+                    ->aIdFieldName('author_id')
+                    ->typeClass(ArticleType::class);
+            });
         });
 
         $fields->relation('tags', TagType::class, function (LinkManyRelation $relation) {
