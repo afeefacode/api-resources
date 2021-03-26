@@ -1,5 +1,7 @@
 {
   "compilerOptions": {
-    "baseUrl": "."
+    "baseUrl": ".",
+    "target": "es2015",
+    "module": "es6"
   }
 }
