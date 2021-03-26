@@ -1,5 +1,5 @@
-import App from '../App'
-import Test from '../components/Test'
+import App from '@/App'
+import Test from '@/components/Test'
 
 export const routes = [
   {
