@@ -1,0 +1,12 @@
+{
+  "name": "@afeefa/afeefa-vue-app",
+  "version": "1.0.25",
+  "description": "",
+  "author": "Afeefa Kollektiv <kollektiv@afeefa.de>",
+  "license": "MIT",
+  "dependencies": {},
+  "devDependencies": {
+    "vue": "^2.6.12",
+    "vue-property-decorator": "^9.1.2"
+  }
+}
