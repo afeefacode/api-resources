@@ -7,6 +7,9 @@
       ],
       "@afeefa/api-resources-client/*": [
         "../../api-resources-client/src/*"
+      ],
+      "@avue/*": [
+        "../../afeefa-vue-app/src/*"
       ]
     }
   }

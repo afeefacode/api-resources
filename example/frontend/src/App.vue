@@ -5,6 +5,10 @@
         fluid
         class="px-8 py-4 px-sm-15 py-sm-10"
       >
+        TestView: <router-view />
+
+        <a-vue />
+
         <p>URL {{ url }}</p>
 
         <a href="/">Backend</a>
@@ -12,9 +16,9 @@
         <h1>Articles</h1>
 
         <v-text-field
+          v-model="keyword"
           label="Suche"
           title="Suche"
-          v-model="keyword"
         />
 
         <v-pagination
@@ -30,9 +34,15 @@
             v-for="article in articles"
             :key="article.id"
           >
-            <div class="meta"># {{ article.id }} | Am {{ article.date }}</div>
-            <div class="author">{{ article.author.name }}</div>
-            <div class="title">{{ article.title }}</div>
+            <div class="meta">
+              # {{ article.id }} | Am {{ article.date }}
+            </div>
+            <div class="author">
+              {{ article.author.name }}
+            </div>
+            <div class="title">
+              {{ article.title }}
+            </div>
           </li>
         </ul>
       </v-container>
@@ -62,7 +72,7 @@ export default class App extends Vue {
   }
 
   get numPages () {
-    console.log('get num pages', this.meta,  Math.ceil(this.meta.count_search / 15))
+    console.log('get num pages', this.meta, Math.ceil(this.meta.count_search / 15))
     return Math.ceil(this.meta.count_search / 15)
   }
 
@@ -96,7 +106,6 @@ export default class App extends Vue {
     this.articles = result.data.data
     this.meta = result.data.meta
   }
-
 }
 </script>
 

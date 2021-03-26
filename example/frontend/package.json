@@ -5,8 +5,11 @@
     "build": "npm run --prefix node_modules/@afeefa/vue2-bootstrap build"
   },
   "dependencies": {
+    "@afeefa/afeefa-vue-app": "file:../../afeefa-vue-app",
     "@afeefa/api-resources-client": "file:../../api-resources-client",
     "@afeefa/vue2-bootstrap": "^1.0",
+    "axios": "^0.21.1",
+    "vue-router": "^3.5.1",
     "vuetify": "^2.4.8"
   },
   "devDependencies": {
