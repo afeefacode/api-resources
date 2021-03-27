@@ -1,8 +1,10 @@
+import { RouteDefinitionsPlugin } from '@avue/routes/RouteDefinitionsPlugin'
 import Vue from 'vue'
 import Router from 'vue-router'
 
 import { routes } from './routes'
 
+Vue.use(RouteDefinitionsPlugin)
 Vue.use(Router)
 
 export default new Router({

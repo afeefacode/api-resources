@@ -1,7 +1,6 @@
 <template>
   <div>
-    Default {{ $routeDefinition.routeId }}
-    <router-view />
+    Edit
   </div>
 </template>
 
@@ -9,6 +8,6 @@
 import { Component, Vue } from 'vue-property-decorator'
 
 @Component
-export default class DefaultRouteComponent extends Vue {
+export default class Edit extends Vue {
 }
 </script>
