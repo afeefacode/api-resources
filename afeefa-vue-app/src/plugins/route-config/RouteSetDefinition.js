@@ -9,17 +9,17 @@ export class RouteSetDefinition {
   }
 
   getDefinitions () {
-    return this.single('container', this.path, false, false, [
-      this.single('list', '', true, false),
-      this.single('new', 'new', true, false),
-      this.single('model', ':' + this.idKey, false, true, [
-        this.single('detail', '', true, true),
-        this.single('edit', 'edit', true, true)
+    return this.route('container', this.path, false, false, [
+      this.route('list', '', true, false),
+      this.route('new', 'new', true, false),
+      this.route('model', ':' + this.idKey, false, true, [
+        this.route('detail', '', true, true),
+        this.route('edit', 'edit', true, true)
       ])
     ])
   }
 
-  single (action, path, hasRouteName, hasId, children = []) {
+  route (action, path, hasRouteName, hasId, children = []) {
     const routeId = `${this.name}.${action}`
     const component = this.components[action]
 

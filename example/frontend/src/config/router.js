@@ -1,10 +1,10 @@
-import { RouteDefinitionsPlugin } from '@avue/routes/RouteDefinitionsPlugin'
+import { RouteConfigPlugin } from '@avue/plugins/route-config/RouteConfigPlugin'
 import Vue from 'vue'
 import Router from 'vue-router'
 
 import { routes } from './routes'
 
-Vue.use(RouteDefinitionsPlugin)
+Vue.use(RouteConfigPlugin)
 Vue.use(Router)
 
 export default new Router({

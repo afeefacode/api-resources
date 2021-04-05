@@ -3,9 +3,9 @@ import Detail from '@/components/routes/Detail'
 import Edit from '@/components/routes/Edit'
 import List from '@/components/routes/List'
 import New from '@/components/routes/New'
-import { RouteDefinitionsPlugin } from '@avue/routes/RouteDefinitionsPlugin'
+import { RouteConfigPlugin } from '@avue/plugins/route-config/RouteConfigPlugin'
 
-const defintions = new RouteDefinitionsPlugin()
+const defintions = new RouteConfigPlugin()
 
 defintions
   .defaultComponents({

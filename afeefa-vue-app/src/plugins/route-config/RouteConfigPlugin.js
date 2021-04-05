@@ -1,8 +1,8 @@
 import DefaultRouteComponent from './DefaultRouteComponent'
-import { RouteDefinition } from './definition/RouteDefinition'
-import { RouteSetDefinition } from './definition/RouteSetDefinition'
+import { RouteDefinition } from './RouteDefinition'
+import { RouteSetDefinition } from './RouteSetDefinition'
 
-export class RouteDefinitionsPlugin {
+export class RouteConfigPlugin {
   routeNameDefinitionMap = {}
 
   static install (Vue) {
