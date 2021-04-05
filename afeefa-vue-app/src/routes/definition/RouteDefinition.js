@@ -1,8 +1,9 @@
-export class SingleDefinition {
+export class RouteDefinition {
   parent = null
   children = []
 
   constructor ({routeId = '', path, name = '', component, props = {}, meta = {}, children = []}) {
+    console.log('set', routeId)
     this.routeId = routeId || name || ''
     this.path = path
     this.routeName = name || ''

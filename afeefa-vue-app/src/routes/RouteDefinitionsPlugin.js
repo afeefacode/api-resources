@@ -1,6 +1,6 @@
 import DefaultRouteComponent from './DefaultRouteComponent'
-import { SetDefinition } from './definition/SetDefinition'
-import { SingleDefinition } from './definition/SingleDefinition'
+import { RouteDefinition } from './definition/RouteDefinition'
+import { RouteSetDefinition } from './definition/RouteSetDefinition'
 
 export class RouteDefinitionsPlugin {
   routeNameDefinitionMap = {}
@@ -52,7 +52,7 @@ export class RouteDefinitionsPlugin {
   }
 
   single = (options) => {
-    return new SingleDefinition(options)
+    return new RouteDefinition(options)
   }
 
   set = (options) => {
@@ -61,7 +61,7 @@ export class RouteDefinitionsPlugin {
       ...options.components
     }
 
-    const set = new SetDefinition(options)
+    const set = new RouteSetDefinition(options)
     return set.getDefinitions()
   }
 

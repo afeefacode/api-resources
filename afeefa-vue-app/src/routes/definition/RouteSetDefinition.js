@@ -1,6 +1,6 @@
-import { SingleDefinition } from './SingleDefinition'
+import { RouteDefinition } from './RouteDefinition'
 
-export class SetDefinition {
+export class RouteSetDefinition {
   constructor ({path, name, idKey, components}) {
     this.path = path
     this.name = name
@@ -38,7 +38,7 @@ export class SetDefinition {
       }
     }
 
-    const definition = new SingleDefinition(options)
+    const definition = new RouteDefinition(options)
 
     if (['new', 'detail'].includes(action)) {
       definition.setParent = function (parent, routeNameDefinitionMap) {
