@@ -36,8 +36,8 @@ export class RouteConfigPlugin {
   routes (callback = null) {
     if (callback) {
       const routeOrRoutes = callback({
-        SET: this.set,
-        SINGLE: this.single
+        ROUTESET: this.routeSet,
+        ROUTE: this.route
       })
       this._routes = Array.isArray(routeOrRoutes) ? routeOrRoutes : [routeOrRoutes]
       return this
@@ -51,11 +51,11 @@ export class RouteConfigPlugin {
     return this._routes.map(r => r.toVue())
   }
 
-  single = (options) => {
+  route = (options) => {
     return new RouteDefinition(options)
   }
 
-  set = (options) => {
+  routeSet = (options) => {
     options.components = {
       ...this._defaultComponents,
       ...options.components

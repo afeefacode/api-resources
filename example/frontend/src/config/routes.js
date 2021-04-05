@@ -15,27 +15,27 @@ defintions
     new: New
   })
 
-  .routes(({SINGLE, SET}) => {
+  .routes(({ROUTE, ROUTESET}) => {
     return [
-      SINGLE(
+      ROUTE(
         {
           path: '/',
           component: App,
 
           children: [
-            SINGLE({
+            ROUTE({
               path: '/autoren2',
               name: 'authors2.list',
               component: List
             }),
 
-            SINGLE({
+            ROUTE({
               path: '/artikel2',
               name: 'articles2.list',
               component: List,
 
               children: [
-                SET({
+                ROUTESET({
                   path: 'autoren',
                   name: 'authors',
                   idKey: 'authorId'
@@ -43,13 +43,13 @@ defintions
               ]
             }),
 
-            SET({
+            ROUTESET({
               path: 'autoren',
               name: 'authors',
               idKey: 'authorId'
             }),
 
-            SET({
+            ROUTESET({
               path: 'artikel',
               name: 'articles',
               idKey: 'articleId'
