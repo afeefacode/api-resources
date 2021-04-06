@@ -1,6 +1,11 @@
 <template>
   <div>
-    Detail {{ $routeDefinition.routeId }}
+    <h3>Detail</h3>
+    <ul>
+      <li>{{ $routeDefinition.fullId }}</li>
+      <li>{{ $routeDefinition.fullName }}</li>
+      <li>{{ $routeDefinition.fullPath }}</li>
+    </ul>
   </div>
 </template>
 
@@ -9,8 +14,5 @@ import { Component, Vue } from 'vue-property-decorator'
 
 @Component
 export default class Detail extends Vue {
-  created () {
-    console.log('Detail', this.$props, this.$attrs, this.$route)
-  }
 }
 </script>

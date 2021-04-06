@@ -9,6 +9,35 @@
 
         <p>URL {{ url }}</p>
 
+        <h3>App</h3>
+        <ul>
+          <li>{{ $routeDefinition.fullId }}</li>
+          <li>{{ $routeDefinition.fullName }}</li>
+          <li>{{ $routeDefinition.fullPath }}</li>
+        </ul>
+
+        <h3>Parent Paths:</h3>
+
+        <ul>
+          <li
+            v-for="path in paths"
+            :key="path"
+          >
+            {{ path }}
+          </li>
+        </ul>
+
+        <h3>Parents:</h3>
+
+        <ul>
+          <li
+            v-for="definition in definitions"
+            :key="definition"
+          >
+            {{ definition }}
+          </li>
+        </ul>
+
         <a href="/">Backend</a>
 
         <router-link :to="{path: '/'}">
@@ -46,6 +75,16 @@ import { Component, Vue } from 'vue-property-decorator'
 export default class App extends Vue {
   get url () {
     return location.protocol + '//' + location.hostname + (location.port ? ':' + location.port : '')
+  }
+
+  get paths () {
+    const definition = this.$route.meta.routeDefinition
+    return definition.getParentPathDefinitions().map(d => d.fullId)
+  }
+
+  get definitions () {
+    const definition = this.$route.meta.routeDefinition
+    return definition.getParentDefinitions().map(d => d.fullId)
   }
 }
 </script>

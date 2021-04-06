@@ -1,5 +1,12 @@
 <template>
   <div>
+    <h3>List</h3>
+    <ul>
+      <li>{{ $routeDefinition.fullId }}</li>
+      <li>{{ $routeDefinition.fullName }}</li>
+      <li>{{ $routeDefinition.fullPath }}</li>
+    </ul>
+
     <h1>Articles</h1>
 
     <v-text-field

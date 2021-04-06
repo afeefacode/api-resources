@@ -3,16 +3,7 @@ import { RouteDefinition } from './RouteDefinition'
 import { RouteSetDefinition } from './RouteSetDefinition'
 
 export class RouteConfigPlugin {
-  routeNameDefinitionMap = {}
-
-  static install (Vue) {
-    Object.defineProperty(Vue.prototype, '$routeDefinition', {
-      get () {
-        return (this.$props && this.$props.rcp_routeDefinition) ||
-        (this.$attrs && this.$attrs.rcp_routeDefinition)
-      }
-    })
-  }
+  pathDefinitionMap = {}
 
   _defaultComponents = {
     container: DefaultRouteComponent,
@@ -23,6 +14,17 @@ export class RouteConfigPlugin {
     new: DefaultRouteComponent
   }
 
+  _routes = []
+
+  static install (Vue) {
+    Object.defineProperty(Vue.prototype, '$routeDefinition', {
+      get () {
+        return (this.$props && this.$props.rcp_routeDefinition) ||
+          (this.$attrs && this.$attrs.rcp_routeDefinition)
+      }
+    })
+  }
+
   defaultComponents (components = {}) {
     this._defaultComponents = {
       ...this._defaultComponents,
@@ -31,8 +33,6 @@ export class RouteConfigPlugin {
     return this
   }
 
-  _routes = []
-
   routes (callback = null) {
     if (callback) {
       const routeOrRoutes = callback({
@@ -40,15 +40,22 @@ export class RouteConfigPlugin {
         ROUTE: this.route
       })
       this._routes = Array.isArray(routeOrRoutes) ? routeOrRoutes : [routeOrRoutes]
+      this._routes.forEach(r => r.init(null, '', this.pathDefinitionMap))
       return this
     }
   }
 
   getRoutes () {
-    this._routes.forEach(r => r.setRouteName(''))
-    this._routes.forEach(r => r.register(this.register))
-    this._routes.forEach(r => r.setParent(null, this.routeNameDefinitionMap))
     return this._routes.map(r => r.toVue())
+  }
+
+  dumpRoutes () {
+    for (const path in this.pathDefinitionMap) {
+      const r = this.pathDefinitionMap[path]
+      const whites = ' '.repeat(60 - path.length)
+      const whites2 = ' '.repeat(40 - r.fullName.length)
+      console.log('path:', path, whites, 'name:', r.fullName, whites2, 'parent:', r.parentPathDefinition && r.parentPathDefinition.fullName)
+    }
   }
 
   route = (options) => {
@@ -63,11 +70,5 @@ export class RouteConfigPlugin {
 
     const set = new RouteSetDefinition(options)
     return set.getDefinitions()
-  }
-
-  register = (routeId, definition) => {
-    if (routeId) {
-      this.routeNameDefinitionMap[routeId] = definition
-    }
   }
 }

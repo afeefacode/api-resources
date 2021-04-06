@@ -5,9 +5,9 @@ import List from '@/components/routes/List'
 import New from '@/components/routes/New'
 import { RouteConfigPlugin } from '@avue/plugins/route-config/RouteConfigPlugin'
 
-const defintions = new RouteConfigPlugin()
+const config = new RouteConfigPlugin()
 
-defintions
+config
   .defaultComponents({
     list: List,
     detail: Detail,
@@ -20,24 +20,33 @@ defintions
       ROUTE(
         {
           path: '/',
+          name: 'root',
           component: App,
 
           children: [
             ROUTE({
-              path: '/autoren2',
+              path: 'autoren2',
               name: 'authors2.list',
-              component: List
+              component: List,
+
+              children: [
+                ROUTE({
+                  path: 'artikel2',
+                  name: 'articles2.list',
+                  component: List
+                })
+              ]
             }),
 
             ROUTE({
-              path: '/artikel2',
+              path: 'artikel2',
               name: 'articles2.list',
               component: List,
 
               children: [
                 ROUTESET({
-                  path: 'autoren',
-                  name: 'authors',
+                  path: 'autoren3',
+                  name: 'authors3',
                   idKey: 'authorId'
                 })
               ]
@@ -46,7 +55,15 @@ defintions
             ROUTESET({
               path: 'autoren',
               name: 'authors',
-              idKey: 'authorId'
+              idKey: 'authorId',
+
+              children: [
+                ROUTESET({
+                  path: 'kommentare',
+                  name: 'comments',
+                  idKey: 'commentId'
+                })
+              ]
             }),
 
             ROUTESET({
@@ -61,4 +78,6 @@ defintions
     ]
   })
 
-export const routes = defintions.getRoutes()
+config.dumpRoutes()
+
+export const routes = config.getRoutes()
