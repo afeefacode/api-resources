@@ -23,6 +23,7 @@ export class RouteConfigPlugin {
           (this.$attrs && this.$attrs.rcp_routeDefinition)
       }
     })
+
     Object.defineProperty(Vue.prototype, '$routeConfig', {
       get () {
         return (this.$routeDefinition && this.$routeDefinition.config) || {}
