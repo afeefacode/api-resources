@@ -1,7 +1,10 @@
 <template>
   <div>
+    <widget />
+
     <h3>List</h3>
     <ul>
+      <li>Config: {{ $routeConfig }}</li>
       <li>{{ $routeDefinition.fullId }}</li>
       <li>{{ $routeDefinition.fullName }}</li>
       <li>{{ $routeDefinition.fullPath }}</li>
@@ -76,7 +79,7 @@ export default class List extends Vue {
     this.load()
   }
 
-  async created () {
+  created () {
     this.load()
   }
 

@@ -1,41 +1,30 @@
 export class RouteDefinition {
-  path = ''
   fullPath = ''
-
-  id = ''
   fullId = ''
-
-  name = ''
-  childrenNamePrefix = ''
   fullName = ''
-
-  component = null
-  options = {}
 
   parentDefintion = null
   parentPathDefinition = null
-  children = []
-
   pathDefinitionMap = null
 
   constructor ({
-    id = '',
     path,
     component,
+    id = '',
     name = '',
     childrenNamePrefix = '',
+    config = {},
     children = [],
     ...options
   }) {
-    this.id = id || this.getId(path, name)
-
     this.path = path
     this.component = component
+    this.id = id || this.getId(path, name)
     this.name = name
     this.childrenNamePrefix = childrenNamePrefix
-    this.options = options
-
+    this.config = config
     this.children = children
+    this.options = options
   }
 
   setParent (parent, parentName) {
@@ -115,8 +104,10 @@ export class RouteDefinition {
   }
 
   toVue () {
-    const props = route => {
-      let props = this.options.props || {}
+    // props
+    const optionsProps = this.options.props || {}
+    this.options.props = route => {
+      let props = optionsProps
       if (typeof props === 'function') {
         props = props(route)
       }
@@ -124,15 +115,17 @@ export class RouteDefinition {
       return props
     }
 
+    // meta
+    this.options.meta = {
+      ...this.options.meta,
+      routeDefinition: this
+    }
+
     return {
       path: this.path,
       name: this.fullName,
       component: this.component,
       ...this.options,
-      props: props,
-      meta: {
-        routeDefinition: this
-      },
       children: this.children.map(c => c.toVue())
     }
   }

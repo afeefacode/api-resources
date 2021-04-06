@@ -22,6 +22,12 @@ config
           path: '/',
           name: 'root',
           component: App,
+          redirect: {
+            name: 'authors2.list'
+          },
+          config: {
+            title: 'Frontend'
+          },
 
           children: [
             ROUTE({
@@ -69,7 +75,10 @@ config
             ROUTESET({
               path: 'artikel',
               name: 'articles',
-              idKey: 'articleId'
+              idKey: 'articleId',
+              config: {
+                title: 'Artikel'
+              }
             })
           ]
 
@@ -78,6 +87,5 @@ config
     ]
   })
 
-config.dumpRoutes()
-
+// config.dumpRoutes()
 export const routes = config.getRoutes()

@@ -7,10 +7,13 @@
       >
         <a-vue />
 
+        <widget />
+
         <p>URL {{ url }}</p>
 
         <h3>App</h3>
         <ul>
+          <li>Config: {{ $routeConfig }}</li>
           <li>{{ $routeDefinition.fullId }}</li>
           <li>{{ $routeDefinition.fullName }}</li>
           <li>{{ $routeDefinition.fullPath }}</li>
@@ -40,7 +43,7 @@
 
         <a href="/">Backend</a>
 
-        <router-link :to="{path: '/'}">
+        <router-link :to="{name: 'root'}">
           Home
         </router-link>
 
@@ -70,8 +73,13 @@
 
 <script>
 import { Component, Vue } from 'vue-property-decorator'
+import Widget from './components/Widget'
 
-@Component
+@Component({
+  components: {
+    Widget
+  }
+})
 export default class App extends Vue {
   get url () {
     return location.protocol + '//' + location.hostname + (location.port ? ':' + location.port : '')
@@ -85,6 +93,11 @@ export default class App extends Vue {
   get definitions () {
     const definition = this.$route.meta.routeDefinition
     return definition.getParentDefinitions().map(d => d.fullId)
+  }
+
+  created () {
+    console.log(this.$route.meta, this.$attrs)
+    console.log(this.$route.matched)
   }
 }
 </script>

@@ -23,6 +23,11 @@ export class RouteConfigPlugin {
           (this.$attrs && this.$attrs.rcp_routeDefinition)
       }
     })
+    Object.defineProperty(Vue.prototype, '$routeConfig', {
+      get () {
+        return (this.$routeDefinition && this.$routeDefinition.config) || {}
+      }
+    })
   }
 
   defaultComponents (components = {}) {
@@ -67,8 +72,6 @@ export class RouteConfigPlugin {
       ...this._defaultComponents,
       ...options.components
     }
-
-    const set = new RouteSetDefinition(options)
-    return set.getDefinitions()
+    return new RouteSetDefinition(options).getDefinitions()
   }
 }

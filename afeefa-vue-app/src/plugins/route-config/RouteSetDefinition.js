@@ -1,11 +1,19 @@
 import { RouteDefinition } from './RouteDefinition'
 
 export class RouteSetDefinition {
-  constructor ({path, name, idKey, components, children = []}) {
+  constructor ({
+    path,
+    name,
+    idKey = 'id',
+    components,
+    config = {},
+    children = []
+  }) {
     this.path = path
     this.name = name
     this.idKey = idKey
     this.components = components
+    this.config = config
     this.children = children
   }
 
@@ -26,6 +34,7 @@ export class RouteSetDefinition {
       path,
       component: this.components[action],
       name: hasRouteName ? action : '',
+      config: this.config,
       children
     }
 
