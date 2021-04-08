@@ -8,6 +8,10 @@ class OrderFilter extends Filter
 {
     public static string $type = 'Afeefa.Order';
 
+    public const DESC = 'desc';
+
+    public const ASC = 'asc';
+
     protected array $values;
 
     public function values(array $values): OrderFilter

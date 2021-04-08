@@ -47,7 +47,7 @@ class Relation extends Field
         return $this;
     }
 
-    public function getRelatedType(): string
+    public function getRelatedTypeClass(): string
     {
         return $this->RelatedTypeClass;
     }
