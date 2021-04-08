@@ -52,7 +52,7 @@
 <script>
 import { Component, Watch, Vue } from 'vue-property-decorator'
 import Widget from '../Widget.vue'
-import { Client } from '@afeefa/api-resources-client'
+import { Api, Client } from '@afeefa/api-resources-client'
 
 @Component({
   components: {
@@ -64,6 +64,7 @@ export default class List extends Vue {
   meta = {}
   keyword = null
   page = 1
+
 
   @Watch('keyword')
   keywordChanged () {
@@ -84,6 +85,31 @@ export default class List extends Vue {
   }
 
   async load () {
+    // console.log(this.$routeConfig)
+    // console.log(this.$routeConfig.api.request())
+
+    // const {data, meta} = client
+    //   .action('Example.ArticlesResource::get_articles')
+    //   .fields({
+    //     title: true,
+    //     date: true,
+    //     author: {
+    //       name: true
+    //     }
+    //   })
+    //   .filters({
+    //     keyword: this.keyword,
+    //     page: {
+    //       page: this.page,
+    //       pageSize: 15
+    //     }
+    //   })
+    //   .run()
+
+
+    // const Resource = this.$routeConfig.Resource
+    // const resource = new Resource()
+    // console.log(Resource)
     const result = await new Client().post('/backend-api', {
       resource: 'Example.ArticlesResource',
       action: 'get_articles',

@@ -1,3 +1,5 @@
+import './config/api'
+
 import Vue from 'vue'
 
 import router from './config/router'

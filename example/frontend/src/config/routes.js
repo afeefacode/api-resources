@@ -3,6 +3,8 @@ import Detail from '@/components/routes/Detail'
 import Edit from '@/components/routes/Edit'
 import List from '@/components/routes/List'
 import New from '@/components/routes/New'
+import { ArticlesResource } from '@/resources/ArticlesResource'
+import { getApi } from '@afeefa/api-resources-client'
 import { RouteConfigPlugin } from '@avue/plugins/route-config/RouteConfigPlugin'
 
 const config = new RouteConfigPlugin()
@@ -13,6 +15,10 @@ config
     detail: Detail,
     edit: Edit,
     new: New
+  })
+
+  .config({
+    api: getApi('backendApi')
   })
 
   .routes(({ROUTE, ROUTESET}) => {
@@ -62,6 +68,10 @@ config
               path: 'autoren',
               name: 'authors',
               idKey: 'authorId',
+              config: {
+                title: 'Autoren',
+                action: 'Example.AuthorsResource::get_authors'
+              },
 
               children: [
                 ROUTESET({
@@ -77,6 +87,7 @@ config
               name: 'articles',
               idKey: 'articleId',
               config: {
+                Resource: ArticlesResource,
                 title: 'Artikel'
               }
             })

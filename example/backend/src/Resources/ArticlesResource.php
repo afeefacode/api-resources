@@ -57,7 +57,7 @@ class ArticlesResource extends ModelResource
 
                 $filters->add('order', function (OrderFilter $filter) {
                     $filter->values([
-                        'date' => ['desc', 'asc']
+                        'date' => [OrderFilter::DESC, OrderFilter::ASC]
                     ]);
                 });
             });

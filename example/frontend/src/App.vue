@@ -1,10 +1,49 @@
 <template>
   <v-app>
+    <v-navigation-drawer
+      v-model="drawer"
+      app
+      fixed
+    >
+      <div class="pa-8 d-flex align-start flex-column">
+        <v-app-bar-nav-icon @click="drawer = !drawer" />
+      </div>
+
+      <v-container class="pa-8 d-flex flex-column">
+        <a href="/">Backend</a>
+
+        <router-link :to="{name: 'root'}">
+          Home
+        </router-link>
+
+        <router-link :to="{name: 'articles.list'}">
+          Artikel
+        </router-link>
+
+        <router-link :to="{name: 'authors.list'}">
+          Autoren
+        </router-link>
+
+        <router-link :to="{name: 'articles2.list'}">
+          Artikel2
+        </router-link>
+
+        <router-link :to="{name: 'authors2.list'}">
+          Autoren2
+        </router-link>
+      </v-container>
+    </v-navigation-drawer>
+
     <v-main>
       <v-container
         fluid
-        class="px-8 py-4 px-sm-15 py-sm-10"
+        class="pa-8"
       >
+        <v-app-bar-nav-icon
+          v-if="!drawer"
+          class=" mb-8"
+          @click="drawer = !drawer"
+        />
         <a-vue />
 
         <widget />
@@ -41,28 +80,6 @@
           </li>
         </ul>
 
-        <a href="/">Backend</a>
-
-        <router-link :to="{name: 'root'}">
-          Home
-        </router-link>
-
-        <router-link :to="{name: 'articles.list'}">
-          Artikel
-        </router-link>
-
-        <router-link :to="{name: 'authors.list'}">
-          Autoren
-        </router-link>
-
-        <router-link :to="{name: 'articles2.list'}">
-          Artikel2
-        </router-link>
-
-        <router-link :to="{name: 'authors2.list'}">
-          Autoren2
-        </router-link>
-
         <p>
           <router-view />
         </p>
@@ -81,6 +98,8 @@ import Widget from './components/Widget'
   }
 })
 export default class App extends Vue {
+  drawer = true
+
   get url () {
     return location.protocol + '//' + location.hostname + (location.port ? ':' + location.port : '')
   }
@@ -96,8 +115,8 @@ export default class App extends Vue {
   }
 
   created () {
-    console.log(this.$route.meta, this.$attrs)
-    console.log(this.$route.matched)
+    // console.log(this.$route.meta, this.$attrs)
+    // console.log(this.$route.matched)
   }
 }
 </script>
