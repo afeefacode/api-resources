@@ -1,4 +1,4 @@
-import axios from "axios";
+import axios from 'axios';
 export class Client {
     get(url) {
         return axios.get(url);
