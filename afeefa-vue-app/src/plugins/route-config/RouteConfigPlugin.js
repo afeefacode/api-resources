@@ -15,6 +15,7 @@ export class RouteConfigPlugin {
   }
 
   _routes = []
+  _config = {}
 
   static install (Vue) {
     Object.defineProperty(Vue.prototype, '$routeDefinition', {
@@ -36,6 +37,11 @@ export class RouteConfigPlugin {
       ...this._defaultComponents,
       ...components
     }
+    return this
+  }
+
+  config (config = {}) {
+    this._config = config
     return this
   }
 
@@ -65,6 +71,10 @@ export class RouteConfigPlugin {
   }
 
   route = (options) => {
+    options.config = {
+      ...this._config,
+      ...options.config
+    }
     return new RouteDefinition(options)
   }
 
@@ -72,6 +82,10 @@ export class RouteConfigPlugin {
     options.components = {
       ...this._defaultComponents,
       ...options.components
+    }
+    options.config = {
+      ...this._config,
+      ...options.config
     }
     return new RouteSetDefinition(options).getDefinitions()
   }
