@@ -4,7 +4,7 @@
 
     <h3>List</h3>
     <ul>
-      <li>Config: {{ $routeConfig }}</li>
+      <li>Config: {{ Object.keys($routeConfig) }}</li>
       <li>{{ $routeDefinition.fullId }}</li>
       <li>{{ $routeDefinition.fullName }}</li>
       <li>{{ $routeDefinition.fullPath }}</li>

@@ -5,33 +5,11 @@
       app
       fixed
     >
-      <div class="pa-8 d-flex align-start flex-column">
+      <div class="pt-8 pl-8 d-flex align-start flex-column">
         <v-app-bar-nav-icon @click="drawer = !drawer" />
       </div>
 
-      <v-container class="pa-8 d-flex flex-column">
-        <a href="/">Backend</a>
-
-        <router-link :to="{name: 'root'}">
-          Home
-        </router-link>
-
-        <router-link :to="{name: 'articles.list'}">
-          Artikel
-        </router-link>
-
-        <router-link :to="{name: 'authors.list'}">
-          Autoren
-        </router-link>
-
-        <router-link :to="{name: 'articles2.list'}">
-          Artikel2
-        </router-link>
-
-        <router-link :to="{name: 'authors2.list'}">
-          Autoren2
-        </router-link>
-      </v-container>
+      <app-menu />
     </v-navigation-drawer>
 
     <v-main>
@@ -52,7 +30,7 @@
 
         <h3>App</h3>
         <ul>
-          <li>Config: {{ $routeConfig }}</li>
+          <li>Config: {{ Object.keys($routeConfig) }}</li>
           <li>{{ $routeDefinition.fullId }}</li>
           <li>{{ $routeDefinition.fullName }}</li>
           <li>{{ $routeDefinition.fullPath }}</li>
@@ -91,9 +69,11 @@
 <script>
 import { Component, Vue } from 'vue-property-decorator'
 import Widget from './components/Widget'
+import AppMenu from './components/Menu'
 
 @Component({
   components: {
+    AppMenu,
     Widget
   }
 })
