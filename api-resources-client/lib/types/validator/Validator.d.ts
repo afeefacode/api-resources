@@ -7,7 +7,8 @@ export declare type ValidatorJSON = {
 export declare class Validator {
     private _rules;
     private _params;
-    setup(json: ValidatorJSON): void;
-    createInstance(json: ValidatorJSON): Validator;
+    setupRules(rules: Record<string, RuleJSON>): void;
+    createFieldValidator(json: ValidatorJSON): Validator;
+    protected setupParams(params: Record<string, unknown>): void;
 }
 //# sourceMappingURL=Validator.d.ts.map

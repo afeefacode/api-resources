@@ -3,17 +3,19 @@ import { Filter, FilterJSON } from '../Filter'
 type Direction = 'asc' | 'desc';
 
 type OrderFilterJSON = FilterJSON & {
-  [name: string]: Direction[]
+  fields: {
+    [name: string]: Direction[]
+  }
 }
 
 export class OrderFilter extends Filter {
-  [name: string]: Direction[];
+  public fields: Record<string, Direction[]> = {}
 
-  constructor (json: OrderFilterJSON) {
-    super(json)
-
-    for (const [name, orderJSON] of Object.entries(json)) {
-      this[name] = orderJSON
+  protected setupParams (json: OrderFilterJSON) {
+    if (json.fields) {
+      for (const [name, orderJSON] of Object.entries(json.fields)) {
+        this.fields[name] = orderJSON
+      }
     }
   }
 }

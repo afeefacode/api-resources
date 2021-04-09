@@ -4,7 +4,7 @@ declare type RelationJSON = FieldJSON & {
 };
 export declare class Relation extends Field {
     private _relatedType;
-    constructor(json: RelationJSON);
+    createTypeField(json: RelationJSON): Relation;
 }
 export {};
 //# sourceMappingURL=Relation.d.ts.map

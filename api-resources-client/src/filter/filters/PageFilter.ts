@@ -6,12 +6,10 @@ export type PageFilterJSON = FilterJSON & {
 }
 
 export class PageFilter extends Filter {
-  public defaultPageSize: number
-  public pageSizes: number[]
+  public defaultPageSize!: number
+  public pageSizes!: number[]
 
-  constructor (json: PageFilterJSON) {
-    super(json)
-
+  protected setupParams (json: PageFilterJSON) {
     this.defaultPageSize = json.default_page_size
     this.pageSizes = json.page_sizes
   }

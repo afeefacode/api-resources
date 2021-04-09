@@ -5,11 +5,11 @@ import { OrderFilter } from './OrderFilter';
 import { PageFilter } from './PageFilter';
 import { TypeFilter } from './TypeFilter';
 export declare const filters: {
-    'Afeefa.Id': typeof IdFilter;
-    'Afeefa.Type': typeof TypeFilter;
-    'Afeefa.Page': typeof PageFilter;
-    'Afeefa.Keyword': typeof KeywordFilter;
-    'Afeefa.Order': typeof OrderFilter;
-    'Afeefa.Boolean': typeof BooleanFilter;
+    'Afeefa.Id': IdFilter;
+    'Afeefa.Type': TypeFilter;
+    'Afeefa.Page': PageFilter;
+    'Afeefa.Keyword': KeywordFilter;
+    'Afeefa.Order': OrderFilter;
+    'Afeefa.Boolean': BooleanFilter;
 };
 //# sourceMappingURL=index.d.ts.map

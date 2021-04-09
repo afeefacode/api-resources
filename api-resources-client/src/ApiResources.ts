@@ -9,9 +9,9 @@ import { validators } from './validator/validators'
 
 class ApiResources {
   private _apis: Record<string, Api> = {}
-  private _fields: Record<string, typeof Field> = {}
+  private _fields: Record<string, Field> = {}
   private _validators: Record<string, Validator> = {}
-  private _filters: Record<string, typeof Filter> = {}
+  private _filters: Record<string, Filter> = {}
   private _types: Record<string, Type> = {}
 
   private _schemasToLoad: Promise<ApiSchemaJSON>[] = []
@@ -47,18 +47,18 @@ class ApiResources {
     return this._apis[name] || null
   }
 
-  public registerField (type: string, FieldClass: typeof Field): void {
-    this._fields[type] = FieldClass
-    this._fields.taset = FieldClass
+  public registerField (type: string, field: Field): void {
+    this._fields[type] = field
+    this._fields.taset = field
   }
 
-  public registerFields (fields: Record<string, typeof Field>): void {
-    for (const [type, FieldClass] of Object.entries(fields)) {
-      this.registerField(type, FieldClass)
+  public registerFields (fields: Record<string, Field>): void {
+    for (const [type, field] of Object.entries(fields)) {
+      this.registerField(type, field)
     }
   }
 
-  public getField (type: string): (typeof Field | null) {
+  public getField (type: string): Field | null {
     return this._fields[type] || null
   }
 
@@ -76,17 +76,17 @@ class ApiResources {
     return this._validators[type] || null
   }
 
-  public registerFilter (type: string, FilterClass: typeof Filter): void {
-    this._filters[type] = FilterClass
+  public registerFilter (type: string, filter: Filter): void {
+    this._filters[type] = filter
   }
 
-  public registerFilters (filters: Record<string, typeof Filter>): void {
-    for (const [type, FilterClass] of Object.entries(filters)) {
-      this.registerFilter(type, FilterClass)
+  public registerFilters (filters: Record<string, Filter>): void {
+    for (const [type, filter] of Object.entries(filters)) {
+      this.registerFilter(type, filter)
     }
   }
 
-  public getFilter (type: string): (typeof Filter | null) {
+  public getFilter (type: string): (Filter | null) {
     return this._filters[type] || null
   }
 

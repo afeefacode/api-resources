@@ -5,11 +5,9 @@ export type BooleanFilterJSON = FilterJSON & {
 }
 
 export class BooleanFilter extends Filter {
-  public values: boolean[]
+  public values!: boolean[]
 
-  constructor (json: BooleanFilterJSON) {
-    super(json)
-
+  protected setupParams (json: BooleanFilterJSON) {
     this.values = json.values
   }
 }

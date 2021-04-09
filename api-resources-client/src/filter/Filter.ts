@@ -3,8 +3,13 @@ export type FilterJSON = {
 }
 
 export class Filter {
-  // eslint-disable-next-line no-useless-constructor
-  constructor (_json: FilterJSON) {
+  public createActionFilter (json: FilterJSON): Filter {
+    const filter = new (this.constructor as { new (): Filter })()
+    filter.setupParams(json)
+    return filter
+  }
+
+  protected setupParams (_json: FilterJSON) {
     // do something particular to the actual filter
   }
 }

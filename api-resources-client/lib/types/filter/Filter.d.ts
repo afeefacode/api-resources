@@ -2,6 +2,7 @@ export declare type FilterJSON = {
     type: string;
 };
 export declare class Filter {
-    constructor(_json: FilterJSON);
+    createActionFilter(json: FilterJSON): Filter;
+    protected setupParams(_json: FilterJSON): void;
 }
 //# sourceMappingURL=Filter.d.ts.map

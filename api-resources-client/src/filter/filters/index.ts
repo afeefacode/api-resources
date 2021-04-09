@@ -6,10 +6,10 @@ import { PageFilter } from './PageFilter'
 import { TypeFilter } from './TypeFilter'
 
 export const filters = {
-  'Afeefa.Id': IdFilter,
-  'Afeefa.Type': TypeFilter,
-  'Afeefa.Page': PageFilter,
-  'Afeefa.Keyword': KeywordFilter,
-  'Afeefa.Order': OrderFilter,
-  'Afeefa.Boolean': BooleanFilter
+  'Afeefa.Id': new IdFilter(),
+  'Afeefa.Type': new TypeFilter(),
+  'Afeefa.Page': new PageFilter(),
+  'Afeefa.Keyword': new KeywordFilter(),
+  'Afeefa.Order': new OrderFilter(),
+  'Afeefa.Boolean': new BooleanFilter()
 }

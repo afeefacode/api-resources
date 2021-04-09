@@ -4,6 +4,6 @@ export declare type BooleanFilterJSON = FilterJSON & {
 };
 export declare class BooleanFilter extends Filter {
     values: boolean[];
-    constructor(json: BooleanFilterJSON);
+    protected setupParams(json: BooleanFilterJSON): void;
 }
 //# sourceMappingURL=BooleanFilter.d.ts.map

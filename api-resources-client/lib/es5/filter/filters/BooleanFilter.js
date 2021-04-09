@@ -1,7 +1,6 @@
 import { Filter } from '../Filter';
 export class BooleanFilter extends Filter {
-    constructor(json) {
-        super(json);
+    setupParams(json) {
         this.values = json.values;
     }
 }

@@ -33,13 +33,13 @@ class ApiResources {
     getApi(name) {
         return this._apis[name] || null;
     }
-    registerField(type, FieldClass) {
-        this._fields[type] = FieldClass;
-        this._fields.taset = FieldClass;
+    registerField(type, field) {
+        this._fields[type] = field;
+        this._fields.taset = field;
     }
     registerFields(fields) {
-        for (const [type, FieldClass] of Object.entries(fields)) {
-            this.registerField(type, FieldClass);
+        for (const [type, field] of Object.entries(fields)) {
+            this.registerField(type, field);
         }
     }
     getField(type) {
@@ -56,12 +56,12 @@ class ApiResources {
     getValidator(type) {
         return this._validators[type] || null;
     }
-    registerFilter(type, FilterClass) {
-        this._filters[type] = FilterClass;
+    registerFilter(type, filter) {
+        this._filters[type] = filter;
     }
     registerFilters(filters) {
-        for (const [type, FilterClass] of Object.entries(filters)) {
-            this.registerFilter(type, FilterClass);
+        for (const [type, filter] of Object.entries(filters)) {
+            this.registerFilter(type, filter);
         }
     }
     getFilter(type) {

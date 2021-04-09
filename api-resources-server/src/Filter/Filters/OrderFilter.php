@@ -23,7 +23,7 @@ class OrderFilter extends Filter
     public function toSchemaJson(): array
     {
         $json = parent::toSchemaJson();
-        $json = array_merge($json, $this->values);
+        $json['fields'] = $this->values;
         return $json;
     }
 }

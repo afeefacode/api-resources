@@ -23,10 +23,10 @@ export class Action {
         }
         if (json.filters) {
             for (const [name, filterJSON] of Object.entries(json.filters)) {
-                const FilterClass = apiResources.getFilter(filterJSON.type);
-                if (FilterClass) {
-                    const filter = new FilterClass(filterJSON);
-                    this._filters[name] = filter;
+                const filter = apiResources.getFilter(filterJSON.type);
+                if (filter) {
+                    const actionFilter = filter.createActionFilter(filterJSON);
+                    this._filters[name] = actionFilter;
                 }
             }
         }

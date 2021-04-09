@@ -15,15 +15,15 @@ declare class ApiResources {
     registerApi(name: string, baseUrl: string): ApiResources;
     registerApis(apis: Record<string, string>): ApiResources;
     getApi(name: string): Api | null;
-    registerField(type: string, FieldClass: typeof Field): void;
-    registerFields(fields: Record<string, typeof Field>): void;
-    getField(type: string): (typeof Field | null);
+    registerField(type: string, field: Field): void;
+    registerFields(fields: Record<string, Field>): void;
+    getField(type: string): Field | null;
     registerValidator(type: string, validator: Validator): void;
     registerValidators(validators: Record<string, Validator>): void;
     getValidator(type: string): Validator | null;
-    registerFilter(type: string, FilterClass: typeof Filter): void;
-    registerFilters(filters: Record<string, typeof Filter>): void;
-    getFilter(type: string): (typeof Filter | null);
+    registerFilter(type: string, filter: Filter): void;
+    registerFilters(filters: Record<string, Filter>): void;
+    getFilter(type: string): (Filter | null);
     registerType(typeName: string, type: Type): void;
     getType(typeName: string): Type | null;
 }

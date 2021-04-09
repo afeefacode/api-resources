@@ -5,6 +5,7 @@ export declare type FieldJSON = {
 };
 export declare class Field {
     private _validator;
-    constructor(json: FieldJSON);
+    createTypeField(json: FieldJSON): Field;
+    protected setupTypeFieldValidator(json: ValidatorJSON): void;
 }
 //# sourceMappingURL=Field.d.ts.map

@@ -1,6 +1,10 @@
 export class Filter {
-    // eslint-disable-next-line no-useless-constructor
-    constructor(_json) {
+    createActionFilter(json) {
+        const filter = new this.constructor();
+        filter.setupParams(json);
+        return filter;
+    }
+    setupParams(_json) {
         // do something particular to the actual filter
     }
 }

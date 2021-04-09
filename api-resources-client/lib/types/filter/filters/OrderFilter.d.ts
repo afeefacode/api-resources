@@ -1,11 +1,13 @@
 import { Filter, FilterJSON } from '../Filter';
 declare type Direction = 'asc' | 'desc';
 declare type OrderFilterJSON = FilterJSON & {
-    [name: string]: Direction[];
+    fields: {
+        [name: string]: Direction[];
+    };
 };
 export declare class OrderFilter extends Filter {
-    [name: string]: Direction[];
-    constructor(json: OrderFilterJSON);
+    fields: Record<string, Direction[]>;
+    protected setupParams(json: OrderFilterJSON): void;
 }
 export {};
 //# sourceMappingURL=OrderFilter.d.ts.map

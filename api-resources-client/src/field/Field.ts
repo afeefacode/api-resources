@@ -9,11 +9,17 @@ export type FieldJSON = {
 export class Field {
   private _validator: Validator | null = null
 
-  constructor (json: FieldJSON) {
-    if (json.validator) {
-      const validator = apiResources.getValidator(json.validator.type)
+  public createTypeField (json: FieldJSON): Field {
+    const field = new (this.constructor as { new (): Field })()
+    field.setupTypeFieldValidator(json.validator)
+    return field
+  }
+
+  protected setupTypeFieldValidator (json: ValidatorJSON) {
+    if (json) {
+      const validator = apiResources.getValidator(json.type)
       if (validator) {
-        this._validator = validator.createInstance(json.validator)
+        this._validator = validator.createFieldValidator(json)
       }
     }
   }

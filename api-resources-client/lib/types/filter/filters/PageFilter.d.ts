@@ -6,6 +6,6 @@ export declare type PageFilterJSON = FilterJSON & {
 export declare class PageFilter extends Filter {
     defaultPageSize: number;
     pageSizes: number[];
-    constructor(json: PageFilterJSON);
+    protected setupParams(json: PageFilterJSON): void;
 }
 //# sourceMappingURL=PageFilter.d.ts.map

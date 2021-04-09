@@ -1,11 +1,18 @@
 import { apiResources } from '../ApiResources';
 export class Field {
-    constructor(json) {
+    constructor() {
         this._validator = null;
-        if (json.validator) {
-            const validator = apiResources.getValidator(json.validator.type);
+    }
+    createTypeField(json) {
+        const field = new this.constructor();
+        field.setupTypeFieldValidator(json.validator);
+        return field;
+    }
+    setupTypeFieldValidator(json) {
+        if (json) {
+            const validator = apiResources.getValidator(json.type);
             if (validator) {
-                this._validator = validator.createInstance(json.validator);
+                this._validator = validator.createFieldValidator(json);
             }
         }
     }

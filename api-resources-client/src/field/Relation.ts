@@ -7,9 +7,9 @@ type RelationJSON = FieldJSON & {
 export class Relation extends Field {
   private _relatedType: string
 
-  constructor (json: RelationJSON) {
-    super(json)
-
-    this._relatedType = json.related_type
+  public createTypeField (json: RelationJSON): Relation {
+    const relation = super.createTypeField(json) as Relation
+    relation._relatedType = json.related_type
+    return relation
   }
 }
