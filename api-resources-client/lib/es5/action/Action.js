@@ -1,4 +1,4 @@
-import { getFilter } from '../filter/FilterRegistry';
+import { apiResources } from '../ApiResources';
 import { ActionInput } from './ActionInput';
 import { ActionParam } from './ActionParams';
 import { ActionResponse } from './ActionResponse';
@@ -23,7 +23,7 @@ export class Action {
         }
         if (json.filters) {
             for (const [name, filterJSON] of Object.entries(json.filters)) {
-                const FilterClass = getFilter(filterJSON.type);
+                const FilterClass = apiResources.getFilter(filterJSON.type);
                 if (FilterClass) {
                     const filter = new FilterClass(filterJSON);
                     this._filters[name] = filter;

@@ -1,13 +1,12 @@
 import axios from 'axios'
 
-import { Request } from '../Request'
+import { apiResources } from '../ApiResources'
 import { Resource, ResourceJSON } from '../resource/Resource'
 import { Type, TypeJSON } from '../type/Type'
-import { registerType } from '../type/TypeRegistry'
 import { Validator, ValidatorJSON } from '../validator/Validator'
-import { getValidator } from '../validator/ValidatorRegistry'
+import { ApiRequest } from './ApiRequest'
 
-type SchemaJSON = {
+export type ApiSchemaJSON = {
   types: Record<string, TypeJSON>,
   resources: Record<string, ResourceJSON>,
   validators: Record<string, ValidatorJSON>,
@@ -21,16 +20,15 @@ export class Api {
 
   constructor (baseUrl: string) {
     this._baseUrl = baseUrl
-    void this.loadSchema()
   }
 
   public getBaseUrl (): string {
     return this._baseUrl
   }
 
-  private async loadSchema (): Promise<SchemaJSON> {
+  public async loadSchema (): Promise<ApiSchemaJSON> {
     const result = await axios.get(`${this._baseUrl}/schema`)
-    const schema: SchemaJSON = result.data as SchemaJSON
+    const schema: ApiSchemaJSON = result.data as ApiSchemaJSON
 
     for (const [name, resourceJSON] of Object.entries(schema.resources)) {
       const resource = new Resource(resourceJSON)
@@ -38,7 +36,7 @@ export class Api {
     }
 
     for (const [type, validatorJSON] of Object.entries(schema.validators)) {
-      const validator = getValidator(type)
+      const validator = apiResources.getValidator(type)
       if (validator) {
         validator.setup(validatorJSON)
         this._validators[type] = validator
@@ -49,14 +47,14 @@ export class Api {
       const type = new Type(typeJSON)
       this._types[typeName] = type
 
-      registerType(typeName, type)
+      apiResources.registerType(typeName, type)
     }
 
     return schema
   }
 
-  public request (): Request {
-    return new Request()
+  public request (): ApiRequest {
+    return new ApiRequest()
       .api(this)
   }
 }

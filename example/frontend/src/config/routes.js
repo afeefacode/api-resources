@@ -4,7 +4,7 @@ import Edit from '@/components/routes/Edit'
 import List from '@/components/routes/List'
 import New from '@/components/routes/New'
 import { ArticlesResource } from '@/resources/ArticlesResource'
-import { getApi } from '@afeefa/api-resources-client'
+import { apiResources } from '@afeefa/api-resources-client'
 import { RouteConfigPlugin } from '@avue/plugins/route-config/RouteConfigPlugin'
 
 const config = new RouteConfigPlugin()
@@ -18,7 +18,7 @@ config
   })
 
   .config({
-    api: getApi('backendApi')
+    api: apiResources.getApi('backendApi')
   })
 
   .routes(({ROUTE, ROUTESET}) => {

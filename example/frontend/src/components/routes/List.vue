@@ -130,6 +130,8 @@ export default class List extends Vue {
     })
     this.articles = result.data.data
     this.meta = result.data.meta
+
+    // console.log(this.articles)
   }
 }
 </script>

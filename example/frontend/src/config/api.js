@@ -1,3 +1,11 @@
-import { registerApi } from '@afeefa/api-resources-client'
+import { apiResources } from '@afeefa/api-resources-client'
+import { ApiResourcesPlugin } from '@avue/plugins/api-resources/ApiResourcesPlugin'
+import Vue from 'vue'
 
-registerApi('backendApi', '/backend-api')
+Vue.use(ApiResourcesPlugin)
+
+apiResources.registerApis({
+  backendApi: '/backend-api'
+})
+
+export default apiResources

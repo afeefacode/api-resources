@@ -1,16 +1,14 @@
 import axios from 'axios';
-import { Request } from '../Request';
+import { apiResources } from '../ApiResources';
 import { Resource } from '../resource/Resource';
 import { Type } from '../type/Type';
-import { registerType } from '../type/TypeRegistry';
-import { getValidator } from '../validator/ValidatorRegistry';
+import { ApiRequest } from './ApiRequest';
 export class Api {
     constructor(baseUrl) {
         this._resources = {};
         this._types = {};
         this._validators = {};
         this._baseUrl = baseUrl;
-        void this.loadSchema();
     }
     getBaseUrl() {
         return this._baseUrl;
@@ -23,7 +21,7 @@ export class Api {
             this._resources[name] = resource;
         }
         for (const [type, validatorJSON] of Object.entries(schema.validators)) {
-            const validator = getValidator(type);
+            const validator = apiResources.getValidator(type);
             if (validator) {
                 validator.setup(validatorJSON);
                 this._validators[type] = validator;
@@ -32,12 +30,12 @@ export class Api {
         for (const [typeName, typeJSON] of Object.entries(schema.types)) {
             const type = new Type(typeJSON);
             this._types[typeName] = type;
-            registerType(typeName, type);
+            apiResources.registerType(typeName, type);
         }
         return schema;
     }
     request() {
-        return new Request()
+        return new ApiRequest()
             .api(this);
     }
 }

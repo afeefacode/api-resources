@@ -1,4 +1,4 @@
-export class Request {
+export class ApiRequest {
     api(api) {
         this._api = api;
         return this;

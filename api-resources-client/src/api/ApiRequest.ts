@@ -1,9 +1,9 @@
-import { Api } from './api/Api'
+import { Api } from './Api'
 
-export class Request {
+export class ApiRequest {
   private _api!: Api
 
-  public api (api: Api): Request {
+  public api (api: Api): ApiRequest {
     this._api = api
     return this
   }
