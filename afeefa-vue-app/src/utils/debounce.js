@@ -1,9 +1,3 @@
-
-/**
- * test
- * @param {*} callback
- * @param {*} delay
- */
 export function debounce (callback, delay = 300) {
   let timeout = null
   return function () {

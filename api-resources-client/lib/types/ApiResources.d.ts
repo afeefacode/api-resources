@@ -10,14 +10,11 @@ declare class ApiResources {
     private _filters;
     private _types;
     private _schemasToLoad;
-    private _schmemaLoadCount;
     constructor();
-    get isLoaded(): boolean;
-    loaded(): Promise<ApiSchemaJSON[]>;
-    registerApi(name: string, baseUrl: string): Api;
-    registerApis(apis: Record<string, string>): void;
+    schemasLoaded(): Promise<ApiSchemaJSON[]>;
+    registerApi(name: string, baseUrl: string): ApiResources;
+    registerApis(apis: Record<string, string>): ApiResources;
     getApi(name: string): Api | null;
-    setup(): Promise<ApiSchemaJSON[]>;
     registerField(type: string, FieldClass: typeof Field): void;
     registerFields(fields: Record<string, typeof Field>): void;
     getField(type: string): (typeof Field | null);

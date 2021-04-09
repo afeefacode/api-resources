@@ -15,7 +15,6 @@ class ApiResources {
   private _types: Record<string, Type> = {}
 
   private _schemasToLoad: Promise<ApiSchemaJSON>[] = []
-  private _schmemaLoadCount = 0
 
   constructor () {
     this.registerFields(fields)
@@ -23,41 +22,29 @@ class ApiResources {
     this.registerValidators(validators)
   }
 
-  public get isLoaded (): boolean {
-    return this._schmemaLoadCount === this._schemasToLoad.length
-  }
-
-  public loaded (): Promise<ApiSchemaJSON[]> {
+  public schemasLoaded (): Promise<ApiSchemaJSON[]> {
     return Promise.all(this._schemasToLoad)
   }
 
-  public registerApi (name: string, baseUrl: string): Api {
+  public registerApi (name: string, baseUrl: string): ApiResources {
     const api = new Api(baseUrl)
     this._apis[name] = api
 
-    const promise = api.loadSchema().then(result => {
-      this._schmemaLoadCount++
-      return result
-    })
+    const promise = api.loadSchema()
     this._schemasToLoad.push(promise)
 
-    return api
+    return this
   }
 
-  public registerApis (apis: Record<string, string>): void {
+  public registerApis (apis: Record<string, string>): ApiResources {
     for (const [name, baseUrl] of Object.entries(apis)) {
       this.registerApi(name, baseUrl)
     }
+    return this
   }
 
   public getApi (name: string): Api | null {
     return this._apis[name] || null
-  }
-
-  public setup (): Promise<ApiSchemaJSON[]> {
-    const promises = Object.values(this._apis)
-      .map(a => a.loadSchema())
-    return Promise.all(promises)
   }
 
   public registerField (type: string, FieldClass: typeof Field): void {

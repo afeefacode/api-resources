@@ -10,39 +10,28 @@ class ApiResources {
         this._filters = {};
         this._types = {};
         this._schemasToLoad = [];
-        this._schmemaLoadCount = 0;
         this.registerFields(fields);
         this.registerFilters(filters);
         this.registerValidators(validators);
     }
-    get isLoaded() {
-        return this._schmemaLoadCount === this._schemasToLoad.length;
-    }
-    loaded() {
+    schemasLoaded() {
         return Promise.all(this._schemasToLoad);
     }
     registerApi(name, baseUrl) {
         const api = new Api(baseUrl);
         this._apis[name] = api;
-        const promise = api.loadSchema().then(result => {
-            this._schmemaLoadCount++;
-            return result;
-        });
+        const promise = api.loadSchema();
         this._schemasToLoad.push(promise);
-        return api;
+        return this;
     }
     registerApis(apis) {
         for (const [name, baseUrl] of Object.entries(apis)) {
             this.registerApi(name, baseUrl);
         }
+        return this;
     }
     getApi(name) {
         return this._apis[name] || null;
-    }
-    setup() {
-        const promises = Object.values(this._apis)
-            .map(a => a.loadSchema());
-        return Promise.all(promises);
     }
     registerField(type, FieldClass) {
         this._fields[type] = FieldClass;

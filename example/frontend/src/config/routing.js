@@ -5,11 +5,14 @@ import List from '@/components/routes/List'
 import New from '@/components/routes/New'
 import { ArticlesResource } from '@/resources/ArticlesResource'
 import { apiResources } from '@afeefa/api-resources-client'
-import { RouteConfigPlugin } from '@avue/plugins/route-config/RouteConfigPlugin'
+import { routeConfigPlugin } from '@avue/plugins/route-config/RouteConfigPlugin'
 
-const config = new RouteConfigPlugin()
+export default routeConfigPlugin
+  .router({
+    mode: 'history',
+    base: process.env.BASE_URL
+  })
 
-config
   .defaultComponents({
     list: List,
     detail: Detail,
@@ -21,7 +24,7 @@ config
     api: apiResources.getApi('backendApi')
   })
 
-  .routes(({ROUTE, ROUTESET}) => {
+  .routes(async ({ROUTE, ROUTESET}) => {
     return [
       ROUTE(
         {
@@ -97,6 +100,3 @@ config
       )
     ]
   })
-
-// config.dumpRoutes()
-export const routes = config.getRoutes()

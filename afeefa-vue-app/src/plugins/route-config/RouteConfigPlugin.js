@@ -1,9 +1,12 @@
+import Vue from 'vue'
+import Router from 'vue-router'
+
 import DefaultRouteComponent from './DefaultRouteComponent'
 import { RouteDefinition } from './RouteDefinition'
 import { RouteSetDefinition } from './RouteSetDefinition'
 
-export class RouteConfigPlugin {
-  pathDefinitionMap = {}
+class RouteConfigPlugin {
+  _pathDefinitionMap = {}
 
   _defaultComponents = {
     container: DefaultRouteComponent,
@@ -14,10 +17,23 @@ export class RouteConfigPlugin {
     new: DefaultRouteComponent
   }
 
-  _routes = []
+  _routeDefinitions = []
   _config = {}
 
-  static install (Vue) {
+  _router = null
+  _routes = []
+
+  _promise = Promise.resolve(true)
+
+  router (options) {
+    Vue.use(Router)
+    Vue.use(this)
+
+    this._router = new Router(options)
+    return this
+  }
+
+  install (Vue) {
     Object.defineProperty(Vue.prototype, '$routeDefinition', {
       get () {
         return (this.$props && this.$props.rcp_routeDefinition) ||
@@ -32,6 +48,11 @@ export class RouteConfigPlugin {
     })
   }
 
+  async getRouter () {
+    await this._promise
+    return this._router
+  }
+
   defaultComponents (components = {}) {
     this._defaultComponents = {
       ...this._defaultComponents,
@@ -40,30 +61,63 @@ export class RouteConfigPlugin {
     return this
   }
 
-  config (config = {}) {
-    this._config = config
+  config (callback) {
+    this._promise = this._promise.then(() => {
+      // config is object -> make function
+      if (typeof callback !== 'function') {
+        const config = callback
+        callback = () => config
+      }
+
+      // config is function
+      callback = callback()
+
+      // function is not async -> make async
+      if (!(callback instanceof Promise)) {
+        callback = Promise.resolve(callback)
+      }
+
+      return callback.then(config => {
+        this._config = config
+      })
+    })
     return this
   }
 
-  routes (callback = null) {
-    if (callback) {
-      const routeOrRoutes = callback({
+  routes (callback) {
+    this._promise = this._promise.then(() => {
+      callback = callback({
         ROUTESET: this.routeSet,
         ROUTE: this.route
       })
-      this._routes = Array.isArray(routeOrRoutes) ? routeOrRoutes : [routeOrRoutes]
-      this._routes.forEach(r => r.init(null, '', this.pathDefinitionMap))
-      return this
-    }
+
+      if (!(callback instanceof Promise)) {
+        callback = Promise.resolve(callback)
+      }
+
+      return callback.then(routeOrRoutes => {
+        this._routeDefinitions = Array.isArray(routeOrRoutes) ? routeOrRoutes : [routeOrRoutes]
+        this._routeDefinitions.forEach(r => r.init(null, '', this._pathDefinitionMap))
+        this._routes = this._routeDefinitions.map(r => r.toVue())
+
+        for (const route of this._routes) {
+          this._router.addRoute(route)
+        }
+      })
+    })
+
+    return this
   }
 
-  getRoutes () {
-    return this._routes.map(r => r.toVue())
+  async getRoutes () {
+    await this._promise
+    return this._routes
   }
 
-  dumpRoutes () {
-    for (const path in this.pathDefinitionMap) {
-      const r = this.pathDefinitionMap[path]
+  async dumpRoutes () {
+    await this._promise
+    for (const path in this._pathDefinitionMap) {
+      const r = this._pathDefinitionMap[path]
       const whites = ' '.repeat(60 - path.length)
       const whites2 = ' '.repeat(40 - r.fullName.length)
       console.log('path:', path, whites, 'name:', r.fullName, whites2, 'parent:', r.parentPathDefinition && r.parentPathDefinition.fullName)
@@ -90,3 +144,5 @@ export class RouteConfigPlugin {
     return new RouteSetDefinition(options).getDefinitions()
   }
 }
+
+export const routeConfigPlugin = new RouteConfigPlugin()

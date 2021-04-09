@@ -1,8 +1,5 @@
 <template>
-  <div v-if="isLoading">
-    Loading
-  </div>
-  <v-app v-else>
+  <v-app>
     <v-navigation-drawer
       v-model="drawer"
       app
@@ -94,7 +91,6 @@
 <script>
 import { Component, Vue } from 'vue-property-decorator'
 import Widget from './components/Widget'
-import apiResources from './config/api'
 
 @Component({
   components: {
@@ -103,7 +99,6 @@ import apiResources from './config/api'
 })
 export default class App extends Vue {
   drawer = true
-  isLoading = true
 
   get url () {
     return location.protocol + '//' + location.hostname + (location.port ? ':' + location.port : '')
@@ -120,12 +115,10 @@ export default class App extends Vue {
   }
 
   async created () {
+    // console.log(this.$attrs)
     // console.log(this.$route.meta, this.$attrs)
     // console.log(this.$route.matched)
-    console.log(this.$routeDefinition.config.api)
-
-    await apiResources.loaded()
-    this.isLoading = false
+    // console.log(this.$routeDefinition.config.api)
   }
 }
 </script>
