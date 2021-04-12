@@ -57,9 +57,8 @@ export class RequestFilters {
   public initFromQuerySource (): boolean {
     const query = this._querySource.getQuery()
 
+    // no initial filters
     if (JSON.stringify(this._lastQuery) === JSON.stringify(query)) {
-      console.warn('This should not be triggered!')
-      console.log('same query')
       return false
     }
 
