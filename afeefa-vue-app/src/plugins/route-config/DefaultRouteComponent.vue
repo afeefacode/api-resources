@@ -1,6 +1,6 @@
 <template>
   <div>
-    <div>
+    <div v-if="false">
       <h3>Default</h3>
       <ul>
         <li>{{ $routeDefinition.fullId }}</li>

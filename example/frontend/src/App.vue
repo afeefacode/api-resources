@@ -22,45 +22,46 @@
           class=" mb-8"
           @click="drawer = !drawer"
         />
-        <a-vue />
 
-        <widget />
+        <div v-if="false">
+          <a-vue />
 
-        <p>URL {{ url }}</p>
+          <widget />
 
-        <h3>App</h3>
-        <ul>
-          <li>Config: {{ Object.keys($routeConfig) }}</li>
-          <li>{{ $routeDefinition.fullId }}</li>
-          <li>{{ $routeDefinition.fullName }}</li>
-          <li>{{ $routeDefinition.fullPath }}</li>
-        </ul>
+          <p>URL {{ url }}</p>
 
-        <h3>Parent Paths:</h3>
+          <h3>App</h3>
+          <ul>
+            <li>Config: {{ Object.keys($routeConfig) }}</li>
+            <li>{{ $routeDefinition.fullId }}</li>
+            <li>{{ $routeDefinition.fullName }}</li>
+            <li>{{ $routeDefinition.fullPath }}</li>
+          </ul>
 
-        <ul>
-          <li
-            v-for="path in paths"
-            :key="path"
-          >
-            {{ path }}
-          </li>
-        </ul>
+          <h3>Parent Paths:</h3>
 
-        <h3>Parents:</h3>
+          <ul>
+            <li
+              v-for="path in paths"
+              :key="path"
+            >
+              {{ path }}
+            </li>
+          </ul>
 
-        <ul>
-          <li
-            v-for="definition in definitions"
-            :key="definition"
-          >
-            {{ definition }}
-          </li>
-        </ul>
+          <h3>Parents:</h3>
 
-        <p>
-          <router-view />
-        </p>
+          <ul>
+            <li
+              v-for="definition in definitions"
+              :key="definition"
+            >
+              {{ definition }}
+            </li>
+          </ul>
+        </div>
+
+        <router-view />
       </v-container>
     </v-main>
   </v-app>

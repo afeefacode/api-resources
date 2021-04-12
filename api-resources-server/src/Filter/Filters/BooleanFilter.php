@@ -6,9 +6,11 @@ use Afeefa\ApiResources\Filter\Filter;
 
 class BooleanFilter extends Filter
 {
-    public static string $type = 'Afeefa.Boolean';
+    public static string $type = 'Afeefa.BooleanFilter';
 
     protected $values = [true];
+
+    protected $default = false;
 
     public function values(array $values)
     {
@@ -19,7 +21,9 @@ class BooleanFilter extends Filter
     public function toSchemaJson(): array
     {
         $json = parent::toSchemaJson();
-        $json['values'] = $this->values;
+        $json['params'] = [
+            'values' => $this->values
+        ];
         return $json;
     }
 }

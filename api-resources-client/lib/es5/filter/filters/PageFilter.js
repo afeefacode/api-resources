@@ -1,7 +1,12 @@
 import { Filter } from '../Filter';
 export class PageFilter extends Filter {
-    setupParams(json) {
-        this.defaultPageSize = json.default_page_size;
-        this.pageSizes = json.page_sizes;
+    fromQuerySource(query) {
+        this.value.page = parseInt(query.page);
+    }
+    toQuerySource() {
+        return this.value.page > 1
+            ? { page: this.value.page.toString() }
+            : {};
     }
 }
+PageFilter.type = 'Afeefa.PageFilter';

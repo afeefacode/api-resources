@@ -76,13 +76,13 @@ class ApiResources {
     return this._validators[type] || null
   }
 
-  public registerFilter (type: string, filter: Filter): void {
-    this._filters[type] = filter
+  public registerFilter (filter: Filter): void {
+    this._filters[filter.type] = filter
   }
 
-  public registerFilters (filters: Record<string, Filter>): void {
-    for (const [type, filter] of Object.entries(filters)) {
-      this.registerFilter(type, filter)
+  public registerFilters (filters: Filter[]): void {
+    for (const filter of filters) {
+      this.registerFilter(filter)
     }
   }
 

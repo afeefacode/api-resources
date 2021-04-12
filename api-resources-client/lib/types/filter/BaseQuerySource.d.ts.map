@@ -1,0 +1,1 @@
+{"version":3,"file":"BaseQuerySource.d.ts","sourceRoot":"","sources":["../../../src/filter/BaseQuerySource.ts"],"names":[],"mappings":"AAAA,oBAAY,KAAK,GAAG;IAClB,CAAC,GAAG,EAAE,MAAM,GAAG,GAAG,CAAA;CACnB,CAAA;AAED,qBAAa,eAAe;IACnB,QAAQ,IAAK,KAAK;IAIlB,IAAI,CAAE,MAAM,EAAE,KAAK,GAAG,IAAI;CAElC"}

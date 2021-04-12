@@ -2,7 +2,6 @@ import axios from 'axios';
 import { apiResources } from '../ApiResources';
 import { Resource } from '../resource/Resource';
 import { Type } from '../type/Type';
-import { ApiRequest } from './ApiRequest';
 export class Api {
     constructor(baseUrl) {
         this._resources = {};
@@ -17,7 +16,7 @@ export class Api {
         const result = await axios.get(`${this._baseUrl}/schema`);
         const schema = result.data;
         for (const [name, resourceJSON] of Object.entries(schema.resources)) {
-            const resource = new Resource(resourceJSON);
+            const resource = new Resource(this, name, resourceJSON);
             this._resources[name] = resource;
         }
         for (const [type, validatorJSON] of Object.entries(schema.validators)) {
@@ -34,8 +33,14 @@ export class Api {
         }
         return schema;
     }
-    request() {
-        return new ApiRequest()
-            .api(this);
+    getAction(resourceName, actionName) {
+        const resource = this._resources[resourceName];
+        if (!resource) {
+            return null;
+        }
+        return resource.getAction(actionName);
+    }
+    call(params) {
+        return axios.post(this._baseUrl, params);
     }
 }

@@ -1,16 +1,23 @@
-import { Filter, FilterJSON } from '../Filter'
+import { Query } from '../BaseQuerySource'
+import { Filter } from '../Filter'
 
-export type PageFilterJSON = FilterJSON & {
-  default_page_size: number,
-  page_sizes: number[]
+type Value = {
+  page: number,
+  page_size: number
 }
 
 export class PageFilter extends Filter {
-  public defaultPageSize!: number
-  public pageSizes!: number[]
+  public static type: string = 'Afeefa.PageFilter'
 
-  protected setupParams (json: PageFilterJSON) {
-    this.defaultPageSize = json.default_page_size
-    this.pageSizes = json.page_sizes
+  public value!: Value
+
+  public fromQuerySource (query: Query): void {
+    this.value.page = parseInt(query.page)
+  }
+
+  public toQuerySource (): Query {
+    return this.value.page > 1
+      ? { page: this.value.page.toString() }
+      : {}
   }
 }

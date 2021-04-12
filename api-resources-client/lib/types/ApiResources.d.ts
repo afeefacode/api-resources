@@ -21,8 +21,8 @@ declare class ApiResources {
     registerValidator(type: string, validator: Validator): void;
     registerValidators(validators: Record<string, Validator>): void;
     getValidator(type: string): Validator | null;
-    registerFilter(type: string, filter: Filter): void;
-    registerFilters(filters: Record<string, Filter>): void;
+    registerFilter(filter: Filter): void;
+    registerFilters(filters: Filter[]): void;
     getFilter(type: string): (Filter | null);
     registerType(typeName: string, type: Type): void;
     getType(typeName: string): Type | null;

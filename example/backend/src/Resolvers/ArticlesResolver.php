@@ -19,6 +19,7 @@ class ArticlesResolver
             ->load(function (ResolveContext $c) use ($r, $db) {
                 $request = $r->getRequest();
                 $filters = $request->getFilters();
+                $usedFilters = [];
 
                 $where = [
                     'ORDER' => 'id',
@@ -30,7 +31,7 @@ class ArticlesResolver
                 $count = $db->count('articles');
                 $countSearch = $count;
 
-                $keyword = $filters['keyword'] ?? null;
+                $keyword = $filters['q'] ?? null;
 
                 if ($keyword) {
                     $countSearch = $db->count('articles', [
@@ -38,15 +39,23 @@ class ArticlesResolver
                     ]);
 
                     $where['title[~]'] = $keyword;
+
+                    $usedFilters['q'] = $keyword;
                 }
 
-                $page = $filters['page'] ?? null;
+                $pageFilter = $filters['page'] ?? null;
 
-                if ($page) {
-                    $page = $page['page'] ?? 1;
-                    $pageSize = $page['page_size'] ?? 15;
+                if ($pageFilter) {
+                    $page = $pageFilter['page'] ?? 1;
+                    $pageSize = $pageFilter['page_size'] ?? 15;
 
-                    $where['LIMIT'] = $this->pageToLimit($page, $pageSize, $countSearch);
+                    [$offset, $pageSize, $page] = $this->pageToLimit($page, $pageSize, $countSearch);
+                    $where['LIMIT'] = [$offset, $pageSize];
+
+                    $usedFilters['page'] = [
+                        'page' => $page,
+                        'page_size' => $pageSize
+                    ];
                 }
 
                 $objects = $db->select(
@@ -66,7 +75,7 @@ class ArticlesResolver
                     'count_scope' => $count,
                     'count_filter' => $count,
                     'count_search' => $countSearch,
-                    'keyword' => $filters['keyword']
+                    'used_filters' => $usedFilters
                 ]);
 
                 return Model::fromList(ArticleType::$type, $objects);
@@ -78,7 +87,7 @@ class ArticlesResolver
         $numPages = ceil($countAll / $pageSize);
         $page = max(1, min($numPages, $page));
         $offset = $pageSize * $page - $pageSize;
-        return [$offset, $pageSize];
+        return [$offset, $pageSize, $page];
     }
 
     public function resolve_articles_relation(RelationResolver $r, Medoo $db)

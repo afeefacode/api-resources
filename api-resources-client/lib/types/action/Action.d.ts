@@ -1,4 +1,9 @@
-import { FilterJSON } from '../filter/Filter';
+import { Api } from 'src/api/Api';
+import { BaseQuerySource } from 'src/filter/BaseQuerySource';
+import { ApiRequest } from '../api/ApiRequest';
+import { Filter, FilterJSON } from '../filter/Filter';
+import { RequestFilters } from '../filter/RequestFilters';
+import { Resource } from '../resource/Resource';
 import { ActionParamJSON } from './ActionParams';
 export declare type ActionJSON = {
     params: Record<string, ActionParamJSON>;
@@ -11,11 +16,18 @@ export declare type ActionJSON = {
     };
 };
 export declare class Action {
+    private _resource;
     private _name;
     private _response;
     private _params;
     private _input;
     private _filters;
-    constructor(name: string, json: ActionJSON);
+    constructor(resource: Resource, name: string, json: ActionJSON);
+    getName(): string;
+    getFilters(): Record<string, Filter>;
+    requestFilters(querySource?: BaseQuerySource): RequestFilters;
+    request(): ApiRequest;
+    getResource(): Resource;
+    getApi(): Api;
 }
 //# sourceMappingURL=Action.d.ts.map

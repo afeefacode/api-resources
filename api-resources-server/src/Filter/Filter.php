@@ -11,6 +11,10 @@ class Filter extends BagEntry
 
     protected string $name;
 
+    protected $default;
+
+    protected $params;
+
     public function created(): void
     {
         if (!static::$type) {
@@ -24,10 +28,23 @@ class Filter extends BagEntry
         return $this;
     }
 
+    public function default($default): Filter
+    {
+        $this->default = $default;
+        return $this;
+    }
+
+    public function params($params): Filter
+    {
+        $this->params = $params;
+        return $this;
+    }
+
     public function toSchemaJson(): array
     {
         $json = [
-            'type' => static::$type
+            'type' => static::$type,
+            'default' => $this->default
         ];
 
         return $json;

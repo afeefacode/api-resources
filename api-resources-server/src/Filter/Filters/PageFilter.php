@@ -6,24 +6,27 @@ use Afeefa\ApiResources\Filter\Filter;
 
 class PageFilter extends Filter
 {
-    public static string $type = 'Afeefa.Page';
+    public static string $type = 'Afeefa.PageFilter';
 
-    protected $defaultPageSize = 15;
+    protected $pageSizes = [15];
 
-    protected $pageSizes;
+    protected $default = [
+        'page' => 1,
+        'page_size' => 15
+    ];
 
-    public function pageSizes(array $pageSizes, int $defaultPageSize): PageFilter
+    public function pageSizes(array $pageSizes): PageFilter
     {
         $this->pageSizes = $pageSizes;
-        $this->defaultPageSize = $defaultPageSize;
         return $this;
     }
 
     public function toSchemaJson(): array
     {
         $json = parent::toSchemaJson();
-        $json['default_page_size'] = $this->defaultPageSize;
-        $json['page_sizes'] = $this->pageSizes;
+        $json['params'] = [
+            'page_sizes' => $this->pageSizes
+        ];
         return $json;
     }
 }

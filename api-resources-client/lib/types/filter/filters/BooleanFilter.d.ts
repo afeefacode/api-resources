@@ -1,9 +1,5 @@
-import { Filter, FilterJSON } from '../Filter';
-export declare type BooleanFilterJSON = FilterJSON & {
-    values: boolean[];
-};
+import { Filter } from '../Filter';
 export declare class BooleanFilter extends Filter {
-    values: boolean[];
-    protected setupParams(json: BooleanFilterJSON): void;
+    static type: string;
 }
 //# sourceMappingURL=BooleanFilter.d.ts.map

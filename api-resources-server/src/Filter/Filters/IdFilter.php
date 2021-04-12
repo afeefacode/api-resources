@@ -8,7 +8,7 @@ use Closure;
 
 class IdFilter extends Filter
 {
-    public static string $type = 'Afeefa.Id';
+    public static string $type = 'Afeefa.IdFilter';
 
     protected ApiRequest $request;
 

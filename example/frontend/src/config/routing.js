@@ -25,6 +25,9 @@ export default routeConfigPlugin
   })
 
   .routes(async ({ROUTE, ROUTESET}) => {
+    await apiResources.schemasLoaded()
+    const api = apiResources.getApi('backendApi')
+
     return [
       ROUTE(
         {
@@ -90,6 +93,7 @@ export default routeConfigPlugin
               name: 'articles',
               idKey: 'articleId',
               config: {
+                action: api.getAction('Example.ArticlesResource', 'get_articles'),
                 Resource: ArticlesResource,
                 title: 'Artikel'
               }

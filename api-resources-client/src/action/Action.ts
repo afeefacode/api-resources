@@ -1,5 +1,11 @@
+import { Api } from 'src/api/Api'
+import { BaseQuerySource } from 'src/filter/BaseQuerySource'
+
+import { ApiRequest } from '../api/ApiRequest'
 import { apiResources } from '../ApiResources'
 import { Filter, FilterJSON } from '../filter/Filter'
+import { RequestFilters } from '../filter/RequestFilters'
+import { Resource } from '../resource/Resource'
 import { ActionInput } from './ActionInput'
 import { ActionParam, ActionParamJSON } from './ActionParams'
 import { ActionResponse } from './ActionResponse'
@@ -16,13 +22,15 @@ export type ActionJSON = {
 }
 
 export class Action {
+  private _resource: Resource
   private _name: string
   private _response: ActionResponse | null = null
   private _params: Record<string, ActionParam> = {}
   private _input: ActionInput | null = null
   private _filters: Record<string, Filter> = {}
 
-  constructor (name: string, json: ActionJSON) {
+  constructor (resource: Resource, name: string, json: ActionJSON) {
+    this._resource = resource
     this._name = name
 
     if (json.response) {
@@ -44,10 +52,40 @@ export class Action {
       for (const [name, filterJSON] of Object.entries(json.filters)) {
         const filter = apiResources.getFilter(filterJSON.type)
         if (filter) {
-          const actionFilter = filter.createActionFilter(filterJSON)
+          const actionFilter = filter.createActionFilter(name, filterJSON)
           this._filters[name] = actionFilter
         }
       }
     }
+  }
+
+  public getName (): string {
+    return this._name
+  }
+
+  public getFilters (): Record<string, Filter> {
+    return this._filters
+  }
+
+  public requestFilters (querySource?: BaseQuerySource): RequestFilters {
+    const filters = new RequestFilters(querySource)
+    for (const [name, filter] of Object.entries(this._filters)) {
+      filters.add(name, filter.createRequestFilter(filters))
+    }
+    filters.initFromQuerySource()
+    return filters
+  }
+
+  public request (): ApiRequest {
+    return new ApiRequest()
+      .action(this)
+  }
+
+  public getResource (): Resource {
+    return this._resource
+  }
+
+  public getApi (): Api {
+    return this._resource.getApi()
   }
 }

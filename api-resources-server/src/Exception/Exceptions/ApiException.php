@@ -10,6 +10,9 @@ class ApiException extends Exception
     {
         parent::__construct('Api Exception');
 
-        $this->message = $message;
+        $this->message = [
+            'message' => $message,
+            'request' => json_decode(file_get_contents('php://input'), true)
+        ];
     }
 }

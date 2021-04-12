@@ -6,24 +6,26 @@ use Afeefa\ApiResources\Filter\Filter;
 
 class OrderFilter extends Filter
 {
-    public static string $type = 'Afeefa.Order';
+    public static string $type = 'Afeefa.OrderFilter';
 
     public const DESC = 'desc';
 
     public const ASC = 'asc';
 
-    protected array $values;
+    protected array $fields;
 
-    public function values(array $values): OrderFilter
+    public function fields(array $fields): OrderFilter
     {
-        $this->values = $values;
+        $this->fields = $fields;
         return $this;
     }
 
     public function toSchemaJson(): array
     {
         $json = parent::toSchemaJson();
-        $json['fields'] = $this->values;
+        $json['params'] = [
+            'fields' => $this->fields
+        ];
         return $json;
     }
 }

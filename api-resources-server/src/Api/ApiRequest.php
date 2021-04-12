@@ -7,6 +7,7 @@ use Afeefa\ApiResources\DB\ActionResolver;
 use Afeefa\ApiResources\DI\ContainerAwareInterface;
 use Afeefa\ApiResources\DI\ContainerAwareTrait;
 use Afeefa\ApiResources\DI\DependencyResolver;
+use Afeefa\ApiResources\Exception\Exceptions\ApiException;
 use JsonSerializable;
 
 class ApiRequest implements ContainerAwareInterface, JsonSerializable
@@ -27,9 +28,18 @@ class ApiRequest implements ContainerAwareInterface, JsonSerializable
     {
         $input = json_decode(file_get_contents('php://input'), true);
 
-        $this->resourceName = $input['resource'];
-        $this->actionName = $input['action'];
+        $this->resourceName = $input['resource'] ?? '';
+        if (!$this->resourceName) {
+            throw new ApiException('No resource field');
+        }
+
+        $this->actionName = $input['action'] ?? '';
+        if (!$this->actionName) {
+            throw new ApiException('No action field');
+        }
+
         $this->fields($input['fields'] ?? []);
+
         $this->filters = $input['filters'] ?? [];
 
         return $this;

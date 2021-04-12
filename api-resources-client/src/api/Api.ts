@@ -1,10 +1,10 @@
 import axios from 'axios'
+import { Action } from 'src/action/Action'
 
 import { apiResources } from '../ApiResources'
 import { Resource, ResourceJSON } from '../resource/Resource'
 import { Type, TypeJSON } from '../type/Type'
 import { Validator, ValidatorJSON } from '../validator/Validator'
-import { ApiRequest } from './ApiRequest'
 
 export type ApiSchemaJSON = {
   types: Record<string, TypeJSON>,
@@ -31,7 +31,7 @@ export class Api {
     const schema: ApiSchemaJSON = result.data as ApiSchemaJSON
 
     for (const [name, resourceJSON] of Object.entries(schema.resources)) {
-      const resource = new Resource(resourceJSON)
+      const resource = new Resource(this, name, resourceJSON)
       this._resources[name] = resource
     }
 
@@ -53,8 +53,15 @@ export class Api {
     return schema
   }
 
-  public request (): ApiRequest {
-    return new ApiRequest()
-      .api(this)
+  public getAction (resourceName: string, actionName: string): Action | null {
+    const resource = this._resources[resourceName]
+    if (!resource) {
+      return null
+    }
+    return resource.getAction(actionName)
+  }
+
+  public call (params: object): Promise<any> {
+    return axios.post(this._baseUrl, params)
   }
 }

@@ -1,13 +1,5 @@
-import { Filter, FilterJSON } from '../Filter'
-
-export type BooleanFilterJSON = FilterJSON & {
-  values: boolean[]
-}
+import { Filter } from '../Filter'
 
 export class BooleanFilter extends Filter {
-  public values!: boolean[]
-
-  protected setupParams (json: BooleanFilterJSON) {
-    this.values = json.values
-  }
+  public static type: string = 'Afeefa.BooleanFilter'
 }

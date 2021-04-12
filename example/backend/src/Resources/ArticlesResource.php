@@ -49,14 +49,14 @@ class ArticlesResource extends ModelResource
                     $filter->values([true, false]);
                 });
 
-                $filters->add('page', function (PageFilter $filter) {
-                    $filter->pageSizes([15, 30, 50], 15);
-                });
-
                 $filters->add('q', KeywordFilter::class);
 
+                $filters->add('page', function (PageFilter $filter) {
+                    $filter->pageSizes([15, 30, 50]);
+                });
+
                 $filters->add('order', function (OrderFilter $filter) {
-                    $filter->values([
+                    $filter->fields([
                         'date' => [OrderFilter::DESC, OrderFilter::ASC]
                     ]);
                 });

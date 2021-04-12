@@ -4,12 +4,5 @@ import { KeywordFilter } from './KeywordFilter';
 import { OrderFilter } from './OrderFilter';
 import { PageFilter } from './PageFilter';
 import { TypeFilter } from './TypeFilter';
-export declare const filters: {
-    'Afeefa.Id': IdFilter;
-    'Afeefa.Type': TypeFilter;
-    'Afeefa.Page': PageFilter;
-    'Afeefa.Keyword': KeywordFilter;
-    'Afeefa.Order': OrderFilter;
-    'Afeefa.Boolean': BooleanFilter;
-};
+export declare const filters: (IdFilter | TypeFilter | PageFilter | KeywordFilter | OrderFilter | BooleanFilter)[];
 //# sourceMappingURL=index.d.ts.map

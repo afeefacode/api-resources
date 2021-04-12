@@ -56,12 +56,12 @@ class ApiResources {
     getValidator(type) {
         return this._validators[type] || null;
     }
-    registerFilter(type, filter) {
-        this._filters[type] = filter;
+    registerFilter(filter) {
+        this._filters[filter.type] = filter;
     }
     registerFilters(filters) {
-        for (const [type, filter] of Object.entries(filters)) {
-            this.registerFilter(type, filter);
+        for (const filter of filters) {
+            this.registerFilter(filter);
         }
     }
     getFilter(type) {

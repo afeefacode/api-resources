@@ -1,6 +1,49 @@
 <template>
   <div>
-    <widget />
+    <ul v-if="filters">
+      <li
+        v-for="(filter, name) in filters"
+        :key="name"
+      >
+        {{ name }} {{ filter.serialize() }} {{ filter.defaultValue }}
+
+        <template v-if="filter.type === 'Afeefa.PageFilter'">
+          <v-pagination
+            v-if="models.length"
+            v-model="filter.value.page"
+            :length="numPages"
+            :total-visible="8"
+            @input="filterInputChanged(filter.name)"
+          />
+        </template>
+
+        <template v-if="filter.type === 'Afeefa.KeywordFilter'">
+          <v-text-field
+            v-model="filter.value"
+            label="Suche"
+            title="Suche"
+            @input="filterInputChanged(filter.name)"
+          />
+        </template>
+
+        <template v-if="filter.type === 'Afeefa.OrderFilter'">
+          <p>Order: {{ filter.fields }}</p>
+        </template>
+
+        <template v-if="filter.type === 'Afeefa.BooleanFilter'">
+          <p>
+            <input
+              id="checkbox"
+              type="checkbox"
+            > <label for="checkbox">Hoho</label>
+          </p>
+        </template>
+
+        <template v-if="filter.type === 'Afeefa.IdFilter'">
+          <p>Name: {{ name }}</p>
+        </template>
+      </li>
+    </ul>
 
     <h3>List</h3>
     <ul>
@@ -10,39 +53,25 @@
       <li>{{ $routeDefinition.fullPath }}</li>
     </ul>
 
-    <h1>Articles</h1>
-
-    <v-text-field
-      v-model="keyword"
-      label="Suche"
-      title="Suche"
-    />
-
-    <v-pagination
-      v-if="articles.length"
-      v-model="page"
-      :length="numPages"
-      :total-visible="8"
-      @input="pageChanged"
-    />
+    <h1>Models</h1>
 
     <ul>
       <li
-        v-for="article in articles"
-        :key="article.id"
+        v-for="model in models"
+        :key="model.id"
       >
-        <router-link :to="{name: 'articles.detail', params: { articleId: article.id }}">
+        <router-link :to="{name: 'articles.detail', params: { articleId: model.id }}">
           Artikel
         </router-link>
 
         <div class="meta">
-          # {{ article.id }} | Am {{ article.date }}
+          # {{ model.id }} | Am {{ model.date }}
         </div>
         <div class="author">
-          {{ article.author.name }}
+          {{ model.author.name }}
         </div>
         <div class="title">
-          {{ article.title }}
+          {{ model.title }}
         </div>
       </li>
     </ul>
@@ -52,7 +81,7 @@
 <script>
 import { Component, Watch, Vue } from 'vue-property-decorator'
 import Widget from '../Widget.vue'
-import { Api, Client } from '@afeefa/api-resources-client'
+import { RouteQuerySource } from '@avue/services/list-filters/RouteQuerySource'
 
 @Component({
   components: {
@@ -60,78 +89,65 @@ import { Api, Client } from '@afeefa/api-resources-client'
   }
 })
 export default class List extends Vue {
-  articles = []
+  models = []
   meta = {}
-  keyword = null
-  page = 1
 
+  requestFilters = null
 
-  @Watch('keyword')
-  keywordChanged () {
-    this.page = 1
+  created () {
+    const querySource = new RouteQuerySource(this.$router)
+    this.requestFilters = this.action.requestFilters(querySource)
+
+    this.requestFilters.on('change', this.filterValueChanged)
     this.load()
+  }
+
+  destroyed () {
+    this.requestFilters.off('change', this.filterValueChanged)
+  }
+
+  get action () {
+    return this.$routeConfig.action
+  }
+
+  get filters () {
+    return (this.requestFilters && this.requestFilters.getFilters()) || null
+  }
+
+  get querySource () {
+    return this.requestFilters.getQuerySource()
+  }
+
+  filterValueChanged (event) {
+    console.log('filter value changed', event.filter.serialize())
+    this.load()
+  }
+
+  filterInputChanged (name) {
+    // console.log('filter input changed', name)
   }
 
   get numPages () {
     return Math.ceil(this.meta.count_search / 15)
   }
 
-  pageChanged () {
-    this.load()
-  }
-
-  created () {
-    this.load()
-  }
-
   async load () {
-    // console.log(this.$routeConfig)
-    // console.log(this.$routeConfig.api.request())
-
-    // const {data, meta} = client
-    //   .action('Example.ArticlesResource::get_articles')
-    //   .fields({
-    //     title: true,
-    //     date: true,
-    //     author: {
-    //       name: true
-    //     }
-    //   })
-    //   .filters({
-    //     keyword: this.keyword,
-    //     page: {
-    //       page: this.page,
-    //       pageSize: 15
-    //     }
-    //   })
-    //   .run()
-
-
-    // const Resource = this.$routeConfig.Resource
-    // const resource = new Resource()
-    // console.log(Resource)
-    const result = await new Client().post('/backend-api', {
-      resource: 'Example.ArticlesResource',
-      action: 'get_articles',
-      fields: {
+    const result = await this.action
+      .request()
+      .fields({
         title: true,
         date: true,
         author: {
           name: true
         }
-      },
-      filters: {
-        keyword: this.keyword,
-        page: {
-          page: this.page,
-          pageSize: 15
-        }
-      }
-    })
-    this.articles = result.data.data
+      })
+      .filters(this.requestFilters.serialize())
+      .send()
+
+    this.models = result.data.data
     this.meta = result.data.meta
 
-    // console.log(this.articles)
+    this.requestFilters.initFromUsed(this.meta.used_filters)
   }
 }
 </script>
