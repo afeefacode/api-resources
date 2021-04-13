@@ -1,14 +1,17 @@
-import { Query } from '../BaseQuerySource';
+import { QuerySource } from '../BaseQuerySource';
 import { Filter } from '../Filter';
-declare type Value = {
+declare type PageFilterValue = {
     page: number;
     page_size: number;
 };
+declare type PageQuery = QuerySource & {
+    page: string;
+    page_size: string;
+};
 export declare class PageFilter extends Filter {
     static type: string;
-    value: Value;
-    fromQuerySource(query: Query): void;
-    toQuerySource(): Query;
+    value: PageFilterValue;
+    fromQuerySource(query: PageQuery): void;
 }
 export {};
 //# sourceMappingURL=PageFilter.d.ts.map

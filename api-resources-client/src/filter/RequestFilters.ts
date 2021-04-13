@@ -1,5 +1,5 @@
-import { BaseQuerySource, Query } from './BaseQuerySource'
-import { Filter } from './Filter'
+import { BaseQuerySource, QuerySource } from './BaseQuerySource'
+import { Filter, FilterValues } from './Filter'
 import { FilterChangeEvent } from './FilterChangeEvent'
 import { ObjectQuerySource } from './ObjectQuerySource'
 
@@ -32,7 +32,7 @@ export class RequestFilters {
     return this._querySource
   }
 
-  public initFromUsed (usedFilters: Query): void {
+  public initFromUsed (usedFilters: FilterValues): void {
     this._disableUpdates = true
     Object.values(this._filters).forEach(f => f.initFromUsed(usedFilters))
     this._disableUpdates = false
@@ -59,8 +59,11 @@ export class RequestFilters {
 
     // no initial filters
     if (JSON.stringify(this._lastQuery) === JSON.stringify(query)) {
+      console.warn('same query')
       return false
     }
+
+    console.log(JSON.stringify(this._lastQuery), JSON.stringify(query))
 
     for (const filter of Object.values(this._filters)) {
       filter.initFromQuerySource(query)
@@ -72,7 +75,7 @@ export class RequestFilters {
   }
 
   public pushToQuerySource (): void {
-    const query = Object.values(this._filters).reduce((map: Query, filter: Filter) => {
+    const query = Object.values(this._filters).reduce((map: QuerySource, filter: Filter) => {
       return {
         ...map,
         ...filter.toUrlParams()
@@ -91,8 +94,8 @@ export class RequestFilters {
     this.pushToQuerySource()
   }
 
-  public serialize (): Query {
-    return Object.values(this._filters).reduce((map: Query, filter: Filter) => {
+  public serialize (): FilterValues {
+    return Object.values(this._filters).reduce((map: FilterValues, filter: Filter) => {
       return {
         ...map,
         ...filter.serialize()

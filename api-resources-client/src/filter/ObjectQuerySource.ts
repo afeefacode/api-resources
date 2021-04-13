@@ -1,18 +1,18 @@
-import { BaseQuerySource, Query } from './BaseQuerySource'
+import { BaseQuerySource, QuerySource } from './BaseQuerySource'
 
 export class ObjectQuerySource extends BaseQuerySource {
-  public query: Query = {}
+  public query: QuerySource = {}
 
-  constructor (query: Query) {
+  constructor (query: QuerySource) {
     super()
     this.query = query
   }
 
-  public getQuery (): Query {
+  public getQuery (): QuerySource {
     return this.query
   }
 
-  public push (query: Query): void {
+  public push (query: QuerySource): void {
     this.query = {
       ...query
     }

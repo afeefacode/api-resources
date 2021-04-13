@@ -5,7 +5,7 @@ type RelationJSON = FieldJSON & {
 }
 
 export class Relation extends Field {
-  private _relatedType: string
+  private _relatedType!: string
 
   public createTypeField (json: RelationJSON): Relation {
     const relation = super.createTypeField(json) as Relation

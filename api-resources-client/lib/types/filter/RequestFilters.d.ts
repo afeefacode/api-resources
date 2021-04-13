@@ -1,5 +1,5 @@
-import { BaseQuerySource, Query } from './BaseQuerySource';
-import { Filter } from './Filter';
+import { BaseQuerySource } from './BaseQuerySource';
+import { Filter, FilterValues } from './Filter';
 export declare class RequestFilters {
     private _filters;
     private _querySource;
@@ -11,13 +11,13 @@ export declare class RequestFilters {
     add(name: string, filter: Filter): void;
     getFilters(): Record<string, Filter>;
     getQuerySource(): BaseQuerySource;
-    initFromUsed(usedFilters: Query): void;
+    initFromUsed(usedFilters: FilterValues): void;
     on(type: string, handler: () => {}): void;
     off(type: string, handler: () => {}): void;
     valueChanged(filter: Filter): void;
     initFromQuerySource(): boolean;
     pushToQuerySource(): void;
     resetFilters(): void;
-    serialize(): Query;
+    serialize(): FilterValues;
 }
 //# sourceMappingURL=RequestFilters.d.ts.map

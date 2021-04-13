@@ -1,13 +1,18 @@
-import { Query } from './BaseQuerySource'
+import { QuerySource } from './BaseQuerySource'
 import { RequestFilters } from './RequestFilters'
 
 export type FilterJSON = {
   type: string,
   params: FilterParams,
-  default: unknown
+  default: FilterValue
 }
 
-export type FilterParams = {
+export type FilterParams = object
+
+export type FilterValue = boolean | string | number | null | FilterValues
+
+export type FilterValues = {
+  [key: string]: FilterValue
 }
 
 type FilterConstructor = {
@@ -22,8 +27,9 @@ export class Filter {
   public name!: string
 
   public params: unknown
-  public defaultValue: unknown
-  public value: unknown
+
+  public defaultValue!: FilterValue
+  public value!: FilterValue
 
   private _valueInitialized: boolean = false
   private _requestFilters!: RequestFilters
@@ -39,7 +45,7 @@ export class Filter {
         get: function (filter: Filter, key: string): unknown {
           return filter[key]
         },
-        set: function (filter: Filter, key: string, value: unknown): boolean {
+        set: function (filter: Filter, key: string, value: FilterValue): boolean {
           // ignore setting initial value in constructor where
           // name is not present yet
           if (filter._valueInitialized && key === 'value') {
@@ -74,19 +80,21 @@ export class Filter {
     return filter
   }
 
-  public initFromUsed (usedFilters: Query): void {
-    if (usedFilters[this.name]) {
-      if (this.defaultValue && typeof this.defaultValue === 'object') {
-        for (const [key, value] of Object.entries(usedFilters[this.name])) {
-          (this.value as Record<string, unknown>)[key] = value
+  public initFromUsed (usedFilters: FilterValues): void {
+    const usedFilter = usedFilters[this.name]
+    if (usedFilter) {
+      if (typeof usedFilter === 'object') {
+        // const usedFilter: FilterValues = usedFilters[this.name] as FilterValues
+        for (const [key, value] of Object.entries(usedFilter)) {
+          (this.value as FilterValues)[key] = value
         }
       } else {
-        this.value = usedFilters[this.name]
+        this.value = usedFilter
       }
     }
   }
 
-  public initFromQuerySource (query: Query): void {
+  public initFromQuerySource (query: QuerySource): void {
     if (query[this.name]) {
       this.fromQuerySource(query)
     } else {
@@ -94,21 +102,32 @@ export class Filter {
     }
   }
 
-  protected fromQuerySource (query: Query): void {
-    this.value = query[this.name]
-  }
-
-  public toUrlParams (): Query {
+  public toUrlParams (): QuerySource {
     return this.toQuerySource()
   }
 
-  public toQuerySource (): Query {
-    if (this.value) {
-      return {
-        [this.name]: this.value
+  public toQuerySource (): QuerySource {
+    if (this.value && typeof this.value === 'object') {
+      const query: QuerySource = {}
+      for (const [key, value] of Object.entries(this.value)) {
+        if (value !== (this.defaultValue as FilterValues)[key]) {
+          const valueString = this.filterValueToString(value)
+          if (valueString) {
+            query[key] = valueString
+          }
+        }
+      }
+      return query
+    } else {
+      if (this.value !== this.defaultValue) {
+        const valueString = this.filterValueToString(this.value)
+        if (valueString) {
+          return {
+            [this.name]: valueString
+          }
+        }
       }
     }
-
     return {}
   }
 
@@ -121,7 +140,7 @@ export class Filter {
     this._valueInitialized = true
   }
 
-  public serialize (): Query {
+  public serialize (): FilterValues {
     if (this.value) {
       return {
         [this.name]: this.value
@@ -131,20 +150,41 @@ export class Filter {
     return {}
   }
 
-  protected init (name: string, defaultValue: unknown, params: unknown): void {
+  protected fromQuerySource (query: QuerySource): void {
+    const queryValue = query[this.name]
+    if (queryValue) {
+      this.value = queryValue as FilterValue
+    } else {
+      this.value = null
+    }
+  }
+
+  protected filterValueToString (value: FilterValue): string | null {
+    switch (typeof value) {
+      case 'boolean':
+        return value ? '1' : '0'
+      case 'number':
+        return value.toString()
+      case 'string':
+        return value
+    }
+    return null
+  }
+
+  protected init (name: string, defaultValue: FilterValue, params: unknown): void {
     this.name = name
     this.defaultValue = defaultValue
     this.params = params
   }
 
-  protected createValueProxy (defaultValue: object): object {
+  protected createValueProxy (defaultValue: FilterValue): FilterValue {
     const value = new Proxy({
-      ...defaultValue
+      ...(defaultValue as object)
     }, {
-      get: function (object: Record<string, unknown>, key: string): unknown {
+      get: function (object: FilterValues, key: string): unknown {
         return object[key]
       },
-      set: (object: Record<string, unknown>, key: string, value: unknown): boolean => {
+      set: (object: FilterValues, key: string, value: FilterValue): boolean => {
         // console.log('setFilterValueProp', this.constructor.name, this.name, key, value)
         if (value !== object[key]) {
           // console.log('setFilterValueProp', this.constructor.name, this.name, key, value)
@@ -158,7 +198,7 @@ export class Filter {
     return value
   }
 
-  protected valueChanged (key: string, value: unknown): void {
+  protected valueChanged (_key: string, _value: unknown): void {
     // console.log('--- value changed', this.constructor.name, this.name, key, value)
     this._requestFilters.valueChanged(this)
   }

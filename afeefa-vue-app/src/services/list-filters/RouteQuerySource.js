@@ -15,6 +15,7 @@ export class RouteQuerySource extends BaseQuerySource {
 
   push (query) {
     if (JSON.stringify(this.router.currentRoute.query) !== JSON.stringify(query)) {
+      // console.log(JSON.stringify(this.router.currentRoute.query), JSON.stringify(query))
       this.router.push({query})
     }
   }

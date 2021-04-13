@@ -34,6 +34,7 @@
           <p>
             <input
               id="checkbox"
+              v-model="filter.value"
               type="checkbox"
             > <label for="checkbox">Hoho</label>
           </p>
@@ -79,7 +80,7 @@
 </template>
 
 <script>
-import { Component, Watch, Vue } from 'vue-property-decorator'
+import { Component, Vue } from 'vue-property-decorator'
 import Widget from '../Widget.vue'
 import { RouteQuerySource } from '@avue/services/list-filters/RouteQuerySource'
 

@@ -1,12 +1,12 @@
-export type Query = {
-  [key: string]: any
+export type QuerySource = {
+  [key: string]: string
 }
 
 export class BaseQuerySource {
-  public getQuery (): Query {
+  public getQuery (): QuerySource {
     return {}
   }
 
-  public push (_query: Query): void {
+  public push (_query: QuerySource): void {
   }
 }

@@ -43,14 +43,16 @@ export class Filter {
         return filter;
     }
     initFromUsed(usedFilters) {
-        if (usedFilters[this.name]) {
-            if (this.defaultValue && typeof this.defaultValue === 'object') {
-                for (const [key, value] of Object.entries(usedFilters[this.name])) {
+        const usedFilter = usedFilters[this.name];
+        if (usedFilter) {
+            if (typeof usedFilter === 'object') {
+                // const usedFilter: FilterValues = usedFilters[this.name] as FilterValues
+                for (const [key, value] of Object.entries(usedFilter)) {
                     this.value[key] = value;
                 }
             }
             else {
-                this.value = usedFilters[this.name];
+                this.value = usedFilter;
             }
         }
     }
@@ -62,17 +64,31 @@ export class Filter {
             this.reset();
         }
     }
-    fromQuerySource(query) {
-        this.value = query[this.name];
-    }
     toUrlParams() {
         return this.toQuerySource();
     }
     toQuerySource() {
-        if (this.value) {
-            return {
-                [this.name]: this.value
-            };
+        if (this.value && typeof this.value === 'object') {
+            const query = {};
+            for (const [key, value] of Object.entries(this.value)) {
+                if (value !== this.defaultValue[key]) {
+                    const valueString = this.filterValueToString(value);
+                    if (valueString) {
+                        query[key] = valueString;
+                    }
+                }
+            }
+            return query;
+        }
+        else {
+            if (this.value !== this.defaultValue) {
+                const valueString = this.filterValueToString(this.value);
+                if (valueString) {
+                    return {
+                        [this.name]: valueString
+                    };
+                }
+            }
         }
         return {};
     }
@@ -92,6 +108,26 @@ export class Filter {
             };
         }
         return {};
+    }
+    fromQuerySource(query) {
+        const queryValue = query[this.name];
+        if (queryValue) {
+            this.value = queryValue;
+        }
+        else {
+            this.value = null;
+        }
+    }
+    filterValueToString(value) {
+        switch (typeof value) {
+            case 'boolean':
+                return value ? '1' : '0';
+            case 'number':
+                return value.toString();
+            case 'string':
+                return value;
+        }
+        return null;
     }
     init(name, defaultValue, params) {
         this.name = name;
@@ -115,7 +151,7 @@ export class Filter {
         });
         return value;
     }
-    valueChanged(key, value) {
+    valueChanged(_key, _value) {
         // console.log('--- value changed', this.constructor.name, this.name, key, value)
         this._requestFilters.valueChanged(this);
     }
