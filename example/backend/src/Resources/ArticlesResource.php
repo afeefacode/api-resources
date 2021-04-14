@@ -13,6 +13,7 @@ use Afeefa\ApiResources\Filter\Filters\IdFilter;
 use Afeefa\ApiResources\Filter\Filters\KeywordFilter;
 use Afeefa\ApiResources\Filter\Filters\OrderFilter;
 use Afeefa\ApiResources\Filter\Filters\PageFilter;
+use Afeefa\ApiResources\Filter\Filters\PageSizeFilter;
 use Afeefa\ApiResources\Resource\ModelResource;
 use Afeefa\ApiResources\Type\Type;
 use Backend\Resolvers\ArticlesResolver;
@@ -31,18 +32,18 @@ class ArticlesResource extends ModelResource
         $actions->add('get_articles', function (Action $action) {
             $action->filters(function (FilterBag $filters) {#
                 $filters->add('author_id', function (IdFilter $filter) {
-                    $filter->request(function (ApiRequest $request) {
-                        // $request
-                        //     ->action([AuthorsResource::class, 'test']);
-                    });
+                    // $filter->request(function (ApiRequest $request) {
+                    //     $request
+                    //         ->action([AuthorsResource::class, 'test']);
+                    // });
                 });
 
                 $filters->add('tag_id', function (IdFilter $filter) {
-                    $filter->request(function (ApiRequest $request) {
-                        //     $request
-                        //         ->action([ArticlesResource::class, 'getTags'])
-                        //         ->filter('user_type', 'Example.Article');
-                    });
+                    // $filter->request(function (ApiRequest $request) {
+                    //         $request
+                    //             ->action([ArticlesResource::class, 'getTags'])
+                    //             ->filter('user_type', 'Example.Article');
+                    // });
                 });
 
                 $filters->add('tag_id', function (BooleanFilter $filter) {
@@ -51,8 +52,12 @@ class ArticlesResource extends ModelResource
 
                 $filters->add('q', KeywordFilter::class);
 
-                $filters->add('page', function (PageFilter $filter) {
-                    $filter->pageSizes([15, 30, 50]);
+                $filters->add('page', PageFilter::class);
+
+                $filters->add('page_size', function (PageSizeFilter $filter) {
+                    $filter
+                        ->pageSizes([15, 30, 50])
+                        ->default(30);
                 });
 
                 $filters->add('order', function (OrderFilter $filter) {

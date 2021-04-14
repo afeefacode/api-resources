@@ -43,20 +43,16 @@ class ArticlesResolver
                     $usedFilters['q'] = $keyword;
                 }
 
-                $pageFilter = $filters['page'] ?? null;
+                $pageSizeFilter = $r->getAction()->getFilter('page_size');
 
-                if ($pageFilter) {
-                    $page = $pageFilter['page'] ?? 1;
-                    $pageSize = $pageFilter['page_size'] ?? 15;
+                $page = $filters['page'] ?? 1;
+                $pageSize = $filters['page_size'] ?? $pageSizeFilter->getDefaultValue();
 
-                    [$offset, $pageSize, $page] = $this->pageToLimit($page, $pageSize, $countSearch);
-                    $where['LIMIT'] = [$offset, $pageSize];
+                [$offset, $pageSize, $page] = $this->pageToLimit($page, $pageSize, $countSearch);
+                $where['LIMIT'] = [$offset, $pageSize];
 
-                    $usedFilters['page'] = [
-                        'page' => $page,
-                        'page_size' => $pageSize
-                    ];
-                }
+                $usedFilters['page'] = $page;
+                $usedFilters['page_size'] = $pageSize;
 
                 $objects = $db->select(
                     'articles',
