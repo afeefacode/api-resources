@@ -6,7 +6,18 @@ export type FieldJSON = {
   validator: ValidatorJSON
 }
 
+type FieldConstructor = {
+  new (): Field,
+  type: string,
+}
+
 export class Field {
+  public type!: string
+
+  constructor () {
+    this.type = (this.constructor as FieldConstructor).type
+  }
+
   private _validator: Validator | null = null
 
   public createTypeField (json: FieldJSON): Field {
@@ -15,7 +26,7 @@ export class Field {
     return field
   }
 
-  protected setupTypeFieldValidator (json: ValidatorJSON) {
+  protected setupTypeFieldValidator (json: ValidatorJSON): void {
     if (json) {
       const validator = apiResources.getValidator(json.type)
       if (validator) {

@@ -47,14 +47,13 @@ class ApiResources {
     return this._apis[name] || null
   }
 
-  public registerField (type: string, field: Field): void {
-    this._fields[type] = field
-    this._fields.taset = field
+  public registerField (field: Field): void {
+    this._fields[field.type] = field
   }
 
-  public registerFields (fields: Record<string, Field>): void {
-    for (const [type, field] of Object.entries(fields)) {
-      this.registerField(type, field)
+  public registerFields (fields: Field[]): void {
+    for (const field of fields) {
+      this.registerField(field)
     }
   }
 

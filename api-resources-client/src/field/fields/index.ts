@@ -1,20 +1,24 @@
 import { BooleanAttribute } from './BooleanAttribute'
+import { DateAttribute } from './DateAttribute'
 import { HasManyRelation } from './HasManyRelation'
 import { HasOneRelation } from './HasOneRelation'
 import { IdAttribute } from './IdAttribute'
+import { IntAttribute } from './IntAttribute'
 import { LinkManyRelation } from './LinkManyRelation'
 import { LinkOneRelation } from './LinkOneRelation'
 import { TextAttribute } from './TextAttribute'
 import { VarcharAttribute } from './VarcharAttribute'
 
-export const fields = {
-  'Afeefa.VarcharAttribute': new VarcharAttribute(),
-  'Afeefa.TextAttribute': new TextAttribute(),
-  'Afeefa.BooleanAttribute': new BooleanAttribute(),
-  'Afeefa.IdAttribute': new IdAttribute(),
+export const fields = [
+  new VarcharAttribute(),
+  new TextAttribute(),
+  new BooleanAttribute(),
+  new IdAttribute(),
+  new DateAttribute(),
+  new IntAttribute(),
 
-  'Afeefa.HasManyRelation': new HasManyRelation(),
-  'Afeefa.HasOneRelation': new HasOneRelation(),
-  'Afeefa.LinkOneRelation': new LinkOneRelation(),
-  'Afeefa.LinkManyRelation': new LinkManyRelation()
-}
+  new HasManyRelation(),
+  new HasOneRelation(),
+  new LinkOneRelation(),
+  new LinkManyRelation()
+]
