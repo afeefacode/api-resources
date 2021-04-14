@@ -32,11 +32,11 @@ class FieldBag extends Bag
 
     public function attribute(string $name, $classOrCallback): FieldBag
     {
-        $this->container->create($classOrCallback, function (Field $field) use ($name) {
-            $field
+        $this->container->create($classOrCallback, function (Attribute $attribute) use ($name) {
+            $attribute
                 ->name($name)
                 ->allowed(true);
-            $this->set($name, $field);
+            $this->set($name, $attribute);
         });
 
         return $this;

@@ -4,6 +4,8 @@ namespace Afeefa\ApiResources\Filter;
 
 use Afeefa\ApiResources\Bag\BagEntry;
 use Afeefa\ApiResources\Exception\Exceptions\MissingTypeException;
+use Afeefa\ApiResources\Field\Attribute;
+use Afeefa\ApiResources\Field\Fields\VarcharAttribute;
 
 class Filter extends BagEntry
 {
@@ -11,14 +13,24 @@ class Filter extends BagEntry
 
     protected string $name;
 
-    protected $default;
+    protected array $options;
 
-    protected $params;
+    protected Attribute $value;
 
     public function created(): void
     {
         if (!static::$type) {
             throw new MissingTypeException('Missing type for filter of class ' . static::class . '.');
+        };
+
+        $this->setup();
+
+        if (!isset($this->value)) {
+            $this->value = $this->container->create(VarcharAttribute::class);
+        };
+
+        if (!$this->value->hasDefaultValue()) {
+            $this->value->default(null);
         };
     }
 
@@ -30,13 +42,18 @@ class Filter extends BagEntry
 
     public function default($default): Filter
     {
-        $this->default = $default;
+        $this->value->default($default);
         return $this;
     }
 
-    public function params($params): Filter
+    public function getDefaultValue()
     {
-        $this->params = $params;
+        return $this->value->getDefaultValue();
+    }
+
+    public function options(array $options)
+    {
+        $this->options = $options;
         return $this;
     }
 
@@ -44,9 +61,25 @@ class Filter extends BagEntry
     {
         $json = [
             'type' => static::$type,
-            'default' => $this->default
+            'value' => $this->value->toSchemaJson()
         ];
 
+        if (isset($this->options)) {
+            $json['options'] = $this->options;
+        }
+
         return $json;
+    }
+
+    protected function setup()
+    {
+    }
+
+    protected function value($classOrCallback): Filter
+    {
+        $this->container->create($classOrCallback, function (Attribute $attribute) {
+            $this->value = $attribute;
+        });
+        return $this;
     }
 }

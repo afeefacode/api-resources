@@ -6,6 +6,7 @@ use Afeefa\ApiResources\Bag\BagEntry;
 use Afeefa\ApiResources\Exception\Exceptions\InvalidConfigurationException;
 use Afeefa\ApiResources\Exception\Exceptions\NotACallbackException;
 use Afeefa\ApiResources\Exception\Exceptions\NotATypeException;
+use Afeefa\ApiResources\Filter\Filter;
 use Afeefa\ApiResources\Filter\FilterBag;
 use Closure;
 
@@ -75,6 +76,11 @@ class Action extends BagEntry
             $this->filters = $filters;
         });
         return $this;
+    }
+
+    public function getFilter(string $name): Filter
+    {
+        return $this->filters->get($name);
     }
 
     public function response($TypeClassOrClasses, Closure $callback = null): Action

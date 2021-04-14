@@ -2,28 +2,22 @@
 
 namespace Afeefa\ApiResources\Filter\Filters;
 
+use Afeefa\ApiResources\Field\Fields\BooleanAttribute;
 use Afeefa\ApiResources\Filter\Filter;
 
 class BooleanFilter extends Filter
 {
     public static string $type = 'Afeefa.BooleanFilter';
 
-    protected $values = [true];
-
-    protected $default = false;
-
-    public function values(array $values)
+    public function values(array $values): BooleanFilter
     {
-        $this->values = $values;
-        return $this;
+        return parent::options($values);
     }
 
-    public function toSchemaJson(): array
+    protected function setup()
     {
-        $json = parent::toSchemaJson();
-        $json['params'] = [
-            'values' => $this->values
-        ];
-        return $json;
+        $this
+            ->value(BooleanAttribute::class)
+            ->options([true]);
     }
 }

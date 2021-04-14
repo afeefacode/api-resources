@@ -65,8 +65,8 @@ class Api implements ContainerAwareInterface
         }
 
         return [
-            'types' => $types,
             'resources' => $resources,
+            'types' => $types,
             'validators' => $validators
             // 'fields' => $fields,
             // 'relations' => $relations,
