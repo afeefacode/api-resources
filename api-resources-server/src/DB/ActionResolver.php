@@ -77,6 +77,7 @@ class ActionResolver extends DataResolver
         return [
             'data' => array_values($models),
             'meta' => $resolveContext->getMeta(),
+            'input' => json_decode(file_get_contents('php://input'), true),
             'request' => $this->request
         ];
     }

@@ -1,4 +1,5 @@
 import { Filter } from '../Filter';
-export class BooleanFilter extends Filter {
+import { BooleanFilterMixin } from './mixins/BooleanFilterMixin';
+export class BooleanFilter extends BooleanFilterMixin(Filter) {
 }
 BooleanFilter.type = 'Afeefa.BooleanFilter';

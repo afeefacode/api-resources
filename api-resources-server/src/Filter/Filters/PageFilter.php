@@ -2,7 +2,6 @@
 
 namespace Afeefa\ApiResources\Filter\Filters;
 
-use Afeefa\ApiResources\Field\Fields\IntAttribute;
 use Afeefa\ApiResources\Filter\Filter;
 
 class PageFilter extends Filter
@@ -11,8 +10,6 @@ class PageFilter extends Filter
 
     protected function setup()
     {
-        $this->value(function (IntAttribute $page) {
-            $page->default(1);
-        });
+        $this->default(1);
     }
 }

@@ -33,13 +33,12 @@ class ApiResources {
     getApi(name) {
         return this._apis[name] || null;
     }
-    registerField(type, field) {
-        this._fields[type] = field;
-        this._fields.taset = field;
+    registerField(field) {
+        this._fields[field.type] = field;
     }
     registerFields(fields) {
-        for (const [type, field] of Object.entries(fields)) {
-            this.registerField(type, field);
+        for (const field of fields) {
+            this.registerField(field);
         }
     }
     getField(type) {

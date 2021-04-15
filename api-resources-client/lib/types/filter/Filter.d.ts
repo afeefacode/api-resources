@@ -1,37 +1,32 @@
 import { QuerySource } from './BaseQuerySource';
 import { RequestFilters } from './RequestFilters';
+export declare type FilterValueType = boolean | string | number | [string, FilterValueType] | null;
 export declare type FilterJSON = {
     type: string;
-    params: FilterParams;
-    default: FilterValue;
+    default: FilterValueType;
+    options: [];
 };
 export declare type FilterParams = object;
-export declare type FilterValue = boolean | string | number | null | FilterValues;
-export declare type FilterValues = {
-    [key: string]: FilterValue;
-};
 export declare class Filter {
-    [key: string]: any;
     type: string;
     name: string;
-    params: unknown;
-    defaultValue: FilterValue;
-    value: FilterValue;
-    private _valueInitialized;
+    private _defaultValue;
+    private _value;
+    options: unknown[];
     private _requestFilters;
     constructor(requestFilters?: RequestFilters);
+    get value(): FilterValueType;
+    set value(value: FilterValueType);
     createActionFilter(name: string, json: FilterJSON): Filter;
     createRequestFilter(requestFilters: RequestFilters): Filter;
-    initFromUsed(usedFilters: FilterValues): void;
+    initFromUsed(usedFilters: Record<string, FilterValueType>): void;
     initFromQuerySource(query: QuerySource): void;
-    toUrlParams(): QuerySource;
     toQuerySource(): QuerySource;
+    protected valueToQuery(_value: unknown): string | undefined;
+    protected queryToValue(_value: string): unknown | undefined;
     reset(): void;
-    serialize(): FilterValues;
-    protected fromQuerySource(query: QuerySource): void;
-    protected filterValueToString(value: FilterValue): string | null;
-    protected init(name: string, defaultValue: FilterValue, params: unknown): void;
-    protected createValueProxy(defaultValue: FilterValue): FilterValue;
-    protected valueChanged(_key: string, _value: unknown): void;
+    serialize(): Record<string, FilterValueType>;
+    protected serializeValue(value: unknown): unknown | undefined;
+    protected init(name: string, defaultValue: FilterValueType, options?: unknown[]): void;
 }
 //# sourceMappingURL=Filter.d.ts.map

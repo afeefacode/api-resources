@@ -36,6 +36,11 @@ class RequestedFields implements ContainerAwareInterface, JsonSerializable
         return $this;
     }
 
+    public function hasField(string $fieldName): bool
+    {
+        return isset($this->fields[$fieldName]);
+    }
+
     public function getFieldNames(): array
     {
         return array_keys($this->fields);
@@ -87,6 +92,13 @@ class RequestedFields implements ContainerAwareInterface, JsonSerializable
         $normalizedFields = [];
 
         foreach ($fields as $fieldName => $nested) {
+            if (preg_match('/^count_(.+)/', $fieldName, $matches)) {
+                $countRelationName = $matches[1];
+                if ($type->hasRelation($countRelationName)) {
+                    $normalizedFields[$fieldName] = true;
+                }
+            }
+
             if ($type->hasAttribute($fieldName)) {
                 $normalizedFields[$fieldName] = true;
             }

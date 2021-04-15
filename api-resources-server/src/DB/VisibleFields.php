@@ -64,6 +64,13 @@ class VisibleFields implements ContainerAwareInterface
             if ($type->hasField($fieldName)) {
                 $visibleFields[] = $fieldName;
             }
+
+            if (preg_match('/^count_(.+)/', $fieldName, $matches)) {
+                $countRelationName = $matches[1];
+                if ($type->hasRelation($countRelationName)) {
+                    $visibleFields[] = $fieldName;
+                }
+            }
         }
 
         return $visibleFields;

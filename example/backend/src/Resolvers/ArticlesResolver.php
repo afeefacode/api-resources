@@ -18,30 +18,55 @@ class ArticlesResolver
         $r
             ->load(function (ResolveContext $c) use ($r, $db) {
                 $request = $r->getRequest();
+                $requestedFields = $request->getFields();
                 $filters = $request->getFilters();
+
+                $selectFields = array_map(function ($field) {
+                    return 'articles.' . $field;
+                }, $c->getSelectFields());
+
+                $countSelectFields = [];
+
                 $usedFilters = [];
 
-                $where = [
-                    'ORDER' => 'id',
-                    'LIMIT' => 15,
-                    // 'id[>=]' => '199'
-                    // 'id' => '10'
-                ];
+                $where = [];
 
-                $count = $db->count('articles');
-                $countSearch = $count;
+                $countScope = $countFilters = $db->count('articles');
+
+                // has comments
+
+                $hasComments = array_key_exists('has_comments', $filters);
+
+                if ($hasComments) {
+                    $hasComments = $filters['has_comments'];
+
+                    $this->selectCountComments($selectFields, $countSelectFields);
+
+                    // $where['GROUP'] = ['id'];
+
+                    $operator = $hasComments ? '[>]' : '';
+                    $where['HAVING'] = [
+                        'count_comments' . $operator => 0
+                    ];
+
+                    $countFilters = $this->getCount($db, $countSelectFields, $where);
+                }
+
+                $countSearch = $countFilters;
+
+                // keyword search
 
                 $keyword = $filters['q'] ?? null;
 
                 if ($keyword) {
-                    $countSearch = $db->count('articles', [
-                        'title[~]' => $keyword
-                    ]);
-
                     $where['title[~]'] = $keyword;
+
+                    $countSearch = $this->getCount($db, $countSelectFields, $where);
 
                     $usedFilters['q'] = $keyword;
                 }
+
+                // pagination
 
                 $pageSizeFilter = $r->getAction()->getFilter('page_size');
 
@@ -54,9 +79,33 @@ class ArticlesResolver
                 $usedFilters['page'] = $page;
                 $usedFilters['page_size'] = $pageSize;
 
+                // order
+
+                $oderFilter = $r->getAction()->getFilter('order');
+
+                $order = $filters['order'] ?? $oderFilter->getDefaultValue() ?? null;
+
+                if ($order) {
+                    [$field, $direction] = $order;
+
+                    $where['ORDER'] = [
+                        $field => strtoupper($direction)
+                    ];
+                }
+
+                // count comments
+
+                if ($requestedFields->hasField('count_comments')) {
+                    if (!isset($selectFields['count_comments'])) {
+                        $this->selectCountComments($selectFields, $countSelectFields);
+                    }
+                }
+
+                // select
+
                 $objects = $db->select(
                     'articles',
-                    $c->getSelectFields(),
+                    $selectFields,
                     $where
                 );
 
@@ -68,8 +117,8 @@ class ArticlesResolver
                 }
 
                 $c->meta([
-                    'count_scope' => $count,
-                    'count_filter' => $count,
+                    'count_scope' => $countScope,
+                    'count_filter' => $countFilters,
                     'count_search' => $countSearch,
                     'used_filters' => $usedFilters
                 ]);
@@ -78,15 +127,7 @@ class ArticlesResolver
             });
     }
 
-    private function pageToLimit($page, $pageSize, $countAll)
-    {
-        $numPages = ceil($countAll / $pageSize);
-        $page = max(1, min($numPages, $page));
-        $offset = $pageSize * $page - $pageSize;
-        return [$offset, $pageSize, $page];
-    }
-
-    public function resolve_articles_relation(RelationResolver $r, Medoo $db)
+    public function resolve_articles_relation(RelationResolver $r, Medoo $db): void
     {
         $r
             ->load(function (array $owners, ResolveContext $c) use ($db) {
@@ -122,5 +163,39 @@ class ArticlesResolver
                 $key = $owner->id;
                 return $objects['Author:' . $key];
             });
+    }
+
+    private function getCount($db, $countSelectFields, $where): int
+    {
+        $query = $db->sql(
+            'articles',
+            $countSelectFields,
+            $where
+        );
+
+        return intval($db->query('SELECT COUNT(*) from (' . $query . ') tmp')->fetchColumn());
+    }
+
+    private function selectCountComments(array &$selectFields, array &$countSelectFields): void
+    {
+        $selectFields['count_comments'] = Medoo::raw(
+            <<<EOT
+                (
+                    select count(*) from comments
+                    where owner_id = articles.id
+                    and owner_type = 'Example.ArticleType'
+                )
+                EOT
+        );
+
+        $countSelectFields['count_comments'] = $selectFields['count_comments'];
+    }
+
+    private function pageToLimit($page, $pageSize, $countAll): array
+    {
+        $numPages = ceil($countAll / $pageSize);
+        $page = max(1, min($numPages, $page));
+        $offset = $pageSize * $page - $pageSize;
+        return [$offset, $pageSize, $page];
     }
 }

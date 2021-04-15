@@ -15,8 +15,8 @@ declare class ApiResources {
     registerApi(name: string, baseUrl: string): ApiResources;
     registerApis(apis: Record<string, string>): ApiResources;
     getApi(name: string): Api | null;
-    registerField(type: string, field: Field): void;
-    registerFields(fields: Record<string, Field>): void;
+    registerField(field: Field): void;
+    registerFields(fields: Field[]): void;
     getField(type: string): Field | null;
     registerValidator(type: string, validator: Validator): void;
     registerValidators(validators: Record<string, Validator>): void;

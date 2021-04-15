@@ -1,158 +1,83 @@
 export class Filter {
     constructor(requestFilters) {
-        this._valueInitialized = false;
+        this.options = [];
         this.type = this.constructor.type;
-        // console.log('--REG--', this.type, this.constructor.name)
         if (requestFilters) {
             this._requestFilters = requestFilters;
-            return new Proxy(this, {
-                get: function (filter, key) {
-                    return filter[key];
-                },
-                set: function (filter, key, value) {
-                    // ignore setting initial value in constructor where
-                    // name is not present yet
-                    if (filter._valueInitialized && key === 'value') {
-                        const oldJson = filter.serialize();
-                        // console.log('setFilterValue1', filter.constructor.name, filter.name, key, value, filter.value, filter[key])
-                        filter[key] = value;
-                        const newJson = filter.serialize();
-                        if (JSON.stringify(newJson) !== JSON.stringify(oldJson)) {
-                            // console.log('setFilterValue', filter.constructor.name, filter.name, key, value)
-                            // console.log(JSON.stringify(oldJson), JSON.stringify(newJson))
-                            filter.valueChanged(key, value);
-                        }
-                    }
-                    else {
-                        filter[key] = value;
-                    }
-                    return true;
-                }
-            });
+        }
+    }
+    get value() {
+        return this._value;
+    }
+    set value(value) {
+        if (value !== this._value) {
+            this._value = value;
+            this._requestFilters.valueChanged(this);
         }
     }
     createActionFilter(name, json) {
         const filter = new this.constructor();
-        filter.init(name, json.default, json.params);
+        filter.init(name, json.default || null, json.options);
         return filter;
     }
     createRequestFilter(requestFilters) {
         const filter = new this.constructor(requestFilters);
-        filter.init(this.name, this.defaultValue, this.params);
+        filter.init(this.name, this._defaultValue, this.options);
         filter.reset();
         return filter;
     }
     initFromUsed(usedFilters) {
         const usedFilter = usedFilters[this.name];
         if (usedFilter) {
-            if (typeof usedFilter === 'object') {
-                // const usedFilter: FilterValues = usedFilters[this.name] as FilterValues
-                for (const [key, value] of Object.entries(usedFilter)) {
-                    this.value[key] = value;
-                }
-            }
-            else {
-                this.value = usedFilter;
-            }
+            this.value = usedFilter;
         }
     }
     initFromQuerySource(query) {
-        if (query[this.name]) {
-            this.fromQuerySource(query);
+        const queryValue = query[this.name];
+        if (queryValue) {
+            this._value = this.queryToValue(queryValue);
         }
         else {
             this.reset();
         }
     }
-    toUrlParams() {
-        return this.toQuerySource();
-    }
     toQuerySource() {
-        if (this.value && typeof this.value === 'object') {
-            const query = {};
-            for (const [key, value] of Object.entries(this.value)) {
-                if (value !== this.defaultValue[key]) {
-                    const valueString = this.filterValueToString(value);
-                    if (valueString) {
-                        query[key] = valueString;
-                    }
-                }
-            }
-            return query;
-        }
-        else {
-            if (this.value !== this.defaultValue) {
-                const valueString = this.filterValueToString(this.value);
-                if (valueString) {
-                    return {
-                        [this.name]: valueString
-                    };
-                }
+        if (this._value !== this._defaultValue) {
+            const valueString = this.valueToQuery(this._value);
+            if (valueString) {
+                return {
+                    [this.name]: valueString
+                };
             }
         }
         return {};
+    }
+    valueToQuery(_value) {
+        return undefined;
+    }
+    queryToValue(_value) {
+        return undefined;
     }
     reset() {
-        if (this.defaultValue && typeof this.defaultValue === 'object') {
-            this.value = this.createValueProxy(this.defaultValue);
-        }
-        else {
-            this.value = this.defaultValue;
-        }
-        this._valueInitialized = true;
+        this._value = this._defaultValue;
     }
     serialize() {
-        if (this.value) {
-            return {
-                [this.name]: this.value
-            };
+        if (this._value !== this._defaultValue) {
+            const serialized = this.serializeValue(this._value);
+            if (serialized !== undefined) {
+                return {
+                    [this.name]: this._value
+                };
+            }
         }
         return {};
     }
-    fromQuerySource(query) {
-        const queryValue = query[this.name];
-        if (queryValue) {
-            this.value = queryValue;
-        }
-        else {
-            this.value = null;
-        }
-    }
-    filterValueToString(value) {
-        switch (typeof value) {
-            case 'boolean':
-                return value ? '1' : '0';
-            case 'number':
-                return value.toString();
-            case 'string':
-                return value;
-        }
-        return null;
-    }
-    init(name, defaultValue, params) {
-        this.name = name;
-        this.defaultValue = defaultValue;
-        this.params = params;
-    }
-    createValueProxy(defaultValue) {
-        const value = new Proxy(Object.assign({}, defaultValue), {
-            get: function (object, key) {
-                return object[key];
-            },
-            set: (object, key, value) => {
-                // console.log('setFilterValueProp', this.constructor.name, this.name, key, value)
-                if (value !== object[key]) {
-                    // console.log('setFilterValueProp', this.constructor.name, this.name, key, value)
-                    object[key] = value;
-                    this.valueChanged(key, object);
-                }
-                return true;
-            }
-        });
+    serializeValue(value) {
         return value;
     }
-    valueChanged(_key, _value) {
-        // console.log('--- value changed', this.constructor.name, this.name, key, value)
-        this._requestFilters.valueChanged(this);
+    init(name, defaultValue, options = []) {
+        this.name = name;
+        this._defaultValue = defaultValue;
+        this.options = options;
     }
 }

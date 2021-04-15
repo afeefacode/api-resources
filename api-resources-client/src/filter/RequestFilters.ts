@@ -1,5 +1,5 @@
 import { BaseQuerySource, QuerySource } from './BaseQuerySource'
-import { Filter, FilterValues } from './Filter'
+import { Filter, FilterValueType, FilterValues } from './Filter'
 import { FilterChangeEvent } from './FilterChangeEvent'
 import { ObjectQuerySource } from './ObjectQuerySource'
 
@@ -60,10 +60,11 @@ export class RequestFilters {
     // no initial filters
     if (JSON.stringify(this._lastQuery) === JSON.stringify(query)) {
       console.warn('same query')
+      console.log(JSON.stringify(this._lastQuery), JSON.stringify(query))
       return false
     }
 
-    console.log(JSON.stringify(this._lastQuery), JSON.stringify(query))
+    // console.log(JSON.stringify(this._lastQuery), JSON.stringify(query))
 
     for (const filter of Object.values(this._filters)) {
       filter.initFromQuerySource(query)
@@ -78,7 +79,7 @@ export class RequestFilters {
     const query = Object.values(this._filters).reduce((map: QuerySource, filter: Filter) => {
       return {
         ...map,
-        ...filter.toUrlParams()
+        ...filter.toQuerySource()
       }
     }, {})
 
@@ -95,7 +96,7 @@ export class RequestFilters {
   }
 
   public serialize (): FilterValues {
-    return Object.values(this._filters).reduce((map: FilterValues, filter: Filter) => {
+    return Object.values(this._filters).reduce((map: Record<string, FilterValueType>, filter: Filter) => {
       return {
         ...map,
         ...filter.serialize()

@@ -5,43 +5,68 @@
         v-for="(filter, name) in filters"
         :key="name"
       >
-        {{ name }} {{ filter.serialize() }} {{ filter.defaultValue }}
-
-        <template v-if="filter.type === 'Afeefa.PageFilter'">
-          <v-pagination
-            v-if="models.length"
-            v-model="filter.value.page"
-            :length="numPages"
-            :total-visible="8"
-            @input="filterInputChanged(filter.name)"
-          />
-        </template>
+        {{ name }} {{ filter.value }} {{ filter.serialize() }}
 
         <template v-if="filter.type === 'Afeefa.KeywordFilter'">
           <v-text-field
             v-model="filter.value"
             label="Suche"
             title="Suche"
+            clearable
+            @input="filterInputChanged(filter.name)"
+          />
+        </template>
+
+        <template v-if="filter.type === 'Afeefa.PageFilter'">
+          <v-pagination
+            v-if="models.length"
+            v-model="filter.value"
+            :length="numPages"
+            :total-visible="8"
             @input="filterInputChanged(filter.name)"
           />
         </template>
 
         <template v-if="filter.type === 'Afeefa.OrderFilter'">
-          <p>Order: {{ filter.fields }}</p>
+          <v-select
+            v-model="filter.value"
+            :items="orderItems"
+            item-text="title"
+            item-value="value"
+            :clearable="filter.value !== null"
+            :value-comparator="compareOrderValues"
+          />
         </template>
 
-        <template v-if="filter.type === 'Afeefa.BooleanFilter'">
+        <template v-if="filter.type === 'Afeefa.PageSizeFilter'">
+          <v-select
+            v-model="filter.value"
+            :items="filter.options"
+          />
+        </template>
+
+        <template v-if="filter.type === 'Afeefa.BooleanFilter' && filter.options.includes(false)">
+          <v-select
+            v-model="filter.value"
+            :items="filter.options"
+            :clearable="filter.value !== null"
+          />
+        </template>
+
+        <template v-else-if="filter.type === 'Afeefa.BooleanFilter'">
           <p>
             <input
-              id="checkbox"
+              :id="'checkbox-' + name"
               v-model="filter.value"
               type="checkbox"
-            > <label for="checkbox">Hoho</label>
+            > <label :for="'checkbox-' + name">{{ name }}</label>
           </p>
         </template>
 
-        <template v-if="filter.type === 'Afeefa.IdFilter'">
-          <p>Name: {{ name }}</p>
+        <template v-if="false">
+          <template v-if="filter.type === 'Afeefa.IdFilter'">
+            <p>Name: {{ name }}</p>
+          </template>
         </template>
       </li>
     </ul>
@@ -66,7 +91,7 @@
         </router-link>
 
         <div class="meta">
-          # {{ model.id }} | Am {{ model.date }}
+          # {{ model.id }} | am {{ model.date }} | Kommentare: {{ model.count_comments }}
         </div>
         <div class="author">
           {{ model.author.name }}
@@ -98,8 +123,10 @@ export default class List extends Vue {
   created () {
     const querySource = new RouteQuerySource(this.$router)
     this.requestFilters = this.action.requestFilters(querySource)
-
     this.requestFilters.on('change', this.filterValueChanged)
+
+    console.log(this.filters.page)
+
     this.load()
   }
 
@@ -119,8 +146,28 @@ export default class List extends Vue {
     return this.requestFilters.getQuerySource()
   }
 
+  get orderItems () {
+    const items = []
+    for (const [fieldName, directions] of Object.entries(this.filters.order.options)) {
+      for (const direction of directions) {
+        items.push({
+          title: fieldName + ' ' + direction,
+          value: [fieldName, direction]
+        })
+      }
+    }
+    return items
+  }
+
+  compareOrderValues (a, b) {
+    if (a && b && a.every((val, index) => val === b[index])) {
+      return true
+    }
+    return false
+  }
+
   filterValueChanged (event) {
-    console.log('filter value changed', event.filter.serialize())
+    // console.log('filter value changed', event.filter.serialize())
     this.load()
   }
 
@@ -129,7 +176,8 @@ export default class List extends Vue {
   }
 
   get numPages () {
-    return Math.ceil(this.meta.count_search / 15)
+    const pageSize = this.filters.page_size.value
+    return Math.ceil(this.meta.count_search / pageSize)
   }
 
   async load () {
@@ -141,6 +189,7 @@ export default class List extends Vue {
         author: {
           name: true
         }
+        // count_comments: true
       })
       .filters(this.requestFilters.serialize())
       .send()

@@ -2,7 +2,6 @@
 
 namespace Afeefa\ApiResources\Filter\Filters;
 
-use Afeefa\ApiResources\Field\Fields\BooleanAttribute;
 use Afeefa\ApiResources\Filter\Filter;
 
 class BooleanFilter extends Filter
@@ -16,8 +15,6 @@ class BooleanFilter extends Filter
 
     protected function setup()
     {
-        $this
-            ->value(BooleanAttribute::class)
-            ->options([true]);
+        $this->options([true]);
     }
 }

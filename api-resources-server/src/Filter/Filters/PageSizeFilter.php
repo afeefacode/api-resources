@@ -2,7 +2,6 @@
 
 namespace Afeefa\ApiResources\Filter\Filters;
 
-use Afeefa\ApiResources\Field\Fields\IntAttribute;
 use Afeefa\ApiResources\Filter\Filter;
 
 class PageSizeFilter extends Filter
@@ -18,8 +17,6 @@ class PageSizeFilter extends Filter
     {
         $this
             ->options([15])
-            ->value(function (IntAttribute $pageSize) {
-                $pageSize->default(15);
-            });
+            ->default(15);
     }
 }

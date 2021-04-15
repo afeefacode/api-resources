@@ -1,1 +1,1 @@
-{"version":3,"file":"LinkOneRelation.d.ts","sourceRoot":"","sources":["../../../../src/field/fields/LinkOneRelation.ts"],"names":[],"mappings":"AAAA,OAAO,EAAE,QAAQ,EAAE,MAAM,aAAa,CAAA;AAEtC,qBAAa,eAAgB,SAAQ,QAAQ;CAE5C"}
+{"version":3,"file":"LinkOneRelation.d.ts","sourceRoot":"","sources":["../../../../src/field/fields/LinkOneRelation.ts"],"names":[],"mappings":"AAAA,OAAO,EAAE,QAAQ,EAAE,MAAM,aAAa,CAAA;AAEtC,qBAAa,eAAgB,SAAQ,QAAQ;IAC3C,OAAc,IAAI,EAAE,MAAM,CAA2B;CACtD"}

@@ -16,11 +16,21 @@ use Slim\Http\ServerRequest as HttpRequest;
 
 require __DIR__ . '/../vendor/autoload.php';
 
-// error_reporting(E_ALL);
+error_reporting(E_ALL);
+
+class MedooWithSql extends Medoo
+{
+    public function sql($table, $join, $columns = null, $where = null)
+    {
+        $map = [];
+        $query = $this->selectContext($table, $map, $join, $columns, $where);
+        return $this->generate($query, $map);
+    }
+}
 
 $container = new Container([
     Medoo::class => function () {
-        return new Medoo([
+        return new MedooWithSql([
             'database_type' => 'mysql',
             'database_name' => 'api',
             'server' => 'mysql',
@@ -124,6 +134,7 @@ $app->post('/backend-api', function (HttpRequest $request, Response $response, a
     $result = $this->call(function (BackendApi $api) {
         return $api->requestFromInput();
     });
+    $result['db'] = $this->get(Medoo::class)->log();
     return $response->withJson($result);
 });
 

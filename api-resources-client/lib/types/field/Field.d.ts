@@ -4,7 +4,10 @@ export declare type FieldJSON = {
     validator: ValidatorJSON;
 };
 export declare class Field {
+    type: string;
+    constructor();
     private _validator;
+    newInstance<T>(): T;
     createTypeField(json: FieldJSON): Field;
     protected setupTypeFieldValidator(json: ValidatorJSON): void;
 }

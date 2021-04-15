@@ -4,8 +4,6 @@ namespace Afeefa\ApiResources\Filter;
 
 use Afeefa\ApiResources\Bag\BagEntry;
 use Afeefa\ApiResources\Exception\Exceptions\MissingTypeException;
-use Afeefa\ApiResources\Field\Attribute;
-use Afeefa\ApiResources\Field\Fields\VarcharAttribute;
 
 class Filter extends BagEntry
 {
@@ -15,7 +13,9 @@ class Filter extends BagEntry
 
     protected array $options;
 
-    protected Attribute $value;
+    protected $default;
+
+    protected bool $defaultValueSet = false;
 
     public function created(): void
     {
@@ -24,14 +24,6 @@ class Filter extends BagEntry
         };
 
         $this->setup();
-
-        if (!isset($this->value)) {
-            $this->value = $this->container->create(VarcharAttribute::class);
-        };
-
-        if (!$this->value->hasDefaultValue()) {
-            $this->value->default(null);
-        };
     }
 
     public function name(string $name): Filter
@@ -42,13 +34,19 @@ class Filter extends BagEntry
 
     public function default($default): Filter
     {
-        $this->value->default($default);
+        $this->default = $default;
+        $this->defaultValueSet = true;
         return $this;
+    }
+
+    public function hasDefaultValue(): bool
+    {
+        return $this->defaultValueSet;
     }
 
     public function getDefaultValue()
     {
-        return $this->value->getDefaultValue();
+        return $this->default;
     }
 
     public function options(array $options)
@@ -60,9 +58,12 @@ class Filter extends BagEntry
     public function toSchemaJson(): array
     {
         $json = [
-            'type' => static::$type,
-            'value' => $this->value->toSchemaJson()
+            'type' => static::$type
         ];
+
+        if ($this->defaultValueSet) {
+            $json['default'] = $this->default;
+        }
 
         if (isset($this->options)) {
             $json['options'] = $this->options;
@@ -73,13 +74,5 @@ class Filter extends BagEntry
 
     protected function setup()
     {
-    }
-
-    protected function value($classOrCallback): Filter
-    {
-        $this->container->create($classOrCallback, function (Attribute $attribute) {
-            $this->value = $attribute;
-        });
-        return $this;
     }
 }

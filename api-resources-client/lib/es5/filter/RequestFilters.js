@@ -43,9 +43,10 @@ export class RequestFilters {
         // no initial filters
         if (JSON.stringify(this._lastQuery) === JSON.stringify(query)) {
             console.warn('same query');
+            console.log(JSON.stringify(this._lastQuery), JSON.stringify(query));
             return false;
         }
-        console.log(JSON.stringify(this._lastQuery), JSON.stringify(query));
+        // console.log(JSON.stringify(this._lastQuery), JSON.stringify(query))
         for (const filter of Object.values(this._filters)) {
             filter.initFromQuerySource(query);
         }
@@ -54,7 +55,7 @@ export class RequestFilters {
     }
     pushToQuerySource() {
         const query = Object.values(this._filters).reduce((map, filter) => {
-            return Object.assign(Object.assign({}, map), filter.toUrlParams());
+            return Object.assign(Object.assign({}, map), filter.toQuerySource());
         }, {});
         this._querySource.push(query);
         this._lastQuery = query;

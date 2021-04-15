@@ -2,9 +2,13 @@ import { apiResources } from '../ApiResources';
 export class Field {
     constructor() {
         this._validator = null;
+        this.type = this.constructor.type;
+    }
+    newInstance() {
+        return new this.constructor();
     }
     createTypeField(json) {
-        const field = new this.constructor();
+        const field = this.newInstance();
         field.setupTypeFieldValidator(json.validator);
         return field;
     }

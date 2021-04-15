@@ -1,7 +1,5 @@
 import { Filter } from '../Filter';
-export class PageFilter extends Filter {
-    fromQuerySource(query) {
-        this.value.page = parseInt(query.page);
-    }
+import { IntFilterMixin } from './mixins/IntFilterMixin';
+export class PageFilter extends IntFilterMixin(Filter) {
 }
 PageFilter.type = 'Afeefa.PageFilter';

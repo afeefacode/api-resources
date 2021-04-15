@@ -46,13 +46,24 @@ class ArticlesResource extends ModelResource
                     // });
                 });
 
-                $filters->add('tag_id', function (BooleanFilter $filter) {
+                $filters->add('has_comments', function (BooleanFilter $filter) {
                     $filter->values([true, false]);
                 });
 
+                $filters->add('has_comments2', BooleanFilter::class);
+
                 $filters->add('q', KeywordFilter::class);
 
-                $filters->add('page', PageFilter::class);
+                $filters->add('order', function (OrderFilter $filter) {
+                    $filter
+                        ->fields([
+                            'id' => [OrderFilter::DESC, OrderFilter::ASC],
+                            'title' => [OrderFilter::DESC, OrderFilter::ASC],
+                            'date' => [OrderFilter::DESC, OrderFilter::ASC],
+                            'count_comments' => [OrderFilter::DESC, OrderFilter::ASC]
+                        ])
+                        ->default(['id', OrderFilter::ASC]);
+                });
 
                 $filters->add('page_size', function (PageSizeFilter $filter) {
                     $filter
@@ -60,11 +71,7 @@ class ArticlesResource extends ModelResource
                         ->default(30);
                 });
 
-                $filters->add('order', function (OrderFilter $filter) {
-                    $filter->fields([
-                        'date' => [OrderFilter::DESC, OrderFilter::ASC]
-                    ]);
-                });
+                $filters->add('page', PageFilter::class);
             });
 
             $action->response(Type::listOf(ArticleType::class));

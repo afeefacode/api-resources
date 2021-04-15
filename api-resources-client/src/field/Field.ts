@@ -6,8 +6,8 @@ export type FieldJSON = {
   validator: ValidatorJSON
 }
 
-type FieldConstructor = {
-  new (): Field,
+type FieldConstructor<T> = {
+  new (): T,
   type: string,
 }
 
@@ -15,13 +15,17 @@ export class Field {
   public type!: string
 
   constructor () {
-    this.type = (this.constructor as FieldConstructor).type
+    this.type = (this.constructor as FieldConstructor<Field>).type
   }
 
   private _validator: Validator | null = null
 
+  public newInstance<T> (): T {
+    return new (this.constructor as { new (): T })()
+  }
+
   public createTypeField (json: FieldJSON): Field {
-    const field = new (this.constructor as { new (): Field })()
+    const field = this.newInstance<Field>()
     field.setupTypeFieldValidator(json.validator)
     return field
   }
