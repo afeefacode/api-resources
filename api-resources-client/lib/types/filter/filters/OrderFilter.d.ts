@@ -1,6 +1,6 @@
 import { Filter } from '../Filter';
 declare type Direction = 'asc' | 'desc';
-declare type OrderFilterValue = [string, Direction] | undefined;
+declare type OrderFilterValue = Record<string, Direction>;
 export declare class OrderFilter extends Filter {
     static type: string;
     protected valueToQuery(value: OrderFilterValue): string | undefined;

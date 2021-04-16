@@ -2,7 +2,8 @@
   "name": "frontend",
   "scripts": {
     "serve": "npm run --prefix node_modules/@afeefa/vue2-bootstrap serve",
-    "build": "npm run --prefix node_modules/@afeefa/vue2-bootstrap build"
+    "build": "npm run --prefix node_modules/@afeefa/vue2-bootstrap build",
+    "inspect": "npm run --prefix node_modules/@afeefa/vue2-bootstrap inspect"
   },
   "dependencies": {
     "@afeefa/afeefa-vue-app": "file:../../afeefa-vue-app",
@@ -11,7 +12,7 @@
     "@mdi/js": "^5.9.55",
     "axios": "^0.21.1",
     "vue-router": "^3.5.1",
-    "vuetify": "^2.4.8"
+    "vuetify": "^2.4.9"
   },
   "devDependencies": {
     "vuetify-loader": "^1.7.2"

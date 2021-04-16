@@ -42,8 +42,7 @@ class ArticlesResolver
 
                     $this->selectCountComments($selectFields, $countSelectFields);
 
-                    // $where['GROUP'] = ['id'];
-
+                    $where['GROUP'] = ['id']; // medoo requires group with having
                     $operator = $hasComments ? '[>]' : '';
                     $where['HAVING'] = [
                         'count_comments' . $operator => 0
@@ -82,17 +81,21 @@ class ArticlesResolver
                 // order
 
                 $oderFilter = $r->getAction()->getFilter('order');
+                $order = $filters['order'] ?? $oderFilter->getDefaultValue() ?? [];
 
-                $order = $filters['order'] ?? $oderFilter->getDefaultValue() ?? null;
+                foreach ($order as $field => $direction) {
+                    if ($field === 'count_comments') {
+                        if (!isset($selectFields['count_comments'])) {
+                            $this->selectCountComments($selectFields, $countSelectFields);
+                        }
+                    }
 
-                if ($order) {
-                    [$field, $direction] = $order;
+                    $where['ORDER'][$field] = strtoupper($direction);
 
-                    $where['ORDER'] = [
-                        $field => strtoupper($direction)
+                    $usedFilters['order'] = [
+                        $field => $direction
                     ];
                 }
-
                 // count comments
 
                 if ($requestedFields->hasField('count_comments')) {

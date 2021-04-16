@@ -1,14 +1,20 @@
 import { Filter } from '../Filter';
 export class OrderFilter extends Filter {
     valueToQuery(value) {
+        let query;
         if (value) {
-            return value.join('-');
+            for (const [field, direction] of Object.entries(value)) {
+                query = [field, direction].join('-');
+            }
         }
-        return undefined;
+        return query;
     }
     queryToValue(value) {
         if (value) {
-            return value.split('-');
+            const [field, direction] = value.split('-');
+            return {
+                [field]: direction
+            };
         }
         return undefined;
     }

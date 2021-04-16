@@ -62,7 +62,7 @@ class ArticlesResource extends ModelResource
                             'date' => [OrderFilter::DESC, OrderFilter::ASC],
                             'count_comments' => [OrderFilter::DESC, OrderFilter::ASC]
                         ])
-                        ->default(['id', OrderFilter::ASC]);
+                        ->default(['id' => OrderFilter::ASC]);
                 });
 
                 $filters->add('page_size', function (PageSizeFilter $filter) {

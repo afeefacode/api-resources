@@ -2,24 +2,28 @@ import { Filter } from '../Filter'
 
 type Direction = 'asc' | 'desc';
 
-type OrderFilterValue = [string, Direction] | undefined
+type OrderFilterValue = Record<string, Direction>
 
 export class OrderFilter extends Filter {
   public static type: string = 'Afeefa.OrderFilter'
 
   protected valueToQuery (value: OrderFilterValue): string | undefined {
+    let query: string | undefined
     if (value) {
-      return value.join('-')
+      for (const [field, direction] of Object.entries(value)) {
+        query = [field, direction].join('-')
+      }
     }
-
-    return undefined
+    return query
   }
 
   protected queryToValue (value: string): OrderFilterValue | undefined {
     if (value) {
-      return value.split('-') as OrderFilterValue
+      const [field, direction] = value.split('-') as [string, Direction]
+      return {
+        [field]: direction
+      }
     }
-
     return undefined
   }
 }

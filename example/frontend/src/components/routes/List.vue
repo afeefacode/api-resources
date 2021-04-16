@@ -31,8 +31,8 @@
           <v-select
             v-model="filter.value"
             :items="orderItems"
-            item-text="title"
-            item-value="value"
+            item-text="itemText"
+            item-value="itemValue"
             :clearable="filter.value !== null"
             :value-comparator="compareOrderValues"
           />
@@ -124,9 +124,6 @@ export default class List extends Vue {
     const querySource = new RouteQuerySource(this.$router)
     this.requestFilters = this.action.requestFilters(querySource)
     this.requestFilters.on('change', this.filterValueChanged)
-
-    console.log(this.filters.page)
-
     this.load()
   }
 
@@ -151,8 +148,12 @@ export default class List extends Vue {
     for (const [fieldName, directions] of Object.entries(this.filters.order.options)) {
       for (const direction of directions) {
         items.push({
-          title: fieldName + ' ' + direction,
-          value: [fieldName, direction]
+          // itemText, itemValue instead of title, value:
+          // https://github.com/vuetifyjs/vuetify/issues
+          itemText: fieldName + ' ' + direction,
+          itemValue: {
+            [fieldName]: direction
+          }
         })
       }
     }
@@ -160,10 +161,7 @@ export default class List extends Vue {
   }
 
   compareOrderValues (a, b) {
-    if (a && b && a.every((val, index) => val === b[index])) {
-      return true
-    }
-    return false
+    return JSON.stringify(a) === JSON.stringify(b)
   }
 
   filterValueChanged (event) {
@@ -188,8 +186,8 @@ export default class List extends Vue {
         date: true,
         author: {
           name: true
-        }
-        // count_comments: true
+        },
+        count_comments: true
       })
       .filters(this.requestFilters.serialize())
       .send()
