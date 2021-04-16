@@ -93,11 +93,21 @@
         <div class="meta">
           # {{ model.id }} | am {{ model.date }} | Kommentare: {{ model.count_comments }}
         </div>
+
         <div class="author">
           {{ model.author.name }}
         </div>
+
         <div class="title">
           {{ model.title }}
+        </div>
+
+        <div class="tags">
+          <tag
+            v-for="tag in model.tags"
+            :key="tag.id"
+            :tag="tag"
+          />
         </div>
       </li>
     </ul>
@@ -107,11 +117,13 @@
 <script>
 import { Component, Vue } from 'vue-property-decorator'
 import Widget from '../Widget.vue'
+import Tag from '../Tag.vue'
 import { RouteQuerySource } from '@avue/services/list-filters/RouteQuerySource'
 
 @Component({
   components: {
-    Widget
+    Widget,
+    Tag
   }
 })
 export default class List extends Vue {
@@ -187,6 +199,9 @@ export default class List extends Vue {
         author: {
           name: true
         },
+        tags: {
+          name: true
+        },
         count_comments: true
       })
       .filters(this.requestFilters.serialize())
@@ -213,5 +228,10 @@ export default class List extends Vue {
 
 .title {
   font-weight: bold;
+}
+
+.tags {
+  display: flex;
+  gap: 1rem;
 }
 </style>
