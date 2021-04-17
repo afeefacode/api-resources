@@ -25,8 +25,6 @@ class ArticlesResolver
                     return 'articles.' . $field;
                 }, $c->getSelectFields());
 
-                $countSelectFields = [];
-
                 $usedFilters = [];
 
                 $where = [];
@@ -40,15 +38,36 @@ class ArticlesResolver
                 if ($hasComments) {
                     $hasComments = $filters['has_comments'];
 
-                    $this->selectCountComments($selectFields, $countSelectFields);
+                    $selectFields['count_comments'] = $this->selectCountComments();
 
-                    $where['GROUP'] = ['id']; // medoo requires group with having
                     $operator = $hasComments ? '[>]' : '';
-                    $where['HAVING'] = [
-                        'count_comments' . $operator => 0
-                    ];
+                    $where['HAVING']['count_comments' . $operator] = 0;
 
-                    $countFilters = $this->getCount($db, $countSelectFields, $where);
+                    $usedFilters['has_comments'] = $hasComments;
+                }
+
+                // author search
+
+                $authorId = $filters['author_id'] ?? null;
+
+                if ($authorId) {
+                    $where['author_id'] = $authorId;
+
+                    $usedFilters['author_id'] = $authorId;
+                }
+
+                // tag search
+
+                $tagId = $filters['tag_id'] ?? null;
+
+                if ($tagId) {
+                    $where['EXISTS'] = $this->selectTagId($tagId);
+
+                    $usedFilters['tag_id'] = $tagId;
+                }
+
+                if (count($usedFilters)) {
+                    $countFilters = $this->getCount($db, $selectFields, $where);
                 }
 
                 $countSearch = $countFilters;
@@ -60,7 +79,7 @@ class ArticlesResolver
                 if ($keyword) {
                     $where['title[~]'] = $keyword;
 
-                    $countSearch = $this->getCount($db, $countSelectFields, $where);
+                    $countSearch = $this->getCount($db, $selectFields, $where);
 
                     $usedFilters['q'] = $keyword;
                 }
@@ -86,7 +105,7 @@ class ArticlesResolver
                 foreach ($order as $field => $direction) {
                     if ($field === 'count_comments') {
                         if (!isset($selectFields['count_comments'])) {
-                            $this->selectCountComments($selectFields, $countSelectFields);
+                            $selectFields['count_comments'] = $this->selectCountComments();
                         }
                     }
 
@@ -96,11 +115,12 @@ class ArticlesResolver
                         $field => $direction
                     ];
                 }
+
                 // count comments
 
                 if ($requestedFields->hasField('count_comments')) {
                     if (!isset($selectFields['count_comments'])) {
-                        $this->selectCountComments($selectFields, $countSelectFields);
+                        $selectFields['count_comments'] = $this->selectCountComments();
                     }
                 }
 
@@ -179,9 +199,9 @@ class ArticlesResolver
         return intval($db->query('SELECT COUNT(*) from (' . $query . ') tmp')->fetchColumn());
     }
 
-    private function selectCountComments(array &$selectFields, array &$countSelectFields): void
+    private function selectCountComments()
     {
-        $selectFields['count_comments'] = Medoo::raw(
+        return Medoo::raw(
             <<<EOT
                 (
                     select count(*) from comments
@@ -190,8 +210,20 @@ class ArticlesResolver
                 )
                 EOT
         );
+    }
 
-        $countSelectFields['count_comments'] = $selectFields['count_comments'];
+    private function selectTagId($tagId)
+    {
+        return Medoo::raw(
+            <<<EOT
+                (
+                    select 1 from tag_users
+                    where user_id = articles.id
+                    and user_type = 'Example.ArticleType'
+                    and tag_id = {$tagId}
+                )
+                EOT
+        );
     }
 
     private function pageToLimit($page, $pageSize, $countAll): array

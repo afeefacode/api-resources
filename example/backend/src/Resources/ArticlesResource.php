@@ -30,27 +30,28 @@ class ArticlesResource extends ModelResource
         parent::actions($actions);
 
         $actions->add('get_articles', function (Action $action) {
-            $action->filters(function (FilterBag $filters) {#
+            $action->filters(function (FilterBag $filters) {
                 $filters->add('author_id', function (IdFilter $filter) {
-                    // $filter->request(function (ApiRequest $request) {
-                    //     $request
-                    //         ->action([AuthorsResource::class, 'test']);
-                    // });
+                    $filter->request(function (ApiRequest $request) {
+                        $request
+                            ->resourceName(AuthorsResource::$type)
+                            ->actionName('get_authors')
+                            ->fields(['name' => true, 'count_articles' => true]);
+                    });
                 });
 
                 $filters->add('tag_id', function (IdFilter $filter) {
-                    // $filter->request(function (ApiRequest $request) {
-                    //         $request
-                    //             ->action([ArticlesResource::class, 'getTags'])
-                    //             ->filter('user_type', 'Example.Article');
-                    // });
+                    $filter->request(function (ApiRequest $request) {
+                        $request
+                            ->resourceName(TagsResource::$type)
+                            ->actionName('get_tags')
+                            ->fields(['name' => true, 'count_users' => true]);
+                    });
                 });
 
                 $filters->add('has_comments', function (BooleanFilter $filter) {
                     $filter->values([true, false]);
                 });
-
-                $filters->add('has_comments2', BooleanFilter::class);
 
                 $filters->add('q', KeywordFilter::class);
 

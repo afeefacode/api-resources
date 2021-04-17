@@ -52,7 +52,7 @@ export class Action {
       for (const [name, filterJSON] of Object.entries(json.filters)) {
         const filter = apiResources.getFilter(filterJSON.type)
         if (filter) {
-          const actionFilter = filter.createActionFilter(name, filterJSON)
+          const actionFilter = filter.createActionFilter(this, name, filterJSON)
           this._filters[name] = actionFilter
         }
       }

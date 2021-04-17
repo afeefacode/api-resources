@@ -32,11 +32,11 @@ export class RequestFilters {
     off(type, handler) {
         this._eventTarget.removeEventListener(type, handler);
     }
-    valueChanged(filter) {
+    valueChanged(filters) {
         if (this._disableUpdates) {
             return;
         }
-        this._eventTarget.dispatchEvent(new FilterChangeEvent('change', filter));
+        this._eventTarget.dispatchEvent(new FilterChangeEvent('change', filters));
     }
     initFromQuerySource() {
         const query = this._querySource.getQuery();
@@ -60,15 +60,20 @@ export class RequestFilters {
         this._querySource.push(query);
         this._lastQuery = query;
     }
-    resetFilters() {
+    reset() {
+        const changedFilters = {};
         Object.values(this._filters).forEach(f => {
-            f.reset();
+            const changed = f.reset();
+            if (changed) {
+                changedFilters[f.name] = f;
+            }
         });
         this.pushToQuerySource();
+        this.valueChanged(changedFilters);
     }
-    serialize() {
+    serialize(options = {}) {
         return Object.values(this._filters).reduce((map, filter) => {
             return Object.assign(Object.assign({}, map), filter.serialize());
-        }, {});
+        }, options);
     }
 }

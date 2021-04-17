@@ -26,4 +26,12 @@ export class OrderFilter extends Filter {
     }
     return undefined
   }
+
+  protected serializeValue (value: OrderFilterValue): OrderFilterValue | undefined {
+    if (value) {
+      return value
+    }
+
+    return undefined
+  }
 }

@@ -1,11 +1,18 @@
-import { Action } from 'src/action/Action';
+import { Action } from '../action/Action';
+export declare type ApiRequestJSON = {
+    resource: string;
+    action: string;
+    fields: Record<string, unknown>;
+    filters: Record<string, unknown>;
+};
 export declare class ApiRequest {
     private _action;
     private _fields;
     private _filters;
+    constructor(json?: ApiRequestJSON);
     action(action: Action): ApiRequest;
-    fields(fields: object): ApiRequest;
-    filters(filters: object): ApiRequest;
+    fields(fields: Record<string, unknown>): ApiRequest;
+    filters(filters: Record<string, unknown>): ApiRequest;
     send(): Promise<any>;
     protected toParams(): object;
 }

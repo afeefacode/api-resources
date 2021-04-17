@@ -18,5 +18,11 @@ export class OrderFilter extends Filter {
         }
         return undefined;
     }
+    serializeValue(value) {
+        if (value) {
+            return value;
+        }
+        return undefined;
+    }
 }
 OrderFilter.type = 'Afeefa.OrderFilter';

@@ -2,8 +2,11 @@
 
 namespace Afeefa\ApiResources\Filter;
 
+use Afeefa\ApiResources\Api\Api;
+use Afeefa\ApiResources\Api\ApiRequest;
 use Afeefa\ApiResources\Bag\BagEntry;
 use Afeefa\ApiResources\Exception\Exceptions\MissingTypeException;
+use Closure;
 
 class Filter extends BagEntry
 {
@@ -12,6 +15,8 @@ class Filter extends BagEntry
     protected string $name;
 
     protected array $options;
+
+    protected Closure $requestCallback;
 
     protected $default;
 
@@ -24,6 +29,11 @@ class Filter extends BagEntry
         };
 
         $this->setup();
+    }
+
+    public function request(Closure $callback)
+    {
+        $this->requestCallback = $callback;
     }
 
     public function name(string $name): Filter
@@ -67,6 +77,16 @@ class Filter extends BagEntry
 
         if (isset($this->options)) {
             $json['options'] = $this->options;
+        }
+
+        if (isset($this->requestCallback)) {
+            $callback = $this->requestCallback;
+            $api = $this->container->get(Api::class);
+            $request = $this->container->create(function (ApiRequest $request) use ($api, $callback) {
+                $request->api($api);
+                $callback($request);
+            });
+            $json['request'] = $request->toSchemaJson();
         }
 
         return $json;

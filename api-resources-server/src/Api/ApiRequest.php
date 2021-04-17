@@ -10,7 +10,7 @@ use Afeefa\ApiResources\DI\DependencyResolver;
 use Afeefa\ApiResources\Exception\Exceptions\ApiException;
 use JsonSerializable;
 
-class ApiRequest implements ContainerAwareInterface, JsonSerializable
+class ApiRequest implements ContainerAwareInterface, ToSchemaJsonInterface, JsonSerializable
 {
     use ContainerAwareTrait;
 
@@ -70,7 +70,7 @@ class ApiRequest implements ContainerAwareInterface, JsonSerializable
 
     public function filter(string $name, string $value): ApiRequest
     {
-        $this->filters[] = [$name => $value];
+        $this->filters[$name] = $value;
         return $this;
     }
 
@@ -122,6 +122,21 @@ class ApiRequest implements ContainerAwareInterface, JsonSerializable
         );
 
         return $actionResolver->fetch();
+    }
+
+    public function toSchemaJson(): array
+    {
+        $json = [
+            'resource' => $this->resourceName,
+            'action' => $this->actionName,
+            'fields' => $this->fields
+        ];
+
+        if (count($this->filters)) {
+            $json['filters'] = $this->filters;
+        }
+
+        return $json;
     }
 
     public function jsonSerialize()

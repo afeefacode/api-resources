@@ -2,6 +2,7 @@
 
 namespace Backend\Resolvers;
 
+use Afeefa\ApiResources\DB\ActionResolver;
 use Afeefa\ApiResources\DB\RelationResolver;
 use Afeefa\ApiResources\DB\ResolveContext;
 use Afeefa\ApiResources\Model\Model;
@@ -11,6 +12,49 @@ use Medoo\Medoo;
 
 class TagsResolver
 {
+    public function get_tags(ActionResolver $r, Medoo $db)
+    {
+        $r
+            ->load(function (ResolveContext $c) use ($r, $db) {
+                $request = $r->getRequest();
+                $requestedFields = $request->getFields();
+                $selectFields = $c->getSelectFields();
+
+                $count = $db->count('tags');
+
+                if ($requestedFields->hasField('count_users')) {
+                    if (!isset($selectFields['count_users'])) {
+                        $selectFields['count_users'] = $this->selectCountUsers();
+                    }
+                }
+
+                $objects = $db->select(
+                    'tags',
+                    $selectFields
+                );
+
+                $c->meta([
+                    'count_scope' => $count,
+                    'count_filter' => $count,
+                    'count_search' => $count
+                ]);
+
+                return Model::fromList(TagType::$type, $objects);
+            });
+    }
+
+    private function selectCountUsers()
+    {
+        return Medoo::raw(
+            <<<EOT
+                (
+                    select count(*) from tag_users
+                    where tag_id = tags.id
+                )
+                EOT
+        );
+    }
+
     public function resolve_tag_users_relation(RelationResolver $r, Medoo $db)
     {
         $r

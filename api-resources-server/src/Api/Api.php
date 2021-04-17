@@ -17,6 +17,8 @@ class Api implements ContainerAwareInterface
 
     public function created(): void
     {
+        $this->container->registerAlias($this, self::class);
+
         $this->resources = $this->container->create(ResourceBag::class);
         $this->resources($this->resources);
     }

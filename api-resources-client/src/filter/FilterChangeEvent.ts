@@ -1,10 +1,10 @@
-import { Filter } from './Filter'
+import { Filters } from './RequestFilters'
 
 export class FilterChangeEvent extends Event {
-  public filter: Filter
+  public filters: Filters
 
-  constructor (type: string, filter: Filter) {
+  constructor (type: string, filters: Filters) {
     super(type)
-    this.filter = filter
+    this.filters = filters
   }
 }

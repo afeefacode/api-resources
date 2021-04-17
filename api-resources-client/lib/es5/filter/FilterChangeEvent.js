@@ -1,6 +1,6 @@
 export class FilterChangeEvent extends Event {
-    constructor(type, filter) {
+    constructor(type, filters) {
         super(type);
-        this.filter = filter;
+        this.filters = filters;
     }
 }

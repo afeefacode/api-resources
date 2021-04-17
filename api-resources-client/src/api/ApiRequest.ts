@@ -1,21 +1,38 @@
-import { Action } from 'src/action/Action'
+import { Action } from '../action/Action'
+
+export type ApiRequestJSON = {
+  resource: string,
+  action: string,
+  fields: Record<string, unknown>,
+  filters: Record<string, unknown>
+}
 
 export class ApiRequest {
   private _action!: Action
-  private _fields: object = {}
-  private _filters: object = {}
+  private _fields!: Record<string, unknown>
+  private _filters!: Record<string, unknown>
+
+  constructor (json?: ApiRequestJSON) {
+    if (json) {
+      this._fields = json.fields
+
+      if (json.filters) {
+        this._filters = json.filters
+      }
+    }
+  }
 
   public action (action: Action): ApiRequest {
     this._action = action
     return this
   }
 
-  public fields (fields: object): ApiRequest {
+  public fields (fields: Record<string, unknown>): ApiRequest {
     this._fields = fields
     return this
   }
 
-  public filters (filters: object): ApiRequest {
+  public filters (filters: Record<string, unknown>): ApiRequest {
     this._filters = filters
     return this
   }

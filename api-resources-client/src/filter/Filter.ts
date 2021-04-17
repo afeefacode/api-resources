@@ -1,12 +1,15 @@
+import { Action } from '../action/Action'
+import { ApiRequest, ApiRequestJSON } from '../api/ApiRequest'
 import { QuerySource } from './BaseQuerySource'
-import { RequestFilters } from './RequestFilters'
+import { RequestFilters, UsedFilters } from './RequestFilters'
 
 export type FilterValueType = boolean | string | number | [string, FilterValueType] | null
 
 export type FilterJSON = {
   type: string,
   default: FilterValueType,
-  options: []
+  options: [],
+  request: ApiRequestJSON
 }
 
 export type FilterParams = object
@@ -16,13 +19,18 @@ type FilterConstructor = {
   type: string,
 }
 
+type RequestFactory = (() => ApiRequest) | null
+
 export class Filter {
   public type!: string
   public name!: string
 
+  private _action!: Action
   private _defaultValue!: FilterValueType
   private _value!: FilterValueType
-  public options!: unknown[] = []
+  public options: unknown[] = []
+  private _requestFactory: RequestFactory = null
+  private _request: ApiRequest | null = null
 
   private _requestFilters!: RequestFilters
 
@@ -34,6 +42,10 @@ export class Filter {
     }
   }
 
+  public getAction (): Action {
+    return this._action
+  }
+
   public get value (): FilterValueType {
     return this._value
   }
@@ -41,24 +53,47 @@ export class Filter {
   public set value (value: FilterValueType) {
     if (value !== this._value) {
       this._value = value
-      this._requestFilters.valueChanged(this)
+      this._requestFilters.valueChanged({
+        [this.name]: this
+      })
     }
   }
 
-  public createActionFilter (name: string, json: FilterJSON): Filter {
+  public get defaultValue (): FilterValueType {
+    return this._defaultValue
+  }
+
+  public get request (): ApiRequest | null {
+    return this._request
+  }
+
+  public createActionFilter (action: Action, name: string, json: FilterJSON): Filter {
     const filter = new (this.constructor as FilterConstructor)()
-    filter.init(name, json.default || null, json.options)
+
+    let requestFactory: RequestFactory = null
+    if (json.request) {
+      requestFactory = (): ApiRequest => {
+        const requestAction = action.getApi().getAction(json.request.resource, json.request.action)
+        return new ApiRequest(json.request)
+          .action(requestAction as Action)
+      }
+    }
+
+    filter.init(action, name, json.default || null, json.options, requestFactory)
     return filter
   }
 
   public createRequestFilter (requestFilters: RequestFilters): Filter {
     const filter = new (this.constructor as FilterConstructor)(requestFilters)
-    filter.init(this.name, this._defaultValue, this.options)
+    filter.init(this._action, this.name, this._defaultValue, this.options, this._requestFactory)
+    if (filter._requestFactory) {
+      filter._request = filter._requestFactory()
+    }
     filter.reset()
     return filter
   }
 
-  public initFromUsed (usedFilters: Record<string, FilterValueType>): void {
+  public initFromUsed (usedFilters: UsedFilters): void {
     const usedFilter = usedFilters[this.name]
     if (usedFilter) {
       this.value = usedFilter
@@ -75,7 +110,7 @@ export class Filter {
   }
 
   public toQuerySource (): QuerySource {
-    if (this._value !== this._defaultValue) {
+    if (!this.hasDefaultValue()) {
       const valueString = this.valueToQuery(this._value)
       if (valueString) {
         return {
@@ -87,20 +122,20 @@ export class Filter {
     return {}
   }
 
-  protected valueToQuery (_value: unknown): string | undefined {
-    return undefined
+  public hasDefaultValue (): boolean {
+    return JSON.stringify(this._value) === JSON.stringify(this._defaultValue)
   }
 
-  protected queryToValue (_value: string): unknown | undefined {
-    return undefined
+  public reset (): boolean {
+    if (!this.hasDefaultValue()) {
+      this._value = this._defaultValue
+      return true
+    }
+    return false
   }
 
-  public reset (): void {
-    this._value = this._defaultValue
-  }
-
-  public serialize (): Record<string, FilterValueType> {
-    if (this._value !== this._defaultValue) {
+  public serialize (): UsedFilters {
+    if (!this.hasDefaultValue()) {
       const serialized = this.serializeValue(this._value)
       if (serialized !== undefined) {
         return {
@@ -111,13 +146,23 @@ export class Filter {
     return {}
   }
 
+  protected valueToQuery (_value: unknown): string | undefined {
+    return undefined
+  }
+
+  protected queryToValue (_value: string): unknown | undefined {
+    return undefined
+  }
+
   protected serializeValue (value: unknown): unknown | undefined {
     return value
   }
 
-  protected init (name: string, defaultValue: FilterValueType, options: unknown[] = []): void {
+  protected init (action: Action, name: string, defaultValue: FilterValueType, options: unknown[] = [], _requestFactory: RequestFactory): void {
+    this._action = action
     this.name = name
     this._defaultValue = defaultValue
     this.options = options
+    this._requestFactory = _requestFactory
   }
 }

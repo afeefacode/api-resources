@@ -6,6 +6,7 @@ use Afeefa\ApiResources\Action\Action;
 use Afeefa\ApiResources\Action\ActionBag;
 use Afeefa\ApiResources\Resource\Resource;
 use Afeefa\ApiResources\Type\Type;
+use Backend\Resolvers\AuthorsResolver;
 use Backend\Types\AuthorType;
 
 class AuthorsResource extends Resource
@@ -16,6 +17,8 @@ class AuthorsResource extends Resource
     {
         $actions->add('get_authors', function (Action $action) {
             $action->response(Type::listOf(AuthorType::class));
+
+            $action->resolve([AuthorsResolver::class, 'get_authors']);
         });
     }
 }

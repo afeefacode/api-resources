@@ -1,6 +1,6 @@
-import { Filter } from './Filter';
+import { Filters } from './RequestFilters';
 export declare class FilterChangeEvent extends Event {
-    filter: Filter;
-    constructor(type: string, filter: Filter);
+    filters: Filters;
+    constructor(type: string, filters: Filters);
 }
 //# sourceMappingURL=FilterChangeEvent.d.ts.map

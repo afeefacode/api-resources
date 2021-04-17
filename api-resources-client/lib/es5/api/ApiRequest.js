@@ -1,7 +1,11 @@
 export class ApiRequest {
-    constructor() {
-        this._fields = {};
-        this._filters = {};
+    constructor(json) {
+        if (json) {
+            this._fields = json.fields;
+            if (json.filters) {
+                this._filters = json.filters;
+            }
+        }
     }
     action(action) {
         this._action = action;

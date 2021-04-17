@@ -146,6 +146,11 @@ class Container implements ContainerInterface
         return $this->entries;
     }
 
+    public function registerAlias(object $instance, string $alias): void
+    {
+        $this->register($alias, $instance);
+    }
+
     public function dumpEntries($sort = false)
     {
         $dump = array_column(
@@ -190,10 +195,16 @@ class Container implements ContainerInterface
             }
         }
 
-        $this->bootstrapInstance($instance);
+        if ($instance instanceof ContainerAwareInterface) {
+            $instance->container($this);
+        }
 
         if ($register) {
             $this->register($TypeClass, $instance);
+        }
+
+        if ($instance instanceof ContainerAwareInterface) {
+            $instance->created();
         }
 
         if ($callback) {
@@ -247,14 +258,6 @@ class Container implements ContainerInterface
     {
         if (!isset($this->entries[$TypeClass])) {
             $this->entries[$TypeClass] = $instance;
-        }
-    }
-
-    private function bootstrapInstance($instance): void
-    {
-        if ($instance instanceof ContainerAwareInterface) {
-            $instance->container($this);
-            $instance->created();
         }
     }
 

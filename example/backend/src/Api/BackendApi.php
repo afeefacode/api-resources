@@ -6,6 +6,7 @@ use Afeefa\ApiResources\Api\Api;
 use Afeefa\ApiResources\Resource\ResourceBag;
 use Backend\Resources\ArticlesResource;
 use Backend\Resources\AuthorsResource;
+use Backend\Resources\TagsResource;
 use Backend\Types\AuthorType;
 
 class BackendApi extends Api
@@ -14,6 +15,7 @@ class BackendApi extends Api
     {
         $resources
             ->add(ArticlesResource::class)
+            ->add(TagsResource::class)
             ->add(function (AuthorsResource $resource) {
                 // $resource->removeAction('get_authors');
             });

@@ -12,7 +12,7 @@ use Backend\Types\TagType;
 use Medoo\Medoo;
 use Slim\Factory\AppFactory;
 use Slim\Http\Response;
-use Slim\Http\ServerRequest as HttpRequest;
+use Slim\Http\ServerRequest;
 
 require __DIR__ . '/../vendor/autoload.php';
 
@@ -25,6 +25,24 @@ class MedooWithSql extends Medoo
         $map = [];
         $query = $this->selectContext($table, $map, $join, $columns, $where);
         return $this->generate($query, $map);
+    }
+
+    protected function whereClause($where, &$map)
+    {
+        if (isset($where['HAVING']) && !isset($where['GROUP'])) {
+            $where['GROUP'] = 'id';
+        }
+
+        return parent::whereClause($where, $map);
+    }
+
+    protected function dataImplode($data, &$map, $conjunctor)
+    {
+        $where = parent::dataImplode($data, $map, ' AND');
+
+        $where = preg_replace('/"EXISTS" =/', 'EXISTS', $where);
+
+        return $where;
     }
 }
 
@@ -54,7 +72,7 @@ AppFactory::setContainer($container);
 $app = AppFactory::create();
 $app->addErrorMiddleware(true, false, false);
 
-$app->get('/backend-api/test', function (HttpRequest $request, Response $response, array $args) {
+$app->get('/backend-api/test', function (ServerRequest $request, Response $response, array $args) {
     $result = $this->call(function (BackendApi $api) {
         return $api->request(function (ApiRequest $request) {
             $request
@@ -101,7 +119,7 @@ $app->get('/backend-api/test', function (HttpRequest $request, Response $respons
     return $response->withJson($result);
 });
 
-$app->get('/backend-api/tags', function (HttpRequest $request, Response $response, array $args) {
+$app->get('/backend-api/tags', function (ServerRequest $request, Response $response, array $args) {
     $result = $this->call(function (BackendApi $api) {
         return $api->request(function (ApiRequest $request) {
             $request
@@ -130,7 +148,7 @@ $app->get('/backend-api/tags', function (HttpRequest $request, Response $respons
     return $response->withJson($result);
 });
 
-$app->post('/backend-api', function (HttpRequest $request, Response $response, array $args) {
+$app->post('/backend-api', function (ServerRequest $request, Response $response, array $args) {
     $result = $this->call(function (BackendApi $api) {
         return $api->requestFromInput();
     });
@@ -138,7 +156,7 @@ $app->post('/backend-api', function (HttpRequest $request, Response $response, a
     return $response->withJson($result);
 });
 
-$app->get('/backend-api/schema', function (HttpRequest $request, Response $response, array $args) {
+$app->get('/backend-api/schema', function (ServerRequest $request, Response $response, array $args) {
     $result = $this->call(function (BackendApi $api) {
         return $api->toSchemaJson();
     });
@@ -146,7 +164,7 @@ $app->get('/backend-api/schema', function (HttpRequest $request, Response $respo
     return $response->withJson($result);
 });
 
-$app->get('/', function (HttpRequest $request, Response $response, array $args) {
+$app->get('/', function (ServerRequest $request, Response $response, array $args) {
     ob_start();
     include 'index.html';
     $content = ob_get_clean();
