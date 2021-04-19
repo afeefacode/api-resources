@@ -120,11 +120,14 @@
         </div>
 
         <div class="tags">
-          <tag
+          <a
             v-for="tag in model.tags"
             :key="tag.id"
-            :tag="tag"
-          />
+            href=""
+            @click.prevent="filters.tag_id.value = tag.id"
+          >
+            <tag :tag="tag" />
+          </a>
         </div>
       </li>
     </ol>
@@ -153,8 +156,6 @@ import { RouteQuerySource } from '@avue/services/list-filters/RouteQuerySource'
 export default class List extends Vue {
   models = []
   meta = {}
-  idItems = {}
-
   requestFilters = null
 
   created () {
@@ -177,14 +178,9 @@ export default class List extends Vue {
   }
 
   async getIdItems (filter) {
-    let items = null
-    if (this.idItems[filter.name]) {
-      items = this.idItems[filter.name]
-    } else {
-      const result = await filter.request.send()
-      items = result.data.data
-      this.idItems[filter.name] = items
-    }
+    const result = await filter.request.send()
+    const items = result.data.data
+
     return items.map(i => {
       const count = filter.name === 'tag_id' ? i.count_users : i.count_articles
       return {
@@ -243,7 +239,8 @@ export default class List extends Vue {
           name: true
         },
         tags: {
-          name: true
+          name: true,
+          count_users: true
         },
         count_comments: true
       })

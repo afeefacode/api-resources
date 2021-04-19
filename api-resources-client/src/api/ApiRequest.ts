@@ -1,3 +1,4 @@
+import { AxiosResponse } from 'axios'
 import { Action } from '../action/Action'
 
 export type ApiRequestJSON = {
@@ -11,6 +12,9 @@ export class ApiRequest {
   private _action!: Action
   private _fields!: Record<string, unknown>
   private _filters!: Record<string, unknown>
+
+  private _lastRequestJSON: string = ''
+  private _lastRequest!: Promise<AxiosResponse>
 
   constructor (json?: ApiRequestJSON) {
     if (json) {
@@ -37,9 +41,18 @@ export class ApiRequest {
     return this
   }
 
-  public send (): Promise<any> {
+  public send (): Promise<AxiosResponse> {
+    const params = this.toParams()
+
+    if (this._lastRequestJSON === JSON.stringify(params)) {
+      return this._lastRequest
+    }
+
+    this._lastRequestJSON = JSON.stringify(params)
+
     const api = this._action.getApi()
-    return api.call(this.toParams())
+    this._lastRequest = api.call(params)
+    return this._lastRequest
   }
 
   protected toParams (): object {

@@ -1,3 +1,4 @@
+import { AxiosResponse } from 'axios';
 import { Action } from 'src/action/Action';
 import { ResourceJSON } from '../resource/Resource';
 import { TypeJSON } from '../type/Type';
@@ -16,6 +17,6 @@ export declare class Api {
     getBaseUrl(): string;
     loadSchema(): Promise<ApiSchemaJSON>;
     getAction(resourceName: string, actionName: string): Action | null;
-    call(params: object): Promise<any>;
+    call(params: object): Promise<AxiosResponse>;
 }
 //# sourceMappingURL=Api.d.ts.map

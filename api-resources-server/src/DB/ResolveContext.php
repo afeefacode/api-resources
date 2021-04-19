@@ -36,6 +36,11 @@ class ResolveContext implements ContainerAwareInterface
         return $this;
     }
 
+    public function getRequestedFields(): RequestedFields
+    {
+        return $this->requestedFields;
+    }
+
     public function meta(array $meta): ResolveContext
     {
         $this->meta = $meta;

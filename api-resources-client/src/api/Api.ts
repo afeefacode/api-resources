@@ -1,4 +1,4 @@
-import axios from 'axios'
+import axios, { AxiosResponse } from 'axios'
 import { Action } from 'src/action/Action'
 
 import { apiResources } from '../ApiResources'
@@ -61,7 +61,7 @@ export class Api {
     return resource.getAction(actionName)
   }
 
-  public call (params: object): Promise<any> {
+  public call (params: object): Promise<AxiosResponse> {
     return axios.post(this._baseUrl, params)
   }
 }

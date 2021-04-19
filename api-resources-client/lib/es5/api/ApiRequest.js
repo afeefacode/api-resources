@@ -1,5 +1,6 @@
 export class ApiRequest {
     constructor(json) {
+        this._lastRequestJSON = '';
         if (json) {
             this._fields = json.fields;
             if (json.filters) {
@@ -20,8 +21,14 @@ export class ApiRequest {
         return this;
     }
     send() {
+        const params = this.toParams();
+        if (this._lastRequestJSON === JSON.stringify(params)) {
+            return this._lastRequest;
+        }
+        this._lastRequestJSON = JSON.stringify(params);
         const api = this._action.getApi();
-        return api.call(this.toParams());
+        this._lastRequest = api.call(params);
+        return this._lastRequest;
     }
     toParams() {
         return {

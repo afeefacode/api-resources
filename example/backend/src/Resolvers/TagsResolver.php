@@ -43,18 +43,6 @@ class TagsResolver
             });
     }
 
-    private function selectCountUsers()
-    {
-        return Medoo::raw(
-            <<<EOT
-                (
-                    select count(*) from tag_users
-                    where tag_id = tags.id
-                )
-                EOT
-        );
-    }
-
     public function resolve_tag_users_relation(RelationResolver $r, Medoo $db)
     {
         $r
@@ -119,15 +107,23 @@ class TagsResolver
     {
         $r
             ->load(function (array $owners, ResolveContext $c) use ($db) {
+                $requestedFields = $c->getRequestedFields();
                 $selectFields = $c->getSelectFields();
+
+                $queryFields = ['tag_users.user_id', 'tag_users.user_type'];
 
                 /** @var ModelInterface[] $owners */
                 $fieldMap = [];
-                $queryFields = [];
                 foreach ($selectFields as $selectField) {
                     $alias = "tag_{$selectField}";
                     $fieldMap[$selectField] = $alias;
                     $queryFields[] = "tags.{$selectField}({$alias})";
+                }
+
+                if ($requestedFields->hasField('count_users')) {
+                    $alias = 'tag_users_count_users';
+                    $fieldMap['count_users'] = $alias;
+                    $queryFields[$alias] = $this->selectCountUsers();
                 }
 
                 $where = [];
@@ -148,10 +144,7 @@ class TagsResolver
                 $result = $db->select(
                     'tag_users',
                     ['[>]tags' => ['tag_id' => 'id']],
-                    [
-                        'tag_users.user_id', 'tag_users.user_type',
-                        ...$queryFields
-                    ],
+                    $queryFields,
                     [
                         'OR' => $where,
                         'ORDER' => 'tag_users.id'
@@ -162,7 +155,7 @@ class TagsResolver
                 foreach ($result as $row) {
                     $key = $row['user_type'] . ':' . $row['user_id'];
                     $object = [];
-                    foreach ($selectFields as $selectField) {
+                    foreach (array_keys($fieldMap) as $selectField) {
                         $object[$selectField] = $row[$fieldMap[$selectField]];
                     }
                     $models[$key][] = Model::fromSingle(TagType::$type, $object);
@@ -174,5 +167,17 @@ class TagsResolver
                 $key = $owner->type . ':' . $owner->id;
                 return $objects[$key] ?? [];
             });
+    }
+
+    private function selectCountUsers()
+    {
+        return Medoo::raw(
+            <<<EOT
+                (
+                    select count(*) from tag_users
+                    where tag_id = tags.id
+                )
+                EOT
+        );
     }
 }

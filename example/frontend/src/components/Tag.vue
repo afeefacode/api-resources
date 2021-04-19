@@ -4,6 +4,12 @@
 
     <div class="content">
       {{ tag.name }}
+      <div
+        v-if="tag.count_users"
+        class="hint"
+      >
+        ({{ tag.count_users }})
+      </div>
     </div>
   </div>
 </template>
@@ -37,8 +43,13 @@ export default class Tag extends Vue {
   .content {
     padding: 0.2rem .7rem;
     display: flex;
-    justify-content: space-around;
-    flex-direction: column;
+    align-items: center;
+    gap: .3rem;
+  }
+
+  .hint {
+    font-size: .7rem;
+    color: #999999;
   }
 }
 </style>
