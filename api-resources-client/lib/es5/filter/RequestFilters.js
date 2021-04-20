@@ -42,8 +42,8 @@ export class RequestFilters {
         const query = this._querySource.getQuery();
         // no initial filters
         if (JSON.stringify(this._lastQuery) === JSON.stringify(query)) {
-            console.warn('same query');
-            console.log(JSON.stringify(this._lastQuery), JSON.stringify(query));
+            // console.warn('same query')
+            // console.log(JSON.stringify(this._lastQuery), JSON.stringify(query))
             return false;
         }
         // console.log(JSON.stringify(this._lastQuery), JSON.stringify(query))

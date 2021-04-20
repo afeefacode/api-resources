@@ -188,7 +188,7 @@ class ArticlesResolver
             });
     }
 
-    private function getCount($db, $countSelectFields, $where): int
+    private function getCount(Medoo $db, array $countSelectFields, array $where): int
     {
         $query = $db->sql(
             'articles',
@@ -226,7 +226,7 @@ class ArticlesResolver
         );
     }
 
-    private function pageToLimit($page, $pageSize, $countAll): array
+    private function pageToLimit(int $page, int $pageSize, int $countAll): array
     {
         $numPages = ceil($countAll / $pageSize);
         $page = max(1, min($numPages, $page));

@@ -38,7 +38,7 @@ class MedooWithSql extends Medoo
 
     protected function dataImplode($data, &$map, $conjunctor)
     {
-        $where = parent::dataImplode($data, $map, ' AND');
+        $where = parent::dataImplode($data, $map, $conjunctor);
 
         $where = preg_replace('/"EXISTS" =/', 'EXISTS', $where);
 

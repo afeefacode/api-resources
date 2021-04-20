@@ -13,14 +13,6 @@
     <router-link :to="{name: 'authors.list'}">
       Autoren
     </router-link>
-
-    <router-link :to="{name: 'articles2.list'}">
-      Artikel2
-    </router-link>
-
-    <router-link :to="{name: 'authors2.list'}">
-      Autoren2
-    </router-link>
   </v-container>
 </template>
 
