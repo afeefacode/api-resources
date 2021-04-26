@@ -40,7 +40,7 @@ export class Action {
     getFilters() {
         return this._filters;
     }
-    requestFilters(querySource) {
+    createRequestFilters(querySource) {
         const filters = new RequestFilters(querySource);
         for (const [name, filter] of Object.entries(this._filters)) {
             filters.add(name, filter.createRequestFilter(filters));

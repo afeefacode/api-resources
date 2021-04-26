@@ -1,9 +1,10 @@
-import App from '@/App'
+import App from '@/components/App'
 import Detail from '@/components/routes/Detail'
 import Edit from '@/components/routes/Edit'
 import List from '@/components/routes/List'
 import New from '@/components/routes/New'
-import { ArticlesResource } from '@/resources/ArticlesResource'
+import { ArticlesRouteConfig } from '@/routes/ArticlesRouteConfig'
+import { AuthorsRouteConfig } from '@/routes/AuthorsRouteConfig'
 import { apiResources } from '@afeefa/api-resources-client'
 import { routeConfigPlugin } from '@avue/plugins/route-config/RouteConfigPlugin'
 
@@ -37,9 +38,6 @@ export default routeConfigPlugin
           redirect: {
             name: 'articles.list'
           },
-          config: {
-            title: 'Frontend'
-          },
 
           children: [
             ROUTESET({
@@ -47,8 +45,7 @@ export default routeConfigPlugin
               name: 'authors',
               idKey: 'authorId',
               config: {
-                title: 'Autoren',
-                action: api.getAction('Example.AuthorsResource', 'get_authors')
+                route: new AuthorsRouteConfig(api)
               }
             }),
 
@@ -57,8 +54,7 @@ export default routeConfigPlugin
               name: 'articles',
               idKey: 'articleId',
               config: {
-                title: 'Artikel',
-                action: api.getAction('Example.ArticlesResource', 'get_articles')
+                route: new ArticlesRouteConfig(api)
               },
 
               children: [

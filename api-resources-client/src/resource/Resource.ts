@@ -1,6 +1,5 @@
-import { Api } from 'src/api/Api'
-
 import { Action, ActionJSON } from '../action/Action'
+import { Api } from '../api/Api'
 
 export type ResourceJSON = Record<string, ActionJSON>
 

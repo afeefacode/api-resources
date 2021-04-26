@@ -1,7 +1,8 @@
-import axios, { AxiosResponse } from 'axios'
-import { Action } from 'src/action/Action'
+import axios from 'axios'
 
+import { Action } from '../action/Action'
 import { apiResources } from '../ApiResources'
+import { ModelJSON } from '../Model'
 import { Resource, ResourceJSON } from '../resource/Resource'
 import { Type, TypeJSON } from '../type/Type'
 import { Validator, ValidatorJSON } from '../validator/Validator'
@@ -10,6 +11,10 @@ export type ApiSchemaJSON = {
   types: Record<string, TypeJSON>,
   resources: Record<string, ResourceJSON>,
   validators: Record<string, ValidatorJSON>,
+}
+
+export type ResultDataJSON = {
+  data: ModelJSON | ModelJSON[]
 }
 
 export class Api {
@@ -44,7 +49,7 @@ export class Api {
     }
 
     for (const [typeName, typeJSON] of Object.entries(schema.types)) {
-      const type = new Type(typeJSON)
+      const type = new Type(typeName, typeJSON)
       this._types[typeName] = type
 
       apiResources.registerType(typeName, type)
@@ -59,9 +64,5 @@ export class Api {
       return null
     }
     return resource.getAction(actionName)
-  }
-
-  public call (params: object): Promise<AxiosResponse> {
-    return axios.post(this._baseUrl, params)
   }
 }

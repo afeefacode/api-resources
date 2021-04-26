@@ -27,7 +27,7 @@ export class Api {
             }
         }
         for (const [typeName, typeJSON] of Object.entries(schema.types)) {
-            const type = new Type(typeJSON);
+            const type = new Type(typeName, typeJSON);
             this._types[typeName] = type;
             apiResources.registerType(typeName, type);
         }
@@ -39,8 +39,5 @@ export class Api {
             return null;
         }
         return resource.getAction(actionName);
-    }
-    call(params) {
-        return axios.post(this._baseUrl, params);
     }
 }

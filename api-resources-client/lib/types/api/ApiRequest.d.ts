@@ -1,5 +1,5 @@
-import { AxiosResponse } from 'axios';
 import { Action } from '../action/Action';
+import { ApiResponse } from './ApiResponse';
 export declare type ApiRequestJSON = {
     resource: string;
     action: string;
@@ -14,9 +14,10 @@ export declare class ApiRequest {
     private _lastRequest;
     constructor(json?: ApiRequestJSON);
     action(action: Action): ApiRequest;
+    getAction(): Action;
     fields(fields: Record<string, unknown>): ApiRequest;
     filters(filters: Record<string, unknown>): ApiRequest;
-    send(): Promise<AxiosResponse>;
-    protected toParams(): object;
+    send(): Promise<ApiResponse>;
+    protected serialize(): object;
 }
 //# sourceMappingURL=ApiRequest.d.ts.map

@@ -5,6 +5,7 @@ import { validators } from './validator/validators';
 class ApiResources {
     constructor() {
         this._apis = {};
+        this._models = {};
         this._fields = {};
         this._validators = {};
         this._filters = {};
@@ -35,39 +36,59 @@ class ApiResources {
     }
     registerField(field) {
         this._fields[field.type] = field;
+        return this;
     }
     registerFields(fields) {
         for (const field of fields) {
             this.registerField(field);
         }
+        return this;
     }
     getField(type) {
         return this._fields[type] || null;
     }
+    registerModel(Model) {
+        this._models[Model.type] = Model;
+        return this;
+    }
+    registerModels(models) {
+        for (const Model of models) {
+            this.registerModel(Model);
+        }
+        return this;
+    }
+    getModel(type) {
+        return this._models[type] || null;
+    }
     registerValidator(type, validator) {
         this._validators[type] = validator;
+        return this;
     }
     registerValidators(validators) {
         for (const [type, validator] of Object.entries(validators)) {
             this.registerValidator(type, validator);
         }
+        return this;
     }
     getValidator(type) {
         return this._validators[type] || null;
     }
     registerFilter(filter) {
         this._filters[filter.type] = filter;
+        return this;
     }
     registerFilters(filters) {
         for (const filter of filters) {
             this.registerFilter(filter);
         }
+        return this;
     }
     getFilter(type) {
         return this._filters[type] || null;
     }
     registerType(typeName, type) {
         this._types[typeName] = type;
+        return this;
     }
     getType(typeName) {
         return this._types[typeName] || null;

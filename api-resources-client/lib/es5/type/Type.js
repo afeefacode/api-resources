@@ -1,9 +1,10 @@
 import { apiResources } from '../ApiResources';
 export class Type {
-    constructor(json) {
+    constructor(name, json) {
         this._fields = {};
         this._updateFields = {};
         this._createFields = {};
+        this.name = name;
         for (const [name, fieldJSON] of Object.entries(json.fields)) {
             const field = apiResources.getField(fieldJSON.type);
             if (field) {
@@ -29,5 +30,8 @@ export class Type {
                 }
             }
         }
+    }
+    getFields() {
+        return this._fields;
     }
 }

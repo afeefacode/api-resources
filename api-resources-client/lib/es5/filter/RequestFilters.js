@@ -17,6 +17,9 @@ export class RequestFilters {
     getFilters() {
         return this._filters;
     }
+    hasFilter(name) {
+        return !!this._filters[name];
+    }
     getQuerySource() {
         return this._querySource;
     }
@@ -40,7 +43,7 @@ export class RequestFilters {
     }
     initFromQuerySource() {
         const query = this._querySource.getQuery();
-        // no initial filters
+        // skip initial filters
         if (JSON.stringify(this._lastQuery) === JSON.stringify(query)) {
             // console.warn('same query')
             // console.log(JSON.stringify(this._lastQuery), JSON.stringify(query))

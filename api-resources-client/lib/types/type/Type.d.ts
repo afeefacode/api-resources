@@ -1,13 +1,15 @@
-import { FieldJSON } from '../field/Field';
+import { Field, FieldJSON } from '../field/Field';
 export declare type TypeJSON = {
     fields: Record<string, FieldJSON>;
     update_fields: Record<string, FieldJSON>;
     create_fields: Record<string, FieldJSON>;
 };
 export declare class Type {
+    name: string;
     private _fields;
     private _updateFields;
     private _createFields;
-    constructor(json: TypeJSON);
+    constructor(name: string, json: TypeJSON);
+    getFields(): Record<string, Field>;
 }
 //# sourceMappingURL=Type.d.ts.map

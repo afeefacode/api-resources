@@ -1,3 +1,5 @@
+import axios from 'axios';
+import { ApiResponse } from './ApiResponse';
 export class ApiRequest {
     constructor(json) {
         this._lastRequestJSON = '';
@@ -12,6 +14,9 @@ export class ApiRequest {
         this._action = action;
         return this;
     }
+    getAction() {
+        return this._action;
+    }
     fields(fields) {
         this._fields = fields;
         return this;
@@ -21,16 +26,20 @@ export class ApiRequest {
         return this;
     }
     send() {
-        const params = this.toParams();
+        const params = this.serialize();
         if (this._lastRequestJSON === JSON.stringify(params)) {
             return this._lastRequest;
         }
         this._lastRequestJSON = JSON.stringify(params);
-        const api = this._action.getApi();
-        this._lastRequest = api.call(params);
-        return this._lastRequest;
+        const url = this._action.getApi().getBaseUrl();
+        const request = axios.post(url, params)
+            .then(result => {
+            return new ApiResponse(new ApiRequest(), result);
+        });
+        this._lastRequest = request;
+        return request;
     }
-    toParams() {
+    serialize() {
         return {
             resource: this._action.getResource().getName(),
             action: this._action.getName(),

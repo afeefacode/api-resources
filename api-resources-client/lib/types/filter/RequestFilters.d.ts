@@ -12,6 +12,7 @@ export declare class RequestFilters {
     querySource(querySource: BaseQuerySource): void;
     add(name: string, filter: Filter): void;
     getFilters(): Record<string, Filter>;
+    hasFilter(name: string): boolean;
     getQuerySource(): BaseQuerySource;
     initFromUsed(usedFilters: UsedFilters): void;
     on(type: string, handler: () => {}): void;

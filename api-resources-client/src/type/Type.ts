@@ -8,11 +8,14 @@ export type TypeJSON = {
 }
 
 export class Type {
+  public name: string
   private _fields: Record<string, Field> = {}
   private _updateFields: Record<string, Field> = {}
   private _createFields: Record<string, Field> = {}
 
-  constructor (json: TypeJSON) {
+  constructor (name: string, json: TypeJSON) {
+    this.name = name
+
     for (const [name, fieldJSON] of Object.entries(json.fields)) {
       const field = apiResources.getField(fieldJSON.type)
       if (field) {
@@ -40,5 +43,9 @@ export class Type {
         }
       }
     }
+  }
+
+  public getFields (): Record<string, Field> {
+    return this._fields
   }
 }

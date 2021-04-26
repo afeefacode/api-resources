@@ -1,8 +1,7 @@
-import { Api } from 'src/api/Api'
-import { BaseQuerySource } from 'src/filter/BaseQuerySource'
-
+import { Api } from '../api/Api'
 import { ApiRequest } from '../api/ApiRequest'
 import { apiResources } from '../ApiResources'
+import { BaseQuerySource } from '../filter/BaseQuerySource'
 import { Filter, FilterJSON } from '../filter/Filter'
 import { RequestFilters } from '../filter/RequestFilters'
 import { Resource } from '../resource/Resource'
@@ -67,7 +66,7 @@ export class Action {
     return this._filters
   }
 
-  public requestFilters (querySource?: BaseQuerySource): RequestFilters {
+  public createRequestFilters (querySource?: BaseQuerySource): RequestFilters {
     const filters = new RequestFilters(querySource)
     for (const [name, filter] of Object.entries(this._filters)) {
       filters.add(name, filter.createRequestFilter(filters))

@@ -1,5 +1,5 @@
-import { AxiosResponse } from 'axios';
-import { Action } from 'src/action/Action';
+import { Action } from '../action/Action';
+import { ModelJSON } from '../Model';
 import { ResourceJSON } from '../resource/Resource';
 import { TypeJSON } from '../type/Type';
 import { ValidatorJSON } from '../validator/Validator';
@@ -7,6 +7,9 @@ export declare type ApiSchemaJSON = {
     types: Record<string, TypeJSON>;
     resources: Record<string, ResourceJSON>;
     validators: Record<string, ValidatorJSON>;
+};
+export declare type ResultDataJSON = {
+    data: ModelJSON | ModelJSON[];
 };
 export declare class Api {
     private _baseUrl;
@@ -17,6 +20,5 @@ export declare class Api {
     getBaseUrl(): string;
     loadSchema(): Promise<ApiSchemaJSON>;
     getAction(resourceName: string, actionName: string): Action | null;
-    call(params: object): Promise<AxiosResponse>;
 }
 //# sourceMappingURL=Api.d.ts.map

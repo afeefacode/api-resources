@@ -12,6 +12,12 @@ export class Field {
         field.setupTypeFieldValidator(json.validator);
         return field;
     }
+    deserialize(value) {
+        return value;
+    }
+    serialize(value) {
+        return value;
+    }
     setupTypeFieldValidator(json) {
         if (json) {
             const validator = apiResources.getValidator(json.type);

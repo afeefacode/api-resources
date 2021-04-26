@@ -1,5 +1,6 @@
 import { Relation } from '../Relation'
+import { ManyRelationMixin } from './mixins/ManyRelationMixin'
 
-export class HasManyRelation extends Relation {
+export class HasManyRelation extends ManyRelationMixin(Relation) {
   public static type: string = 'Afeefa.HasManyRelation'
 }

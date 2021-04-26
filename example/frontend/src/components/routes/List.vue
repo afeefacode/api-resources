@@ -88,50 +88,14 @@
       <template v-if="false" />
     </div>
 
-    <h3 v-if="false">
-      List
-    </h3>
-
-    <ul v-if="false">
-      <li>Config: {{ Object.keys($routeConfig) }}</li>
-      <li>{{ $routeDefinition.fullId }}</li>
-      <li>{{ $routeDefinition.fullName }}</li>
-      <li>{{ $routeDefinition.fullPath }}</li>
-    </ul>
-
-    <ol v-if="models.length">
-      <li
+    <template v-if="models.length">
+      <list-card
         v-for="model in models"
         :key="model.id"
-      >
-        <router-link :to="{name: 'articles.detail', params: { articleId: model.id }}">
-          Artikel
-        </router-link>
-
-        <div class="meta">
-          # {{ model.id }} | am {{ model.date }} | Kommentare: {{ model.count_comments }}
-        </div>
-
-        <div class="author">
-          {{ model.author.name }}
-        </div>
-
-        <div class="title">
-          {{ model.title }}
-        </div>
-
-        <div class="tags">
-          <a
-            v-for="tag in model.tags"
-            :key="tag.id"
-            href=""
-            @click.prevent="filters.tag_id.value = tag.id"
-          >
-            <tag :tag="tag" />
-          </a>
-        </div>
-      </li>
-    </ol>
+        :listConfig="listConfig"
+        :model="model"
+      />
+    </template>
 
     <div v-else>
       Nichts gefunden. <a
@@ -143,45 +107,69 @@
 </template>
 
 <script>
-import { Component, Vue } from 'vue-property-decorator'
-import Widget from '../Widget.vue'
-import Tag from '../Tag.vue'
+import { Component, Vue, Watch } from 'vue-property-decorator'
+import Widget from '../Widget'
+import Tag from '../Tag'
+import ListCard from './ListCard'
+import { ListConfig } from './ListConfig'
 import { RouteQuerySource } from '@avue/services/list-filters/RouteQuerySource'
 
 @Component({
   components: {
     Widget,
-    Tag
+    Tag,
+    ListCard
   }
 })
 export default class List extends Vue {
   models = []
   meta = {}
+  items = []
   requestFilters = null
 
   created () {
-    const querySource = new RouteQuerySource(this.$router)
-    this.requestFilters = this.action.requestFilters(querySource)
-    this.requestFilters.on('change', this.filterValueChanged)
-    this.load()
+    this.init()
+  }
+
+  get listConfig () {
+    return new ListConfig(this.filters)
   }
 
   destroyed () {
     this.requestFilters.off('change', this.filterValueChanged)
   }
 
+  @Watch('$route.name')
+  routeNameChanged () {
+    this.init()
+  }
+
+  init () {
+    if (this.requestFilters) {
+      this.requestFilters.off('change', this.filterValueChanged)
+    }
+
+    const querySource = new RouteQuerySource(this.$router)
+    this.requestFilters = this.action.createRequestFilters(querySource)
+    this.requestFilters.on('change', this.filterValueChanged)
+    this.load()
+  }
+
   get action () {
-    return this.$routeConfig.action
+    return this.$routeConfig.route.action
   }
 
   get filters () {
     return (this.requestFilters && this.requestFilters.getFilters()) || null
   }
 
+  get list () {
+    return this
+  }
+
   async getIdItems (filter) {
     const result = await filter.request.send()
-    const items = result.data.data
-
+    const items = result.data
     return items.map(i => {
       const count = filter.name === 'tag_id' ? i.count_users : i.count_articles
       return {
@@ -233,23 +221,14 @@ export default class List extends Vue {
   async load () {
     const result = await this.action
       .request()
-      .fields({
-        title: true,
-        date: true,
-        author: {
-          name: true
-        },
-        tags: {
-          name: true,
-          count_users: true
-        },
-        count_comments: true
-      })
+      .fields(this.$routeConfig.route.listFields)
       .filters(this.requestFilters.serialize())
       .send()
 
-    this.models = result.data.data
-    this.meta = result.data.meta
+    // console.log('result', result.data)
+
+    this.models = result.data
+    this.meta = result.meta
 
     this.requestFilters.initFromUsed(this.meta.used_filters)
   }

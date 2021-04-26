@@ -1,4 +1,5 @@
 import { Relation } from '../Relation';
-export class LinkManyRelation extends Relation {
+import { ManyRelationMixin } from './mixins/ManyRelationMixin';
+export class LinkManyRelation extends ManyRelationMixin(Relation) {
 }
 LinkManyRelation.type = 'Afeefa.LinkManyRelation';

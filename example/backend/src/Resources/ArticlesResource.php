@@ -81,22 +81,29 @@ class ArticlesResource extends ModelResource
         });
 
         $actions->add('get_article', function (Action $action) {
-            $action->params(function (ActionParams $params) {
-                $params->attribute('id', IdAttribute::class);
-            });
+            $action
+                ->params(function (ActionParams $params) {
+                    $params->attribute('id', IdAttribute::class);
+                })
 
-            $action->response(ArticleType::class);
+                ->response(ArticleType::class);
         });
 
         $actions->add('create_article', function (Action $action) {
             $action
                 ->input(ArticleType::class)
+
                 ->response(ArticleType::class);
         });
 
         $actions->add('update_article', function (Action $action) {
             $action
+                ->params(function (ActionParams $params) {
+                    $params->attribute('id', IdAttribute::class);
+                })
+
                 ->input(ArticleType::class)
+
                 ->response(ArticleType::class);
         });
 
@@ -108,6 +115,7 @@ class ArticlesResource extends ModelResource
                 })
 
                 ->input(ArticleType::class)
+
                 ->response(ArticleType::class);
         });
 

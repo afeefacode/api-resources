@@ -31,6 +31,10 @@ export class RequestFilters {
     return this._filters
   }
 
+  public hasFilter (name: string): boolean {
+    return !!this._filters[name]
+  }
+
   public getQuerySource (): BaseQuerySource {
     return this._querySource
   }
@@ -60,7 +64,7 @@ export class RequestFilters {
   public initFromQuerySource (): boolean {
     const query = this._querySource.getQuery()
 
-    // no initial filters
+    // skip initial filters
     if (JSON.stringify(this._lastQuery) === JSON.stringify(query)) {
       // console.warn('same query')
       // console.log(JSON.stringify(this._lastQuery), JSON.stringify(query))

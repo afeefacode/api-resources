@@ -1,9 +1,9 @@
 import Vue from 'vue'
 
+import Splash from './components/Splash'
 import apiResources from './config/api'
 import routing from './config/routing'
 import vuetify from './config/vuetify'
-import Splash from './Splash'
 
 Vue.config.productionTip = false
 

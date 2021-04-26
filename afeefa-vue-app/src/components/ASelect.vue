@@ -19,9 +19,9 @@ import { Component, Vue, Watch } from 'vue-property-decorator'
 export default class KSelect extends Vue {
   internalItems = []
 
-  created () {
-    console.log('created ASelect')
-  }
+  // created () {
+  //   console.log('created ASelect')
+  // }
 
   mounted () {
     // monkey patch v-select setting 'undefined' on clearable
@@ -36,7 +36,7 @@ export default class KSelect extends Vue {
 
   @Watch('items')
   itemsChanged (newItems, oldItems) {
-    console.log('items changed', newItems, oldItems)
+    // console.log('items changed', newItems, oldItems)
     this.init()
   }
 

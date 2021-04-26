@@ -1,5 +1,7 @@
-import { AxiosResponse } from 'axios'
+import axios from 'axios'
+
 import { Action } from '../action/Action'
+import { ApiResponse } from './ApiResponse'
 
 export type ApiRequestJSON = {
   resource: string,
@@ -14,7 +16,7 @@ export class ApiRequest {
   private _filters!: Record<string, unknown>
 
   private _lastRequestJSON: string = ''
-  private _lastRequest!: Promise<AxiosResponse>
+  private _lastRequest!: Promise<ApiResponse>
 
   constructor (json?: ApiRequestJSON) {
     if (json) {
@@ -31,6 +33,10 @@ export class ApiRequest {
     return this
   }
 
+  public getAction (): Action {
+    return this._action
+  }
+
   public fields (fields: Record<string, unknown>): ApiRequest {
     this._fields = fields
     return this
@@ -41,8 +47,8 @@ export class ApiRequest {
     return this
   }
 
-  public send (): Promise<AxiosResponse> {
-    const params = this.toParams()
+  public send (): Promise<ApiResponse> {
+    const params = this.serialize()
 
     if (this._lastRequestJSON === JSON.stringify(params)) {
       return this._lastRequest
@@ -50,12 +56,18 @@ export class ApiRequest {
 
     this._lastRequestJSON = JSON.stringify(params)
 
-    const api = this._action.getApi()
-    this._lastRequest = api.call(params)
-    return this._lastRequest
+    const url = this._action.getApi().getBaseUrl()
+
+    const request = axios.post(url, params)
+      .then(result => {
+        return new ApiResponse(new ApiRequest(), result)
+      })
+
+    this._lastRequest = request
+    return request
   }
 
-  protected toParams (): object {
+  protected serialize (): object {
     return {
       resource: this._action.getResource().getName(),
       action: this._action.getName(),

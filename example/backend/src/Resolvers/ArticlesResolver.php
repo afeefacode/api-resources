@@ -46,7 +46,7 @@ class ArticlesResolver
                     $usedFilters['has_comments'] = $hasComments;
                 }
 
-                // author search
+                // author_id search
 
                 $authorId = $filters['author_id'] ?? null;
 
@@ -56,7 +56,7 @@ class ArticlesResolver
                     $usedFilters['author_id'] = $authorId;
                 }
 
-                // tag search
+                // tag_id search
 
                 $tagId = $filters['tag_id'] ?? null;
 
