@@ -4,7 +4,9 @@ namespace Backend\Resources;
 
 use Afeefa\ApiResources\Action\Action;
 use Afeefa\ApiResources\Action\ActionBag;
+use Afeefa\ApiResources\Api\ApiRequest;
 use Afeefa\ApiResources\Filter\FilterBag;
+use Afeefa\ApiResources\Filter\Filters\IdFilter;
 use Afeefa\ApiResources\Filter\Filters\KeywordFilter;
 use Afeefa\ApiResources\Filter\Filters\OrderFilter;
 use Afeefa\ApiResources\Filter\Filters\PageFilter;
@@ -23,6 +25,15 @@ class AuthorsResource extends Resource
         $actions->add('get_authors', function (Action $action) {
             $action->filters(function (FilterBag $filters) {
                 $filters->add('q', KeywordFilter::class);
+
+                $filters->add('tag_id', function (IdFilter $filter) {
+                    $filter->request(function (ApiRequest $request) {
+                        $request
+                            ->resourceName(TagsResource::$type)
+                            ->actionName('get_tags')
+                            ->fields(['name' => true, 'count_users' => true]);
+                    });
+                });
 
                 $filters->add('order', function (OrderFilter $filter) {
                     $filter

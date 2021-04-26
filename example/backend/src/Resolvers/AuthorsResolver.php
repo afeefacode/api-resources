@@ -26,6 +26,20 @@ class AuthorsResolver
 
                 $countScope = $countFilters = $db->count('authors');
 
+                // tag_id search
+
+                $tagId = $filters['tag_id'] ?? null;
+
+                if ($tagId) {
+                    $where['EXISTS'] = $this->selectTagId($tagId);
+
+                    $usedFilters['tag_id'] = $tagId;
+                }
+
+                if (count($usedFilters)) {
+                    $countFilters = $this->getCount($db, $selectFields, $where);
+                }
+
                 $countSearch = $countFilters;
 
                 // keyword search
@@ -80,6 +94,8 @@ class AuthorsResolver
                     ];
                 }
 
+                // select
+
                 $objects = $db->select(
                     'authors',
                     $selectFields,
@@ -131,10 +147,24 @@ class AuthorsResolver
             });
     }
 
+    private function selectTagId($tagId)
+    {
+        return Medoo::raw(
+            <<<EOT
+                (
+                    select 1 from tag_users
+                    where user_id = authors.id
+                    and user_type = 'Example.AuthorType'
+                    and tag_id = {$tagId}
+                )
+                EOT
+        );
+    }
+
     private function getCount(Medoo $db, array $countSelectFields, array $where): int
     {
         $query = $db->sql(
-            'articles',
+            'authors',
             $countSelectFields,
             $where
         );
