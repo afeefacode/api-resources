@@ -18,9 +18,42 @@ class AuthorsResolver
             ->load(function (ResolveContext $c) use ($r, $db) {
                 $request = $r->getRequest();
                 $requestedFields = $request->getFields();
+                $filters = $request->getFilters();
                 $selectFields = $c->getSelectFields();
 
-                $count = $db->count('authors');
+                $usedFilters = [];
+                $where = [];
+
+                $countScope = $countFilters = $db->count('authors');
+
+                $countSearch = $countFilters;
+
+                // keyword search
+
+                $keyword = $filters['q'] ?? null;
+
+                if ($keyword) {
+                    $where['name[~]'] = $keyword;
+
+                    $countSearch = $this->getCount($db, $selectFields, $where);
+
+                    $usedFilters['q'] = $keyword;
+                }
+
+                // pagination
+
+                $pageSizeFilter = $r->getAction()->getFilter('page_size');
+
+                $page = $filters['page'] ?? 1;
+                $pageSize = $filters['page_size'] ?? $pageSizeFilter->getDefaultValue();
+
+                [$offset, $pageSize, $page] = $this->pageToLimit($page, $pageSize, $countSearch);
+                $where['LIMIT'] = [$offset, $pageSize];
+
+                $usedFilters['page'] = $page;
+                $usedFilters['page_size'] = $pageSize;
+
+                // count articles
 
                 if ($requestedFields->hasField('count_articles')) {
                     if (!isset($selectFields['count_articles'])) {
@@ -28,15 +61,36 @@ class AuthorsResolver
                     }
                 }
 
+                // order
+
+                $oderFilter = $r->getAction()->getFilter('order');
+                $order = $filters['order'] ?? $oderFilter->getDefaultValue() ?? [];
+
+                foreach ($order as $field => $direction) {
+                    if ($field === 'count_articles') {
+                        if (!isset($selectFields['count_articles'])) {
+                            $selectFields['count_articles'] = $this->selectCountArticles();
+                        }
+                    }
+
+                    $where['ORDER'][$field] = strtoupper($direction);
+
+                    $usedFilters['order'] = [
+                        $field => $direction
+                    ];
+                }
+
                 $objects = $db->select(
                     'authors',
-                    $selectFields
+                    $selectFields,
+                    $where
                 );
 
                 $c->meta([
-                    'count_scope' => $count,
-                    'count_filter' => $count,
-                    'count_search' => $count
+                    'count_scope' => $countScope,
+                    'count_filter' => $countFilters,
+                    'count_search' => $countSearch,
+                    'used_filters' => $usedFilters
                 ]);
 
                 return Model::fromList(AuthorType::$type, $objects);
@@ -75,6 +129,25 @@ class AuthorsResolver
             ->map(function (array $objects, ModelInterface $owner) {
                 return $objects[$owner->author_id];
             });
+    }
+
+    private function getCount(Medoo $db, array $countSelectFields, array $where): int
+    {
+        $query = $db->sql(
+            'articles',
+            $countSelectFields,
+            $where
+        );
+
+        return intval($db->query('SELECT COUNT(*) from (' . $query . ') tmp')->fetchColumn());
+    }
+
+    private function pageToLimit(int $page, int $pageSize, int $countAll): array
+    {
+        $numPages = ceil($countAll / $pageSize);
+        $page = max(1, min($numPages, $page));
+        $offset = $pageSize * $page - $pageSize;
+        return [$offset, $pageSize, $page];
     }
 
     private function selectCountArticles()
