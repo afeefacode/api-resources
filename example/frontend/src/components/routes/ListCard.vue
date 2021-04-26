@@ -21,7 +21,6 @@
       <template v-if="typeof content === 'function'">
         <component
           :is="content"
-          :listConfig="listConfig"
           :model="model"
         />
       </template>

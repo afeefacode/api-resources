@@ -26,9 +26,7 @@ export class Article extends Model {
               listConfig.filters.tag_id.value = tag.id
             }
           })
-        },
-
-        TagList
+        }
       ]
     }
   }
