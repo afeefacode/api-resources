@@ -24,10 +24,6 @@ import Tag from '../Tag'
   }
 })
 export default class TagList extends Vue {
-  get card () {
-    return this.model.toCard()
-  }
-
   clickTag (tag) {
     this.$emit('clickTag', tag)
   }

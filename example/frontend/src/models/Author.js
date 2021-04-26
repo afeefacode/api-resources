@@ -19,11 +19,11 @@ export class Author extends Model {
       contents: [
         {
           component: TagList,
-          events: listConfig => ({
+          events: {
             clickTag (tag) {
               listConfig.filters.tag_id.value = tag.id
             }
-          })
+          }
         }
       ]
     }

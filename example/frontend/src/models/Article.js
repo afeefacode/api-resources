@@ -5,7 +5,7 @@ import { Model } from './Model'
 export class Article extends Model {
   static type = 'Example.ArticleType'
 
-  toCard () {
+  toCard (listConfig) {
     return {
       type: 'Artikel',
 
@@ -21,11 +21,11 @@ export class Article extends Model {
       contents: [
         {
           component: TagList,
-          events: listConfig => ({
+          events: {
             clickTag (tag) {
               listConfig.filters.tag_id.value = tag.id
             }
-          })
+          }
         }
       ]
     }

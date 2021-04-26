@@ -29,7 +29,7 @@
         <component
           :is="content.component"
           :model="model"
-          v-on="getComponentEvents(content)"
+          v-on="content.events"
         />
       </template>
 
@@ -52,7 +52,7 @@ import Tag from '../Tag'
 })
 export default class ListCard extends Vue {
   get card () {
-    return this.model.toCard()
+    return this.model.toCard(this.listConfig)
   }
 
   getComponentEvents (component) {
