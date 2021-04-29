@@ -8,6 +8,9 @@ export class ApiRequest {
             if (json.filters) {
                 this._filters = json.filters;
             }
+            if (json.params) {
+                this._params = json.params;
+            }
         }
     }
     action(action) {
@@ -23,6 +26,10 @@ export class ApiRequest {
     }
     filters(filters) {
         this._filters = filters;
+        return this;
+    }
+    params(params) {
+        this._params = params;
         return this;
     }
     send() {
@@ -43,6 +50,7 @@ export class ApiRequest {
         return {
             resource: this._action.getResource().getName(),
             action: this._action.getName(),
+            params: this._params,
             fields: this._fields,
             filters: this._filters
         };

@@ -1,11 +1,13 @@
 <template>
-  <p>Test2</p>
+  <div>
+    New
+  </div>
 </template>
 
 <script>
 import { Component, Vue } from 'vue-property-decorator'
 
 @Component
-export default class Test extends Vue {
+export default class NewRoute extends Vue {
 }
 </script>

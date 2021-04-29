@@ -53,9 +53,14 @@ class ActionResolver extends DataResolver
         // query db
 
         $loadCallback = $this->loadCallback;
-        $models = $loadCallback($resolveContext);
+        $modelOrModels = $loadCallback($resolveContext);
 
-        if (count($models)) {
+        $isList = is_array($modelOrModels);
+        $hasResult = $isList && count($modelOrModels) || $modelOrModels;
+
+        if ($hasResult) {
+            $models = $isList ? $modelOrModels : [$modelOrModels];
+
             // resolve relations
 
             foreach ($resolveContext->getRelationResolvers() as $relationResolver) {
@@ -75,7 +80,7 @@ class ActionResolver extends DataResolver
         }
 
         return [
-            'data' => array_values($models),
+            'data' => $isList ? array_values($modelOrModels) : $modelOrModels,
             'meta' => $resolveContext->getMeta(),
             'input' => json_decode(file_get_contents('php://input'), true),
             'request' => $this->request

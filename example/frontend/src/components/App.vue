@@ -69,13 +69,11 @@
 
 <script>
 import { Component, Vue } from 'vue-property-decorator'
-import Widget from './Widget'
 import AppMenu from './Menu'
 
 @Component({
   components: {
-    AppMenu,
-    Widget
+    AppMenu
   }
 })
 export default class App extends Vue {

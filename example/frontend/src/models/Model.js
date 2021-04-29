@@ -1,13 +1,11 @@
 import { Model as ApiResourcesModel } from '@afeefa/api-resources-client'
 
 export class Model extends ApiResourcesModel {
-  toCard () {
-    return {
-      type: 'Model',
+  $components = {
+    listCard: null
+  }
 
-      meta: '',
-
-      title: `${this.type}:${this.id}`
-    }
+  getRoute (_action) {
+    return {}
   }
 }

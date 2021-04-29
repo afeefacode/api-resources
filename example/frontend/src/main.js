@@ -1,3 +1,5 @@
+import './config/components'
+
 import Vue from 'vue'
 
 import Splash from './components/Splash'

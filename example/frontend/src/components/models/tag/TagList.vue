@@ -15,7 +15,7 @@
 
 <script>
 import { Component, Vue } from 'vue-property-decorator'
-import Tag from '../Tag'
+import Tag from './Tag'
 
 @Component({
   props: ['model'],

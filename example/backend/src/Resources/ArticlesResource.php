@@ -86,7 +86,9 @@ class ArticlesResource extends ModelResource
                     $params->attribute('id', IdAttribute::class);
                 })
 
-                ->response(ArticleType::class);
+                ->response(ArticleType::class)
+
+                ->resolve([ArticlesResolver::class, 'get_article']);
         });
 
         $actions->add('create_article', function (Action $action) {

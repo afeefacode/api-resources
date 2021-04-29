@@ -8,12 +8,14 @@ export type ApiRequestJSON = {
   action: string,
   fields: Record<string, unknown>,
   filters: Record<string, unknown>
+  params: Record<string, unknown>
 }
 
 export class ApiRequest {
   private _action!: Action
   private _fields!: Record<string, unknown>
   private _filters!: Record<string, unknown>
+  private _params!: Record<string, unknown>
 
   private _lastRequestJSON: string = ''
   private _lastRequest!: Promise<ApiResponse>
@@ -24,6 +26,10 @@ export class ApiRequest {
 
       if (json.filters) {
         this._filters = json.filters
+      }
+
+      if (json.params) {
+        this._params = json.params
       }
     }
   }
@@ -44,6 +50,11 @@ export class ApiRequest {
 
   public filters (filters: Record<string, unknown>): ApiRequest {
     this._filters = filters
+    return this
+  }
+
+  public params (params: Record<string, unknown>): ApiRequest {
+    this._params = params
     return this
   }
 
@@ -71,6 +82,7 @@ export class ApiRequest {
     return {
       resource: this._action.getResource().getName(),
       action: this._action.getName(),
+      params: this._params,
       fields: this._fields,
       filters: this._filters
     }

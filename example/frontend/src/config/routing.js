@@ -1,8 +1,8 @@
 import App from '@/components/App'
-import Detail from '@/components/routes/Detail'
-import Edit from '@/components/routes/Edit'
-import List from '@/components/routes/List'
-import New from '@/components/routes/New'
+import DetailRoute from '@/components/routes/DetailRoute'
+import EditRoute from '@/components/routes/EditRoute'
+import ListRoute from '@/components/routes/ListRoute'
+import NewRoute from '@/components/routes/NewRoute'
 import { ArticlesRouteConfig } from '@/routes/ArticlesRouteConfig'
 import { AuthorsRouteConfig } from '@/routes/AuthorsRouteConfig'
 import { apiResources } from '@afeefa/api-resources-client'
@@ -15,10 +15,10 @@ export default routeConfigPlugin
   })
 
   .defaultComponents({
-    list: List,
-    detail: Detail,
-    edit: Edit,
-    new: New
+    list: ListRoute,
+    detail: DetailRoute,
+    edit: EditRoute,
+    new: NewRoute
   })
 
   .config({

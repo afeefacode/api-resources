@@ -4,7 +4,9 @@ namespace Backend\Resources;
 
 use Afeefa\ApiResources\Action\Action;
 use Afeefa\ApiResources\Action\ActionBag;
+use Afeefa\ApiResources\Action\ActionParams;
 use Afeefa\ApiResources\Api\ApiRequest;
+use Afeefa\ApiResources\Field\Fields\IdAttribute;
 use Afeefa\ApiResources\Filter\FilterBag;
 use Afeefa\ApiResources\Filter\Filters\IdFilter;
 use Afeefa\ApiResources\Filter\Filters\KeywordFilter;
@@ -57,6 +59,17 @@ class AuthorsResource extends Resource
             $action->response(Type::listOf(AuthorType::class));
 
             $action->resolve([AuthorsResolver::class, 'get_authors']);
+        });
+
+        $actions->add('get_author', function (Action $action) {
+            $action
+                ->params(function (ActionParams $params) {
+                    $params->attribute('id', IdAttribute::class);
+                })
+
+                ->response(AuthorType::class)
+
+                ->resolve([AuthorsResolver::class, 'get_author']);
         });
     }
 }

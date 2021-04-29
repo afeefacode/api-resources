@@ -12,6 +12,7 @@ export class RouteDefinition {
     component,
     id = '',
     name = '',
+    idKey = 'id',
     childrenNamePrefix = '',
     config = {},
     children = [],
@@ -21,6 +22,7 @@ export class RouteDefinition {
     this.component = component
     this.id = id || this.getId(path, name)
     this.name = name
+    this.idKey = idKey
     this.childrenNamePrefix = childrenNamePrefix
     this.config = config
     this.children = children

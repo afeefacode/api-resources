@@ -1,38 +1,20 @@
-import TagList from '@/components/routes/TagList'
+import ArticleCard from '@/components/models/article/ArticleCard'
 
 import { Model } from './Model'
 
 export class Article extends Model {
   static type = 'Example.ArticleType'
 
-  toCard (listConfig) {
-    return {
-      type: 'Artikel',
-
-      meta: [
-        `# ${this.id}`,
-        `von ${this.author.name}`,
-        `am ${this.formattedDate}`,
-        `${this.count_comments} Kommentare`
-      ].join(' | '),
-
-      title: this.title,
-
-      contents: [
-        {
-          component: TagList,
-          events: {
-            clickTag (tag) {
-              listConfig.filters.tag_id.value = tag.id
-            }
-          }
-        }
-      ]
-    }
+  $components = {
+    listCard: ArticleCard
   }
 
-  get formattedDate () {
-    const options = { year: 'numeric', month: 'long', day: 'numeric' }
-    return this.date.toLocaleDateString('de-DE', options)
+  getRoute (action) {
+    return {
+      name: 'articles.' + action,
+      params: {
+        articleId: this.id
+      }
+    }
   }
 }

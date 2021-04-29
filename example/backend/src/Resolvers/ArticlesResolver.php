@@ -150,6 +150,43 @@ class ArticlesResolver
             });
     }
 
+    public function get_article(ActionResolver $r, Medoo $db)
+    {
+        $r
+            ->load(function (ResolveContext $c) use ($r, $db) {
+                $request = $r->getRequest();
+                $requestedFields = $request->getFields();
+                $selectFields = $c->getSelectFields();
+
+                $where = ['id' => $request->getParam('id')];
+
+                // count comments
+
+                if ($requestedFields->hasField('count_comments')) {
+                    if (!isset($selectFields['count_comments'])) {
+                        $selectFields['count_comments'] = $this->selectCountComments();
+                    }
+                }
+
+                // select
+
+                $object = $db->get(
+                    'articles',
+                    $selectFields,
+                    $where
+                );
+
+                if ($object === false) {
+                    throw new ApiException(([
+                        'error' => $db->error(),
+                        'query' => $db->log()
+                    ]));
+                }
+
+                return Model::fromSingle(ArticleType::$type, $object);
+            });
+    }
+
     public function resolve_articles_relation(RelationResolver $r, Medoo $db): void
     {
         $r

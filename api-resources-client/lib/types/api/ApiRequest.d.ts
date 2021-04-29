@@ -5,11 +5,13 @@ export declare type ApiRequestJSON = {
     action: string;
     fields: Record<string, unknown>;
     filters: Record<string, unknown>;
+    params: Record<string, unknown>;
 };
 export declare class ApiRequest {
     private _action;
     private _fields;
     private _filters;
+    private _params;
     private _lastRequestJSON;
     private _lastRequest;
     constructor(json?: ApiRequestJSON);
@@ -17,6 +19,7 @@ export declare class ApiRequest {
     getAction(): Action;
     fields(fields: Record<string, unknown>): ApiRequest;
     filters(filters: Record<string, unknown>): ApiRequest;
+    params(params: Record<string, unknown>): ApiRequest;
     send(): Promise<ApiResponse>;
     protected serialize(): object;
 }

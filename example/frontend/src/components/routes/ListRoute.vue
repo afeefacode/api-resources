@@ -14,7 +14,6 @@
           label="Suche"
           title="Suche"
           clearable
-          @input="filterInputChanged(filter.name)"
         />
       </template>
 
@@ -24,7 +23,6 @@
           v-model="filter.value"
           :length="numPages"
           :total-visible="8"
-          @input="filterInputChanged(filter.name)"
         />
       </template>
 
@@ -89,11 +87,13 @@
     </div>
 
     <template v-if="models.length">
-      <list-card
+      <component
+        :is="model.$components.listCard"
         v-for="model in models"
         :key="model.id"
-        :listConfig="listConfig"
         :model="model"
+        :filters="filters"
+        v-bind="{model}"
       />
     </template>
 
@@ -108,20 +108,10 @@
 
 <script>
 import { Component, Vue, Watch } from 'vue-property-decorator'
-import Widget from '../Widget'
-import Tag from '../Tag'
-import ListCard from './ListCard'
-import { ListConfig } from './ListConfig'
 import { RouteQuerySource } from '@avue/services/list-filters/RouteQuerySource'
 
-@Component({
-  components: {
-    Widget,
-    Tag,
-    ListCard
-  }
-})
-export default class List extends Vue {
+@Component
+export default class ListRoute extends Vue {
   models = []
   meta = {}
   items = []
@@ -129,10 +119,6 @@ export default class List extends Vue {
 
   created () {
     this.init()
-  }
-
-  get listConfig () {
-    return new ListConfig(this.filters)
   }
 
   destroyed () {
@@ -156,15 +142,11 @@ export default class List extends Vue {
   }
 
   get action () {
-    return this.$routeConfig.route.action
+    return this.$routeConfig.route.listAction
   }
 
   get filters () {
     return (this.requestFilters && this.requestFilters.getFilters()) || null
-  }
-
-  get list () {
-    return this
   }
 
   async getIdItems (filter) {
@@ -205,12 +187,7 @@ export default class List extends Vue {
   }
 
   filterValueChanged (event) {
-    // console.log('filter value changed', event.filter.serialize())
     this.load()
-  }
-
-  filterInputChanged (name) {
-    // console.log('filter input changed', name)
   }
 
   get numPages () {
@@ -224,8 +201,6 @@ export default class List extends Vue {
       .fields(this.$routeConfig.route.listFields)
       .filters(this.requestFilters.serialize())
       .send()
-
-    // console.log('result', result.data)
 
     this.models = result.data
     this.meta = result.meta

@@ -113,6 +113,36 @@ class AuthorsResolver
             });
     }
 
+    public function get_author(ActionResolver $r, Medoo $db)
+    {
+        $r
+            ->load(function (ResolveContext $c) use ($r, $db) {
+                $request = $r->getRequest();
+                $requestedFields = $request->getFields();
+                $selectFields = $c->getSelectFields();
+
+                $where = ['id' => $request->getParam('id')];
+
+                // count articles
+
+                if ($requestedFields->hasField('count_articles')) {
+                    if (!isset($selectFields['count_articles'])) {
+                        $selectFields['count_articles'] = $this->selectCountArticles();
+                    }
+                }
+
+                // select
+
+                $object = $db->get(
+                    'authors',
+                    $selectFields,
+                    $where
+                );
+
+                return Model::fromSingle(AuthorType::$type, $object);
+            });
+    }
+
     public function resolve_author_relation(RelationResolver $r, Medoo $db)
     {
         $r

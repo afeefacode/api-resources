@@ -46,9 +46,7 @@ export class RouteSetDefinition {
     }
 
     if (hasId) {
-      options.props = {
-        [this.idKey]: this.idKey
-      }
+      options.idKey = this.idKey
     }
 
     return new RouteDefinition(options)

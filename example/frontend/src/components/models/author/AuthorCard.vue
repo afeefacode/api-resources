@@ -1,0 +1,35 @@
+<template>
+  <list-card>
+    <list-meta>
+      Autor #{{ author.id }}
+      |
+      {{ author.count_articles }} Artikel
+    </list-meta>
+
+    <list-title :link="author.getRoute('detail')">
+      {{ author.name }}
+    </list-title>
+
+    <tag-list
+      :model="author"
+      @clickTag="clickTag"
+    />
+  </list-card>
+</template>
+
+<script>
+import { Component, Vue } from 'vue-property-decorator'
+
+@Component({
+  props: ['model', 'filters']
+})
+export default class AuthorCard extends Vue {
+  get author () {
+    return this.model
+  }
+
+  clickTag (tag) {
+    this.filters.tag_id.value = tag.id
+  }
+}
+</script>
