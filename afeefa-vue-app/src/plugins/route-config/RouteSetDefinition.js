@@ -18,18 +18,18 @@ export class RouteSetDefinition {
   }
 
   getDefinitions () {
-    return this.route('container', this.path, false, false, [
-      this.route('list', '', true, false),
-      this.route('new', 'new', true, false),
-      this.route('model', `:${this.idKey}`, false, true, [
-        this.route('detail', '', true, true),
-        this.route('edit', 'edit', true, true),
+    return this.route('container', this.path, false, null, false, [
+      this.route('list', '', true, null, false),
+      this.route('new', 'new', true, '../list', false),
+      this.route('model', `:${this.idKey}`, false, null, true, [
+        this.route('detail', '', true, '../../list', true),
+        this.route('edit', 'edit', true, '../detail', true),
         ...this.children
       ])
     ])
   }
 
-  route (action, path, hasRouteName, hasId, children = []) {
+  route (action, path, hasRouteName, breadcrumbParent, hasId, children = []) {
     const options = {
       path,
       component: this.components[action],
@@ -43,6 +43,10 @@ export class RouteSetDefinition {
       options.childrenNamePrefix = this.name
     } else {
       options.id = action
+    }
+
+    if (breadcrumbParent) {
+      options.breadcrumbParent = breadcrumbParent
     }
 
     if (hasId) {

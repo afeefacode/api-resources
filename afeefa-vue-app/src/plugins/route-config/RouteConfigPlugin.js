@@ -1,20 +1,23 @@
 import Vue from 'vue'
 import Router from 'vue-router'
 
-import DefaultRouteComponent from './DefaultRouteComponent'
 import { RouteDefinition } from './RouteDefinition'
 import { RouteSetDefinition } from './RouteSetDefinition'
 
+const defaultRouteComponent = {
+  template: '<router-view />'
+}
+
 class RouteConfigPlugin {
-  _pathDefinitionMap = {}
+  _definitionMap = {}
 
   _defaultComponents = {
-    container: DefaultRouteComponent,
-    list: DefaultRouteComponent,
-    model: DefaultRouteComponent,
-    detail: DefaultRouteComponent,
-    edit: DefaultRouteComponent,
-    new: DefaultRouteComponent
+    container: defaultRouteComponent,
+    list: defaultRouteComponent,
+    new: defaultRouteComponent,
+    model: defaultRouteComponent,
+    detail: defaultRouteComponent,
+    edit: defaultRouteComponent
   }
 
   _routeDefinitions = []
@@ -38,12 +41,6 @@ class RouteConfigPlugin {
       get () {
         return (this.$props && this.$props.rcp_routeDefinition) ||
           (this.$attrs && this.$attrs.rcp_routeDefinition)
-      }
-    })
-
-    Object.defineProperty(Vue.prototype, '$routeConfig', {
-      get () {
-        return (this.$routeDefinition && this.$routeDefinition.config) || {}
       }
     })
   }
@@ -97,7 +94,7 @@ class RouteConfigPlugin {
 
       return callback.then(routeOrRoutes => {
         this._routeDefinitions = Array.isArray(routeOrRoutes) ? routeOrRoutes : [routeOrRoutes]
-        this._routeDefinitions.forEach(r => r.init(null, '', this._pathDefinitionMap))
+        this._routeDefinitions.forEach(r => r.init(null, '', this._definitionMap))
         this._routes = this._routeDefinitions.map(r => r.toVue())
 
         for (const route of this._routes) {
@@ -116,8 +113,8 @@ class RouteConfigPlugin {
 
   async dumpRoutes () {
     await this._promise
-    for (const path in this._pathDefinitionMap) {
-      const r = this._pathDefinitionMap[path]
+    for (const path in this._definitionMap) {
+      const r = this._definitionMap[path]
       const whites = ' '.repeat(60 - path.length)
       const whites2 = ' '.repeat(40 - r.fullName.length)
       console.log('path:', path, whites, 'name:', r.fullName, whites2, 'parent:', r.parentPathDefinition && r.parentPathDefinition.fullName)

@@ -3,9 +3,9 @@ export class RouteDefinition {
   fullId = ''
   fullName = ''
 
-  parentDefintion = null
-  parentPathDefinition = null
-  pathDefinitionMap = null
+  parentDefinition = null
+  parentBreadcrumbDefinition = null
+  definitionMap = null
 
   constructor ({
     path,
@@ -14,6 +14,7 @@ export class RouteDefinition {
     name = '',
     idKey = 'id',
     childrenNamePrefix = '',
+    breadcrumbParent = null,
     config = {},
     children = [],
     ...options
@@ -24,6 +25,7 @@ export class RouteDefinition {
     this.name = name
     this.idKey = idKey
     this.childrenNamePrefix = childrenNamePrefix
+    this.breadcrumbParent = breadcrumbParent
     this.config = config
     this.children = children
     this.options = options
@@ -52,13 +54,13 @@ export class RouteDefinition {
         }
       }
 
-      this.parentDefintion = parent
-      this.parentPathDefinition = this.findParentPathDefinition(this.fullPath)
+      this.parentDefinition = parent
+      this.parentBreadcrumbDefinition = this.findBreadcrumbParent()
     }
   }
 
   init (parent, parentName, map) {
-    this.pathDefinitionMap = map
+    this.definitionMap = map
 
     if (parent) {
       this.setParent(parent, parentName)
@@ -68,7 +70,7 @@ export class RouteDefinition {
       this.fullName = this.name
     }
 
-    this.pathDefinitionMap[this.fullPath] = this
+    this.definitionMap[this.fullId] = this
 
     if (this.name && this.path !== '/') { // do not prepend roots name
       parentName = this.fullName
@@ -81,26 +83,14 @@ export class RouteDefinition {
     })
   }
 
-  getParentDefinitions () {
+  getBreadcrumbs () {
     const definitions = []
     let parent = this
     while (parent) {
       if (parent) {
         definitions.unshift(parent)
       }
-      parent = parent.parentDefintion
-    }
-    return definitions
-  }
-
-  getParentPathDefinitions () {
-    const definitions = []
-    let parent = this
-    while (parent) {
-      if (parent) {
-        definitions.unshift(parent)
-      }
-      parent = parent.parentPathDefinition
+      parent = parent.parentBreadcrumbDefinition
     }
     return definitions
   }
@@ -132,14 +122,29 @@ export class RouteDefinition {
     }
   }
 
-  findParentPathDefinition (path) {
-    while (path !== '/') {
-      path = path.replace(/\/[^/]+$/, '') || '/'
-      if (this.pathDefinitionMap[path]) {
-        return this.pathDefinitionMap[path]
+  findBreadcrumbParent () {
+    if (this.breadcrumbParent) {
+      const idParts = this.fullId.split('.')
+      const breadcrumbParts = this.breadcrumbParent.split('/')
+      for (const part of breadcrumbParts) {
+        if (part === '..') {
+          idParts.pop()
+        } else {
+          idParts.push(part)
+        }
       }
+      const parentId = idParts.join('.')
+      return this.definitionMap[parentId]
+    } else {
+      let parent = this.parentDefinition
+      while (parent) {
+        if (parent.name) {
+          return parent
+        }
+        parent = parent.parentDefinition
+      }
+      return null
     }
-    return null
   }
 
   getId (path, name) {
