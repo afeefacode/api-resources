@@ -1,5 +1,6 @@
 <?php
-declare (strict_types = 1);
+
+declare(strict_types=1);
 
 use Phinx\Migration\AbstractMigration;
 
@@ -15,6 +16,8 @@ final class CreateComments extends AbstractMigration
             ->addColumn('content', 'text')
 
             ->addColumn('date', 'datetime', ['null' => true])
+
+            ->addIndex(['owner_id', 'owner_type'])
 
             ->create();
     }
