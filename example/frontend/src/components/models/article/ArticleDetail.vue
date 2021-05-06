@@ -1,6 +1,6 @@
 <template>
-  <list-card>
-    <list-meta>
+  <div>
+    <detail-meta>
       Artikel #{{ article.id }}
       |
       von
@@ -11,27 +11,33 @@
       am {{ date }}
       |
       {{ article.count_comments }} Kommentare
-    </list-meta>
+    </detail-meta>
 
-    <list-title :link="articlesRouteConfig.getRoute('detail', article)">
+    <detail-title>
       {{ article.title }}
-    </list-title>
+    </detail-title>
 
-    <tag-list
-      :model="article"
-      @clickTag="clickTag"
-    />
-  </list-card>
+    <tag-list :model="model" />
+
+    <p class="summary">
+      {{ model.summary }}
+    </p>
+
+    <p>
+      {{ model.content }}
+    </p>
+  </div>
 </template>
 
+
 <script>
-import { Article, Author } from '@/models'
+import { Author } from '@/models'
 import { Component, Vue } from 'vue-property-decorator'
 
 @Component({
-  props: ['model', 'filters']
+  props: ['model']
 })
-export default class ArticleCard extends Vue {
+export default class ArticleDetail extends Vue {
   get article () {
     return this.model
   }
@@ -41,16 +47,8 @@ export default class ArticleCard extends Vue {
     return this.article.date.toLocaleDateString('de-DE', options)
   }
 
-  get articlesRouteConfig () {
-    return new Article.RouteConfig()
-  }
-
   get authorsRouteConfig () {
     return new Author.RouteConfig()
-  }
-
-  clickTag (tag) {
-    this.filters.tag_id.value = tag.id
   }
 }
 </script>

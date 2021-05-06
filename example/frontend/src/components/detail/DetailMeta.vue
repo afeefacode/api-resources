@@ -1,13 +1,12 @@
 <template>
-  <div class="listMeta">
+  <div class="detailMeta">
     <slot />
   </div>
 </template>
 
 
 <style lang="scss" scoped>
-.listMeta {
+.detailMeta {
   color: gray;
-  font-size: .7rem;
 }
 </style>

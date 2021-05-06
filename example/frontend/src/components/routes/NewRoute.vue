@@ -1,6 +1,6 @@
 <template>
   <div>
-    New
+    NEU
   </div>
 </template>
 

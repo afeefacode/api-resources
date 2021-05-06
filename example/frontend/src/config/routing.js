@@ -2,6 +2,7 @@ import App from '@/components/App'
 import DetailRoute from '@/components/routes/DetailRoute'
 import EditRoute from '@/components/routes/EditRoute'
 import ListRoute from '@/components/routes/ListRoute'
+import ModelRoute from '@/components/routes/ModelRoute'
 import NewRoute from '@/components/routes/NewRoute'
 import { ArticlesRouteConfig } from '@/routes/ArticlesRouteConfig'
 import { AuthorsRouteConfig } from '@/routes/AuthorsRouteConfig'
@@ -16,6 +17,7 @@ export default routeConfigPlugin
 
   .defaultComponents({
     list: ListRoute,
+    model: ModelRoute,
     detail: DetailRoute,
     edit: EditRoute,
     new: NewRoute
@@ -28,6 +30,9 @@ export default routeConfigPlugin
   .routes(async ({ROUTE, ROUTESET}) => {
     await apiResources.schemasLoaded()
     const api = apiResources.getApi('backendApi')
+
+    const authorsConfig = new AuthorsRouteConfig(api)
+    const articlesConfig = new ArticlesRouteConfig(api)
 
     return [
       ROUTE(
@@ -42,19 +47,19 @@ export default routeConfigPlugin
           children: [
             ROUTESET({
               path: 'autoren',
-              name: 'authors',
-              idKey: 'authorId',
+              name: authorsConfig.routeName,
+              idKey: authorsConfig.idKey,
               config: {
-                route: new AuthorsRouteConfig(api)
+                route: authorsConfig
               }
             }),
 
             ROUTESET({
               path: 'artikel',
-              name: 'articles',
-              idKey: 'articleId',
+              name: articlesConfig.routeName,
+              idKey: articlesConfig.idKey,
               config: {
-                route: new ArticlesRouteConfig(api)
+                route: articlesConfig
               },
 
               children: [

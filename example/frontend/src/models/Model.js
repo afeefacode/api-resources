@@ -1,11 +1,9 @@
 import { Model as ApiResourcesModel } from '@afeefa/api-resources-client'
 
 export class Model extends ApiResourcesModel {
-  $components = {
-    listCard: null
-  }
+  static RouteConfig = null
 
-  getRoute (_action) {
-    return {}
+  getTitle () {
+    return null
   }
 }

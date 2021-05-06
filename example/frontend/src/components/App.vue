@@ -23,43 +23,7 @@
           @click="drawer = !drawer"
         />
 
-        <div v-if="false">
-          <a-vue />
-
-          <widget />
-
-          <p>URL {{ url }}</p>
-
-          <h3>App</h3>
-          <ul>
-            <li>Config: {{ Object.keys($routeConfig) }}</li>
-            <li>{{ $routeDefinition.fullId }}</li>
-            <li>{{ $routeDefinition.fullName }}</li>
-            <li>{{ $routeDefinition.fullPath }}</li>
-          </ul>
-
-          <h3>Parent Paths:</h3>
-
-          <ul>
-            <li
-              v-for="path in paths"
-              :key="path"
-            >
-              {{ path }}
-            </li>
-          </ul>
-
-          <h3>Parents:</h3>
-
-          <ul>
-            <li
-              v-for="definition in definitions"
-              :key="definition"
-            >
-              {{ definition }}
-            </li>
-          </ul>
-        </div>
+        <breadcrumbs />
 
         <router-view />
       </v-container>
@@ -70,41 +34,22 @@
 <script>
 import { Component, Vue } from 'vue-property-decorator'
 import AppMenu from './Menu'
+import Breadcrumbs from './Breadcrumbs'
 
 @Component({
   components: {
-    AppMenu
+    AppMenu,
+    Breadcrumbs
   }
 })
 export default class App extends Vue {
   drawer = true
-
-  get url () {
-    return location.protocol + '//' + location.hostname + (location.port ? ':' + location.port : '')
-  }
-
-  get paths () {
-    const definition = this.$route.meta.routeDefinition
-    return definition.getParentPathDefinitions().map(d => d.fullId)
-  }
-
-  get definitions () {
-    const definition = this.$route.meta.routeDefinition
-    return definition.getParentDefinitions().map(d => d.fullId)
-  }
-
-  async created () {
-    // console.log(this.$attrs)
-    // console.log(this.$route.meta, this.$attrs)
-    // console.log(this.$route.matched)
-    // console.log(this.$routeDefinition.config.api)
-  }
 }
 </script>
 
 
 <style lang="scss" scoped>
-a {
-  margin-right: 1rem;
+.breadcrumbs {
+  margin-bottom: 2rem;
 }
 </style>
