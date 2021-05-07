@@ -5,13 +5,18 @@
 </template>
 
 <script>
-import { Component, Vue } from 'vue-property-decorator'
+import { Component, Vue, Watch } from 'vue-property-decorator'
 
 @Component
 export default class ModelRoute extends Vue {
   model = null
 
   created () {
+    this.load()
+  }
+
+  @Watch('$route.name')
+  routeNameChanged () {
     this.load()
   }
 
