@@ -4,7 +4,7 @@
       Artikel #{{ article.id }}
       |
       von
-      <router-link :to="authorsRouteConfig.getRoute('detail', article.author)">
+      <router-link :to="article.getLink()">
         {{ article.author.name }}
       </router-link>
       |
@@ -45,10 +45,6 @@ export default class ArticleDetail extends Vue {
   get date () {
     const options = { year: 'numeric', month: 'long', day: 'numeric' }
     return this.article.date.toLocaleDateString('de-DE', options)
-  }
-
-  get authorsRouteConfig () {
-    return new Author.RouteConfig()
   }
 }
 </script>

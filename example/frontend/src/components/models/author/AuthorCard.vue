@@ -6,7 +6,7 @@
       {{ author.count_articles }} Artikel
     </list-meta>
 
-    <list-title :link="authorsRouteConfig.getRoute('detail', author)">
+    <list-title :link="author.getLink()">
       {{ author.name }}
     </list-title>
 
@@ -31,10 +31,6 @@ export default class AuthorCard extends Vue {
 
   clickTag (tag) {
     this.filters.tag_id.value = tag.id
-  }
-
-  get authorsRouteConfig () {
-    return new Author.RouteConfig()
   }
 }
 </script>

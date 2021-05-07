@@ -31,9 +31,6 @@ export default routeConfigPlugin
     await apiResources.schemasLoaded()
     const api = apiResources.getApi('backendApi')
 
-    const authorsConfig = new AuthorsRouteConfig(api)
-    const articlesConfig = new ArticlesRouteConfig(api)
-
     return [
       ROUTE(
         {
@@ -47,19 +44,19 @@ export default routeConfigPlugin
           children: [
             ROUTESET({
               path: 'autoren',
-              name: authorsConfig.routeName,
-              idKey: authorsConfig.idKey,
+              name: 'authors',
+              idKey: 'authorId',
               config: {
-                route: authorsConfig
+                route: new AuthorsRouteConfig(api)
               }
             }),
 
             ROUTESET({
               path: 'artikel',
-              name: articlesConfig.routeName,
-              idKey: articlesConfig.idKey,
+              name: 'articles',
+              idKey: 'articleId',
               config: {
-                route: articlesConfig
+                route: new ArticlesRouteConfig(api)
               },
 
               children: [

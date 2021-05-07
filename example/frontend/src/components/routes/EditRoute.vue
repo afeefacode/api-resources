@@ -2,7 +2,7 @@
   <div v-if="model">
     <router-link
       class="button"
-      :to="routeConfig.getRoute('detail', model)"
+      :to="model.getLink()"
     >
       <v-btn>Ansehen</v-btn>
     </router-link>

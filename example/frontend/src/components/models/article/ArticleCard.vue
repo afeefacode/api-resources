@@ -4,7 +4,7 @@
       Artikel #{{ article.id }}
       |
       von
-      <router-link :to="authorsRouteConfig.getRoute('detail', article.author)">
+      <router-link :to="article.author.getLink()">
         {{ article.author.name }}
       </router-link>
       |
@@ -13,7 +13,7 @@
       {{ article.count_comments }} Kommentare
     </list-meta>
 
-    <list-title :link="articlesRouteConfig.getRoute('detail', article)">
+    <list-title :link="article.getLink()">
       {{ article.title }}
     </list-title>
 
@@ -25,7 +25,6 @@
 </template>
 
 <script>
-import { Article, Author } from '@/models'
 import { Component, Vue } from 'vue-property-decorator'
 
 @Component({
@@ -39,14 +38,6 @@ export default class ArticleCard extends Vue {
   get date () {
     const options = { year: 'numeric', month: 'long', day: 'numeric' }
     return this.article.date.toLocaleDateString('de-DE', options)
-  }
-
-  get articlesRouteConfig () {
-    return new Article.RouteConfig()
-  }
-
-  get authorsRouteConfig () {
-    return new Author.RouteConfig()
   }
 
   clickTag (tag) {

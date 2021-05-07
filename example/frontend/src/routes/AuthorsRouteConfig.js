@@ -6,9 +6,6 @@ import { Author } from '@/models'
 import { RouteConfig } from './RouteConfig'
 
 export class AuthorsRouteConfig extends RouteConfig {
-  routeName = 'authors'
-  idKey = 'authorId'
-
   resourceName = 'Example.AuthorsResource'
   listActionName = 'get_authors'
   getActionName = 'get_author'

@@ -6,9 +6,6 @@ import { Article } from '@/models'
 import { RouteConfig } from './RouteConfig'
 
 export class ArticlesRouteConfig extends RouteConfig {
-  routeName = 'articles'
-  idKey = 'articleId'
-
   resourceName = 'Example.ArticlesResource'
   listActionName = 'get_articles'
   getActionName = 'get_article'

@@ -2,9 +2,6 @@ import { breadcrumbEvent } from '@/components/Breadcrumbs'
 import { Model } from '@afeefa/api-resources-client'
 
 export class RouteConfig {
-  routeName = ''
-  idKey = ''
-
   resourceName = ''
   listActionName = ''
   getActionName = ''
@@ -19,18 +16,6 @@ export class RouteConfig {
 
   constructor (api) {
     this.api = api
-  }
-
-  getRoute (action, model) {
-    const to = {
-      name: `${this.routeName}.${action}`
-    }
-    if (model) {
-      to.params = {
-        [this.idKey]: model.id
-      }
-    }
-    return to
   }
 
   setRouteModel (model) {

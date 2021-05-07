@@ -2,7 +2,7 @@
   <div>
     <router-link
       class="button"
-      :to="newRoute"
+      :to="newLink"
     >
       <v-btn>Neu</v-btn>
     </router-link>
@@ -90,8 +90,8 @@ export default class ListRoute extends Vue {
     return this.requestFilters.getFilters()
   }
 
-  get newRoute () {
-    return this.routeConfig.getRoute('new')
+  get newLink () {
+    return this.routeConfig.Model.getLink('new')
   }
 
   resetFilters () {

@@ -1,10 +1,16 @@
-import { ArticlesRouteConfig } from '@/routes/ArticlesRouteConfig'
-
 import { Model } from './Model'
 
 export class Article extends Model {
   static type = 'Example.ArticleType'
-  static RouteConfig = ArticlesRouteConfig
+
+  getLink (action = 'detail') {
+    return {
+      name: `articles.${action}`,
+      params: {
+        articleId: this.id
+      }
+    }
+  }
 
   getTitle () {
     return this.title

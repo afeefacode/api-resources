@@ -2,7 +2,7 @@
   <div v-if="model">
     <router-link
       class="button"
-      :to="routeConfig.getRoute('edit', model)"
+      :to="model.getLink('edit')"
     >
       <v-btn>Bearbeiten</v-btn>
     </router-link>
