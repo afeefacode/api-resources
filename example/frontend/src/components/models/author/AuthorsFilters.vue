@@ -18,7 +18,9 @@
       </v-col>
     </v-row>
 
-    <list-filter page />
+    <v-row>
+      <list-filter page />
+    </v-row>
   </div>
 </template>
 

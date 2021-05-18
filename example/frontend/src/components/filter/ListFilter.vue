@@ -1,10 +1,10 @@
 <template>
   <div>
     <template v-if="filter.type === 'Afeefa.KeywordFilter'">
-      <v-text-field
+      <a-text-field
         v-model="filter.value"
         label="Suche"
-        title="Suche"
+        :debounce="500"
         clearable
       />
     </template>
@@ -41,10 +41,12 @@
     </template>
 
     <template v-if="filter.type === 'Afeefa.BooleanFilter' && filter.options.includes(false)">
-      <v-select
+      <a-select
         v-model="filter.value"
         :label="filter.name"
-        :items="filter.options"
+        :items="booleanOptions"
+        itemText="itemTitle"
+        itemValue="itemValue"
         :clearable="filter.value !== null"
       />
     </template>
@@ -64,8 +66,8 @@
         v-model="filter.value"
         :label="filter.name"
         :items="getIdItems(filter)"
-        item-text="itemTitle"
-        item-value="itemValue"
+        itemText="itemTitle"
+        itemValue="itemValue"
         :clearable="filter.value !== null"
         :value-comparator="compareOrderValues"
       />
@@ -123,16 +125,36 @@ export default class ArticlesFilters extends Vue {
     return items
   }
 
+  get booleanOptions () {
+    return [
+      {
+        itemTitle: 'Alle',
+        itemValue: null
+      },
+      ...this.filter.options.map(o => ({
+        itemTitle: o ? 'Ja' : 'Nein',
+        itemValue: o
+      }))
+    ]
+  }
+
   async getIdItems (filter) {
     const result = await filter.request.send()
     const items = result.data
-    return items.map(i => {
-      const count = filter.name === 'tag_id' ? i.count_users : i.count_articles
-      return {
-        itemTitle: `${i.name} (${count})`,
-        itemValue: i.id
-      }
-    })
+
+    return [
+      {
+        itemTitle: 'Alle',
+        itemValue: null
+      },
+      ...items.map(i => {
+        const count = filter.name === 'tag_id' ? i.count_users : i.count_articles
+        return {
+          itemTitle: `${i.name} (${count})`,
+          itemValue: i.id
+        }
+      })
+    ]
   }
 }
 </script>

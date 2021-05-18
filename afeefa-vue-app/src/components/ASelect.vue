@@ -19,15 +19,13 @@ import { Component, Vue, Watch } from 'vue-property-decorator'
 export default class KSelect extends Vue {
   internalItems = []
 
-  // created () {
-  //   console.log('created ASelect')
-  // }
-
   mounted () {
     // monkey patch v-select setting 'undefined' on clearable
     const setValue = this.$refs.select.setValue
     this.$refs.select.setValue = value => {
-      value = value || this.defaultValue || null
+      if (!value && value !== false) { // if undefined alike
+        value = this.defaultValue || null
+      }
       setValue(value)
     }
 
