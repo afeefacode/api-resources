@@ -30,12 +30,10 @@ export default class ModelRoute extends Vue {
   }
 
   get action () {
-    console.log(this.config)
     return this.config.model.action
   }
 
   async load () {
-    // this.config.setRouteModel(null)
     this.model = null
 
     const result = await this.action.request()
@@ -47,7 +45,9 @@ export default class ModelRoute extends Vue {
 
     this.model = result.data
 
-    // this.config.setRouteModel(this.model)
+    // update breadcrumb
+    const detailDefinition = this.$routeDefinition.getChild('detail')
+    detailDefinition.setCustomBreadcrumbTitle(this.model.getTitle())
   }
 }
 </script>

@@ -5,7 +5,7 @@
     </v-icon>
 
     <v-breadcrumbs
-      :items="paths"
+      :items="breadcrumbs"
       class="pa-0"
       dense
     >
@@ -29,17 +29,11 @@
 <script>
 import { Component, Vue, Watch } from 'vue-property-decorator'
 
-export const breadcrumbEvent = new Vue()
-
 @Component
 export default class Breadcrumb extends Vue {
-  breadcrumbEvent = breadcrumbEvent
-
-  paths = []
+  breadcrumbs = []
 
   created () {
-    this.breadcrumbEvent.$on('update', this.init)
-
     this.init()
   }
 
@@ -49,9 +43,12 @@ export default class Breadcrumb extends Vue {
   }
 
   init () {
+    this.breadcrumbs.forEach(d => d.definition.off('update'))
+
     const definition = this.$route.meta.routeDefinition
-    this.paths = definition.getBreadcrumbs().map(d => {
-      return d.name !== 'root' && d.getBreadcrumb()
+    this.breadcrumbs = definition.getBreadcrumbs().map(d => {
+      d.on('update', this.init)
+      return d.name !== 'root' && d.toBreadcrumb()
     }).filter(b => b)
   }
 }

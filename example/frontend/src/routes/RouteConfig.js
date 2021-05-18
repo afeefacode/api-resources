@@ -1,12 +1,30 @@
-import { breadcrumbEvent } from '@/components/Breadcrumbs'
-
 export class RouteConfig {
-  constructor (api) {
-    this.api = api
+  Model = null
+
+  list = {
+    Card: null,
+    action: null,
+    fields: {}
   }
 
-  setRouteModel (model) {
-    this.model = model
-    breadcrumbEvent.$emit('update')
+  model = {
+    action: null,
+    fields: {}
+  }
+
+  detail = {
+    Detail: null
+  }
+
+  create = {
+    Form: null
+  }
+
+  edit = {
+    Form: null
+  }
+
+  constructor (api) {
+    this.api = api
   }
 }

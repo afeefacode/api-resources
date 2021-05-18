@@ -5,8 +5,9 @@ export class RouteDefinition {
 
   parentDefinition = null
   parentBreadcrumbDefinition = null
-  breadcrumbTitle = ''
   definitionMap = null
+  customBreadcrumbTitle = null
+  eventTarget = new EventTarget()
 
   constructor ({
     path,
@@ -32,6 +33,14 @@ export class RouteDefinition {
     this.config = config
     this.children = children
     this.options = options
+  }
+
+  on (type, handler) {
+    this.eventTarget.addEventListener(type, handler)
+  }
+
+  off (type, handler) {
+    this.eventTarget.removeEventListener(type, handler)
   }
 
   setParent (parent, parentName) {
@@ -86,20 +95,20 @@ export class RouteDefinition {
     })
   }
 
-  getBreadcrumb () {
-    let title
-    if (this.name.match(/detail$/)) {
-      if (this.model) {
-        title = this.model.getTitle()
-      } else {
-        title = this.breadcrumbTitle
-      }
-    } else {
-      title = this.breadcrumbTitle
-    }
+  setCustomBreadcrumbTitle (title) {
+    this.customBreadcrumbTitle = title
+    this.eventTarget.dispatchEvent(new Event('update'))
+  }
+
+  getChild (name) {
+    return this.children.find(c => c.name === name)
+  }
+
+  toBreadcrumb () {
     return {
-      title,
-      to: { name: this.fullName }
+      title: this.customBreadcrumbTitle || this.breadcrumbTitle,
+      to: { name: this.fullName },
+      definition: this
     }
   }
 
