@@ -1,5 +1,7 @@
 <template>
   <div>
+    <a-loading-indicator :isLoading="isLoading" />
+
     <router-link
       class="button"
       :to="newLink"
