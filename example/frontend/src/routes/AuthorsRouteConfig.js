@@ -6,38 +6,45 @@ import { Author } from '@/models'
 import { RouteConfig } from './RouteConfig'
 
 export class AuthorsRouteConfig extends RouteConfig {
-  resourceName = 'Example.AuthorsResource'
-  listActionName = 'get_authors'
-  getActionName = 'get_author'
-
   Model = Author
 
-  components = {
-    listCard: AuthorCard,
-    detail: AuthorDetail,
-    form: AuthorForm
-  }
+  list = {
+    Card: AuthorCard,
 
-  breadcrumbNames = {
-    list: 'Autoren',
-    model: 'Autor'
-  }
+    action: this.api.getAction('Example.AuthorsResource', 'get_authors'),
 
-  listFields = {
-    name: true,
-    tags: {
+    fields: {
       name: true,
-      count_users: true
-    },
-    count_articles: true
+      tags: {
+        name: true,
+        count_users: true
+      },
+      count_articles: true
+    }
   }
 
-  getFields = {
-    name: true,
-    tags: {
+  model = {
+    action: this.api.getAction('Example.AuthorsResource', 'get_author'),
+
+    fields: {
       name: true,
-      count_users: true
-    },
-    count_articles: true
+      tags: {
+        name: true,
+        count_users: true
+      },
+      count_articles: true
+    }
+  }
+
+  detail = {
+    Detail: AuthorDetail
+  }
+
+  create = {
+    Form: AuthorForm
+  }
+
+  edit = {
+    Form: AuthorForm
   }
 }

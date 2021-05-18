@@ -20,6 +20,18 @@ class RouteConfigPlugin {
     edit: defaultRouteComponent
   }
 
+  _defaultBreadcrumbTitles = {
+    list: 'List',
+    new: 'New',
+    detail: 'Detail',
+    edit: 'Edit'
+  }
+
+  _defaultRoutePaths = {
+    new: 'new',
+    edit: 'edit'
+  }
+
   _routeDefinitions = []
   _config = {}
 
@@ -54,6 +66,22 @@ class RouteConfigPlugin {
     this._defaultComponents = {
       ...this._defaultComponents,
       ...components
+    }
+    return this
+  }
+
+  defaultBreadcrumbTitles (titles = {}) {
+    this._defaultBreadcrumbTitles = {
+      ...this._defaultBreadcrumbTitles,
+      ...titles
+    }
+    return this
+  }
+
+  defaultRoutePaths (paths = {}) {
+    this._defaultRoutePaths = {
+      ...this._defaultRoutePaths,
+      ...paths
     }
     return this
   }
@@ -133,6 +161,14 @@ class RouteConfigPlugin {
     options.components = {
       ...this._defaultComponents,
       ...options.components
+    }
+    options.breadcrumbTitles = {
+      ...this._defaultBreadcrumbTitles,
+      ...options.breadcrumbTitles
+    }
+    options.routePaths = {
+      ...this._defaultRoutePaths,
+      ...options.routePaths
     }
     options.config = {
       ...this._config,

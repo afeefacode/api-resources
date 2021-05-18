@@ -1,14 +1,14 @@
 <template>
-  <div>
+  <div v-if="model">
     <router-link
       class="button"
-      :to="model.getLink('edit')"
+      :to="listLink"
     >
-      <v-btn>Bearbeiten</v-btn>
+      <v-btn>Ansehen</v-btn>
     </router-link>
 
     <component
-      :is="Detail"
+      :is="Form"
       :model="model"
     />
   </div>
@@ -17,16 +17,22 @@
 <script>
 import { Component, Vue } from 'vue-property-decorator'
 
-@Component({
-  props: ['model']
-})
-export default class DetailRoute extends Vue {
+@Component
+export default class CreateRoute extends Vue {
   get config () {
     return this.$routeDefinition.config.route
   }
 
-  get Detail () {
-    return this.config.detail.Detail
+  get listLink () {
+    return this.config.Model.getLink('list')
+  }
+
+  get Form () {
+    return this.config.edit.Form
+  }
+
+  get model () {
+    return new this.config.Model()
   }
 }
 </script>

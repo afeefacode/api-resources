@@ -18,7 +18,6 @@
 </template>
 
 <script>
-import { Author } from '@/models'
 import { Component, Vue } from 'vue-property-decorator'
 
 @Component({

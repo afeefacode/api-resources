@@ -51,7 +51,7 @@ export default class Breadcrumb extends Vue {
   init () {
     const definition = this.$route.meta.routeDefinition
     this.paths = definition.getBreadcrumbs().map(d => {
-      return d.config && d.config.route && d.config.route.getBreadcrumb(d)
+      return d.name !== 'root' && d.getBreadcrumb()
     }).filter(b => b)
   }
 }

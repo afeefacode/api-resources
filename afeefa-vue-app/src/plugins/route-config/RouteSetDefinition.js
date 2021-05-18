@@ -6,6 +6,8 @@ export class RouteSetDefinition {
     name,
     idKey = 'id',
     components,
+    breadcrumbTitles,
+    routePaths,
     config = {},
     children = []
   }) {
@@ -13,6 +15,8 @@ export class RouteSetDefinition {
     this.name = name
     this.idKey = idKey
     this.components = components
+    this.breadcrumbTitles = breadcrumbTitles
+    this.routePaths = routePaths
     this.config = config
     this.children = children
   }
@@ -20,10 +24,10 @@ export class RouteSetDefinition {
   getDefinitions () {
     return this.route('container', this.path, false, null, false, [
       this.route('list', '', true, null, false),
-      this.route('new', 'new', true, '../list', false),
+      this.route('new', this.routePaths.new, true, '../list', false),
       this.route('model', `:${this.idKey}`, false, null, true, [
         this.route('detail', '', true, '../../list', true),
-        this.route('edit', 'edit', true, '../detail', true),
+        this.route('edit', this.routePaths.edit, true, '../detail', true),
         ...this.children
       ])
     ])
@@ -34,6 +38,7 @@ export class RouteSetDefinition {
       path,
       component: this.components[action],
       name: hasRouteName ? action : '',
+      breadcrumbTitle: this.breadcrumbTitles[action],
       config: this.config,
       children
     }

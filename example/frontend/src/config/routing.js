@@ -1,9 +1,9 @@
 import App from '@/components/App'
+import CreateRoute from '@/components/routes/CreateRoute'
 import DetailRoute from '@/components/routes/DetailRoute'
 import EditRoute from '@/components/routes/EditRoute'
 import ListRoute from '@/components/routes/ListRoute'
 import ModelRoute from '@/components/routes/ModelRoute'
-import NewRoute from '@/components/routes/NewRoute'
 import { ArticlesRouteConfig } from '@/routes/ArticlesRouteConfig'
 import { AuthorsRouteConfig } from '@/routes/AuthorsRouteConfig'
 import { apiResources } from '@afeefa/api-resources-client'
@@ -20,7 +20,17 @@ export default routeConfigPlugin
     model: ModelRoute,
     detail: DetailRoute,
     edit: EditRoute,
-    new: NewRoute
+    new: CreateRoute
+  })
+
+  .defaultBreadcrumbTitles({
+    edit: 'Bearbeiten',
+    new: 'Neu'
+  })
+
+  .defaultRoutePaths({
+    edit: 'bearbeiten',
+    new: 'neu'
   })
 
   .config({
@@ -46,6 +56,10 @@ export default routeConfigPlugin
               path: 'autoren',
               name: 'authors',
               idKey: 'authorId',
+              breadcrumbTitles: {
+                list: 'Autoren',
+                detail: 'Autor'
+              },
               config: {
                 route: new AuthorsRouteConfig(api)
               }
@@ -55,6 +69,10 @@ export default routeConfigPlugin
               path: 'artikel',
               name: 'articles',
               idKey: 'articleId',
+              breadcrumbTitles: {
+                list: 'Artikel',
+                detail: 'Artikel'
+              },
               config: {
                 route: new ArticlesRouteConfig(api)
               },

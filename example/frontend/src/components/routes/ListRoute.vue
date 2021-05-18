@@ -15,7 +15,7 @@
 
     <template v-if="!isLoading && models.length">
       <component
-        :is="routeConfig.components.listCard"
+        :is="Card"
         v-for="model in models"
         :key="model.id"
         :model="model"
@@ -78,12 +78,12 @@ export default class ListRoute extends Vue {
     this.load()
   }
 
-  get routeConfig () {
+  get config () {
     return this.$routeDefinition.config.route
   }
 
   get action () {
-    return this.routeConfig.listAction
+    return this.config.list.action
   }
 
   get filters () {
@@ -91,7 +91,11 @@ export default class ListRoute extends Vue {
   }
 
   get newLink () {
-    return this.routeConfig.Model.getLink('new')
+    return this.config.Model.getLink('new')
+  }
+
+  get Card () {
+    return this.config.list.Card
   }
 
   resetFilters () {
@@ -103,7 +107,7 @@ export default class ListRoute extends Vue {
 
     const result = await this.action
       .request()
-      .fields(this.routeConfig.listFields)
+      .fields(this.config.list.fields)
       .filters(this.requestFilters.serialize())
       .send()
 

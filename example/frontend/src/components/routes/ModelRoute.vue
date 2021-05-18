@@ -25,27 +25,29 @@ export default class ModelRoute extends Vue {
     return this.$route.params[idKey]
   }
 
-  get routeConfig () {
+  get config () {
     return this.$routeDefinition.config.route
   }
 
   get action () {
-    return this.routeConfig.getAction
+    console.log(this.config)
+    return this.config.model.action
   }
 
   async load () {
-    this.routeConfig.setRouteModel(null)
+    // this.config.setRouteModel(null)
+    this.model = null
 
     const result = await this.action.request()
       .params({
         id: this.id
       })
-      .fields(this.routeConfig.getFields)
+      .fields(this.config.model.fields)
       .send()
 
     this.model = result.data
 
-    this.routeConfig.setRouteModel(this.model)
+    // this.config.setRouteModel(this.model)
   }
 }
 </script>

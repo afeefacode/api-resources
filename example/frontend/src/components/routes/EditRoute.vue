@@ -1,5 +1,5 @@
 <template>
-  <div v-if="model">
+  <div>
     <router-link
       class="button"
       :to="model.getLink()"
@@ -8,7 +8,7 @@
     </router-link>
 
     <component
-      :is="routeConfig.components.form"
+      :is="Form"
       :model="model"
     />
   </div>
@@ -21,8 +21,12 @@ import { Component, Vue } from 'vue-property-decorator'
   props: ['model']
 })
 export default class EditRoute extends Vue {
-  get routeConfig () {
+  get config () {
     return this.$routeDefinition.config.route
+  }
+
+  get Form () {
+    return this.config.edit.Form
   }
 }
 </script>

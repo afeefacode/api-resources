@@ -1,19 +1,6 @@
 import { breadcrumbEvent } from '@/components/Breadcrumbs'
-import { Model } from '@afeefa/api-resources-client'
 
 export class RouteConfig {
-  resourceName = ''
-  listActionName = ''
-  getActionName = ''
-
-  Model = Model
-  model = null
-
-  breadcrumbNames = {}
-
-  listFields = {}
-  getFields = {}
-
   constructor (api) {
     this.api = api
   }
@@ -21,34 +8,5 @@ export class RouteConfig {
   setRouteModel (model) {
     this.model = model
     breadcrumbEvent.$emit('update')
-  }
-
-  getBreadcrumb (routeDefinition) {
-    let title
-    if (routeDefinition.name.match(/detail$/)) {
-      if (this.model) {
-        title = this.model.getTitle()
-      } else {
-        title = this.breadcrumbNames.model
-      }
-    } else if (routeDefinition.name.match(/edit$/)) {
-      title = 'Bearbeiten'
-    } else if (routeDefinition.name.match(/new$/)) {
-      title = 'Neu'
-    } else {
-      title = this.breadcrumbNames.list
-    }
-    return {
-      title,
-      to: { name: routeDefinition.fullName }
-    }
-  }
-
-  get listAction () {
-    return this.api.getAction(this.resourceName, this.listActionName)
-  }
-
-  get getAction () {
-    return this.api.getAction(this.resourceName, this.getActionName)
   }
 }

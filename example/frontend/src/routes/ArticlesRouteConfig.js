@@ -6,48 +6,55 @@ import { Article } from '@/models'
 import { RouteConfig } from './RouteConfig'
 
 export class ArticlesRouteConfig extends RouteConfig {
-  resourceName = 'Example.ArticlesResource'
-  listActionName = 'get_articles'
-  getActionName = 'get_article'
-
   Model = Article
 
-  components = {
-    listCard: ArticleCard,
-    detail: ArticleDetail,
-    form: ArticleForm
+  list = {
+    Card: ArticleCard,
+
+    action: this.api.getAction('Example.ArticlesResource', 'get_articles'),
+
+    fields: {
+      title: true,
+      date: true,
+      author: {
+        name: true
+      },
+      tags: {
+        name: true,
+        count_users: true
+      },
+      count_comments: true
+    }
   }
 
-  breadcrumbNames = {
-    list: 'Artikel',
-    model: 'Artikel'
+  model = {
+    action: this.api.getAction('Example.ArticlesResource', 'get_article'),
+
+    fields: {
+      title: true,
+      date: true,
+      summary: true,
+      content: true,
+      author: {
+        name: true
+      },
+      tags: {
+        name: true,
+        count_users: true
+      },
+      count_comments: true
+    }
   }
 
-  listFields = {
-    title: true,
-    date: true,
-    author: {
-      name: true
-    },
-    tags: {
-      name: true,
-      count_users: true
-    },
-    count_comments: true
+  detail = {
+    Detail: ArticleDetail
   }
 
-  getFields = {
-    title: true,
-    date: true,
-    summary: true,
-    content: true,
-    author: {
-      name: true
-    },
-    tags: {
-      name: true,
-      count_users: true
-    },
-    count_comments: true
+  create = {
+    Form: ArticleForm
+  }
+
+  edit = {
+    Form: ArticleForm
   }
 }

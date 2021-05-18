@@ -4,7 +4,7 @@
       Artikel #{{ article.id }}
       |
       von
-      <router-link :to="article.getLink()">
+      <router-link :to="article.author.getLink()">
         {{ article.author.name }}
       </router-link>
       |
@@ -17,21 +17,20 @@
       {{ article.title }}
     </detail-title>
 
-    <tag-list :model="model" />
+    <tag-list :model="article" />
 
     <p class="summary">
-      {{ model.summary }}
+      {{ article.summary }}
     </p>
 
     <p>
-      {{ model.content }}
+      {{ article.content }}
     </p>
   </div>
 </template>
 
 
 <script>
-import { Author } from '@/models'
 import { Component, Vue } from 'vue-property-decorator'
 
 @Component({

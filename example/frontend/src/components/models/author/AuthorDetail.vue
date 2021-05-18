@@ -10,7 +10,7 @@
       {{ author.name }}
     </detail-title>
 
-    <tag-list :model="model" />
+    <tag-list :model="author" />
   </div>
 </template>
 

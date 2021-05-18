@@ -5,6 +5,7 @@ export class RouteDefinition {
 
   parentDefinition = null
   parentBreadcrumbDefinition = null
+  breadcrumbTitle = ''
   definitionMap = null
 
   constructor ({
@@ -15,6 +16,7 @@ export class RouteDefinition {
     idKey = 'id',
     childrenNamePrefix = '',
     breadcrumbParent = null,
+    breadcrumbTitle = '',
     config = {},
     children = [],
     ...options
@@ -26,6 +28,7 @@ export class RouteDefinition {
     this.idKey = idKey
     this.childrenNamePrefix = childrenNamePrefix
     this.breadcrumbParent = breadcrumbParent
+    this.breadcrumbTitle = breadcrumbTitle
     this.config = config
     this.children = children
     this.options = options
@@ -81,6 +84,23 @@ export class RouteDefinition {
     this.children.forEach(c => {
       c.init(this, parentName, map)
     })
+  }
+
+  getBreadcrumb () {
+    let title
+    if (this.name.match(/detail$/)) {
+      if (this.model) {
+        title = this.model.getTitle()
+      } else {
+        title = this.breadcrumbTitle
+      }
+    } else {
+      title = this.breadcrumbTitle
+    }
+    return {
+      title,
+      to: { name: this.fullName }
+    }
   }
 
   getBreadcrumbs () {
