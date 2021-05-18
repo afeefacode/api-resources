@@ -2,15 +2,15 @@ class FilterHistory {
   filters = {}
   validFilters = {}
 
-  getFilters (key, filterConfig) {
-    if (!this.filters[key] || this.validFilters[key] === false) {
-      this.filters[key] = filterConfig.map(f => f.clone())
+  createRequestFilters (routeId, action, querySource) {
+    if (!this.filters[routeId] || this.validFilters[routeId] === false) {
+      this.filters[routeId] = action.createRequestFilters(querySource)
     }
-    return this.filters[key]
+    return this.filters[routeId]
   }
 
-  markFiltersValid (key, valid) {
-    this.validFilters[key] = valid
+  markFiltersValid (routeId, valid) {
+    this.validFilters[routeId] = valid
   }
 }
 

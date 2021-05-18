@@ -82,10 +82,6 @@ import { Component, Vue } from 'vue-property-decorator'
   props: ['field']
 })
 export default class ArticlesFilters extends Vue {
-  created () {
-    console.log(this.$props, this.$options, this.$attrs)
-  }
-
   get filters () {
     return this.$parent.filters
   }

@@ -43,6 +43,7 @@
 <script>
 import { Component, Vue, Watch } from 'vue-property-decorator'
 import { RouteQuerySource } from '@avue/services/list-filters/RouteQuerySource'
+import { filterHistory } from '@avue/services/list-filters/FilterHistory'
 
 @Component
 export default class ListRoute extends Vue {
@@ -67,8 +68,12 @@ export default class ListRoute extends Vue {
       this.requestFilters.off('change', this.filtersChanged)
     }
 
-    const querySource = new RouteQuerySource(this.$router)
-    this.requestFilters = this.action.createRequestFilters(querySource)
+    this.requestFilters = filterHistory.createRequestFilters(
+      this.$routeDefinition.fullId,
+      this.action,
+      new RouteQuerySource(this.$router)
+    )
+
     this.requestFilters.on('change', this.filtersChanged)
     this.filtersChanged()
   }
@@ -123,6 +128,9 @@ export default class ListRoute extends Vue {
     this.meta = result.meta
 
     this.requestFilters.initFromUsed(this.meta.used_filters)
+
+    filterHistory.markFiltersValid(this.$routeDefinition.fullId, this.meta.count_search > 0)
+
     this.isLoading = false
   }
 }

@@ -1,4 +1,4 @@
-import { BaseQuerySource } from './BaseQuerySource'
+import { BaseQuerySource } from '@afeefa/api-resources-client'
 
 export class RouteQuerySource extends BaseQuerySource {
   router = null
