@@ -9,7 +9,9 @@
       <v-btn>Neu</v-btn>
     </router-link>
 
-    <list-filters
+    <component
+      :is="Filters"
+      class="filters"
       :count="meta.count_search"
       :filters="filters"
       @filtersChanged="filtersChanged"
@@ -100,6 +102,10 @@ export default class ListRoute extends Vue {
     return this.config.list.Card
   }
 
+  get Filters () {
+    return this.config.list.Filters
+  }
+
   resetFilters () {
     this.requestFilters.reset()
   }
@@ -121,3 +127,10 @@ export default class ListRoute extends Vue {
   }
 }
 </script>
+
+
+<style lang="scss" scoped>
+.filters {
+  margin-bottom: 3rem;
+}
+</style>

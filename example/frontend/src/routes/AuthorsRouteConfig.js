@@ -1,6 +1,7 @@
 import AuthorCard from '@/components/models/author/AuthorCard'
 import AuthorDetail from '@/components/models/author/AuthorDetail'
 import AuthorForm from '@/components/models/author/AuthorForm'
+import AuthorsFilters from '@/components/models/author/AuthorsFilters'
 import { Author } from '@/models'
 
 import { RouteConfig } from './RouteConfig'
@@ -9,6 +10,7 @@ export class AuthorsRouteConfig extends RouteConfig {
   Model = Author
 
   list = {
+    Filters: AuthorsFilters,
     Card: AuthorCard,
 
     action: this.api.getAction('Example.AuthorsResource', 'get_authors'),

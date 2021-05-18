@@ -1,6 +1,7 @@
 import ArticleCard from '@/components/models/article/ArticleCard'
 import ArticleDetail from '@/components/models/article/ArticleDetail'
 import ArticleForm from '@/components/models/article/ArticleForm'
+import ArticlesFilters from '@/components/models/article/ArticlesFilters'
 import { Article } from '@/models'
 
 import { RouteConfig } from './RouteConfig'
@@ -9,6 +10,7 @@ export class ArticlesRouteConfig extends RouteConfig {
   Model = Article
 
   list = {
+    Filters: ArticlesFilters,
     Card: ArticleCard,
 
     action: this.api.getAction('Example.ArticlesResource', 'get_articles'),
