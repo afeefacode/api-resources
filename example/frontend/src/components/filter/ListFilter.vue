@@ -75,11 +75,12 @@
   </div>
 </template>
 
+
 <script>
 import { Component, Vue } from 'vue-property-decorator'
 
 @Component({
-  props: ['field']
+  props: ['name', 'count', 'page_size']
 })
 export default class ArticlesFilters extends Vue {
   get filters () {
@@ -87,17 +88,11 @@ export default class ArticlesFilters extends Vue {
   }
 
   get filter () {
-    const name = Object.keys(this.$attrs)[0]
-    return this.filters[name]
-  }
-
-  get count () {
-    return this.$parent.count
+    return this.filters[this.name]
   }
 
   get numPages () {
-    const pageSize = this.filters.page_size.value
-    return Math.ceil(this.count / pageSize)
+    return Math.ceil(this.count / this.page_size)
   }
 
   compareOrderValues (a, b) {

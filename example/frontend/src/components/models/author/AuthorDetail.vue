@@ -11,15 +11,23 @@
     </detail-title>
 
     <tag-list :model="author" />
+
+    <h2>Artikel</h2>
+
+    <articles-list />
   </div>
 </template>
 
 
 <script>
 import { Component, Vue } from 'vue-property-decorator'
+import ArticlesList from '@/components/models/article/ArticlesList'
 
 @Component({
-  props: ['model']
+  props: ['model'],
+  components: {
+    ArticlesList
+  }
 })
 export default class AuthorDetail extends Vue {
   get author () {
@@ -27,3 +35,10 @@ export default class AuthorDetail extends Vue {
   }
 }
 </script>
+
+
+<style lang="scss" scoped>
+h2 {
+  margin: 3rem 0;
+}
+</style>
