@@ -1,19 +1,28 @@
 <template>
   <div>
-    <slot name="fields" />
+    <v-form
+      v-model="valid"
+      autocomplete="off"
+    >
+      <slot name="fields" />
+    </v-form>
   </div>
 </template>
 
 
 <script>
-import { Component, Vue } from 'vue-property-decorator'
+import { Component, Vue, Watch } from 'vue-property-decorator'
 import { apiResources } from '@afeefa/api-resources-client'
 
 @Component({
   props: ['model']
 })
 export default class EditForm extends Vue {
-  created () {
+  valid = false
+
+  @Watch('valid')
+  validChanged () {
+    this.$parent.$emit('update:valid', this.valid)
   }
 
   get type () {

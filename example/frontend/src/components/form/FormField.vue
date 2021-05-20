@@ -10,8 +10,8 @@
 
     <template v-if="type === 'text'">
       <a-text-area
+        v-model="model[name]"
         :label="name"
-        :value="model[name]"
         :validator="validator"
       />
     </template>
@@ -27,11 +27,11 @@ import { Component, Vue } from 'vue-property-decorator'
 })
 export default class FormField extends Vue {
   get model () {
-    return this.$parent.model
+    return this.$parent.$parent.model
   }
 
   get modelType () {
-    return this.$parent.type
+    return this.$parent.$parent.type
   }
 
   get field () {

@@ -10,9 +10,15 @@
     <component
       :is="Component"
       :model="model"
+      :valid.sync="valid"
     />
 
-    <v-btn>Speichern</v-btn>
+    <v-btn
+      :disabled="!valid"
+      @click="save"
+    >
+      Speichern
+    </v-btn>
   </div>
 </template>
 
@@ -23,8 +29,14 @@ import { Component, Vue } from 'vue-property-decorator'
   props: ['model']
 })
 export default class EditRoute extends Vue {
+  valid = false
+
   get Component () {
     return this.$routeDefinition.config.components.edit
+  }
+
+  save () {
+    console.log('save', this.model)
   }
 }
 </script>
