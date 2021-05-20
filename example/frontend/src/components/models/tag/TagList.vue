@@ -1,7 +1,5 @@
 <template>
-  <div
-    class="tagList"
-  >
+  <div class="tagList">
     <a
       v-for="tag in model.tags"
       :key="tag.id"

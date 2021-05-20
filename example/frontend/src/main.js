@@ -1,6 +1,7 @@
 import './config/components'
 import './config/event-bus'
 
+import { timeout } from '@avue/utils/timeout'
 import Vue from 'vue'
 
 import Splash from './components/Splash'
@@ -23,14 +24,16 @@ async function bootstrap () {
   const router = await routing.getRouter()
   await apiResources.schemasLoaded()
 
-  splash.$destroy()
+  timeout(() => {
+    splash.$destroy()
 
-  new Vue({
-    vuetify,
-    router,
-    el: '#app',
-    template: '<router-view></router-view>'
-  })
+    new Vue({
+      vuetify,
+      router,
+      el: '#app',
+      template: '<router-view></router-view>'
+    })
+  }, 500)
 }
 
 bootstrap()
