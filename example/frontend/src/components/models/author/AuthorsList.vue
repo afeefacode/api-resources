@@ -7,15 +7,7 @@
     <template #filters>
       <v-row>
         <v-col cols="3">
-          <list-filter name="author_id" />
-        </v-col>
-
-        <v-col cols="3">
           <list-filter name="tag_id" />
-        </v-col>
-
-        <v-col cols="3">
-          <list-filter name="has_comments" />
         </v-col>
 
         <v-col cols="3">
@@ -40,27 +32,20 @@
       </v-row>
     </template>
 
-    <template #model="{ model: article }">
+    <template #model="{ model: author }">
       <list-card>
         <list-meta>
-          Artikel #{{ article.id }}
+          Autor #{{ author.id }}
           |
-          von
-          <router-link :to="article.author.getLink()">
-            {{ article.author.name }}
-          </router-link>
-          |
-          am {{ date(article) }}
-          |
-          {{ article.count_comments }} Kommentare
+          {{ author.count_articles }} Artikel
         </list-meta>
 
-        <list-title :link="article.getLink()">
-          {{ article.title }}
+        <list-title :link="author.getLink()">
+          {{ author.name }}
         </list-title>
 
         <tag-list
-          :model="article"
+          :model="author"
           @clickTag="clickTag"
         />
       </list-card>
@@ -72,10 +57,8 @@
 <script>
 import { Component, Vue } from 'vue-property-decorator'
 
-@Component({
-  props: ['listId', 'filterSource']
-})
-export default class ArticlesList extends Vue {
+@Component
+export default class AuthorsList extends Vue {
   filters = []
   count = 0
 
@@ -85,32 +68,23 @@ export default class ArticlesList extends Vue {
     return {
       listId: this.listId,
 
-      filterSource: this.filterSource || 'object',
+      filterSource: 'route',
 
-      action: api.getAction('Example.ArticlesResource', 'get_articles'),
+      action: api.getAction('Example.AuthorsResource', 'get_authors'),
 
       fields: {
-        title: true,
-        date: true,
-        author: {
-          name: true
-        },
+        name: true,
         tags: {
           name: true,
           count_users: true
         },
-        count_comments: true
+        count_articles: true
       }
     }
   }
 
   clickTag (tag) {
     this.filters.tag_id.value = tag.id
-  }
-
-  date (article) {
-    const options = { year: 'numeric', month: 'long', day: 'numeric' }
-    return article.date.toLocaleDateString('de-DE', options)
   }
 }
 </script>

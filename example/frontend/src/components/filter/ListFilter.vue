@@ -82,7 +82,7 @@ import { Component, Vue } from 'vue-property-decorator'
 @Component({
   props: ['name', 'count', 'page_size']
 })
-export default class ArticlesFilters extends Vue {
+export default class ListFilter extends Vue {
   get filters () {
     return this.$parent.filters
   }

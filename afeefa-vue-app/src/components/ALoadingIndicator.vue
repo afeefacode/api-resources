@@ -15,6 +15,7 @@ import { Component, Vue, Watch } from 'vue-property-decorator'
 })
 export default class KLoadingIndicator extends Vue {
   internalLoading = false
+  timeout = null
 
   created () {
     this.internalLoading = this.isLoading
@@ -24,10 +25,11 @@ export default class KLoadingIndicator extends Vue {
   isLoadingChanged () {
     if (this.isLoading) { // start immediately, but stop delayed
       this.internalLoading = this.isLoading
+      clearTimeout(this.timeout)
     }
 
-    setTimeout(() => {
-      this.internalLoading = this.isLoading
+    this.timeout = setTimeout(() => {
+      this.internalLoading = false
     }, 250)
   }
 }

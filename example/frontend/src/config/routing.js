@@ -1,11 +1,18 @@
 import App from '@/components/App'
+import ArticleContainer from '@/components/models/article/ArticleContainer'
+import ArticleDetail from '@/components/models/article/ArticleDetail'
+import ArticleForm from '@/components/models/article/ArticleForm'
+import ArticlesList from '@/components/models/article/ArticlesList'
+import AuthorContainer from '@/components/models/author/AuthorContainer'
+import AuthorDetail from '@/components/models/author/AuthorDetail'
+import AuthorForm from '@/components/models/author/AuthorForm'
+import AuthorsList from '@/components/models/author/AuthorsList'
 import CreateRoute from '@/components/routes/CreateRoute'
 import DetailRoute from '@/components/routes/DetailRoute'
 import EditRoute from '@/components/routes/EditRoute'
 import ListRoute from '@/components/routes/ListRoute'
 import ModelRoute from '@/components/routes/ModelRoute'
-import { ArticlesRouteConfig } from '@/routes/ArticlesRouteConfig'
-import { AuthorsRouteConfig } from '@/routes/AuthorsRouteConfig'
+import { Article, Author } from '@/models'
 import { apiResources } from '@afeefa/api-resources-client'
 import { routeConfigPlugin } from '@avue/plugins/route-config/RouteConfigPlugin'
 
@@ -61,7 +68,14 @@ export default routeConfigPlugin
                 detail: 'Autor'
               },
               config: {
-                route: new AuthorsRouteConfig(api)
+                Model: Author,
+                components: {
+                  list: AuthorsList,
+                  model: AuthorContainer,
+                  detail: AuthorDetail,
+                  new: AuthorForm,
+                  edit: AuthorForm
+                }
               }
             }),
 
@@ -74,7 +88,14 @@ export default routeConfigPlugin
                 detail: 'Artikel'
               },
               config: {
-                route: new ArticlesRouteConfig(api)
+                Model: Article,
+                components: {
+                  list: [ArticlesList, {filterSource: 'route'}],
+                  model: ArticleContainer,
+                  detail: ArticleDetail,
+                  new: ArticleForm,
+                  edit: ArticleForm
+                }
               },
 
               children: [

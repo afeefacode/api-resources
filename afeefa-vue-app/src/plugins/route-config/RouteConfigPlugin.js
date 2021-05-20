@@ -51,8 +51,12 @@ class RouteConfigPlugin {
   install (Vue) {
     Object.defineProperty(Vue.prototype, '$routeDefinition', {
       get () {
-        return (this.$props && this.$props.rcp_routeDefinition) ||
+        const definition = (this.$props && this.$props.rcp_routeDefinition) ||
           (this.$attrs && this.$attrs.rcp_routeDefinition)
+        if (definition) {
+          return definition
+        }
+        return this.$parent.$routeDefinition
       }
     })
   }

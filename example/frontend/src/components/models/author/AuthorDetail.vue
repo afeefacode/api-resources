@@ -33,6 +33,10 @@ export default class AuthorDetail extends Vue {
   get author () {
     return this.model
   }
+
+  get listId () {
+    return this.$route.meta.routeDefinition.fullId
+  }
 }
 </script>
 

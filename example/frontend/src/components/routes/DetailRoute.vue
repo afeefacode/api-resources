@@ -8,7 +8,7 @@
     </router-link>
 
     <component
-      :is="Detail"
+      :is="Component"
       :model="model"
     />
   </div>
@@ -21,12 +21,8 @@ import { Component, Vue } from 'vue-property-decorator'
   props: ['model']
 })
 export default class DetailRoute extends Vue {
-  get config () {
-    return this.$routeDefinition.config.route
-  }
-
-  get Detail () {
-    return this.config.detail.Detail
+  get Component () {
+    return this.$routeDefinition.config.components.detail
   }
 }
 </script>

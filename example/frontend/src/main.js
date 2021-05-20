@@ -1,4 +1,5 @@
 import './config/components'
+import './config/event-bus'
 
 import Vue from 'vue'
 

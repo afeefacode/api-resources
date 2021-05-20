@@ -1,6 +1,8 @@
 <template>
   <div>
-    <slot name="filters" />
+    <div class="filters">
+      <slot name="filters" />
+    </div>
 
     <template v-if="!isLoading && models.length">
       <div
@@ -13,6 +15,13 @@
         />
       </div>
     </template>
+
+    <div v-else-if="!isLoading">
+      Nichts gefunden. <a
+        href=""
+        @click.prevent="resetFilters()"
+      >Filter zurücksetzen</a>
+    </div>
   </div>
 </template>
 
@@ -21,6 +30,7 @@
 import { Component, Vue, Watch } from 'vue-property-decorator'
 import { RouteQuerySource } from '@avue/services/list-filters/RouteQuerySource'
 import { filterHistory } from '@avue/services/list-filters/FilterHistory'
+import { LoadingEvent } from '@avue/events'
 
 @Component({
   props: ['config']
@@ -48,7 +58,7 @@ export default class ListView extends Vue {
     }
 
     this.requestFilters = filterHistory.createRequestFilters(
-      this.config.listId,
+      this.listId,
       this.action,
       this.config.filterSource === 'route' ? new RouteQuerySource(this.$router) : null
     )
@@ -76,16 +86,8 @@ export default class ListView extends Vue {
     return this.requestFilters.getFilters()
   }
 
-  get newLink () {
-    return this.config.Model.getLink('new')
-  }
-
-  get Card () {
-    return this.config.Card
-  }
-
-  get Filters () {
-    return this.config.Filters
+  get listId () {
+    return [this.$route.meta.routeDefinition.fullId, this.config.listId].filter(i => i).join('.')
   }
 
   resetFilters () {
@@ -94,6 +96,9 @@ export default class ListView extends Vue {
 
   async load () {
     this.isLoading = true
+    this.$events.dispatch(new LoadingEvent(LoadingEvent.START_LOADING))
+
+    this.$emit('update:isLoading', this.isLoading)
 
     const result = await this.action
       .request()
@@ -106,9 +111,11 @@ export default class ListView extends Vue {
 
     this.requestFilters.initFromUsed(this.meta.used_filters)
 
-    filterHistory.markFiltersValid(this.config.listId, this.meta.count_search > 0)
+    filterHistory.markFiltersValid(this.listId, this.meta.count_search > 0)
 
     this.isLoading = false
+    this.$events.dispatch(new LoadingEvent(LoadingEvent.STOP_LOADING))
+    this.$emit('update:isLoading', this.isLoading)
 
     this.$emit('update:count', this.meta.count_search)
   }

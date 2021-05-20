@@ -8,7 +8,7 @@
     </router-link>
 
     <component
-      :is="Form"
+      :is="Component"
       :model="model"
     />
   </div>
@@ -21,12 +21,8 @@ import { Component, Vue } from 'vue-property-decorator'
   props: ['model']
 })
 export default class EditRoute extends Vue {
-  get config () {
-    return this.$routeDefinition.config.route
-  }
-
-  get Form () {
-    return this.config.edit.Form
+  get Component () {
+    return this.$routeDefinition.config.components.edit
   }
 }
 </script>
