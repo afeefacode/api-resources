@@ -18,7 +18,6 @@ export default class ModelContainer extends Vue {
   isLoading = true
 
   created () {
-    console.log('load', this.config.id)
     this.load()
   }
 
