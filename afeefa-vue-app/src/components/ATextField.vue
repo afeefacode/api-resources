@@ -15,7 +15,7 @@
 
 <script>
 import { Component, Vue } from 'vue-property-decorator'
-import { debounce } from '@avue/utils/debounce'
+import { debounce } from '../utils/debounce'
 
 @Component({
   props: ['debounce', 'validator', 'password']
@@ -59,6 +59,7 @@ export default class ATextField extends Vue {
   }
 
   get validationRules () {
+    console.log(this.validator && this.validator.getRules())
     return (this.validator && this.validator.getRules()) || []
   }
 
@@ -66,7 +67,7 @@ export default class ATextField extends Vue {
     if (!this.validator) {
       return false
     }
-    return this.validator.getRuleParam('max') || false
+    return this.validator.getParams().max || false
   }
 }
 </script>

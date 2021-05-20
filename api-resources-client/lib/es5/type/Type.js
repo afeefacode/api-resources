@@ -8,7 +8,7 @@ export class Type {
         for (const [name, fieldJSON] of Object.entries(json.fields)) {
             const field = apiResources.getField(fieldJSON.type);
             if (field) {
-                const typeField = field.createTypeField(fieldJSON);
+                const typeField = field.createTypeField(name, fieldJSON);
                 this._fields[name] = typeField;
             }
         }
@@ -16,7 +16,7 @@ export class Type {
             for (const [name, fieldJSON] of Object.entries(json.update_fields)) {
                 const field = apiResources.getField(fieldJSON.type);
                 if (field) {
-                    const typeField = field.createTypeField(fieldJSON);
+                    const typeField = field.createTypeField(name, fieldJSON);
                     this._updateFields[name] = typeField;
                 }
             }
@@ -25,7 +25,7 @@ export class Type {
             for (const [name, fieldJSON] of Object.entries(json.create_fields)) {
                 const field = apiResources.getField(fieldJSON.type);
                 if (field) {
-                    const typeField = field.createTypeField(fieldJSON);
+                    const typeField = field.createTypeField(name, fieldJSON);
                     this._createFields[name] = typeField;
                 }
             }
@@ -33,5 +33,11 @@ export class Type {
     }
     getFields() {
         return this._fields;
+    }
+    getUpdateFields() {
+        return this._updateFields;
+    }
+    getCreateFields() {
+        return this._createFields;
     }
 }

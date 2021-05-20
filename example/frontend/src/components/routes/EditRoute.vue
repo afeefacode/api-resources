@@ -11,6 +11,8 @@
       :is="Component"
       :model="model"
     />
+
+    <v-btn>Speichern</v-btn>
   </div>
 </template>
 
@@ -29,8 +31,8 @@ export default class EditRoute extends Vue {
 
 
 <style lang="scss" scoped>
-.button {
+button {
   display: block;
-  margin-bottom: 2rem;
+  margin: 2rem 0;
 }
 </style>

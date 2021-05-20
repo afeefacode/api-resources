@@ -1,5 +1,20 @@
 <template>
-  <div>Article FORM</div>
+  <edit-form :model="model">
+    <template #fields>
+      <form-field
+        type="varchar"
+        name="title"
+      />
+      <form-field
+        type="text"
+        name="summary"
+      />
+      <form-field
+        type="text"
+        name="content"
+      />
+    </template>
+  </edit-form>
 </template>
 
 <script>
@@ -9,13 +24,5 @@ import { Component, Vue } from 'vue-property-decorator'
   props: ['model']
 })
 export default class ArticleForm extends Vue {
-  get article () {
-    return this.model
-  }
-
-  get date () {
-    const options = { year: 'numeric', month: 'long', day: 'numeric' }
-    return this.article.date.toLocaleDateString('de-DE', options)
-  }
 }
 </script>

@@ -1,5 +1,5 @@
 import { Model, ModelJSON } from '../Model';
-import { ValidatorJSON } from '../validator/Validator';
+import { Validator, ValidatorJSON } from '../validator/Validator';
 export declare type FieldJSON = {
     type: string;
     validator: ValidatorJSON;
@@ -11,9 +11,10 @@ export declare class Field {
     constructor();
     private _validator;
     newInstance<T>(): T;
-    createTypeField(json: FieldJSON): Field;
+    createTypeField(name: string, json: FieldJSON): Field;
+    getValidator(): Validator | null;
     deserialize(value: FieldJSONValue): FieldValue;
     serialize(value: FieldValue): FieldJSONValue;
-    protected setupTypeFieldValidator(json: ValidatorJSON): void;
+    protected setupTypeFieldValidator(fieldName: string, json: ValidatorJSON): void;
 }
 //# sourceMappingURL=Field.d.ts.map

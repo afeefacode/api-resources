@@ -1,5 +1,7 @@
 import DetailMeta from '@/components/detail/DetailMeta'
 import DetailTitle from '@/components/detail/DetailTitle'
+import EditForm from '@/components/form/EditForm'
+import FormField from '@/components/form/FormField'
 import ListCard from '@/components/list/ListCard'
 import ListFilter from '@/components/list/ListFilter'
 import ListMeta from '@/components/list/ListMeta'
@@ -17,6 +19,9 @@ Vue.component('ListFilter', ListFilter)
 
 Vue.component('DetailMeta', DetailMeta)
 Vue.component('DetailTitle', DetailTitle)
+
+Vue.component('EditForm', EditForm)
+Vue.component('FormField', FormField)
 
 Vue.component('ModelContainer', ModelContainer)
 

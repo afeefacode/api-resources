@@ -29,10 +29,14 @@ export class Field {
     return new (this.constructor as { new (): T })()
   }
 
-  public createTypeField (json: FieldJSON): Field {
+  public createTypeField (name: string, json: FieldJSON): Field {
     const field = this.newInstance<Field>()
-    field.setupTypeFieldValidator(json.validator)
+    field.setupTypeFieldValidator(name, json.validator)
     return field
+  }
+
+  public getValidator (): Validator | null {
+    return this._validator
   }
 
   public deserialize (value: FieldJSONValue): FieldValue {
@@ -43,11 +47,11 @@ export class Field {
     return value as FieldJSONValue
   }
 
-  protected setupTypeFieldValidator (json: ValidatorJSON): void {
+  protected setupTypeFieldValidator (fieldName: string, json: ValidatorJSON): void {
     if (json) {
       const validator = apiResources.getValidator(json.type)
       if (validator) {
-        this._validator = validator.createFieldValidator(json)
+        this._validator = validator.createFieldValidator(fieldName, json)
       }
     }
   }

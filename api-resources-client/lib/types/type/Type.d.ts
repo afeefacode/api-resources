@@ -11,5 +11,7 @@ export declare class Type {
     private _createFields;
     constructor(name: string, json: TypeJSON);
     getFields(): Record<string, Field>;
+    getUpdateFields(): Record<string, Field>;
+    getCreateFields(): Record<string, Field>;
 }
 //# sourceMappingURL=Type.d.ts.map
