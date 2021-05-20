@@ -26,14 +26,17 @@
   </div>
 </template>
 
+
 <script>
 import { Component, Vue, Watch } from 'vue-property-decorator'
+import { RouteEvent } from '@avue/events'
 
 @Component
-export default class Breadcrumb extends Vue {
+export default class ABreadcrumbs extends Vue {
   breadcrumbs = []
 
   created () {
+    this.$events.$on(RouteEvent.CHANGE, this.init)
     this.init()
   }
 
@@ -43,11 +46,8 @@ export default class Breadcrumb extends Vue {
   }
 
   init () {
-    this.breadcrumbs.forEach(d => d.definition.off('update'))
-
     const definition = this.$route.meta.routeDefinition
     this.breadcrumbs = definition.getBreadcrumbs().map(d => {
-      d.on('update', this.init)
       return d.name !== 'root' && d.toBreadcrumb()
     }).filter(b => b)
   }

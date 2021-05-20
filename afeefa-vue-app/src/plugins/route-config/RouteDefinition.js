@@ -1,3 +1,6 @@
+import { eventBus } from '../event-bus/EventBus'
+import { RouteEvent } from './RouteEvent'
+
 export class RouteDefinition {
   fullPath = ''
   fullId = ''
@@ -7,7 +10,6 @@ export class RouteDefinition {
   parentBreadcrumbDefinition = null
   definitionMap = null
   customBreadcrumbTitle = null
-  eventTarget = new EventTarget()
 
   constructor ({
     path,
@@ -33,14 +35,6 @@ export class RouteDefinition {
     this.config = config
     this.children = children
     this.options = options
-  }
-
-  on (type, handler) {
-    this.eventTarget.addEventListener(type, handler)
-  }
-
-  off (type, handler) {
-    this.eventTarget.removeEventListener(type, handler)
   }
 
   setParent (parent, parentName) {
@@ -97,7 +91,7 @@ export class RouteDefinition {
 
   setCustomBreadcrumbTitle (title) {
     this.customBreadcrumbTitle = title
-    this.eventTarget.dispatchEvent(new Event('update'))
+    eventBus.dispatch(new RouteEvent(RouteEvent.CHANGE))
   }
 
   getChild (name) {

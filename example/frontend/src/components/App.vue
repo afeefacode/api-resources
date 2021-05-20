@@ -25,7 +25,7 @@
           @click="drawer = !drawer"
         />
 
-        <breadcrumbs />
+        <a-breadcrumbs />
 
         <router-view />
       </v-container>
@@ -36,13 +36,11 @@
 <script>
 import { Component, Vue } from 'vue-property-decorator'
 import AppMenu from './Menu'
-import Breadcrumbs from './Breadcrumbs'
 import { LoadingEvent } from '@avue/events'
 
 @Component({
   components: {
-    AppMenu,
-    Breadcrumbs
+    AppMenu
   }
 })
 export default class App extends Vue {

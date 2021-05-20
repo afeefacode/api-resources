@@ -1,4 +1,4 @@
-import { BaseEvent } from './BaseEvent'
+import { BaseEvent } from '../../plugins/event-bus/BaseEvent'
 
 export class DialogEvent extends BaseEvent {
   static isAsync = true

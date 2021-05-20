@@ -1,4 +1,4 @@
-import { BaseEvent } from '../events/BaseEvent'
+import { BaseEvent } from '../event-bus/BaseEvent'
 
 export class RouteEvent extends BaseEvent {
   static CHANGE = 'RouteEvent:change'
