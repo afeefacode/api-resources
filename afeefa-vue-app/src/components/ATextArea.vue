@@ -23,7 +23,6 @@ export default class ATextArea extends Vue {
   }
 
   get validationRules () {
-    console.log(this.validator && this.validator.getRules())
     return (this.validator && this.validator.getRules()) || []
   }
 
