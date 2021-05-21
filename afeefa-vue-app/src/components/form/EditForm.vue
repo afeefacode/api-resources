@@ -20,7 +20,14 @@ export default class EditForm extends Vue {
 
   @Watch('valid')
   validChanged () {
-    this.$parent.$emit('update:valid', this.valid)
+    let parent = this.$parent
+    while (parent) {
+      if (parent.$listeners['update:valid']) {
+        parent.$emit('update:valid', this.valid)
+        break
+      }
+      parent = parent.$parent
+    }
   }
 
   get type () {
