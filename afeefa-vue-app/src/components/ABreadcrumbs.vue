@@ -29,7 +29,7 @@
 
 <script>
 import { Component, Vue, Watch } from 'vue-property-decorator'
-import { RouteEvent } from '@avue/events'
+import { RouteEvent } from '../plugins/route-config/RouteEvent'
 
 @Component
 export default class ABreadcrumbs extends Vue {

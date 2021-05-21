@@ -21,6 +21,7 @@
 
 <script>
 import { Component, Vue } from 'vue-property-decorator'
+import { apiResources } from '@afeefa/api-resources-client'
 
 @Component({
   props: ['type', 'name']
@@ -31,7 +32,7 @@ export default class FormField extends Vue {
   }
 
   get modelType () {
-    return this.$parent.$parent.type
+    return apiResources.getType(this.model.type)
   }
 
   get field () {

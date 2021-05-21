@@ -14,7 +14,7 @@
 
     <h2>Artikel</h2>
 
-    <articles-list />
+    <articles-list :listId="listId" />
   </div>
 </template>
 
@@ -35,7 +35,7 @@ export default class AuthorDetail extends Vue {
   }
 
   get listId () {
-    return this.$route.meta.routeDefinition.fullId
+    return this.model.id + '.articles'
   }
 }
 </script>

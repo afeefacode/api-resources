@@ -8,7 +8,7 @@
 
 <script>
 import { Component, Vue, Watch } from 'vue-property-decorator'
-import { LoadingEvent } from '@avue/events'
+import { LoadingEvent } from '../loading-indicator/LoadingEvent'
 
 @Component({
   props: ['config']

@@ -1,12 +1,10 @@
 <template>
-  <div>
-    <v-form
-      v-model="valid"
-      autocomplete="off"
-    >
-      <slot name="fields" />
-    </v-form>
-  </div>
+  <v-form
+    v-model="valid"
+    autocomplete="off"
+  >
+    <slot name="fields" />
+  </v-form>
 </template>
 
 
