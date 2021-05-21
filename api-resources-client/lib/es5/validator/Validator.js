@@ -22,7 +22,7 @@ export class Validator {
     getRules() {
         return Object.keys(this._rules).map(name => {
             const rule = this._rules[name];
-            return this.createRuleValidator(name, rule, this._params[name], this._fieldName);
+            return this.createRuleValidator(name, rule, this._params[name]);
         });
     }
     getParams() {
@@ -35,7 +35,7 @@ export class Validator {
             }
         }
     }
-    createRuleValidator(_ruleName, _rule, _params, _fieldName) {
+    createRuleValidator(_ruleName, _rule, _params) {
         return () => true;
     }
 }
