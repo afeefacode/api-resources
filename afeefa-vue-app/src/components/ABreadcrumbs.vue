@@ -36,7 +36,7 @@ export default class ABreadcrumbs extends Vue {
   breadcrumbs = []
 
   created () {
-    this.$events.$on(RouteEvent.CHANGE, this.init)
+    this.$events.on(RouteEvent.CHANGE, this.init)
     this.init()
   }
 

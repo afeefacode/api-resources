@@ -30,6 +30,10 @@
         <router-view />
       </v-container>
     </v-main>
+
+    <a-dialog />
+    <a-alert />
+    <a-save-indicator />
   </v-app>
 </template>
 
@@ -37,6 +41,12 @@
 import { Component, Vue } from 'vue-property-decorator'
 import AppMenu from './Menu'
 import { LoadingEvent } from '@avue/events'
+
+Component.registerHooks([
+  'beforeRouteEnter',
+  'beforeRouteLeave',
+  'beforeRouteUpdate'
+])
 
 @Component({
   components: {
@@ -48,8 +58,8 @@ export default class App extends Vue {
   isLoading = false
 
   created () {
-    this.$events.$on(LoadingEvent.START_LOADING, this.startLoading)
-    this.$events.$on(LoadingEvent.STOP_LOADING, this.stopLoading)
+    this.$events.on(LoadingEvent.START_LOADING, this.startLoading)
+    this.$events.on(LoadingEvent.STOP_LOADING, this.stopLoading)
   }
 
   startLoading () {

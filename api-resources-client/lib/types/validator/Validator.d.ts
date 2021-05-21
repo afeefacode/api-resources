@@ -5,7 +5,7 @@ export declare type ValidatorJSON = {
     params: Record<string, unknown>;
 };
 export declare type RuleValidator<T> = (value: T) => boolean | string;
-export declare class Validator<T> {
+export declare class Validator<T = any> {
     protected _rules: Record<string, Rule>;
     protected _params: Record<string, unknown>;
     protected _fieldName: string;

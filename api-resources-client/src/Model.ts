@@ -50,6 +50,18 @@ export class Model {
     }
   }
 
+  public cloneForEdit (): Model {
+    const ModelType = apiResources.getModel(this.type) || Model
+    const model = new ModelType()
+
+    const type: Type = apiResources.getType(this.type) as Type
+    for (const name of Object.keys(type.getUpdateFields())) {
+      model[name] = this[name]
+    }
+
+    return model
+  }
+
   public serialize (): ModelJSON {
     const json: ModelJSON = {
       type: this.type
@@ -57,6 +69,11 @@ export class Model {
 
     if (this.id) {
       json.id = this.id
+    }
+
+    const type: Type = apiResources.getType(this.type) as Type
+    for (const name of Object.keys(type.getUpdateFields())) {
+      json[name] = this[name] as FieldJSONValue
     }
 
     return json

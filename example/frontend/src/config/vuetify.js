@@ -1,5 +1,7 @@
 import {
-  mdiChevronRight
+  mdiChevronRight,
+  mdiClose,
+  mdiThumbUpOutline
 } from '@mdi/js'
 import Vue from 'vue'
 import Vuetify from 'vuetify/lib'
@@ -10,7 +12,9 @@ export default new Vuetify({
   icons: {
     iconfont: 'mdiSvg',
     values: {
-      chevronRightIcon: mdiChevronRight
+      chevronRightIcon: mdiChevronRight,
+      thumbsUpIcon: mdiThumbUpOutline,
+      closeIcon: mdiClose
     }
   },
   breakpoint: {

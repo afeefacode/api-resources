@@ -12,6 +12,7 @@ export declare class ApiRequest {
     private _fields;
     private _filters;
     private _params;
+    private _data;
     private _lastRequestJSON;
     private _lastRequest;
     constructor(json?: ApiRequestJSON);
@@ -20,6 +21,7 @@ export declare class ApiRequest {
     fields(fields: Record<string, unknown>): ApiRequest;
     filters(filters: Record<string, unknown>): ApiRequest;
     params(params: Record<string, unknown>): ApiRequest;
+    data(data: Record<string, unknown>): ApiRequest;
     send(): Promise<ApiResponse>;
     protected serialize(): object;
 }

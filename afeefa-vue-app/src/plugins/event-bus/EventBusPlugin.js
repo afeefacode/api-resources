@@ -7,6 +7,23 @@ class EventBusPlugin {
         return eventBus
       }
     })
+
+    Object.defineProperty(Vue.prototype, '$emitOnParent', {
+      get () {
+        return (event, value) => {
+          let parent = this
+          while (parent) {
+            console.log(event, parent, parent.$listeners)
+            if (parent.$listeners[event]) {
+              console.log('$emit', event, parent)
+              parent.$emit(event, value)
+              break
+            }
+            parent = parent.$parent
+          }
+        }
+      }
+    })
   }
 }
 

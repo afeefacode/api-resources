@@ -187,6 +187,32 @@ class ArticlesResolver
             });
     }
 
+    public function update_article(ActionResolver $r, Medoo $db)
+    {
+        $r
+            ->load(function () use ($r, $db) {
+                $request = $r->getRequest();
+
+                $data = $request->getData();
+                $where = ['id' => $request->getParam('id')];
+
+                $result = $db->update(
+                    'articles',
+                    $data,
+                    $where
+                );
+
+                if ($result === false) {
+                    throw new ApiException(([
+                        'error' => $db->error(),
+                        'query' => $db->log()
+                    ]));
+                }
+
+                return [];
+            });
+    }
+
     public function resolve_articles_relation(RelationResolver $r, Medoo $db): void
     {
         $r

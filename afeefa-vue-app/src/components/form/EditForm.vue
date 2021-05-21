@@ -17,17 +17,30 @@ import { apiResources } from '@afeefa/api-resources-client'
 })
 export default class EditForm extends Vue {
   valid = false
+  lastJson = null
+
+  created () {
+    this.lastJson = this.json
+  }
+
+  get json () {
+    return JSON.stringify(this.model)
+  }
+
+  get changed () {
+    // console.log(this.json)
+    // console.log(json)
+    return this.json !== this.lastJson
+  }
 
   @Watch('valid')
   validChanged () {
-    let parent = this.$parent
-    while (parent) {
-      if (parent.$listeners['update:valid']) {
-        parent.$emit('update:valid', this.valid)
-        break
-      }
-      parent = parent.$parent
-    }
+    this.$emitOnParent('update:valid', this.valid)
+  }
+
+  @Watch('changed')
+  modelChanged () {
+    this.$emitOnParent('update:changed', this.changed)
   }
 
   get type () {

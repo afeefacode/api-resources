@@ -2,6 +2,7 @@
   <router-view
     v-if="model"
     :model="model"
+    @update:model="reload"
   />
 </template>
 
@@ -40,6 +41,10 @@ export default class ModelContainer extends Vue {
 
   get action () {
     return this.config.action
+  }
+
+  reload () {
+    this.load()
   }
 
   async load () {

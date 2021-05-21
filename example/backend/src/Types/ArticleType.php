@@ -85,7 +85,7 @@ class ArticleType extends ModelType
             ->validate(function (VarcharValidator $v) {
                 $v
                     ->min(3)
-                    ->max(100);
+                    ->max(200);
             });
 
         $fields->allow([

@@ -24,6 +24,8 @@ class ApiRequest implements ContainerAwareInterface, ToSchemaJsonInterface, Json
 
     protected array $params = [];
 
+    protected array $data = [];
+
     protected RequestedFields $fields;
 
     public function fromInput(): ApiRequest
@@ -45,6 +47,8 @@ class ApiRequest implements ContainerAwareInterface, ToSchemaJsonInterface, Json
         $this->filters = $input['filters'] ?? [];
 
         $this->params = $input['params'] ?? [];
+
+        $this->data = $input['data'] ?? [];
 
         return $this;
     }
@@ -91,6 +95,14 @@ class ApiRequest implements ContainerAwareInterface, ToSchemaJsonInterface, Json
     public function getParam(string $name)
     {
         return $this->params[$name];
+    }
+
+    public function getData(): array
+    {
+        return [
+            'title' => $this->data['title'],
+            'summary' => $this->data['summary']
+        ];
     }
 
     public function fields(array $fields): ApiRequest
@@ -160,6 +172,8 @@ class ApiRequest implements ContainerAwareInterface, ToSchemaJsonInterface, Json
             'action' => $this->actionName,
             'fields' => $this->fields,
             'filters' => $this->filters,
+            'params' => $this->params,
+            'data' => $this->data,
         ];
         return $json;
     }

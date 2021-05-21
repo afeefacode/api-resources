@@ -32,6 +32,10 @@ export class ApiRequest {
         this._params = params;
         return this;
     }
+    data(data) {
+        this._data = data;
+        return this;
+    }
     send() {
         const params = this.serialize();
         if (this._lastRequestJSON === JSON.stringify(params)) {
@@ -52,7 +56,8 @@ export class ApiRequest {
             action: this._action.getName(),
             params: this._params,
             fields: this._fields,
-            filters: this._filters
+            filters: this._filters,
+            data: this._data
         };
     }
 }

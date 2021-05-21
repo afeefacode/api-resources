@@ -8,7 +8,7 @@ export type ValidatorJSON = {
 
 export type RuleValidator<T> = (value: T) => boolean | string
 
-export class Validator<T> {
+export class Validator<T=any> {
   protected _rules: Record<string, Rule> = {}
   protected _params: Record<string, unknown> = {}
   protected _fieldName!: string

@@ -12,6 +12,7 @@ export declare class Model {
     static create(json: ModelJSON): Model;
     constructor(type?: string);
     deserialize(json: ModelJSON): void;
+    cloneForEdit(): Model;
     serialize(): ModelJSON;
 }
 //# sourceMappingURL=Model.d.ts.map

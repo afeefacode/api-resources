@@ -106,7 +106,9 @@ class ArticlesResource extends ModelResource
 
                 ->input(ArticleType::class)
 
-                ->response(ArticleType::class);
+                ->response(ArticleType::class)
+
+                ->resolve([ArticlesResolver::class, 'update_article']);
         });
 
         $actions->add('update_articles', function (Action $action) {

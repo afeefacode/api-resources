@@ -24,5 +24,12 @@ import { Component, Vue } from 'vue-property-decorator'
   props: ['model']
 })
 export default class ArticleForm extends Vue {
+  get config () {
+    const api = this.$routeDefinition.config.api
+
+    return {
+      action: api.getAction('Example.ArticlesResource', 'update_article')
+    }
+  }
 }
 </script>

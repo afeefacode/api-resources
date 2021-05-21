@@ -24,6 +24,11 @@ export default class DetailRoute extends Vue {
   get Component () {
     return this.$routeDefinition.config.components.detail
   }
+
+  beforeRouteLeave (_to, _from, next) {
+    console.log('before route leave detail')
+    next()
+  }
 }
 </script>
 

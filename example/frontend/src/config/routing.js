@@ -46,7 +46,6 @@ export default routeConfigPlugin
 
   .routes(async ({ROUTE, ROUTESET}) => {
     await apiResources.schemasLoaded()
-    const api = apiResources.getApi('backendApi')
 
     return [
       ROUTE(

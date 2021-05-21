@@ -16,6 +16,7 @@ export class ApiRequest {
   private _fields!: Record<string, unknown>
   private _filters!: Record<string, unknown>
   private _params!: Record<string, unknown>
+  private _data!: Record<string, unknown>
 
   private _lastRequestJSON: string = ''
   private _lastRequest!: Promise<ApiResponse>
@@ -58,6 +59,11 @@ export class ApiRequest {
     return this
   }
 
+  public data (data: Record<string, unknown>): ApiRequest {
+    this._data = data
+    return this
+  }
+
   public send (): Promise<ApiResponse> {
     const params = this.serialize()
 
@@ -84,7 +90,8 @@ export class ApiRequest {
       action: this._action.getName(),
       params: this._params,
       fields: this._fields,
-      filters: this._filters
+      filters: this._filters,
+      data: this._data
     }
   }
 }
