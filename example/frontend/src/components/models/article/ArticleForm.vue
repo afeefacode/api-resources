@@ -5,10 +5,12 @@
         type="varchar"
         name="title"
       />
+
       <form-field
         type="text"
         name="summary"
       />
+
       <form-field
         type="text"
         name="content"
