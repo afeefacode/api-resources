@@ -14,7 +14,11 @@
 
     <h2>Artikel</h2>
 
-    <articles-list :listId="listId" />
+    <articles-list
+      :listId="model.id + '.articles'"
+      :action="articlesAction"
+      :fields="articlesFields"
+    />
   </div>
 </template>
 
@@ -22,6 +26,7 @@
 <script>
 import { Component, Vue } from 'vue-property-decorator'
 import ArticlesList from '@/components/models/article/ArticlesList'
+import { ArticlesConfig } from '../article/ArticlesConfig'
 
 @Component({
   props: ['model'],
@@ -34,8 +39,14 @@ export default class AuthorDetail extends Vue {
     return this.model
   }
 
-  get listId () {
-    return this.model.id + '.articles'
+  get articlesAction () {
+    const api = this.$routeDefinition.config.api
+    return new ArticlesConfig(api).list.action
+  }
+
+  get articlesFields () {
+    const api = this.$routeDefinition.config.api
+    return new ArticlesConfig(api).list.fields
   }
 }
 </script>

@@ -4,6 +4,7 @@ export declare type ModelJSON = {
     type: string;
     id?: string;
 };
+declare type ModelAttributes = Record<string, unknown>;
 export declare class Model {
     [index: string]: unknown;
     static type: string;
@@ -12,7 +13,8 @@ export declare class Model {
     static create(json: ModelJSON): Model;
     constructor(type?: string);
     deserialize(json: ModelJSON): void;
-    cloneForEdit(): Model;
-    serialize(): ModelJSON;
+    cloneForEdit(fields?: ModelAttributes): Model;
+    serialize(fields?: ModelAttributes): ModelJSON;
 }
+export {};
 //# sourceMappingURL=Model.d.ts.map

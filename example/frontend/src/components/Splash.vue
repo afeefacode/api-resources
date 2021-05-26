@@ -11,9 +11,9 @@
       >
         <v-progress-circular
           :size="45"
-          :width="5"
+          :width="6"
           indeterminate
-          color="#999999"
+          color="green"
         />
 
         <div class="ml-4">

@@ -1,6 +1,6 @@
 <template>
   <list-view
-    :config="config"
+    v-bind="$attrs"
     :filters.sync="filters"
     :count.sync="count"
   >
@@ -43,7 +43,6 @@
     <template #model="{ model: article }">
       <list-card>
         <list-meta>
-          Artikel #{{ article.id }}
           |
           von
           <router-link :to="article.author.getLink()">
@@ -72,37 +71,10 @@
 <script>
 import { Component, Vue } from 'vue-property-decorator'
 
-@Component({
-  props: ['listId', 'filterSource']
-})
+@Component
 export default class ArticlesList extends Vue {
   filters = []
   count = 0
-
-  get config () {
-    const api = this.$routeDefinition.config.api
-
-    return {
-      listId: this.listId,
-
-      filterSource: this.filterSource || 'object',
-
-      action: api.getAction('Example.ArticlesResource', 'get_articles'),
-
-      fields: {
-        title: true,
-        date: true,
-        author: {
-          name: true
-        },
-        tags: {
-          name: true,
-          count_users: true
-        },
-        count_comments: true
-      }
-    }
-  }
 
   clickTag (tag) {
     this.filters.tag_id.value = tag.id

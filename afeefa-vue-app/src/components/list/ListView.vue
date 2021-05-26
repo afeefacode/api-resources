@@ -5,7 +5,7 @@ import { RouteQuerySource } from '../../api-resources/RouteQuerySource'
 import { LoadingEvent } from '../loading-indicator/LoadingEvent'
 
 @Component({
-  props: ['config']
+  props: ['listId', 'filterSource', 'action', 'fields']
 })
 export default class ListView extends Vue {
   models = []
@@ -30,9 +30,9 @@ export default class ListView extends Vue {
     }
 
     this.requestFilters = filterHistory.createRequestFilters(
-      this.listId,
+      this.internalListId,
       this.action,
-      this.config.filterSource === 'route' ? new RouteQuerySource(this.$router) : null
+      this.filterSource === 'route' ? new RouteQuerySource(this.$router) : null
     )
 
     this.$emit('update:filters', this.requestFilters.getFilters())
@@ -50,16 +50,12 @@ export default class ListView extends Vue {
     this.load()
   }
 
-  get action () {
-    return this.config.action
-  }
-
   get filters () {
     return this.requestFilters.getFilters()
   }
 
-  get listId () {
-    return [this.$route.meta.routeDefinition.fullId, this.config.listId].filter(i => i).join('.')
+  get internalListId () {
+    return [this.$route.meta.routeDefinition.fullId, this.listId].filter(i => i).join('.')
   }
 
   resetFilters () {
@@ -74,7 +70,7 @@ export default class ListView extends Vue {
 
     const result = await this.action
       .request()
-      .fields(this.config.fields)
+      .fields(this.fields)
       .filters(this.requestFilters.serialize())
       .send()
 
@@ -83,7 +79,7 @@ export default class ListView extends Vue {
 
     this.requestFilters.initFromUsed(this.meta.used_filters)
 
-    filterHistory.markFiltersValid(this.listId, this.meta.count_search > 0)
+    filterHistory.markFiltersValid(this.internalListId, this.meta.count_search > 0)
 
     this.isLoading = false
     this.$events.dispatch(new LoadingEvent(LoadingEvent.STOP_LOADING))

@@ -1,7 +1,13 @@
 <template>
-  <div>Autor FORM</div>
+  <edit-form :model="model">
+    <template #fields>
+      <form-field
+        type="varchar"
+        name="name"
+      />
+    </template>
+  </edit-form>
 </template>
-
 
 <script>
 import { Component, Vue } from 'vue-property-decorator'
@@ -10,8 +16,5 @@ import { Component, Vue } from 'vue-property-decorator'
   props: ['model']
 })
 export default class AuthorForm extends Vue {
-  get author () {
-    return this.model
-  }
 }
 </script>

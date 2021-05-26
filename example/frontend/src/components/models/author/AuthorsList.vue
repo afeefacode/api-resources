@@ -1,6 +1,6 @@
 <template>
   <list-view
-    :config="config"
+    v-bind="$attrs"
     :filters.sync="filters"
     :count.sync="count"
   >
@@ -62,25 +62,12 @@ export default class AuthorsList extends Vue {
   filters = []
   count = 0
 
-  get config () {
-    const api = this.$routeDefinition.config.api
+  get action () {
+    return this.$routeDefinition.config.routing.list.action
+  }
 
-    return {
-      listId: this.listId,
-
-      filterSource: 'route',
-
-      action: api.getAction('Example.AuthorsResource', 'get_authors'),
-
-      fields: {
-        name: true,
-        tags: {
-          name: true,
-          count_users: true
-        },
-        count_articles: true
-      }
-    }
+  get fields () {
+    return this.$routeDefinition.config.routing.list.fields
   }
 
   clickTag (tag) {

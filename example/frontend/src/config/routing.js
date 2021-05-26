@@ -1,18 +1,11 @@
 import App from '@/components/App'
-import ArticleContainer from '@/components/models/article/ArticleContainer'
-import ArticleDetail from '@/components/models/article/ArticleDetail'
-import ArticleForm from '@/components/models/article/ArticleForm'
-import ArticlesList from '@/components/models/article/ArticlesList'
-import AuthorContainer from '@/components/models/author/AuthorContainer'
-import AuthorDetail from '@/components/models/author/AuthorDetail'
-import AuthorForm from '@/components/models/author/AuthorForm'
-import AuthorsList from '@/components/models/author/AuthorsList'
+import { ArticlesConfig } from '@/components/models/article/ArticlesConfig'
+import { AuthorsConfig } from '@/components/models/author/AuthorsConfig'
 import CreateRoute from '@/components/routes/CreateRoute'
 import DetailRoute from '@/components/routes/DetailRoute'
 import EditRoute from '@/components/routes/EditRoute'
 import ListRoute from '@/components/routes/ListRoute'
 import ModelRoute from '@/components/routes/ModelRoute'
-import { Article, Author } from '@/models'
 import { apiResources } from '@afeefa/api-resources-client'
 import { routeConfigPlugin } from '@avue/plugins/route-config/RouteConfigPlugin'
 
@@ -46,6 +39,7 @@ export default routeConfigPlugin
 
   .routes(async ({ROUTE, ROUTESET}) => {
     await apiResources.schemasLoaded()
+    const api = apiResources.getApi('backendApi')
 
     return [
       ROUTE(
@@ -67,14 +61,7 @@ export default routeConfigPlugin
                 detail: 'Autor'
               },
               config: {
-                Model: Author,
-                components: {
-                  list: AuthorsList,
-                  model: AuthorContainer,
-                  detail: AuthorDetail,
-                  new: AuthorForm,
-                  edit: AuthorForm
-                }
+                routing: new AuthorsConfig(api)
               }
             }),
 
@@ -87,14 +74,7 @@ export default routeConfigPlugin
                 detail: 'Artikel'
               },
               config: {
-                Model: Article,
-                components: {
-                  list: [ArticlesList, {filterSource: 'route'}],
-                  model: ArticleContainer,
-                  detail: ArticleDetail,
-                  new: ArticleForm,
-                  edit: ArticleForm
-                }
+                routing: new ArticlesConfig(api)
               },
 
               children: [

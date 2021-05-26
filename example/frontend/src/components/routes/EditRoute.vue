@@ -1,6 +1,5 @@
 <template>
   <div>
-    Changed: {{ changed }}
     <router-link
       class="button"
       :to="model.getLink()"
@@ -49,11 +48,23 @@ export default class EditRoute extends Vue {
   modelToEdit = null
 
   created () {
-    this.modelToEdit = this.model.cloneForEdit()
+    this.modelToEdit = this.model.cloneForEdit(this.fields)
+  }
+
+  get config () {
+    return this.$routeDefinition.config.routing.edit
   }
 
   get Component () {
-    return this.$routeDefinition.config.components.edit
+    return this.config.Component
+  }
+
+  get fields () {
+    return this.config.fields
+  }
+
+  get action () {
+    return this.config.action
   }
 
   async beforeRouteLeave (_to, _from, next) {
@@ -74,13 +85,11 @@ export default class EditRoute extends Vue {
   async save () {
     this.$events.dispatch(new SaveEvent(SaveEvent.START_SAVING))
 
-    const action = this.$refs.form.config.action
-
-    await action.request()
+    await this.action.request()
       .params({
         id: this.model.id
       })
-      .data(this.modelToEdit.serialize())
+      .data(this.modelToEdit.serialize(this.fields))
       .send()
 
     await sleep()
@@ -95,7 +104,7 @@ export default class EditRoute extends Vue {
   }
 
   reset () {
-    this.modelToEdit = this.model.cloneForEdit()
+    this.modelToEdit = this.model.cloneForEdit(this.fields)
   }
 }
 </script>

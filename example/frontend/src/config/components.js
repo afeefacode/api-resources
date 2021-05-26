@@ -8,7 +8,6 @@ import TagList from '@/components/models/tag/TagList'
 import EditForm from '@avue/components/form/EditForm'
 import FormField from '@avue/components/form/FormField'
 import ListFilter from '@avue/components/list/ListFilter'
-import ModelContainer from '@avue/components/routes/ModelContainer'
 import Vue from 'vue'
 
 Vue.component('ListCard', ListCard)
@@ -22,6 +21,5 @@ Vue.component('DetailTitle', DetailTitle)
 Vue.component('ListFilter', ListFilter)
 Vue.component('EditForm', EditForm)
 Vue.component('FormField', FormField)
-Vue.component('ModelContainer', ModelContainer)
 
 Vue.component('TagList', TagList)

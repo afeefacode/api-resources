@@ -24,16 +24,21 @@ export class Model {
             }
         }
     }
-    cloneForEdit() {
+    cloneForEdit(fields) {
         const ModelType = apiResources.getModel(this.type) || Model;
         const model = new ModelType();
+        if (this.id) {
+            model.id = this.id;
+        }
         const type = apiResources.getType(this.type);
         for (const name of Object.keys(type.getUpdateFields())) {
-            model[name] = this[name];
+            if (!fields || fields[name]) {
+                model[name] = this[name];
+            }
         }
         return model;
     }
-    serialize() {
+    serialize(fields) {
         const json = {
             type: this.type
         };
@@ -42,7 +47,9 @@ export class Model {
         }
         const type = apiResources.getType(this.type);
         for (const name of Object.keys(type.getUpdateFields())) {
-            json[name] = this[name];
+            if (!fields || fields[name]) {
+                json[name] = this[name];
+            }
         }
         return json;
     }

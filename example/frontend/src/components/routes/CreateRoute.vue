@@ -4,7 +4,7 @@
       class="button"
       :to="listLink"
     >
-      <v-btn>Ansehen</v-btn>
+      <v-btn>Liste</v-btn>
     </router-link>
 
     <component
@@ -20,7 +20,7 @@ import { Component, Vue } from 'vue-property-decorator'
 @Component
 export default class CreateRoute extends Vue {
   get config () {
-    return this.$routeDefinition.config
+    return this.$routeDefinition.config.routing.new
   }
 
   get listLink () {
@@ -28,7 +28,7 @@ export default class CreateRoute extends Vue {
   }
 
   get Component () {
-    return this.config.components.new
+    return this.config.Component
   }
 
   get model () {

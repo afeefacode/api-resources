@@ -9,6 +9,8 @@ export type ModelJSON = {
   id?: string,
 }
 
+type ModelAttributes = Record<string, unknown>
+
 type ModelConstructor = {
   new (): Model,
   type: string,
@@ -50,19 +52,25 @@ export class Model {
     }
   }
 
-  public cloneForEdit (): Model {
+  public cloneForEdit (fields?: ModelAttributes): Model {
     const ModelType = apiResources.getModel(this.type) || Model
     const model = new ModelType()
 
+    if (this.id) {
+      model.id = this.id
+    }
+
     const type: Type = apiResources.getType(this.type) as Type
     for (const name of Object.keys(type.getUpdateFields())) {
-      model[name] = this[name]
+      if (!fields || fields[name]) {
+        model[name] = this[name]
+      }
     }
 
     return model
   }
 
-  public serialize (): ModelJSON {
+  public serialize (fields?: ModelAttributes): ModelJSON {
     const json: ModelJSON = {
       type: this.type
     }
@@ -73,7 +81,9 @@ export class Model {
 
     const type: Type = apiResources.getType(this.type) as Type
     for (const name of Object.keys(type.getUpdateFields())) {
-      json[name] = this[name] as FieldJSONValue
+      if (!fields || fields[name]) {
+        json[name] = this[name] as FieldJSONValue
+      }
     }
 
     return json

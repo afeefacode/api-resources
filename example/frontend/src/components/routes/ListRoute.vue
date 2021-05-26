@@ -9,7 +9,9 @@
 
     <component
       :is="Component"
-      v-bind="componentProps"
+      filterSource="route"
+      :action="action"
+      :fields="fields"
     />
   </div>
 </template>
@@ -20,7 +22,15 @@ import { Component, Vue } from 'vue-property-decorator'
 @Component
 export default class ListRoute extends Vue {
   get config () {
-    return this.$routeDefinition.config
+    return this.$routeDefinition.config.routing.list
+  }
+
+  get action () {
+    return this.config.action
+  }
+
+  get fields () {
+    return this.config.fields
   }
 
   get newLink () {
@@ -28,13 +38,7 @@ export default class ListRoute extends Vue {
   }
 
   get Component () {
-    const list = this.config.components.list
-    return Array.isArray(list) ? list[0] : list
-  }
-
-  get componentProps () {
-    const list = this.config.components.list
-    return Array.isArray(list) ? list[1] : null
+    return this.config.Component
   }
 }
 </script>
