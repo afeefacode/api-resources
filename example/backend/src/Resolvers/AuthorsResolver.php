@@ -5,6 +5,7 @@ namespace Backend\Resolvers;
 use Afeefa\ApiResources\DB\ActionResolver;
 use Afeefa\ApiResources\DB\RelationResolver;
 use Afeefa\ApiResources\DB\ResolveContext;
+use Afeefa\ApiResources\Exception\Exceptions\ApiException;
 use Afeefa\ApiResources\Model\Model;
 use Afeefa\ApiResources\Model\ModelInterface;
 use Backend\Types\AuthorType;
@@ -140,6 +141,32 @@ class AuthorsResolver
                 );
 
                 return Model::fromSingle(AuthorType::$type, $object);
+            });
+    }
+
+    public function update_author(ActionResolver $r, Medoo $db)
+    {
+        $r
+            ->load(function () use ($r, $db) {
+                $request = $r->getRequest();
+
+                $data = $request->getData();
+                $where = ['id' => $request->getParam('id')];
+
+                $result = $db->update(
+                    'authors',
+                    $data,
+                    $where
+                );
+
+                if ($result === false) {
+                    throw new ApiException(([
+                        'error' => $db->error(),
+                        'query' => $db->log()
+                    ]));
+                }
+
+                return [];
             });
     }
 

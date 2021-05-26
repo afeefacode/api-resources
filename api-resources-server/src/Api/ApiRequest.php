@@ -99,10 +99,10 @@ class ApiRequest implements ContainerAwareInterface, ToSchemaJsonInterface, Json
 
     public function getData(): array
     {
-        return [
-            'title' => $this->data['title'],
-            'summary' => $this->data['summary']
-        ];
+        $data = $this->data;
+        unset($data['id']);
+        unset($data['type']);
+        return $data;
     }
 
     public function fields(array $fields): ApiRequest

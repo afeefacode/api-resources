@@ -71,5 +71,18 @@ class AuthorsResource extends Resource
 
                 ->resolve([AuthorsResolver::class, 'get_author']);
         });
+
+        $actions->add('update_author', function (Action $action) {
+            $action
+                ->params(function (ActionParams $params) {
+                    $params->attribute('id', IdAttribute::class);
+                })
+
+                ->input(AuthorType::class)
+
+                ->response(AuthorType::class)
+
+                ->resolve([AuthorsResolver::class, 'update_author']);
+        });
     }
 }

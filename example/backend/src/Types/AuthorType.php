@@ -7,10 +7,11 @@ use Afeefa\ApiResources\Field\FieldBag;
 use Afeefa\ApiResources\Field\Fields\HasManyRelation;
 use Afeefa\ApiResources\Field\Fields\LinkManyRelation;
 use Afeefa\ApiResources\Field\Fields\VarcharAttribute;
-use Afeefa\ApiResources\Type\Type;
+use Afeefa\ApiResources\Type\ModelType;
+use Afeefa\ApiResources\Validator\Validators\VarcharValidator;
 use Backend\Resolvers\TagsResolver;
 
-class AuthorType extends Type
+class AuthorType extends ModelType
 {
     public static string $type = 'Example.AuthorType';
 
@@ -31,5 +32,20 @@ class AuthorType extends Type
         $fields->relation('tags', TagType::class, function (LinkManyRelation $relation) {
             $relation->resolve([TagsResolver::class, 'resolve_tags_relation']);
         });
+    }
+
+    protected function updateFields(FieldBag $fields): void
+    {
+        $fields->get('name')
+            ->validate(function (VarcharValidator $v) {
+                $v
+                    ->filled()
+                    ->min(5)
+                    ->max(101);
+            });
+
+        $fields->allow([
+            'name'
+        ]);
     }
 }

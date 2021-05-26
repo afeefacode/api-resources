@@ -15,7 +15,7 @@ class RequestedFields implements ContainerAwareInterface, JsonSerializable
     protected Type $type;
 
     /**
-     * @var RequestedFields[]
+     * @var array
      */
     protected array $fields;
 
