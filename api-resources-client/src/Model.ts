@@ -31,6 +31,12 @@ export class Model {
     return model
   }
 
+  public static createForNew (fields: ModelAttributes): Model {
+    const ModelType = this
+    const model = new ModelType()
+    return model
+  }
+
   constructor (type?: string) {
     this.type = type || (this.constructor as ModelConstructor).type
   }

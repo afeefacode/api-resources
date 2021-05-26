@@ -1,3 +1,4 @@
+import ArticleCreateForm from '@/components/models/article/ArticleCreateForm'
 import ArticleDetail from '@/components/models/article/ArticleDetail'
 import ArticleForm from '@/components/models/article/ArticleForm'
 import ArticlesList from '@/components/models/article/ArticlesList'
@@ -64,14 +65,12 @@ export class ArticlesConfig extends RouteConfig {
   new = {
     Model: Article,
 
-    Component: ArticleForm,
+    Component: ArticleCreateForm,
 
     action: this.api.getAction('Example.ArticlesResource', 'create_article'),
 
     fields: {
-      title: true,
-      summary: true,
-      content: true
+      title: true
     }
   }
 }

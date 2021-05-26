@@ -11,6 +11,11 @@ export class Model {
         model.deserialize(json);
         return model;
     }
+    static createForNew(fields) {
+        const ModelType = this;
+        const model = new ModelType();
+        return model;
+    }
     deserialize(json) {
         const type = apiResources.getType(json.type);
         this.id = json.id || null;

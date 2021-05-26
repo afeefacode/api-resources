@@ -11,6 +11,7 @@ export declare class Model {
     id: string | null;
     type: string;
     static create(json: ModelJSON): Model;
+    static createForNew(fields: ModelAttributes): Model;
     constructor(type?: string);
     deserialize(json: ModelJSON): void;
     cloneForEdit(fields?: ModelAttributes): Model;
