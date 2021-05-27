@@ -70,6 +70,7 @@ export class ArticlesConfig extends RouteConfig {
     action: this.api.getAction('Example.ArticlesResource', 'create_article'),
 
     fields: {
+      author: true,
       title: true
     }
   }

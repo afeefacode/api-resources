@@ -1,11 +1,12 @@
 <template>
   <div>
-    <router-link
-      class="button"
-      :to="listLink"
-    >
+    <router-link :to="listLink">
       <v-btn>Liste</v-btn>
     </router-link>
+
+    <p v-if="modelToEdit">
+      JSON {{ json }}
+    </p>
 
     <component
       :is="Component"
@@ -40,23 +41,32 @@ import BaseEditRoute from './base/BaseEditRoute'
 @Component
 export default class CreateRoute extends BaseEditRoute {
   createModelToEdit () {
-    return this.config.Model.createForNew()
+    return this.config.Model.createForNew(this.fields)
   }
 
   get config () {
     return this.$routeDefinition.config.routing.new
   }
 
+  get fields () {
+    return this.config.fields
+  }
+
   get listLink () {
     return this.config.Model.getLink('list')
+  }
+
+  saved (model) {
+    this.ignoreChanged = true
+    this.$router.push(model.getLink('edit'))
   }
 }
 </script>
 
 
 <style lang="scss" scoped>
-.button {
+button {
   display: block;
-  margin-bottom: 2rem;
+  margin: 2rem 0;
 }
 </style>

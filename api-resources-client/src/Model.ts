@@ -1,12 +1,12 @@
 import { apiResources } from './ApiResources'
-import { FieldJSONValue } from './field/Field'
+import { FieldJSONValue, FieldValue } from './field/Field'
 import { Relation } from './field/Relation'
 import { Type } from './type/Type'
 
 export type ModelJSON = {
   [key: string]: FieldJSONValue | undefined,
   type: string
-  id?: string,
+  id?: string | null,
 }
 
 type ModelAttributes = Record<string, unknown>
@@ -34,6 +34,14 @@ export class Model {
   public static createForNew (fields: ModelAttributes): Model {
     const ModelType = this
     const model = new ModelType()
+
+    const type: Type = apiResources.getType(this.type) as Type
+    for (const [name, field] of Object.entries(type.getCreateFields())) {
+      if (fields[name]) {
+        model[name] = field.default()
+      }
+    }
+
     return model
   }
 
@@ -86,9 +94,9 @@ export class Model {
     }
 
     const type: Type = apiResources.getType(this.type) as Type
-    for (const name of Object.keys(type.getUpdateFields())) {
+    for (const [name, field] of Object.entries(type.getUpdateFields())) {
       if (!fields || fields[name]) {
-        json[name] = this[name] as FieldJSONValue
+        json[name] = field.serialize(this[name] as FieldValue)
       }
     }
 

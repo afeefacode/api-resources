@@ -48,4 +48,11 @@ class AuthorType extends ModelType
             'name'
         ]);
     }
+
+    protected function createFields(FieldBag $fields): void
+    {
+        $fields->allow([
+            'name'
+        ]);
+    }
 }

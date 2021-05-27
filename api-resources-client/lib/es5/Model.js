@@ -14,6 +14,12 @@ export class Model {
     static createForNew(fields) {
         const ModelType = this;
         const model = new ModelType();
+        const type = apiResources.getType(this.type);
+        for (const [name, field] of Object.entries(type.getCreateFields())) {
+            if (fields[name]) {
+                model[name] = field.default();
+            }
+        }
         return model;
     }
     deserialize(json) {
@@ -51,9 +57,9 @@ export class Model {
             json.id = this.id;
         }
         const type = apiResources.getType(this.type);
-        for (const name of Object.keys(type.getUpdateFields())) {
+        for (const [name, field] of Object.entries(type.getUpdateFields())) {
             if (!fields || fields[name]) {
-                json[name] = this[name];
+                json[name] = field.serialize(this[name]);
             }
         }
         return json;

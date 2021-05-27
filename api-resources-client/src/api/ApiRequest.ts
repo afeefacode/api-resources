@@ -19,7 +19,7 @@ export class ApiRequest {
   private _data!: Record<string, unknown>
 
   private _lastRequestJSON: string = ''
-  private _lastRequest!: Promise<ApiResponse>
+  private _lastRequest!: Promise<ApiResponse | boolean>
 
   constructor (json?: ApiRequestJSON) {
     if (json) {
@@ -64,7 +64,7 @@ export class ApiRequest {
     return this
   }
 
-  public send (): Promise<ApiResponse> {
+  public send (): Promise<ApiResponse | boolean> {
     const params = this.serialize()
 
     if (this._lastRequestJSON === JSON.stringify(params)) {
@@ -78,6 +78,9 @@ export class ApiRequest {
     const request = axios.post(url, params)
       .then(result => {
         return new ApiResponse(new ApiRequest(), result)
+      })
+      .catch(() => {
+        return false
       })
 
     this._lastRequest = request

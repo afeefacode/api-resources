@@ -1,9 +1,6 @@
 <template>
   <div>
-    <router-link
-      class="button"
-      :to="model.getLink()"
-    >
+    <router-link :to="model.getLink()">
       <v-btn>Ansehen</v-btn>
     </router-link>
 

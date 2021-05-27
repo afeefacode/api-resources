@@ -8,6 +8,7 @@ export default class BaseEditRoute extends Vue {
   valid = false
   changed = false
   modelToEdit = null
+  ignoreChanged = false
 
   created () {
     this.modelToEdit = this.createModelToEdit()
@@ -34,7 +35,7 @@ export default class BaseEditRoute extends Vue {
   }
 
   async beforeRouteLeave (_to, _from, next) {
-    if (this.changed) {
+    if (!this.ignoreChanged && this.changed) {
       const result = await this.$events.dispatch(new DialogEvent(DialogEvent.SHOW, {
         title: 'Änderungen verwerfen?',
         message: 'Im Formular sind nicht gespeicherte Änderungen. Sollen diese verworfen werden?',
@@ -52,10 +53,14 @@ export default class BaseEditRoute extends Vue {
     return {}
   }
 
+  get json () {
+    return this.modelToEdit.serialize(this.fields)
+  }
+
   async save () {
     this.$events.dispatch(new SaveEvent(SaveEvent.START_SAVING))
 
-    await this.action.request()
+    const result = await this.action.request()
       .params(this.saveParams)
       .data(this.modelToEdit.serialize(this.fields))
       .send()
@@ -64,15 +69,28 @@ export default class BaseEditRoute extends Vue {
 
     this.$events.dispatch(new SaveEvent(SaveEvent.STOP_SAVING))
 
-    this.$events.dispatch(new AlertEvent(AlertEvent.MESSAGE, {
-      message: 'Die Daten wurden gespeichert.'
-    }))
+    if (result) {
+      this.$events.dispatch(new AlertEvent(AlertEvent.MESSAGE, {
+        message: 'Die Daten wurden gespeichert.'
+      }))
 
-    this.$emitOnParent('update:model')
+      this.$emitOnParent('update:model')
+
+      const model = result.data
+      this.saved(model)
+    } else {
+      this.$events.dispatch(new AlertEvent(AlertEvent.ERROR, {
+        message: 'Die Daten wurden nicht gespeichert.'
+      }))
+    }
   }
 
   reset () {
     this.modelToEdit = this.createModelToEdit()
+  }
+
+  saved (model) {
+    console.log('saved', model)
   }
 }
 </script>

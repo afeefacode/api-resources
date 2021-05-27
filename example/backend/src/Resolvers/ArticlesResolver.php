@@ -196,13 +196,13 @@ class ArticlesResolver
                 $data = $request->getData();
                 $where = ['id' => $request->getParam('id')];
 
-                $result = $db->update(
+                $stmt = $db->update(
                     'articles',
                     $data,
                     $where
                 );
 
-                if ($result === false) {
+                if ($stmt->errorCode() !== '00000') {
                     throw new ApiException(([
                         'error' => $db->error(),
                         'query' => $db->log()
@@ -210,6 +210,32 @@ class ArticlesResolver
                 }
 
                 return [];
+            });
+    }
+
+    public function create_article(ActionResolver $r, Medoo $db)
+    {
+        $r
+            ->load(function () use ($r, $db) {
+                $request = $r->getRequest();
+
+                $data = $request->getData();
+
+                $stmt = $db->insert(
+                    'articles',
+                    $data
+                );
+
+                if ($stmt->errorCode() !== '00000') {
+                    throw new ApiException(([
+                        'error' => $db->error(),
+                        'query' => $db->log()
+                    ]));
+                }
+
+                return Model::fromSingle(ArticleType::$type, [
+                    'id' => $db->id()
+                ]);
             });
     }
 

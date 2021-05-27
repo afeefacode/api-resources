@@ -46,6 +46,9 @@ export class ApiRequest {
         const request = axios.post(url, params)
             .then(result => {
             return new ApiResponse(new ApiRequest(), result);
+        })
+            .catch(() => {
+            return false;
         });
         this._lastRequest = request;
         return request;

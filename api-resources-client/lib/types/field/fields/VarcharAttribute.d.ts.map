@@ -1,1 +1,1 @@
-{"version":3,"file":"VarcharAttribute.d.ts","sourceRoot":"","sources":["../../../../src/field/fields/VarcharAttribute.ts"],"names":[],"mappings":"AAAA,OAAO,EAAE,SAAS,EAAE,MAAM,cAAc,CAAA;AAExC,qBAAa,gBAAiB,SAAQ,SAAS;IAC7C,OAAc,IAAI,EAAE,MAAM,CAA4B;CACvD"}
+{"version":3,"file":"VarcharAttribute.d.ts","sourceRoot":"","sources":["../../../../src/field/fields/VarcharAttribute.ts"],"names":[],"mappings":"AAAA,OAAO,EAAE,SAAS,EAAE,MAAM,cAAc,CAAA;AACxC,OAAO,EAAE,UAAU,EAAE,MAAM,UAAU,CAAA;AAErC,qBAAa,gBAAiB,SAAQ,SAAS;IAC7C,OAAc,IAAI,EAAE,MAAM,CAA4B;IAE/C,OAAO,IAAK,UAAU;CAG9B"}

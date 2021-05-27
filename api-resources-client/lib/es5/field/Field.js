@@ -15,6 +15,9 @@ export class Field {
     getValidator() {
         return this._validator;
     }
+    default() {
+        return null;
+    }
     deserialize(value) {
         return value;
     }
@@ -26,6 +29,9 @@ export class Field {
             const validator = apiResources.getValidator(json.type);
             if (validator) {
                 this._validator = validator.createFieldValidator(fieldName, json);
+            }
+            else {
+                console.warn('No field validator of type', json.type);
             }
         }
     }

@@ -1,20 +1,7 @@
 <template>
-  <edit-form :model="model">
+  <edit-form v-bind="$attrs">
     <template #fields>
-      <form-field
-        type="varchar"
-        name="name"
-      />
+      <form-field name="name" />
     </template>
   </edit-form>
 </template>
-
-<script>
-import { Component, Vue } from 'vue-property-decorator'
-
-@Component({
-  props: ['model']
-})
-export default class AuthorForm extends Vue {
-}
-</script>

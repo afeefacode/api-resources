@@ -8,9 +8,11 @@ use Afeefa\ApiResources\Field\Fields\DateAttribute;
 use Afeefa\ApiResources\Field\Fields\HasManyRelation;
 use Afeefa\ApiResources\Field\Fields\LinkManyRelation;
 use Afeefa\ApiResources\Field\Fields\LinkOneRelation;
+use Afeefa\ApiResources\Field\Fields\TextAttribute;
 use Afeefa\ApiResources\Field\Fields\VarcharAttribute;
 use Afeefa\ApiResources\Model\Model;
 use Afeefa\ApiResources\Type\ModelType;
+use Afeefa\ApiResources\Validator\Validators\LinkOneValidator;
 use Afeefa\ApiResources\Validator\Validators\VarcharValidator;
 use Backend\Resolvers\AuthorsResolver;
 use Backend\Resolvers\CommentsResolver;
@@ -24,9 +26,9 @@ class ArticleType extends ModelType
     {
         $fields->attribute('title', VarcharAttribute::class);
 
-        $fields->attribute('summary', VarcharAttribute::class);
+        $fields->attribute('summary', TextAttribute::class);
 
-        $fields->attribute('content', VarcharAttribute::class);
+        $fields->attribute('content', TextAttribute::class);
 
         $fields->attribute('date', DateAttribute::class);
 
@@ -93,7 +95,8 @@ class ArticleType extends ModelType
             'summary',
             'content',
             'date',
-            'tags'
+            'tags',
+            'author'
         ]);
     }
 
@@ -102,12 +105,15 @@ class ArticleType extends ModelType
         $fields->get('title')
             ->required()
             ->validate(function (VarcharValidator $v) {
-                $v->min(20);
+                $v->min(2);
                 $v->max(50);
             });
 
         $fields->get('author')
-            ->required();
+            ->required()
+            ->validate(function (LinkOneValidator $v) {
+                $v->filled();
+            });
 
         $fields->allow([
             'title',

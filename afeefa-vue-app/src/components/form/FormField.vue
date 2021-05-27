@@ -1,6 +1,6 @@
 <template>
-  <div>
-    <template v-if="type === 'varchar'">
+  <div v-if="field">
+    <template v-if="field.type === 'Afeefa.VarcharAttribute'">
       <a-text-field
         v-model="model[name]"
         :label="name"
@@ -8,13 +8,30 @@
       />
     </template>
 
-    <template v-if="type === 'text'">
+    <template v-if="field.type === 'Afeefa.TextAttribute'">
       <a-text-area
         v-model="model[name]"
         :label="name"
         :validator="validator"
       />
     </template>
+
+    <template v-if="field.type === 'Afeefa.LinkOneRelation'">
+      <a-select
+        v-model="model[name]"
+        :label="name"
+        :items="options"
+        itemText="itemTitle"
+        itemValue="itemValue"
+        :clearable="clearable && model[name] !== null"
+        :validator="validator"
+        v-bind="$attrs"
+      />
+    </template>
+  </div>
+
+  <div v-else>
+    Form field {{ name }} not configured in api schema
   </div>
 </template>
 
@@ -24,7 +41,7 @@ import { Component, Vue } from 'vue-property-decorator'
 import { apiResources } from '@afeefa/api-resources-client'
 
 @Component({
-  props: ['type', 'name']
+  props: ['name', 'options', 'clearable']
 })
 export default class FormField extends Vue {
   get model () {
@@ -36,7 +53,7 @@ export default class FormField extends Vue {
   }
 
   get field () {
-    const fields = this.modelType.getUpdateFields()
+    const fields = this.model.id ? this.modelType.getUpdateFields() : this.modelType.getCreateFields()
     return fields[this.name]
   }
 

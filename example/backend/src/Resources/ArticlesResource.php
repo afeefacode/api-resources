@@ -95,7 +95,9 @@ class ArticlesResource extends ModelResource
             $action
                 ->input(ArticleType::class)
 
-                ->response(ArticleType::class);
+                ->response(ArticleType::class)
+
+                ->resolve([ArticlesResolver::class, 'create_article']);
         });
 
         $actions->add('update_article', function (Action $action) {

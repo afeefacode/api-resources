@@ -56,10 +56,11 @@ export default class KSelect extends Vue {
     if (this.validator) {
       this.$nextTick(() => {
         const valid = this.$refs.select.validate(true)
+        const value = this.$refs.select.value
 
-        if (!valid) {
+        if (value && !valid) {
           this.$refs.select.selectedItems = [{
-            text: 'Ungültiger Wert'
+            itemTitle: 'Ungültiger Wert'
           }]
         }
       })

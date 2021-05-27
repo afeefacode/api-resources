@@ -2,7 +2,7 @@ import { FieldJSONValue } from './field/Field';
 export declare type ModelJSON = {
     [key: string]: FieldJSONValue | undefined;
     type: string;
-    id?: string;
+    id?: string | null;
 };
 declare type ModelAttributes = Record<string, unknown>;
 export declare class Model {

@@ -19,7 +19,7 @@
     </template>
 
     <template v-if="filter.type === 'Afeefa.OrderFilter'">
-      <v-select
+      <a-select
         v-model="filter.value"
         :label="filter.name"
         :items="orderItems"

@@ -13,6 +13,7 @@ export declare class Field {
     newInstance<T>(): T;
     createTypeField(name: string, json: FieldJSON): Field;
     getValidator(): Validator | null;
+    default(): FieldValue;
     deserialize(value: FieldJSONValue): FieldValue;
     serialize(value: FieldValue): FieldJSONValue;
     protected setupTypeFieldValidator(fieldName: string, json: ValidatorJSON): void;

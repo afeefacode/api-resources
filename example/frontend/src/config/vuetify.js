@@ -1,4 +1,5 @@
 import {
+  mdiAlarmLightOutline,
   mdiChevronRight,
   mdiClose,
   mdiThumbUpOutline
@@ -14,6 +15,7 @@ export default new Vuetify({
     values: {
       chevronRightIcon: mdiChevronRight,
       thumbsUpIcon: mdiThumbUpOutline,
+      alarmIcon: mdiAlarmLightOutline,
       closeIcon: mdiClose
     }
   },

@@ -22,7 +22,7 @@ export declare class ApiRequest {
     filters(filters: Record<string, unknown>): ApiRequest;
     params(params: Record<string, unknown>): ApiRequest;
     data(data: Record<string, unknown>): ApiRequest;
-    send(): Promise<ApiResponse>;
+    send(): Promise<ApiResponse | boolean>;
     protected serialize(): object;
 }
 //# sourceMappingURL=ApiRequest.d.ts.map

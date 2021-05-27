@@ -43,6 +43,7 @@
     <template #model="{ model: article }">
       <list-card>
         <list-meta>
+          Artikel #{{ article.id }}
           |
           von
           <router-link :to="article.author.getLink()">
