@@ -27,11 +27,11 @@
 
 
 <script>
-import { Component } from 'vue-property-decorator'
-import BaseListView from '@avue/components/list/ListView'
+import { Component, Mixins } from 'vue-property-decorator'
+import ListViewMixin from '@avue/components/list/ListViewMixin'
 
 @Component
-export default class ListView extends BaseListView {
+export default class ListView extends Mixins(ListViewMixin) {
 }
 </script>
 

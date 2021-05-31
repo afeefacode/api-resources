@@ -1,13 +1,13 @@
-<script>
-import { Component, Vue, Watch } from 'vue-property-decorator'
 import { filterHistory } from '@afeefa/api-resources-client'
+import { Component, Vue, Watch } from 'vue-property-decorator'
+
 import { RouteQuerySource } from '../../api-resources/RouteQuerySource'
 import { LoadingEvent } from '../loading-indicator/LoadingEvent'
 
 @Component({
   props: ['listId', 'filterSource', 'action', 'fields']
 })
-export default class ListView extends Vue {
+export default class ListViewMixin extends Vue {
   models = []
   meta = {}
   requestFilters = null
@@ -45,6 +45,11 @@ export default class ListView extends Vue {
   routeNameChanged () {
     this.init()
   }
+
+  // @Watch('$route.query')
+  // routeQueryChanged () {
+  //   console.log('route query changed', this.$route.query)
+  // }
 
   filtersChanged () {
     this.load()
@@ -88,11 +93,3 @@ export default class ListView extends Vue {
     this.$emit('update:count', this.meta.count_search)
   }
 }
-</script>
-
-
-<style lang="scss" scoped>
-.filters {
-  margin-bottom: 3rem;
-}
-</style>
