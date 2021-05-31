@@ -90,7 +90,6 @@ export default class BaseEditRoute extends Vue {
   }
 
   saved (model) {
-    console.log('saved', model)
   }
 }
 </script>
