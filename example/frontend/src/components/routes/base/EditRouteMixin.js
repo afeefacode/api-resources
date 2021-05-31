@@ -1,10 +1,9 @@
-<script>
-import { Component, Vue } from 'vue-property-decorator'
 import { AlertEvent, DialogEvent, SaveEvent } from '@avue/events'
 import { sleep } from '@avue/utils/timeout'
+import { Component, Vue } from 'vue-property-decorator'
 
 @Component
-export default class BaseEditRoute extends Vue {
+export default class EditRouteMixin extends Vue {
   valid = false
   changed = false
   modelToEdit = null
@@ -92,12 +91,3 @@ export default class BaseEditRoute extends Vue {
   saved (model) {
   }
 }
-</script>
-
-
-<style lang="scss" scoped>
-button {
-  display: block;
-  margin: 2rem 0;
-}
-</style>

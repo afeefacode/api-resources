@@ -31,13 +31,13 @@
 </template>
 
 <script>
-import { Component } from 'vue-property-decorator'
-import BaseEditRoute from './base/BaseEditRoute'
+import { Component, Mixins } from 'vue-property-decorator'
+import EditRouteMixin from './base/EditRouteMixin'
 
 @Component({
   props: ['model']
 })
-export default class EditRoute extends BaseEditRoute {
+export default class EditRoute extends Mixins(EditRouteMixin) {
   createModelToEdit () {
     return this.model.cloneForEdit(this.fields)
   }
