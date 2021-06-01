@@ -1,11 +1,10 @@
-import { Action } from 'src/action/Action';
-import { BaseQuerySource } from './BaseQuerySource';
 import { RequestFilters } from './RequestFilters';
 declare class FilterHistory {
     private filters;
-    private validFilters;
-    createRequestFilters(listId: string, action: Action, querySource: BaseQuerySource): RequestFilters;
-    markFiltersValid(listId: string, valid: boolean): void;
+    hasFilters(historyKey: string): boolean;
+    getFilters(historyKey: string): RequestFilters;
+    addFilters(historyKey: string, filters: RequestFilters): void;
+    removeFilters(historyKey: string): void;
 }
 export declare const filterHistory: FilterHistory;
 export {};

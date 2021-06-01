@@ -40,13 +40,8 @@ export class Action {
     getFilters() {
         return this._filters;
     }
-    createRequestFilters(querySource) {
-        const filters = new RequestFilters(querySource);
-        for (const [name, filter] of Object.entries(this._filters)) {
-            filters.add(name, filter.createRequestFilter(filters));
-        }
-        filters.initFromQuerySource();
-        return filters;
+    createRequestFilters(historyKey, querySource) {
+        return RequestFilters.create(this._filters, historyKey, querySource);
     }
     request() {
         return new ApiRequest()

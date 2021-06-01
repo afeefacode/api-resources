@@ -1,21 +1,22 @@
-import { Action } from 'src/action/Action'
-
-import { BaseQuerySource } from './BaseQuerySource'
 import { RequestFilters } from './RequestFilters'
 
 class FilterHistory {
   private filters: Record<string, RequestFilters> = {}
-  private validFilters: Record<string, boolean> = {}
 
-  public createRequestFilters (listId: string, action: Action, querySource: BaseQuerySource): RequestFilters {
-    if (!this.filters[listId] || this.validFilters[listId] === false) {
-      this.filters[listId] = action.createRequestFilters(querySource)
-    }
-    return this.filters[listId]!
+  public hasFilters (historyKey: string): boolean {
+    return !!this.filters[historyKey]
   }
 
-  public markFiltersValid (listId: string, valid: boolean): void {
-    this.validFilters[listId] = valid
+  public getFilters (historyKey: string): RequestFilters {
+    return this.filters[historyKey]!
+  }
+
+  public addFilters (historyKey: string, filters: RequestFilters): void {
+    this.filters[historyKey] = filters
+  }
+
+  public removeFilters (historyKey: string): void {
+    delete this.filters[historyKey]
   }
 }
 

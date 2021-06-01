@@ -15,6 +15,7 @@ export declare type ActionJSON = {
         type: string;
     };
 };
+export declare type ActionFilters = Record<string, Filter>;
 export declare class Action {
     private _resource;
     private _name;
@@ -24,8 +25,8 @@ export declare class Action {
     private _filters;
     constructor(resource: Resource, name: string, json: ActionJSON);
     getName(): string;
-    getFilters(): Record<string, Filter>;
-    createRequestFilters(querySource?: BaseQuerySource): RequestFilters;
+    getFilters(): ActionFilters;
+    createRequestFilters(historyKey?: string, querySource?: BaseQuerySource): RequestFilters;
     request(): ApiRequest;
     getResource(): Resource;
     getApi(): Api;

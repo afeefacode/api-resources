@@ -1,16 +1,18 @@
 class FilterHistory {
     constructor() {
         this.filters = {};
-        this.validFilters = {};
     }
-    createRequestFilters(listId, action, querySource) {
-        if (!this.filters[listId] || this.validFilters[listId] === false) {
-            this.filters[listId] = action.createRequestFilters(querySource);
-        }
-        return this.filters[listId];
+    hasFilters(historyKey) {
+        return !!this.filters[historyKey];
     }
-    markFiltersValid(listId, valid) {
-        this.validFilters[listId] = valid;
+    getFilters(historyKey) {
+        return this.filters[historyKey];
+    }
+    addFilters(historyKey, filters) {
+        this.filters[historyKey] = filters;
+    }
+    removeFilters(historyKey) {
+        delete this.filters[historyKey];
     }
 }
 export const filterHistory = new FilterHistory();

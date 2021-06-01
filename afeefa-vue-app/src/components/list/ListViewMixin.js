@@ -1,4 +1,3 @@
-import { filterHistory } from '@afeefa/api-resources-client'
 import { Component, Vue, Watch } from 'vue-property-decorator'
 
 import { RouteQuerySource } from '../../api-resources/RouteQuerySource'
@@ -29,27 +28,20 @@ export default class ListViewMixin extends Vue {
       this.requestFilters.off('change', this.filtersChanged)
     }
 
-    this.requestFilters = filterHistory.createRequestFilters(
-      this.internalListId,
-      this.action,
-      this.filterSource === 'route' ? new RouteQuerySource(this.$router) : null
-    )
+    const querySource = this.filterSource === 'route' ? new RouteQuerySource(this.$router) : undefined
+    this.requestFilters = this.action.createRequestFilters(this.internalListId, querySource)
 
     this.$emit('update:filters', this.requestFilters.getFilters())
 
     this.requestFilters.on('change', this.filtersChanged)
-    this.filtersChanged()
+
+    this.load()
   }
 
-  @Watch('$route.name')
-  routeNameChanged () {
-    this.init()
+  @Watch('$route.query')
+  routeQueryChanged () {
+    this.requestFilters.querySourceChanged()
   }
-
-  // @Watch('$route.query')
-  // routeQueryChanged () {
-  //   console.log('route query changed', this.$route.query)
-  // }
 
   filtersChanged () {
     this.load()
@@ -82,9 +74,7 @@ export default class ListViewMixin extends Vue {
     this.models = result.data
     this.meta = result.meta
 
-    this.requestFilters.initFromUsed(this.meta.used_filters)
-
-    filterHistory.markFiltersValid(this.internalListId, this.meta.count_search > 0)
+    this.requestFilters.initFromUsed(this.meta.used_filters, this.meta.count_search)
 
     this.isLoading = false
     this.$events.dispatch(new LoadingEvent(LoadingEvent.STOP_LOADING))

@@ -20,13 +20,15 @@ export type ActionJSON = {
   },
 }
 
+export type ActionFilters = Record<string, Filter>
+
 export class Action {
   private _resource: Resource
   private _name: string
   private _response: ActionResponse | null = null
   private _params: Record<string, ActionParam> = {}
   private _input: ActionInput | null = null
-  private _filters: Record<string, Filter> = {}
+  private _filters: ActionFilters = {}
 
   constructor (resource: Resource, name: string, json: ActionJSON) {
     this._resource = resource
@@ -62,17 +64,12 @@ export class Action {
     return this._name
   }
 
-  public getFilters (): Record<string, Filter> {
+  public getFilters (): ActionFilters {
     return this._filters
   }
 
-  public createRequestFilters (querySource?: BaseQuerySource): RequestFilters {
-    const filters = new RequestFilters(querySource)
-    for (const [name, filter] of Object.entries(this._filters)) {
-      filters.add(name, filter.createRequestFilter(filters))
-    }
-    filters.initFromQuerySource()
-    return filters
+  public createRequestFilters (historyKey?: string, querySource?: BaseQuerySource): RequestFilters {
+    return RequestFilters.create(this._filters, historyKey, querySource)
   }
 
   public request (): ApiRequest {

@@ -1,3 +1,5 @@
+import { ActionFilters } from '../action/Action'
+import { filterHistory } from '../filter/FilterHistory'
 import { BaseQuerySource, QuerySource } from './BaseQuerySource'
 import { Filter, FilterValueType } from './Filter'
 import { FilterChangeEvent } from './FilterChangeEvent'
@@ -6,8 +8,17 @@ import { ObjectQuerySource } from './ObjectQuerySource'
 export type Filters = Record<string, Filter>
 export type UsedFilters = Record<string, FilterValueType>
 
+/**
+ * Request filters do have multiple change entry points:
+ * - create: read existing query string and init filter values -> consumer should initially LOAD
+ * - get from history: consumer should initially LOAD
+ * - click: update filter values and update query string  -> RELOAD
+ * - query changed: update filter values -> RELOAD
+ * - init used filters: update filter values and update query string
+ */
 export class RequestFilters {
-  private _filters: Record<string, Filter> = {}
+  private _filters: Filters = {}
+  private _historyKey?: string
   private _querySource: BaseQuerySource
 
   private _lastQuery: QuerySource = {}
@@ -15,35 +26,33 @@ export class RequestFilters {
 
   private _eventTarget: EventTarget = new EventTarget()
 
-  constructor (querySource?: BaseQuerySource) {
+  public static create (filters: ActionFilters, historyKey?: string, querySource?: BaseQuerySource): RequestFilters {
+    let requestFilters: RequestFilters
+    querySource = querySource || new ObjectQuerySource({})
+
+    if (historyKey) {
+      if (filterHistory.hasFilters(historyKey)) {
+        requestFilters = filterHistory.getFilters(historyKey)
+      } else {
+        requestFilters = new RequestFilters(filters, historyKey, querySource)
+        filterHistory.addFilters(historyKey, requestFilters)
+      }
+    } else {
+      requestFilters = new RequestFilters(filters, undefined, querySource)
+    }
+
+    return requestFilters
+  }
+
+  constructor (filters: ActionFilters, historyKey?: string, querySource?: BaseQuerySource) {
+    this._historyKey = historyKey
     this._querySource = querySource || new ObjectQuerySource({})
-  }
 
-  public querySource (querySource: BaseQuerySource): void {
-    this._querySource = querySource
-  }
+    for (const [name, filter] of Object.entries(filters)) {
+      this._filters[name] = filter.createRequestFilter(this)
+    }
 
-  public add (name: string, filter: Filter): void {
-    this._filters[name] = filter
-  }
-
-  public getFilters (): Record<string, Filter> {
-    return this._filters
-  }
-
-  public hasFilter (name: string): boolean {
-    return !!this._filters[name]
-  }
-
-  public getQuerySource (): BaseQuerySource {
-    return this._querySource
-  }
-
-  public initFromUsed (usedFilters: UsedFilters): void {
-    this._disableUpdates = true
-    Object.values(this._filters).forEach(f => f.initFromUsed(usedFilters))
-    this._disableUpdates = false
-    this.pushToQuerySource()
+    this.initFromQuerySource()
   }
 
   public on (type: string, handler: () => {}): void {
@@ -54,45 +63,45 @@ export class RequestFilters {
     this._eventTarget.removeEventListener(type, handler)
   }
 
-  public valueChanged (filters: Filters): void {
+  public getFilters (): Filters {
+    return this._filters
+  }
+
+  public initFromUsed (usedFilters: UsedFilters, count: number): void {
+    // disable valueChanged() upon f.initFromUsed()
+    this._disableUpdates = true
+    Object.values(this._filters).forEach(f => f.initFromUsed(usedFilters))
+    this._disableUpdates = false
+
+    // push to query source here since updates are disabled in valueChanged()
+    this.pushToQuerySource()
+
+    if (this._historyKey && !count) {
+      filterHistory.removeFilters(this._historyKey)
+    }
+  }
+
+  public querySourceChanged (): void {
+    const query = this._querySource.getQuery()
+
+    if (JSON.stringify(this._lastQuery) === JSON.stringify(query)) {
+      return
+    }
+
+    this.initFromQuerySource()
+
+    this.dispatchUpdate()
+  }
+
+  public valueChanged (_filters: Filters): void {
+    // update events are disabled if initialized from used filters
     if (this._disableUpdates) {
       return
     }
-    this._eventTarget.dispatchEvent(new FilterChangeEvent('change', filters))
-  }
 
-  public initFromQuerySource (): boolean {
-    const query = this._querySource.getQuery()
+    this.pushToQuerySource()
 
-    // skip initial filters
-    if (JSON.stringify(this._lastQuery) === JSON.stringify(query)) {
-      // console.warn('same query')
-      // console.log(JSON.stringify(this._lastQuery), JSON.stringify(query))
-      return false
-    }
-
-    // console.log(JSON.stringify(this._lastQuery), JSON.stringify(query))
-
-    for (const filter of Object.values(this._filters)) {
-      filter.initFromQuerySource(query)
-    }
-
-    this._lastQuery = query
-
-    return true
-  }
-
-  public pushToQuerySource (): void {
-    const query = Object.values(this._filters).reduce((map: QuerySource, filter: Filter) => {
-      return {
-        ...map,
-        ...filter.toQuerySource()
-      }
-    }, {})
-
-    this._querySource.push(query)
-
-    this._lastQuery = query
+    this.dispatchUpdate()
   }
 
   public reset (): void {
@@ -115,5 +124,32 @@ export class RequestFilters {
         ...filter.serialize()
       }
     }, options)
+  }
+
+  private dispatchUpdate (): void {
+    this._eventTarget.dispatchEvent(new FilterChangeEvent('change', {}))
+  }
+
+  private initFromQuerySource (): void {
+    const query = this._querySource.getQuery()
+
+    for (const filter of Object.values(this._filters)) {
+      filter.initFromQuerySource(query)
+    }
+
+    this._lastQuery = query
+  }
+
+  private pushToQuerySource (): void {
+    const query = Object.values(this._filters).reduce((map: QuerySource, filter: Filter) => {
+      return {
+        ...map,
+        ...filter.toQuerySource()
+      }
+    }, {})
+
+    this._querySource.push(query)
+
+    this._lastQuery = query
   }
 }
