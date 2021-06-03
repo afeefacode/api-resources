@@ -9,7 +9,6 @@
 
     <component
       :is="Component"
-      filterSource="route"
       :action="action"
       :fields="fields"
     />

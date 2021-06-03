@@ -16,6 +16,7 @@
 
     <articles-list
       :listId="model.id + '.articles'"
+      :filterSource="filterSource"
       :action="articlesAction"
       :fields="articlesFields"
     />
@@ -27,6 +28,7 @@
 import { Component, Vue } from 'vue-property-decorator'
 import ArticlesList from '@/components/models/article/ArticlesList'
 import { ArticlesConfig } from '../article/ArticlesConfig'
+import { QuerySourceType } from '@avue/components/list/QuerySourceType'
 
 @Component({
   props: ['model'],
@@ -35,6 +37,8 @@ import { ArticlesConfig } from '../article/ArticlesConfig'
   }
 })
 export default class AuthorDetail extends Vue {
+  filterSource = QuerySourceType.OBJECT
+
   get author () {
     return this.model
   }
