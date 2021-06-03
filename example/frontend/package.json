@@ -6,8 +6,8 @@
     "inspect": "npm run --prefix node_modules/@afeefa/vue2-bootstrap inspect"
   },
   "dependencies": {
-    "@afeefa/afeefa-vue-app": "file:../../afeefa-vue-app",
     "@afeefa/api-resources-client": "file:../../api-resources-client",
+    "@afeefa/vue-app": "^0",
     "@afeefa/vue2-bootstrap": "^1.0",
     "@mdi/js": "^5.9.55",
     "axios": "^0.21.1",

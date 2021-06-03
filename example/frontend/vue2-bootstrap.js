@@ -22,11 +22,11 @@ module.exports = {
   ],
 
   aliases: {
-    '@avue': path.resolve(__dirname, 'node_modules/@afeefa/afeefa-vue-app/src')
+    '@avue': path.resolve(__dirname, 'node_modules/@afeefa/vue-app/src')
   },
 
   transpileDependencies: [
     'vuetify',
-    '@afeefa/afeefa-vue-app'
+    '@afeefa/vue-app'
   ]
 }
