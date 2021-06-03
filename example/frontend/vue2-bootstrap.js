@@ -15,14 +15,15 @@ module.exports = {
     new VuetifyLoaderPlugin({
       match (originalTag, { kebabTag, camelTag, path, component }) {
         if (kebabTag.startsWith('a-')) {
-          return [camelTag, `import ${camelTag} from '@avue/components/${camelTag}'`]
+          return [camelTag, `import ${camelTag} from '@a-vue/components/${camelTag}'`]
         }
       }
     })
   ],
 
   aliases: {
-    '@avue': path.resolve(__dirname, 'node_modules/@afeefa/vue-app/src')
+    '@a-vue': path.resolve(__dirname, 'node_modules/@afeefa/vue-app/src'),
+    '@a-admin': path.resolve(__dirname, 'node_modules/@afeefa/vue-app/src-admin')
   },
 
   transpileDependencies: [

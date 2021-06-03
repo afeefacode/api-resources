@@ -1,9 +1,10 @@
-import ArticleCreateForm from '@/components/models/article/ArticleCreateForm'
-import ArticleDetail from '@/components/models/article/ArticleDetail'
-import ArticleForm from '@/components/models/article/ArticleForm'
-import ArticlesList from '@/components/models/article/ArticlesList'
 import { Article } from '@/models'
-import { RouteConfig } from '@/routes/RouteConfig'
+import { RouteConfig } from '@a-admin/routes/RouteConfig'
+
+import ArticleCreateForm from './ArticleCreateForm'
+import ArticleDetail from './ArticleDetail'
+import ArticleForm from './ArticleForm'
+import ArticlesList from './ArticlesList'
 
 export class ArticlesConfig extends RouteConfig {
   model = {

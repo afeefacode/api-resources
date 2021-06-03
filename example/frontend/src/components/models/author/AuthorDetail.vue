@@ -15,7 +15,7 @@
     <h2>Artikel</h2>
 
     <articles-list
-      :listId="model.id + '.articles'"
+      :filterHistoryKey="model.id + '.articles'"
       :filterSource="filterSource"
       :action="articlesAction"
       :fields="articlesFields"
@@ -28,7 +28,7 @@
 import { Component, Vue } from 'vue-property-decorator'
 import ArticlesList from '@/components/models/article/ArticlesList'
 import { ArticlesConfig } from '../article/ArticlesConfig'
-import { QuerySourceType } from '@avue/components/list/QuerySourceType'
+import { QuerySourceType } from '@a-vue/components/list/QuerySourceType'
 
 @Component({
   props: ['model'],

@@ -6,17 +6,21 @@
       "@/*": [
         "src/*"
       ],
-      "@avue/*": [
-        "../../afeefa-vue-app/src/*"
-      ],
       "@afeefa/api-resources-client/*": [
         "../../api-resources-client/src/*"
+      ],
+      "@a-vue/*": [
+        "node_modules/@afeefa/vue-app/src/*"
+      ],
+      "@a-admin/*": [
+        "node_modules/@afeefa/vue-app/src-admin/*"
       ]
     }
   },
   "include": [
     "src/**/*",
-    "../../afeefa-vue-app/src/**/*",
-    "../../api-resources-client/src/*"
+    "../../api-resources-client/src/*",
+    "node_modules/@afeefa/vue-app/src/**/*",
+    "node_modules/@afeefa/vue-app/src-admin/**/*", "../../../vue-app/src-admin/components/routes/base",
   ]
 }

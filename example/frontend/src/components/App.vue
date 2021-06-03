@@ -40,7 +40,7 @@
 <script>
 import { Component, Vue } from 'vue-property-decorator'
 import AppMenu from './Menu'
-import { LoadingEvent } from '@avue/events'
+import { LoadingEvent } from '@a-vue/events'
 
 Component.registerHooks([
   'beforeRouteEnter',

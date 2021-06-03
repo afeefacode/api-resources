@@ -1,93 +1,66 @@
 import App from '@/components/App'
 import { ArticlesConfig } from '@/components/models/article/ArticlesConfig'
 import { AuthorsConfig } from '@/components/models/author/AuthorsConfig'
-import CreateRoute from '@/components/routes/CreateRoute'
-import DetailRoute from '@/components/routes/DetailRoute'
-import EditRoute from '@/components/routes/EditRoute'
-import ListRoute from '@/components/routes/ListRoute'
-import ModelRoute from '@/components/routes/ModelRoute'
 import { apiResources } from '@afeefa/api-resources-client'
-import { routeConfigPlugin } from '@avue/plugins/route-config/RouteConfigPlugin'
 
-export default routeConfigPlugin
-  .router({
-    mode: 'history',
-    base: process.env.BASE_URL
-  })
+export default function (routeConfigPlugin) {
+  return routeConfigPlugin
+    .config({
+      api: apiResources.getApi('backendApi')
+    })
 
-  .defaultComponents({
-    list: ListRoute,
-    model: ModelRoute,
-    detail: DetailRoute,
-    edit: EditRoute,
-    new: CreateRoute
-  })
+    .routes(async ({ROUTE, ROUTESET}) => {
+      await apiResources.schemasLoaded()
+      const api = apiResources.getApi('backendApi')
 
-  .defaultBreadcrumbTitles({
-    edit: 'Bearbeiten',
-    new: 'Neu'
-  })
+      return [
+        ROUTE(
+          {
+            path: '/',
+            name: 'root',
+            component: App,
+            redirect: {
+              name: 'articles.list'
+            },
 
-  .defaultRoutePaths({
-    edit: 'bearbeiten',
-    new: 'neu'
-  })
+            children: [
+              ROUTESET({
+                path: 'autoren',
+                name: 'authors',
+                idKey: 'authorId',
+                breadcrumbTitles: {
+                  list: 'Autoren',
+                  detail: 'Autor'
+                },
+                config: {
+                  routing: new AuthorsConfig(api)
+                }
+              }),
 
-  .config({
-    api: apiResources.getApi('backendApi')
-  })
+              ROUTESET({
+                path: 'artikel',
+                name: 'articles',
+                idKey: 'articleId',
+                breadcrumbTitles: {
+                  list: 'Artikel',
+                  detail: 'Artikel'
+                },
+                config: {
+                  routing: new ArticlesConfig(api)
+                },
 
-  .routes(async ({ROUTE, ROUTESET}) => {
-    await apiResources.schemasLoaded()
-    const api = apiResources.getApi('backendApi')
+                children: [
+                  ROUTESET({
+                    path: 'kommentare',
+                    name: 'comments',
+                    idKey: 'commentId'
+                  })
+                ]
+              })
+            ]
 
-    return [
-      ROUTE(
-        {
-          path: '/',
-          name: 'root',
-          component: App,
-          redirect: {
-            name: 'articles.list'
-          },
-
-          children: [
-            ROUTESET({
-              path: 'autoren',
-              name: 'authors',
-              idKey: 'authorId',
-              breadcrumbTitles: {
-                list: 'Autoren',
-                detail: 'Autor'
-              },
-              config: {
-                routing: new AuthorsConfig(api)
-              }
-            }),
-
-            ROUTESET({
-              path: 'artikel',
-              name: 'articles',
-              idKey: 'articleId',
-              breadcrumbTitles: {
-                list: 'Artikel',
-                detail: 'Artikel'
-              },
-              config: {
-                routing: new ArticlesConfig(api)
-              },
-
-              children: [
-                ROUTESET({
-                  path: 'kommentare',
-                  name: 'comments',
-                  idKey: 'commentId'
-                })
-              ]
-            })
-          ]
-
-        }
-      )
-    ]
-  })
+          }
+        )
+      ]
+    })
+}

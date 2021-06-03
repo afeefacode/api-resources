@@ -1,8 +1,9 @@
-import AuthorDetail from '@/components/models/author/AuthorDetail'
-import AuthorForm from '@/components/models/author/AuthorForm'
-import AuthorsList from '@/components/models/author/AuthorsList'
 import { Author } from '@/models'
-import { RouteConfig } from '@/routes/RouteConfig'
+import { RouteConfig } from '@a-admin/routes/RouteConfig'
+
+import AuthorDetail from './AuthorDetail'
+import AuthorForm from './AuthorForm'
+import AuthorsList from './AuthorsList'
 
 export class AuthorsConfig extends RouteConfig {
   model = {
