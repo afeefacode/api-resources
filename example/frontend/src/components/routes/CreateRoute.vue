@@ -4,10 +4,6 @@
       <v-btn>Liste</v-btn>
     </router-link>
 
-    <p v-if="modelToEdit">
-      JSON {{ json }}
-    </p>
-
     <component
       :is="Component"
       :model="modelToEdit"

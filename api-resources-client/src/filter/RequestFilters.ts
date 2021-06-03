@@ -3,6 +3,7 @@ import { filterHistory } from '../filter/FilterHistory'
 import { BaseQuerySource, QuerySource } from './BaseQuerySource'
 import { Filter, FilterValueType } from './Filter'
 import { FilterChangeEvent } from './FilterChangeEvent'
+import { PageFilter } from './filters/PageFilter'
 import { ObjectQuerySource } from './ObjectQuerySource'
 
 export type Filters = Record<string, Filter>
@@ -93,10 +94,18 @@ export class RequestFilters {
     this.dispatchUpdate()
   }
 
-  public valueChanged (_filters: Filters): void {
+  public valueChanged (filters: Filters): void {
     // update events are disabled if initialized from used filters
     if (this._disableUpdates) {
       return
+    }
+
+    // reset page filter if any filter changes
+    if (!Object.values(filters).find(f => f instanceof PageFilter)) {
+      const pageFilter = Object.values(this._filters).find(f => f instanceof PageFilter)
+      if (pageFilter) {
+        pageFilter.reset()
+      }
     }
 
     this.pushToQuerySource()

@@ -25,7 +25,7 @@ export declare class RequestFilters {
     getFilters(): Filters;
     initFromUsed(usedFilters: UsedFilters, count: number): void;
     querySourceChanged(): void;
-    valueChanged(_filters: Filters): void;
+    valueChanged(filters: Filters): void;
     reset(): void;
     serialize(options?: {}): UsedFilters;
     private dispatchUpdate;

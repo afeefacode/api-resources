@@ -31,13 +31,13 @@
         </v-col>
       </v-row>
 
-      <v-row>
+      <div class="ml-n4 mt-1">
         <list-filter
           name="page"
           :count="count"
           :page_size="filters.page_size.value"
         />
-      </v-row>
+      </div>
     </template>
 
     <template #model="{ model: article }">
@@ -87,3 +87,10 @@ export default class ArticlesList extends Vue {
   }
 }
 </script>
+
+
+<style lang="scss" scoped>
+::v-deep .v-pagination {
+  justify-content: left;
+}
+</style>
