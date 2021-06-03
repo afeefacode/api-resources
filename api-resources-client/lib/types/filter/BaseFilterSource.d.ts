@@ -5,4 +5,4 @@ export declare class BaseFilterSource {
     getQuery(): QuerySource;
     push(_query: QuerySource): void;
 }
-//# sourceMappingURL=BaseQuerySource.d.ts.map
+//# sourceMappingURL=BaseFilterSource.d.ts.map

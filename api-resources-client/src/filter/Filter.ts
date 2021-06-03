@@ -1,6 +1,6 @@
 import { Action } from '../action/Action'
 import { ApiRequest, ApiRequestJSON } from '../api/ApiRequest'
-import { QuerySource } from './BaseQuerySource'
+import { QuerySource } from './BaseFilterSource'
 import { RequestFilters, UsedFilters } from './RequestFilters'
 
 export type FilterValueType = boolean | string | number | [string, FilterValueType] | null

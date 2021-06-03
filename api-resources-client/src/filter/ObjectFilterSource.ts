@@ -1,6 +1,6 @@
-import { BaseQuerySource, QuerySource } from './BaseQuerySource'
+import { BaseFilterSource, QuerySource } from './BaseFilterSource'
 
-export class ObjectQuerySource extends BaseQuerySource {
+export class ObjectFilterSource extends BaseFilterSource {
   public query: QuerySource = {}
 
   constructor (query: QuerySource) {

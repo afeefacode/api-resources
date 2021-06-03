@@ -1,5 +1,5 @@
 import { BaseQuerySource, QuerySource } from './BaseQuerySource';
-export declare class ObjectQuerySource extends BaseQuerySource {
+export declare class ObjectFilterSource extends BaseQuerySource {
     query: QuerySource;
     constructor(query: QuerySource);
     getQuery(): QuerySource;

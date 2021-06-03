@@ -1,5 +1,5 @@
 import { ActionFilters } from '../action/Action';
-import { BaseQuerySource } from './BaseQuerySource';
+import { BaseFilterSource } from './BaseFilterSource';
 import { Filter, FilterValueType } from './Filter';
 export declare type Filters = Record<string, Filter>;
 export declare type UsedFilters = Record<string, FilterValueType>;
@@ -18,8 +18,8 @@ export declare class RequestFilters {
     private _lastQuery;
     private _disableUpdates;
     private _eventTarget;
-    static create(filters: ActionFilters, historyKey?: string, querySource?: BaseQuerySource): RequestFilters;
-    constructor(filters: ActionFilters, historyKey?: string, querySource?: BaseQuerySource);
+    static create(filters: ActionFilters, historyKey?: string, querySource?: BaseFilterSource): RequestFilters;
+    constructor(filters: ActionFilters, historyKey?: string, querySource?: BaseFilterSource);
     on(type: string, handler: () => {}): void;
     off(type: string, handler: () => {}): void;
     getFilters(): Filters;

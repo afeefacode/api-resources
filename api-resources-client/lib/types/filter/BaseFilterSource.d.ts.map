@@ -1,0 +1,1 @@
+{"version":3,"file":"BaseFilterSource.d.ts","sourceRoot":"","sources":["../../../src/filter/BaseFilterSource.ts"],"names":[],"mappings":"AAAA,oBAAY,WAAW,GAAG;IACxB,CAAC,GAAG,EAAE,MAAM,GAAG,MAAM,CAAA;CACtB,CAAA;AAED,qBAAa,gBAAgB;IACpB,QAAQ,IAAK,WAAW;IAIxB,IAAI,CAAE,MAAM,EAAE,WAAW,GAAG,IAAI;CAExC"}

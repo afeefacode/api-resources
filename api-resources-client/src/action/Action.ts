@@ -1,7 +1,7 @@
 import { Api } from '../api/Api'
 import { ApiRequest } from '../api/ApiRequest'
 import { apiResources } from '../ApiResources'
-import { BaseQuerySource } from '../filter/BaseQuerySource'
+import { BaseFilterSource } from '../filter/BaseFilterSource'
 import { Filter, FilterJSON } from '../filter/Filter'
 import { RequestFilters } from '../filter/RequestFilters'
 import { Resource } from '../resource/Resource'
@@ -68,7 +68,7 @@ export class Action {
     return this._filters
   }
 
-  public createRequestFilters (historyKey?: string, querySource?: BaseQuerySource): RequestFilters {
+  public createRequestFilters (historyKey?: string, querySource?: BaseFilterSource): RequestFilters {
     return RequestFilters.create(this._filters, historyKey, querySource)
   }
 

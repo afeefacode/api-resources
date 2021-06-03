@@ -1,7 +1,7 @@
 import { filterHistory } from '../filter/FilterHistory';
 import { FilterChangeEvent } from './FilterChangeEvent';
 import { PageFilter } from './filters/PageFilter';
-import { ObjectQuerySource } from './ObjectQuerySource';
+import { ObjectFilterSource } from './ObjectFilterSource';
 /**
  * Request filters do have multiple change entry points:
  * - create: read existing query string and init filter values -> consumer should initially LOAD
@@ -17,7 +17,7 @@ export class RequestFilters {
         this._disableUpdates = false;
         this._eventTarget = new EventTarget();
         this._historyKey = historyKey;
-        this._querySource = querySource || new ObjectQuerySource({});
+        this._querySource = querySource || new ObjectFilterSource({});
         for (const [name, filter] of Object.entries(filters)) {
             this._filters[name] = filter.createRequestFilter(this);
         }
@@ -25,7 +25,7 @@ export class RequestFilters {
     }
     static create(filters, historyKey, querySource) {
         let requestFilters;
-        querySource = querySource || new ObjectQuerySource({});
+        querySource = querySource || new ObjectFilterSource({});
         if (historyKey) {
             if (filterHistory.hasFilters(historyKey)) {
                 requestFilters = filterHistory.getFilters(historyKey);

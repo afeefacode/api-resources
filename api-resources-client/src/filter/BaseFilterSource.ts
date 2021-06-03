@@ -2,7 +2,7 @@ export type QuerySource = {
   [key: string]: string
 }
 
-export class BaseQuerySource {
+export class BaseFilterSource {
   public getQuery (): QuerySource {
     return {}
   }

@@ -1,10 +1,10 @@
 import { ActionFilters } from '../action/Action'
 import { filterHistory } from '../filter/FilterHistory'
-import { BaseQuerySource, QuerySource } from './BaseQuerySource'
+import { BaseFilterSource, QuerySource } from './BaseFilterSource'
 import { Filter, FilterValueType } from './Filter'
 import { FilterChangeEvent } from './FilterChangeEvent'
 import { PageFilter } from './filters/PageFilter'
-import { ObjectQuerySource } from './ObjectQuerySource'
+import { ObjectFilterSource } from './ObjectFilterSource'
 
 export type Filters = Record<string, Filter>
 export type UsedFilters = Record<string, FilterValueType>
@@ -20,16 +20,16 @@ export type UsedFilters = Record<string, FilterValueType>
 export class RequestFilters {
   private _filters: Filters = {}
   private _historyKey?: string
-  private _querySource: BaseQuerySource
+  private _querySource: BaseFilterSource
 
   private _lastQuery: QuerySource = {}
   private _disableUpdates: boolean = false
 
   private _eventTarget: EventTarget = new EventTarget()
 
-  public static create (filters: ActionFilters, historyKey?: string, querySource?: BaseQuerySource): RequestFilters {
+  public static create (filters: ActionFilters, historyKey?: string, querySource?: BaseFilterSource): RequestFilters {
     let requestFilters: RequestFilters
-    querySource = querySource || new ObjectQuerySource({})
+    querySource = querySource || new ObjectFilterSource({})
 
     if (historyKey) {
       if (filterHistory.hasFilters(historyKey)) {
@@ -45,9 +45,9 @@ export class RequestFilters {
     return requestFilters
   }
 
-  constructor (filters: ActionFilters, historyKey?: string, querySource?: BaseQuerySource) {
+  constructor (filters: ActionFilters, historyKey?: string, querySource?: BaseFilterSource) {
     this._historyKey = historyKey
-    this._querySource = querySource || new ObjectQuerySource({})
+    this._querySource = querySource || new ObjectFilterSource({})
 
     for (const [name, filter] of Object.entries(filters)) {
       this._filters[name] = filter.createRequestFilter(this)
