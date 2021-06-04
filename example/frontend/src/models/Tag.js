@@ -1,4 +1,4 @@
-import { Model } from '@afeefa/api-resources-client'
+import { Model } from '@a-admin/models/Model'
 
 export class Tag extends Model {
   static type = 'Example.TagType'

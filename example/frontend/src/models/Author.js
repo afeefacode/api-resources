@@ -1,4 +1,4 @@
-import { Model } from './Model'
+import { Model } from '@a-admin/models/Model'
 
 export class Author extends Model {
   static type = 'Example.AuthorType'
