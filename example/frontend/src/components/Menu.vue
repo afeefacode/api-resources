@@ -20,6 +20,6 @@
 import { Component, Vue } from 'vue-property-decorator'
 
 @Component
-export default class AppMenu extends Vue {
+export default class Menu extends Vue {
 }
 </script>

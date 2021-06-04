@@ -1,6 +1,7 @@
-import App from '@/components/App'
+import Menu from '@/components/Menu'
 import { ArticlesConfig } from '@/components/models/article/ArticlesConfig'
 import { AuthorsConfig } from '@/components/models/author/AuthorsConfig'
+import App from '@a-admin/components/App'
 import { apiResources } from '@afeefa/api-resources-client'
 
 export default function (routeConfigPlugin) {
@@ -19,6 +20,9 @@ export default function (routeConfigPlugin) {
             path: '/',
             name: 'root',
             component: App,
+            props: {
+              Menu
+            },
             redirect: {
               name: 'articles.list'
             },
