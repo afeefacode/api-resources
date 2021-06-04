@@ -6,6 +6,10 @@ import { apiResources } from '@afeefa/api-resources-client'
 
 export default function (routeConfigPlugin) {
   return routeConfigPlugin
+    .router({
+      base: process.env.BASE_URL
+    })
+
     .config({
       api: apiResources.getApi('backendApi')
     })

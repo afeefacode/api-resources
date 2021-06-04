@@ -6,9 +6,6 @@
       "@/*": [
         "src/*"
       ],
-      "@afeefa/api-resources-client/*": [
-        "../../api-resources-client/src/*"
-      ],
       "@a-vue/*": [
         "node_modules/@afeefa/vue-app/src/*"
       ],
@@ -16,11 +13,5 @@
         "node_modules/@afeefa/vue-app/src-admin/*"
       ]
     }
-  },
-  "include": [
-    "src/**/*",
-    "../../api-resources-client/src/*",
-    "node_modules/@afeefa/vue-app/src/**/*",
-    "node_modules/@afeefa/vue-app/src-admin/**/*"
-  ]
+  }
 }
