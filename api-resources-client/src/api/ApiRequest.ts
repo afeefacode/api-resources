@@ -79,7 +79,8 @@ export class ApiRequest {
       .then(result => {
         return new ApiResponse(new ApiRequest(), result)
       })
-      .catch(() => {
+      .catch((error) => {
+        console.error(error)
         return false
       })
 
