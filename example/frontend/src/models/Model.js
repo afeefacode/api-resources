@@ -7,7 +7,7 @@ export class Model extends ApiResourcesModel {
     return (new this()).getLink(action)
   }
 
-  getLink (action = 'detail') {
+  getLink (_action = 'detail') {
     return {
       name: '',
       params: {}

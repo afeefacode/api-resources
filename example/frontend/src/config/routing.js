@@ -1,6 +1,6 @@
+import { ArticlesConfig } from '@/components/article/ArticlesConfig'
+import { AuthorsConfig } from '@/components/author/AuthorsConfig'
 import Menu from '@/components/Menu'
-import { ArticlesConfig } from '@/components/models/article/ArticlesConfig'
-import { AuthorsConfig } from '@/components/models/author/AuthorsConfig'
 import App from '@a-admin/components/App'
 import { apiResources } from '@afeefa/api-resources-client'
 
