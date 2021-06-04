@@ -21,6 +21,6 @@
     "src/**/*",
     "../../api-resources-client/src/*",
     "node_modules/@afeefa/vue-app/src/**/*",
-    "node_modules/@afeefa/vue-app/src-admin/**/*", "../../../vue-app/src-admin/components/routes/base",
+    "node_modules/@afeefa/vue-app/src-admin/**/*"
   ]
 }
