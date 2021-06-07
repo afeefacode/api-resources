@@ -21,7 +21,11 @@ class Bag implements ToSchemaJsonInterface, ContainerAwareInterface
 
     public function get(string $name, Closure $callback = null): BagEntryInterface
     {
-        $entry = $this->entries[$name];
+        $entry = $this->entries[$name] ?? null;
+
+        if (!$entry) {
+            throw new NotABagEntryException("{$name} is not a known Bag entry.");
+        }
 
         if ($callback) {
             $callback($entry);
@@ -30,7 +34,7 @@ class Bag implements ToSchemaJsonInterface, ContainerAwareInterface
         return $entry;
     }
 
-    public function set(string $name, $value): Bag
+    public function set(string $name, BagEntryInterface $value): Bag
     {
         $this->entries[$name] = $value;
         return $this;
@@ -43,6 +47,12 @@ class Bag implements ToSchemaJsonInterface, ContainerAwareInterface
 
     public function remove(string $name): Bag
     {
+        $entry = $this->entries[$name] ?? null;
+
+        if (!$entry) {
+            throw new NotABagEntryException("{$name} is not a known Bag entry.");
+        }
+
         unset($this->entries[$name]);
         return $this;
     }
