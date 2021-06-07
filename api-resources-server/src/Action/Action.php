@@ -124,6 +124,10 @@ class Action extends BagEntry
 
     public function getResponse(): ActionResponse
     {
+        if (!isset($this->response)) {
+            throw new InvalidConfigurationException("Action {$this->name} does not have a response type.");
+        }
+
         return $this->response;
     }
 
