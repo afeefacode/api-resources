@@ -52,9 +52,6 @@ class ResolveContext implements ContainerAwareInterface
         return $this->meta;
     }
 
-    /**
-     * @param RelationResolver[] $relationResolvers
-     */
     public function getSelectFields(string $typeName = null): array
     {
         if (!isset($this->relationResolvers)) {
