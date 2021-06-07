@@ -2,11 +2,11 @@
   "version": "0.2.0",
   "configurations": [
     {
-      "name": "Api-Resources Backend",
+      "name": "Api-Resources Server",
       "type": "php",
       "request": "launch",
       "port": 9000,
-      "pathMappings": {
+      "spathMappings": {
         "/api-resources": "${workspaceFolder}/../..",
       }
     }
