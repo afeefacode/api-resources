@@ -258,7 +258,7 @@ class ContainerTest extends TestCase
     public function test_get_with_callback_closure_missing_argument()
     {
         $this->expectException(MissingCallbackArgumentException::class);
-        $this->expectExceptionMessage('Get callback does not provide arguments.');
+        $this->expectExceptionMessage('Callback must provide more than 0 arguments.');
 
         $container = new Container();
 
@@ -413,7 +413,7 @@ class ContainerTest extends TestCase
     public function test_create_with_callback_closure_multiple_arguments()
     {
         $this->expectException(TooManyCallbackArgumentsException::class);
-        $this->expectExceptionMessage('Create callback may only provide 1 argument.');
+        $this->expectExceptionMessage('Callback may only provide 1 argument.');
 
         $container = new Container();
 

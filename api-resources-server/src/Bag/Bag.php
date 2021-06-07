@@ -5,8 +5,10 @@ namespace Afeefa\ApiResources\Bag;
 use Afeefa\ApiResources\Api\ToSchemaJsonInterface;
 use Afeefa\ApiResources\Api\ToSchemaJsonTrait;
 use Afeefa\ApiResources\DI\ContainerAwareInterface;
+
 use Afeefa\ApiResources\DI\ContainerAwareTrait;
 use Afeefa\ApiResources\DI\DependencyResolver;
+
 use Closure;
 
 class Bag implements ToSchemaJsonInterface, ContainerAwareInterface
@@ -19,12 +21,24 @@ class Bag implements ToSchemaJsonInterface, ContainerAwareInterface
      */
     private array $entries = [];
 
+    private array $definitions = [];
+
     public function get(string $name, Closure $callback = null): BagEntryInterface
     {
         $entry = $this->entries[$name] ?? null;
 
         if (!$entry) {
-            throw new NotABagEntryException("{$name} is not a known Bag entry.");
+            [$classOrCallback, $createCallback] = $this->definitions[$name] ?? [null, null];
+            if (!$classOrCallback) {
+                throw new NotABagEntryException("{$name} is not a known Bag entry.");
+            }
+
+            $entry = $this->container->create($classOrCallback, function (BagEntryInterface $entry) use ($name, $createCallback) {
+                if ($createCallback) {
+                    $createCallback($entry);
+                }
+                $this->set($name, $entry);
+            });
         }
 
         if ($callback) {
@@ -32,6 +46,12 @@ class Bag implements ToSchemaJsonInterface, ContainerAwareInterface
         }
 
         return $entry;
+    }
+
+    public function setDefinition(string $name, $classOrCallback, Closure $createCallback = null): Bag
+    {
+        $this->definitions[$name] = [$classOrCallback, $createCallback];
+        return $this;
     }
 
     public function set(string $name, BagEntryInterface $value): Bag
@@ -42,7 +62,7 @@ class Bag implements ToSchemaJsonInterface, ContainerAwareInterface
 
     public function has(string $name): bool
     {
-        return isset($this->entries[$name]);
+        return isset($this->entries[$name]) || isset($this->definitions[$name]);
     }
 
     public function remove(string $name): Bag
@@ -50,15 +70,24 @@ class Bag implements ToSchemaJsonInterface, ContainerAwareInterface
         $entry = $this->entries[$name] ?? null;
 
         if (!$entry) {
-            throw new NotABagEntryException("{$name} is not a known Bag entry.");
+            [$classOrCallback, $createCallback] = $this->definitions[$name] ?? [null, null];
+            if (!$classOrCallback) {
+                throw new NotABagEntryException("{$name} is not a known Bag entry.");
+            }
         }
 
+        unset($this->definitions[$name]);
         unset($this->entries[$name]);
         return $this;
     }
 
-    public function entries(): array
+    public function getEntries(): array
     {
+        // create entries from all definitions, if not existing
+        foreach (array_keys($this->definitions) as $name) {
+            $this->get($name);
+        }
+
         return $this->entries;
     }
 
@@ -76,6 +105,6 @@ class Bag implements ToSchemaJsonInterface, ContainerAwareInterface
                 );
             }
             return $entry->toSchemaJson();
-        }, $this->entries));
+        }, $this->getEntries()));
     }
 }
