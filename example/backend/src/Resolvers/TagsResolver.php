@@ -99,7 +99,7 @@ class TagsResolver
 
             ->map(function (array $objects, ModelInterface $owner) {
                 $key = $owner->id;
-                return $objects[$key];
+                return $objects[$key] ?? [];
             });
     }
 

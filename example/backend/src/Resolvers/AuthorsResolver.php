@@ -200,7 +200,7 @@ class AuthorsResolver
             })
 
             ->map(function (array $objects, ModelInterface $owner) {
-                return $objects[$owner->author_id];
+                return $objects[$owner->author_id] ?? null;
             });
     }
 

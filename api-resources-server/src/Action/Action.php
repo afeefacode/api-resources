@@ -3,6 +3,7 @@
 namespace Afeefa\ApiResources\Action;
 
 use Afeefa\ApiResources\Bag\BagEntry;
+use Afeefa\ApiResources\DB\TypeClassMap;
 use Afeefa\ApiResources\Exception\Exceptions\InvalidConfigurationException;
 use Afeefa\ApiResources\Exception\Exceptions\NotACallbackException;
 use Afeefa\ApiResources\Exception\Exceptions\NotATypeException;
@@ -62,6 +63,10 @@ class Action extends BagEntry
             $callback($this->input);
         }
 
+        $this->container->get(function (TypeClassMap $typeClassMap) use ($TypeClass) {
+            $typeClassMap->add($TypeClass::$type, $TypeClass);
+        });
+
         return $this;
     }
 
@@ -106,6 +111,13 @@ class Action extends BagEntry
         if ($callback) {
             $callback($this->response);
         }
+
+        $TypeClasses = is_array($TypeClassOrClasses) ? $TypeClassOrClasses : [$TypeClassOrClasses];
+        $this->container->get(function (TypeClassMap $typeClassMap) use ($TypeClasses) {
+            foreach ($TypeClasses as $TypeClass) {
+                $typeClassMap->add($TypeClass::$type, $TypeClass);
+            }
+        });
 
         return $this;
     }

@@ -5,10 +5,7 @@ use Afeefa\ApiResources\DB\TypeClassMap;
 use Afeefa\ApiResources\DI\Container;
 use Backend\Api\BackendApi;
 use Backend\Resources\ArticlesResource;
-use Backend\Types\ArticleType;
-use Backend\Types\AuthorType;
-use Backend\Types\CommentType;
-use Backend\Types\TagType;
+use Backend\Resources\AuthorsResource;
 use Medoo\Medoo;
 use Slim\Factory\AppFactory;
 use Slim\Http\Response;
@@ -55,15 +52,6 @@ $container = new Container([
             'username' => 'root',
             'password' => 'root',
             'logging' => true
-        ]);
-    },
-
-    TypeClassMap::class => function () {
-        return new TypeClassMap([
-            'Example.ArticleType' => ArticleType::class,
-            'Example.AuthorType' => AuthorType::class,
-            'Example.CommentType' => CommentType::class,
-            'Example.TagType' => TagType::class
         ]);
     }
 ]);
@@ -148,17 +136,46 @@ $app->get('/backend-api/tags', function (ServerRequest $request, Response $respo
     return $response->withJson($result);
 });
 
+$app->get('/backend-api/author', function (ServerRequest $request, Response $response, array $args) {
+    $result = $this->call(function (BackendApi $api, TypeClassMap $typeClassMap) {
+        $result = $api->request(function (ApiRequest $request) {
+            $request
+                ->resourceName(AuthorsResource::$type)
+                ->actionName('get_author')
+                ->params([
+                    'id' => 6
+                ])
+                ->fields([
+                    'name' => true,
+                    'tags' => true
+                ]);
+        });
+
+        // debug_dump($typeClassMap);
+        return $result;
+    });
+
+    // debug_dump($this->get(Medoo::class)->log());
+    // exit;
+
+    return $response->withJson($result);
+});
+
 $app->post('/backend-api', function (ServerRequest $request, Response $response, array $args) {
-    $result = $this->call(function (BackendApi $api) {
-        return $api->requestFromInput();
+    $result = $this->call(function (BackendApi $api, TypeClassMap $typeClassMap) {
+        $result = $api->requestFromInput();
+        // debug_dump($typeClassMap);
+        return $result;
     });
     $result['db'] = $this->get(Medoo::class)->log();
     return $response->withJson($result);
 });
 
 $app->get('/backend-api/schema', function (ServerRequest $request, Response $response, array $args) {
-    $result = $this->call(function (BackendApi $api) {
-        return $api->toSchemaJson();
+    $result = $this->call(function (BackendApi $api, TypeClassMap $typeClassMap) {
+        $result = $api->toSchemaJson();
+        // debug_dump($typeClassMap);
+        return $result;
     });
     // $this->dumpEntries();
     return $response->withJson($result);

@@ -273,7 +273,7 @@ class ArticlesResolver
 
             ->map(function (array $objects, ModelInterface $owner) {
                 $key = $owner->id;
-                return $objects['Author:' . $key];
+                return $objects['Author:' . $key] ?? [];
             });
     }
 

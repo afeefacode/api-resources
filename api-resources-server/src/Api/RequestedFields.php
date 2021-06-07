@@ -130,7 +130,7 @@ class RequestedFields implements ContainerAwareInterface, JsonSerializable
     protected function getTypeClassByName(string $typeName = null): string
     {
         return $this->container->call(function (TypeClassMap $typeClassMap) use ($typeName) {
-            return $typeClassMap->getClass($typeName);
+            return $typeClassMap->get($typeName);
         });
     }
 

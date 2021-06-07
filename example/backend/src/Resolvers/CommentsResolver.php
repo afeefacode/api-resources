@@ -31,6 +31,8 @@ class CommentsResolver
                         ];
                 }
 
+                // debug_dump($ownerIdsByType);
+
                 $result = $db->select(
                     'comments',
                     $selectFields,
@@ -45,6 +47,11 @@ class CommentsResolver
                 $objects = [];
                 foreach ($result as $row) {
                     $key = $row['owner_type'] . ':' . $row['owner_id'];
+
+                    if ($key === 30) {
+                        debug_dump($key, $row);
+                    }
+
                     $objects[$key][] = Model::fromSingle(CommentType::$type, $row);
                 }
                 return $objects;
@@ -52,7 +59,7 @@ class CommentsResolver
 
             ->map(function (array $objects, ModelInterface $owner) {
                 $key = $owner->type . ':' . $owner->id;
-                return $objects[$key];
+                return $objects[$key] ?? [];
             });
     }
 }
