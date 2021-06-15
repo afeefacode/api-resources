@@ -73,7 +73,7 @@ export class ApiRequest {
 
     this._lastRequestJSON = JSON.stringify(params)
 
-    const url = this._action.getApi().getBaseUrl() + '?' + this._action.getName()
+    const url = this._action.getApi().getBaseUrl() + '?' + this._action.getResource().getName() + ':' + this._action.getName()
 
     const request = axios.post(url, params)
       .then(result => {
