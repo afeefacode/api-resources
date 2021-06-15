@@ -14,21 +14,17 @@ use Afeefa\ApiResources\Filter\Filters\KeywordFilter;
 use Afeefa\ApiResources\Filter\Filters\OrderFilter;
 use Afeefa\ApiResources\Filter\Filters\PageFilter;
 use Afeefa\ApiResources\Filter\Filters\PageSizeFilter;
-use Afeefa\ApiResources\Resource\ModelResource;
+use Afeefa\ApiResources\Resource\Resource;
 use Afeefa\ApiResources\Type\Type;
 use Backend\Resolvers\ArticlesResolver;
 use Backend\Types\ArticleType;
 
-class ArticlesResource extends ModelResource
+class ArticlesResource extends Resource
 {
     public static string $type = 'Example.ArticlesResource';
 
-    protected string $ModelTypeClass = ArticleType::class;
-
     protected function actions(ActionBag $actions): void
     {
-        parent::actions($actions);
-
         $actions->add('get_articles', function (Action $action) {
             $action->filters(function (FilterBag $filters) {
                 $filters->add('author_id', function (IdFilter $filter) {
@@ -75,7 +71,7 @@ class ArticlesResource extends ModelResource
                 $filters->add('page', PageFilter::class);
             });
 
-            $action->response(Type::listOf(ArticleType::class));
+            $action->response(Type::list(ArticleType::class));
 
             $action->resolve([ArticlesResolver::class, 'get_articles']);
         });

@@ -56,7 +56,7 @@ class AuthorsResource extends Resource
                 $filters->add('page', PageFilter::class);
             });
 
-            $action->response(Type::listOf(AuthorType::class));
+            $action->response(Type::list(AuthorType::class));
 
             $action->resolve([AuthorsResolver::class, 'get_authors']);
         });
