@@ -158,7 +158,7 @@ class ModelResolver
                 }
 
                 $builder = new Builder($owner);
-                $relatedModels = $builder->eagerLoadRelation2($owners, $relationName, $selectFields);
+                $relatedModels = $builder->afeefaEagerLoadRelation($owners, $relationName, $selectFields);
 
                 return $relatedModels->all();
             });
