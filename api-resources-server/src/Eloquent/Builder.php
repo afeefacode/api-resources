@@ -33,11 +33,15 @@ class Builder extends EloquentBuilder
 
         $relation->addEagerConstraints($models);
 
+        // select $selectFields before counts, since withCount()
+        // will add a '*' column by default, which we don't want.
+        $relation->select($selectFields);
+
         if (count($relationCounts)) {
             $relation->withCount($relationCounts);
         }
 
-        $relatedModels = $relation->get($selectFields);
+        $relatedModels = $relation->get();
 
         $relation->match(
             $relation->initRelation($models, $name),
