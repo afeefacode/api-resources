@@ -26,6 +26,11 @@ class Builder extends EloquentBuilder
     {
         $relation = $this->getRelation($name);
 
+        $relatedTable = $relation->getRelated()->getTable();
+        $selectFields = array_map(function ($field) use ($relatedTable) {
+            return $relatedTable . '.' . $field;
+        }, $selectFields);
+
         $relation->addEagerConstraints($models);
 
         $relatedModels = $relation->get($selectFields);
