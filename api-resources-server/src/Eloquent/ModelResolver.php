@@ -164,11 +164,29 @@ class ModelResolver
                     $selectFields[] = $eloquentRelation->getForeignKeyName();
                 }
 
+                $relationCounts = $this->getRelationCounts($r, $c);
+
                 $builder = new Builder($owner);
-                $relatedModels = $builder->afeefaEagerLoadRelation($owners, $relationName, $selectFields);
+                $relatedModels = $builder->afeefaEagerLoadRelation($owners, $relationName, $selectFields, $relationCounts);
 
                 return $relatedModels->all();
             });
+    }
+
+    private function getRelationCounts(RelationResolver $r, ResolveContext $c): array
+    {
+        $requestedFieldNames = $c->getRequestedFields()->getFieldNames();
+        $relatedType = $r->getRelation()->getRelatedTypeInstance();
+        $relationCounts = [];
+        foreach ($requestedFieldNames as $fieldName) {
+            if (preg_match('/^count_(.+)/', $fieldName, $matches)) {
+                $countRelationName = $matches[1];
+                if ($relatedType->hasRelation($countRelationName)) {
+                    $relationCounts = [$countRelationName . ' as count_' . $countRelationName];
+                }
+            }
+        }
+        return $relationCounts;
     }
 
     private function getEloquentRelation(RelationResolver $r): array

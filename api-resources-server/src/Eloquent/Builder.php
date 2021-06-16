@@ -22,7 +22,7 @@ class Builder extends EloquentBuilder
      *
      * @see parent::eagerLoadRelation()
      */
-    public function afeefaEagerLoadRelation(array $models, string $name, array $selectFields)
+    public function afeefaEagerLoadRelation(array $models, string $name, array $selectFields, array $relationCounts)
     {
         $relation = $this->getRelation($name);
 
@@ -32,6 +32,10 @@ class Builder extends EloquentBuilder
         }, $selectFields);
 
         $relation->addEagerConstraints($models);
+
+        if (count($relationCounts)) {
+            $relation->withCount($relationCounts);
+        }
 
         $relatedModels = $relation->get($selectFields);
 
