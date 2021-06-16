@@ -6,7 +6,7 @@ use Afeefa\ApiResources\Type\ModelType as ApiResourcesModelType;
 
 class ModelType extends ApiResourcesModelType
 {
-    protected function getModelResolver(string $ModelClass): ModelResolver
+    protected function getEloquentRelationResolver(string $ModelClass): ModelResolver
     {
         return (new ModelResolver())
             ->modelClass($ModelClass);

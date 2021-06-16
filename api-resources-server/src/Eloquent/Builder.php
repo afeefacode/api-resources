@@ -1,0 +1,41 @@
+<?php
+
+namespace Afeefa\ApiResources\Eloquent;
+
+use Illuminate\Database\Eloquent\Builder as EloquentBuilder;
+use Illuminate\Database\Eloquent\Model;
+
+class Builder extends EloquentBuilder
+{
+    public function __construct(Model $owner)
+    {
+        parent::__construct($owner::getQuery());
+
+        $this->setModel($owner);
+    }
+
+    /**
+     * This overrides the original protected function:
+     * - to make it public
+     * - to select custom fields instead of '*'
+     * - to return the result set
+     *
+     * @see parent::eagerLoadRelation()
+     */
+    public function afeefaEagerLoadRelation(array $models, string $name, array $selectFields)
+    {
+        $relation = $this->getRelation($name);
+
+        $relation->addEagerConstraints($models);
+
+        $relatedModels = $relation->get($selectFields);
+
+        $relation->match(
+            $relation->initRelation($models, $name),
+            $relatedModels,
+            $name
+        );
+
+        return $relatedModels;
+    }
+}
