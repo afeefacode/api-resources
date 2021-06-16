@@ -9,16 +9,23 @@ use Afeefa\ApiResources\Type\ModelType;
 use Closure;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
-use Illuminate\Database\Eloquent\Relations\Relation;
 
 class ModelResolver
 {
     protected string $ModelClass;
+    protected string $relationName;
+
     protected Closure $searchFunction;
 
     public function modelClass(string $ModelClass): ModelResolver
     {
         $this->ModelClass = $ModelClass;
+        return $this;
+    }
+
+    public function relationName(string $relationName): ModelResolver
+    {
+        $this->relationName = $relationName;
         return $this;
     }
 
