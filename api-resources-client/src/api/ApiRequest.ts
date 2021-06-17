@@ -78,9 +78,13 @@ export class ApiRequest {
 
     // this._lastRequestJSON = JSON.stringify(params)
 
-    const url = this._action.getApi().getBaseUrl() + '?' + this._action.getResource().getName() + ':' + this._action.getName()
+    const urlResourceName = this._action.getResource().getName().replace(/.+\./, '').replace(/Resource/, '')
+    let url = this._action.getApi().getBaseUrl() + '?' + urlResourceName + ':' + this._action.getName()
+    if (this._params && this._params.id) {
+      url += ':' + (this._params.id as string)
+    }
 
-    const axiosRresponse = axios.post(url, params)
+    const axiosResponse = axios.post(url, params)
       .then(result => {
         return new ApiResponse(new ApiRequest(), result)
       })
@@ -90,7 +94,7 @@ export class ApiRequest {
       })
 
     // this._lastRequest = request
-    return axiosRresponse
+    return axiosResponse
   }
 
   protected serialize (): object {
