@@ -1,4 +1,5 @@
 import { ApiRequest } from '../api/ApiRequest';
+import { BatchApiRequest } from '../api/BatchApiRequest';
 import { apiResources } from '../ApiResources';
 import { RequestFilters } from '../filter/RequestFilters';
 import { ActionInput } from './ActionInput';
@@ -37,6 +38,9 @@ export class Action {
     getName() {
         return this._name;
     }
+    getFullName() {
+        return this.getResource().getName() + '.' + this._name;
+    }
     getFilters() {
         return this._filters;
     }
@@ -45,6 +49,10 @@ export class Action {
     }
     request() {
         return new ApiRequest()
+            .action(this);
+    }
+    batchRequest() {
+        return new BatchApiRequest()
             .action(this);
     }
     getResource() {

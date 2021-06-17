@@ -1,8 +1,10 @@
 import axios from 'axios';
 import { ApiResponse } from './ApiResponse';
 export class ApiRequest {
+    // private _lastRequestJSON: string = ''
+    // private _lastRequest!: Promise<ApiResponse | boolean>
     constructor(json) {
-        this._lastRequestJSON = '';
+        this._fields = {};
         if (json) {
             this._fields = json.fields;
             if (json.filters) {
@@ -24,6 +26,10 @@ export class ApiRequest {
         this._fields = fields;
         return this;
     }
+    addField(name, value) {
+        this._fields[name] = value;
+        return this;
+    }
     filters(filters) {
         this._filters = filters;
         return this;
@@ -38,12 +44,12 @@ export class ApiRequest {
     }
     send() {
         const params = this.serialize();
-        if (this._lastRequestJSON === JSON.stringify(params)) {
-            return this._lastRequest;
-        }
-        this._lastRequestJSON = JSON.stringify(params);
+        // if (this._lastRequestJSON === JSON.stringify(params)) {
+        //   return this._lastRequest
+        // }
+        // this._lastRequestJSON = JSON.stringify(params)
         const url = this._action.getApi().getBaseUrl() + '?' + this._action.getResource().getName() + ':' + this._action.getName();
-        const request = axios.post(url, params)
+        const axiosRresponse = axios.post(url, params)
             .then(result => {
             return new ApiResponse(new ApiRequest(), result);
         })
@@ -51,8 +57,8 @@ export class ApiRequest {
             console.error(error);
             return false;
         });
-        this._lastRequest = request;
-        return request;
+        // this._lastRequest = request
+        return axiosRresponse;
     }
     serialize() {
         return {

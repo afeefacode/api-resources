@@ -1,5 +1,6 @@
 import { Api } from '../api/Api';
 import { ApiRequest } from '../api/ApiRequest';
+import { BatchApiRequest } from '../api/BatchApiRequest';
 import { BaseFilterSource } from '../filter/BaseFilterSource';
 import { Filter, FilterJSON } from '../filter/Filter';
 import { RequestFilters } from '../filter/RequestFilters';
@@ -25,9 +26,11 @@ export declare class Action {
     private _filters;
     constructor(resource: Resource, name: string, json: ActionJSON);
     getName(): string;
+    getFullName(): string;
     getFilters(): ActionFilters;
     createRequestFilters(historyKey?: string, querySource?: BaseFilterSource): RequestFilters;
     request(): ApiRequest;
+    batchRequest(): BatchApiRequest;
     getResource(): Resource;
     getApi(): Api;
 }

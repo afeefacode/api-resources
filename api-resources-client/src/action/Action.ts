@@ -1,5 +1,6 @@
 import { Api } from '../api/Api'
 import { ApiRequest } from '../api/ApiRequest'
+import { BatchApiRequest } from '../api/BatchApiRequest'
 import { apiResources } from '../ApiResources'
 import { BaseFilterSource } from '../filter/BaseFilterSource'
 import { Filter, FilterJSON } from '../filter/Filter'
@@ -64,6 +65,10 @@ export class Action {
     return this._name
   }
 
+  public getFullName (): string {
+    return this.getResource().getName() + '.' + this._name
+  }
+
   public getFilters (): ActionFilters {
     return this._filters
   }
@@ -74,6 +79,11 @@ export class Action {
 
   public request (): ApiRequest {
     return new ApiRequest()
+      .action(this)
+  }
+
+  public batchRequest (): BatchApiRequest {
+    return new BatchApiRequest()
       .action(this)
   }
 

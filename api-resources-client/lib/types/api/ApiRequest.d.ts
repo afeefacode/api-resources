@@ -13,12 +13,11 @@ export declare class ApiRequest {
     private _filters;
     private _params;
     private _data;
-    private _lastRequestJSON;
-    private _lastRequest;
     constructor(json?: ApiRequestJSON);
     action(action: Action): ApiRequest;
     getAction(): Action;
     fields(fields: Record<string, unknown>): ApiRequest;
+    addField(name: string, value: unknown): ApiRequest;
     filters(filters: Record<string, unknown>): ApiRequest;
     params(params: Record<string, unknown>): ApiRequest;
     data(data: Record<string, unknown>): ApiRequest;
