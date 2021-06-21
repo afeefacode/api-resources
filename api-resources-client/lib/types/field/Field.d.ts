@@ -11,11 +11,11 @@ export declare class Field {
     constructor();
     private _validator;
     newInstance<T>(): T;
-    createTypeField(name: string, json: FieldJSON): Field;
+    createTypeField(json: FieldJSON): Field;
     getValidator(): Validator | null;
     default(): FieldValue;
     deserialize(value: FieldJSONValue): FieldValue;
     serialize(value: FieldValue): FieldJSONValue;
-    protected setupTypeFieldValidator(fieldName: string, json: ValidatorJSON): void;
+    protected setupTypeFieldValidator(json: ValidatorJSON): void;
 }
 //# sourceMappingURL=Field.d.ts.map

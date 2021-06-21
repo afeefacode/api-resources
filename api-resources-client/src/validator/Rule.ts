@@ -9,9 +9,9 @@ export class Rule {
     this._message = json.message
   }
 
-  public getMessage (fieldName: string, param: unknown): string {
+  public getMessage (fieldLabel: string, param: unknown): string {
     const params: Record<string, unknown> = {
-      fieldName,
+      fieldLabel,
       param
     }
 

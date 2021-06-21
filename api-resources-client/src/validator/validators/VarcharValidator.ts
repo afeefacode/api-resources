@@ -2,11 +2,11 @@ import { Rule } from '../Rule'
 import { RuleValidator, Validator } from '../Validator'
 
 export class VarcharValidator extends Validator<string> {
-  protected createRuleValidator (ruleName: string, rule: Rule, params: unknown): RuleValidator<string> {
+  protected createRuleValidator (fieldLabel: string, ruleName: string, rule: Rule, params: unknown): RuleValidator<string> {
     if (ruleName === 'filled') {
       return value => {
         if (params === true && !value.length) {
-          return rule.getMessage(this._fieldName, params)
+          return rule.getMessage(fieldLabel, params)
         }
         return true
       }
@@ -15,7 +15,7 @@ export class VarcharValidator extends Validator<string> {
     if (ruleName === 'max') {
       return value => {
         if (value.length > (params as number)) {
-          return rule.getMessage(this._fieldName, params)
+          return rule.getMessage(fieldLabel, params)
         }
         return true
       }
@@ -28,12 +28,12 @@ export class VarcharValidator extends Validator<string> {
         }
 
         if (value.length < (params as number)) {
-          return rule.getMessage(this._fieldName, params)
+          return rule.getMessage(fieldLabel, params)
         }
         return true
       }
     }
 
-    return super.createRuleValidator(ruleName, rule, params)
+    return super.createRuleValidator(fieldLabel, ruleName, rule, params)
   }
 }

@@ -1,14 +1,14 @@
 import { Validator } from '../Validator';
 export class LinkOneValidator extends Validator {
-    createRuleValidator(ruleName, rule, params) {
+    createRuleValidator(fieldLabel, ruleName, rule, params) {
         if (ruleName === 'filled') {
             return value => {
                 if (params === true && !value) {
-                    return rule.getMessage(this._fieldName, params);
+                    return rule.getMessage(fieldLabel, params);
                 }
                 return true;
             };
         }
-        return super.createRuleValidator(ruleName, rule, params);
+        return super.createRuleValidator(fieldLabel, ruleName, rule, params);
     }
 }

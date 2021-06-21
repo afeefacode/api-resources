@@ -1,7 +1,7 @@
 import { Field } from './Field';
 export class Relation extends Field {
-    createTypeField(name, json) {
-        const relation = super.createTypeField(name, json);
+    createTypeField(json) {
+        const relation = super.createTypeField(json);
         relation._relatedType = json.related_type;
         return relation;
     }

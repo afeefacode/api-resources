@@ -4,6 +4,6 @@ export declare type RuleJSON = {
 export declare class Rule {
     private _message;
     constructor(json: RuleJSON);
-    getMessage(fieldName: string, param: unknown): string;
+    getMessage(fieldLabel: string, param: unknown): string;
 }
 //# sourceMappingURL=Rule.d.ts.map

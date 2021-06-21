@@ -8,5 +8,5 @@ import { LinkManyRelation } from './LinkManyRelation';
 import { LinkOneRelation } from './LinkOneRelation';
 import { TextAttribute } from './TextAttribute';
 import { VarcharAttribute } from './VarcharAttribute';
-export declare const fields: (VarcharAttribute | TextAttribute | BooleanAttribute | IdAttribute | DateAttribute | IntAttribute | HasManyRelation | HasOneRelation | LinkOneRelation | LinkManyRelation)[];
+export declare const fields: (HasManyRelation | LinkManyRelation | VarcharAttribute | TextAttribute | BooleanAttribute | IdAttribute | DateAttribute | IntAttribute | HasOneRelation | LinkOneRelation)[];
 //# sourceMappingURL=index.d.ts.map

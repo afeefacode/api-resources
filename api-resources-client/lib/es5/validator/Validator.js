@@ -12,17 +12,16 @@ export class Validator {
             }
         }
     }
-    createFieldValidator(fieldName, json) {
+    createFieldValidator(json) {
         const validator = new this.constructor();
-        validator._fieldName = fieldName;
         validator._rules = this._rules;
         validator.setupParams(json.params);
         return validator;
     }
-    getRules() {
+    getRules(fieldLabel) {
         return Object.keys(this._rules).map(name => {
             const rule = this._rules[name];
-            return this.createRuleValidator(name, rule, this._params[name]);
+            return this.createRuleValidator(fieldLabel, name, rule, this._params[name]);
         });
     }
     getParams() {
@@ -35,7 +34,7 @@ export class Validator {
             }
         }
     }
-    createRuleValidator(_ruleName, _rule, _params) {
+    createRuleValidator(_fieldLabel, _ruleName, _rule, _params) {
         return () => true;
     }
 }

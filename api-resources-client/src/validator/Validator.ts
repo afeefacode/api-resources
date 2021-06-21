@@ -11,7 +11,6 @@ export type RuleValidator<T> = (value: T) => boolean | string
 export class Validator<T=any> {
   protected _rules: Record<string, Rule> = {}
   protected _params: Record<string, unknown> = {}
-  protected _fieldName!: string
 
   public setupRules (rules: Record<string, RuleJSON>): void {
     if (rules) {
@@ -22,18 +21,17 @@ export class Validator<T=any> {
     }
   }
 
-  public createFieldValidator (fieldName: string, json: ValidatorJSON): Validator<T> {
+  public createFieldValidator (json: ValidatorJSON): Validator<T> {
     const validator = new (this.constructor as { new (): Validator<T> })()
-    validator._fieldName = fieldName
     validator._rules = this._rules
     validator.setupParams(json.params)
     return validator
   }
 
-  public getRules (): RuleValidator<T>[] {
+  public getRules (fieldLabel: string): RuleValidator<T>[] {
     return Object.keys(this._rules).map(name => {
       const rule = this._rules[name] as Rule
-      return this.createRuleValidator(name, rule, this._params[name])
+      return this.createRuleValidator(fieldLabel, name, rule, this._params[name])
     })
   }
 
@@ -49,7 +47,7 @@ export class Validator<T=any> {
     }
   }
 
-  protected createRuleValidator (_ruleName: string, _rule: Rule, _params: unknown): RuleValidator<T> {
+  protected createRuleValidator (_fieldLabel: string, _ruleName: string, _rule: Rule, _params: unknown): RuleValidator<T> {
     return (): boolean => true
   }
 }

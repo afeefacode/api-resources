@@ -2,9 +2,9 @@ export class Rule {
     constructor(json) {
         this._message = json.message;
     }
-    getMessage(fieldName, param) {
+    getMessage(fieldLabel, param) {
         const params = {
-            fieldName,
+            fieldLabel,
             param
         };
         return this._message.replace(/{{\s*(\w+)\s*}}/g, function (placeholder, placeholderName) {

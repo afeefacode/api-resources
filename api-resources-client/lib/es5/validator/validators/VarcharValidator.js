@@ -1,10 +1,10 @@
 import { Validator } from '../Validator';
 export class VarcharValidator extends Validator {
-    createRuleValidator(ruleName, rule, params) {
+    createRuleValidator(fieldLabel, ruleName, rule, params) {
         if (ruleName === 'filled') {
             return value => {
                 if (params === true && !value.length) {
-                    return rule.getMessage(this._fieldName, params);
+                    return rule.getMessage(fieldLabel, params);
                 }
                 return true;
             };
@@ -12,7 +12,7 @@ export class VarcharValidator extends Validator {
         if (ruleName === 'max') {
             return value => {
                 if (value.length > params) {
-                    return rule.getMessage(this._fieldName, params);
+                    return rule.getMessage(fieldLabel, params);
                 }
                 return true;
             };
@@ -23,11 +23,11 @@ export class VarcharValidator extends Validator {
                     return true;
                 }
                 if (value.length < params) {
-                    return rule.getMessage(this._fieldName, params);
+                    return rule.getMessage(fieldLabel, params);
                 }
                 return true;
             };
         }
-        return super.createRuleValidator(ruleName, rule, params);
+        return super.createRuleValidator(fieldLabel, ruleName, rule, params);
     }
 }

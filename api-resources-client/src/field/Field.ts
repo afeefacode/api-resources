@@ -29,9 +29,9 @@ export class Field {
     return new (this.constructor as { new (): T })()
   }
 
-  public createTypeField (name: string, json: FieldJSON): Field {
+  public createTypeField (json: FieldJSON): Field {
     const field = this.newInstance<Field>()
-    field.setupTypeFieldValidator(name, json.validator)
+    field.setupTypeFieldValidator(json.validator)
     return field
   }
 
@@ -51,11 +51,11 @@ export class Field {
     return value as FieldJSONValue
   }
 
-  protected setupTypeFieldValidator (fieldName: string, json: ValidatorJSON): void {
+  protected setupTypeFieldValidator (json: ValidatorJSON): void {
     if (json) {
       const validator = apiResources.getValidator(json.type)
       if (validator) {
-        this._validator = validator.createFieldValidator(fieldName, json)
+        this._validator = validator.createFieldValidator(json)
       } else {
         console.warn('No field validator of type', json.type)
       }

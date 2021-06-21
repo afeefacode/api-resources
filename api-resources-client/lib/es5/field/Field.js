@@ -7,9 +7,9 @@ export class Field {
     newInstance() {
         return new this.constructor();
     }
-    createTypeField(name, json) {
+    createTypeField(json) {
         const field = this.newInstance();
-        field.setupTypeFieldValidator(name, json.validator);
+        field.setupTypeFieldValidator(json.validator);
         return field;
     }
     getValidator() {
@@ -24,11 +24,11 @@ export class Field {
     serialize(value) {
         return value;
     }
-    setupTypeFieldValidator(fieldName, json) {
+    setupTypeFieldValidator(json) {
         if (json) {
             const validator = apiResources.getValidator(json.type);
             if (validator) {
-                this._validator = validator.createFieldValidator(fieldName, json);
+                this._validator = validator.createFieldValidator(json);
             }
             else {
                 console.warn('No field validator of type', json.type);
