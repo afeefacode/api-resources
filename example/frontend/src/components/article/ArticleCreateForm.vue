@@ -3,10 +3,14 @@
     <template #fields>
       <form-field
         name="author"
+        label="Autor"
         :options="authorOptions()"
       />
 
-      <form-field name="title" />
+      <form-field-text
+        name="title"
+        label="Titel"
+      />
     </template>
   </edit-form>
 </template>

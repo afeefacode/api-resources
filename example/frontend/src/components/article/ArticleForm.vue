@@ -1,11 +1,20 @@
 <template>
   <edit-form v-bind="$attrs">
     <template #fields>
-      <form-field name="title" />
+      <form-field-text
+        name="title"
+        label="Titel"
+      />
 
-      <form-field name="summary" />
+      <form-field-text
+        name="summary"
+        label="Kurzbeschreibung"
+      />
 
-      <form-field name="content" />
+      <form-field-text
+        name="content"
+        label="Text"
+      />
     </template>
   </edit-form>
 </template>
