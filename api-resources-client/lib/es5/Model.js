@@ -1,8 +1,12 @@
+import { __decorate } from "tslib";
 import { apiResources } from './ApiResources';
 import { Relation } from './field/Relation';
+import { enumerable } from './utils/enumerable';
+let ID = 0;
 export class Model {
     constructor(type) {
         this.id = null;
+        this._ID = ++ID;
         this.type = type || this.constructor.type;
     }
     static create(json) {
@@ -66,3 +70,6 @@ export class Model {
     }
 }
 Model.type = 'Model';
+__decorate([
+    enumerable(false)
+], Model.prototype, "_ID", void 0);

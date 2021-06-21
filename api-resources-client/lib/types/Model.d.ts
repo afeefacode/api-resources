@@ -10,6 +10,7 @@ export declare class Model {
     static type: string;
     id: string | null;
     type: string;
+    _ID: number;
     static create(json: ModelJSON): Model;
     static createForNew(fields: ModelAttributes): Model;
     constructor(type?: string);

@@ -2,6 +2,7 @@ import { apiResources } from './ApiResources'
 import { FieldJSONValue, FieldValue } from './field/Field'
 import { Relation } from './field/Relation'
 import { Type } from './type/Type'
+import { enumerable } from './utils/enumerable'
 
 export type ModelJSON = {
   [key: string]: FieldJSONValue | undefined,
@@ -16,6 +17,8 @@ type ModelConstructor = {
   type: string,
 }
 
+let ID: number = 0
+
 export class Model {
   [index: string]: unknown,
 
@@ -23,6 +26,9 @@ export class Model {
 
   public id: string | null = null
   public type: string
+
+  @enumerable(false)
+  public _ID: number = ++ID
 
   public static create (json: ModelJSON): Model {
     const ModelType = apiResources.getModel(json.type) || Model
