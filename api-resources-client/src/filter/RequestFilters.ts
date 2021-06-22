@@ -11,8 +11,8 @@ export type UsedFilters = Record<string, FilterValueType>
 
 /**
  * Request filters do have multiple change entry points:
- * - create: read existing query string and init filter values -> consumer should initially LOAD
- * - get from history: consumer should initially LOAD
+ * - create: read existing query string and init filter values -> consumer should initially -> LOAD
+ * - get from history: consumer should initially -> LOAD
  * - click: update filter values and update query string  -> RELOAD
  * - query changed: update filter values -> RELOAD
  * - init used filters: update filter values and update query string
@@ -43,6 +43,14 @@ export class RequestFilters {
     }
 
     return requestFilters
+  }
+
+  public static fromHistory (historyKey: string): RequestFilters | null {
+    if (filterHistory.hasFilters(historyKey)) {
+      return filterHistory.getFilters(historyKey)
+    } else {
+      return null
+    }
   }
 
   constructor (filters: ActionFilters, historyKey?: string, querySource?: BaseFilterSource) {

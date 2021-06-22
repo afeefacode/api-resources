@@ -1,6 +1,6 @@
 import { Action } from '../action/Action';
 import { ModelJSON } from '../Model';
-import { ResourceJSON } from '../resource/Resource';
+import { Resource, ResourceJSON } from '../resource/Resource';
 import { TypeJSON } from '../type/Type';
 import { ValidatorJSON } from '../validator/Validator';
 export declare type ApiSchemaJSON = {
@@ -19,6 +19,7 @@ export declare class Api {
     constructor(baseUrl: string);
     getBaseUrl(): string;
     loadSchema(): Promise<ApiSchemaJSON>;
+    getResource(resourceName: string): Resource | null;
     getAction(resourceName: string, actionName: string): Action | null;
 }
 //# sourceMappingURL=Api.d.ts.map

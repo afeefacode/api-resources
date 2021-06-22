@@ -33,6 +33,9 @@ export class Api {
         }
         return schema;
     }
+    getResource(resourceName) {
+        return this._resources[resourceName] || null;
+    }
     getAction(resourceName, actionName) {
         const resource = this._resources[resourceName];
         if (!resource) {
