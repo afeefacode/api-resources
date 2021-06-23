@@ -8,6 +8,7 @@ use Afeefa\ApiResources\DI\ContainerAwareInterface;
 use Afeefa\ApiResources\DI\ContainerAwareTrait;
 use Afeefa\ApiResources\DI\DependencyResolver;
 use Afeefa\ApiResources\Exception\Exceptions\ApiException;
+use Afeefa\ApiResources\Resource\Resource;
 use JsonSerializable;
 
 class ApiRequest implements ContainerAwareInterface, ToSchemaJsonInterface, JsonSerializable
@@ -75,6 +76,11 @@ class ApiRequest implements ContainerAwareInterface, ToSchemaJsonInterface, Json
     {
         $this->params = $params;
         return $this;
+    }
+
+    public function getResource(): Resource
+    {
+        return $this->api->getResource($this->resourceName);
     }
 
     public function getAction(): Action
