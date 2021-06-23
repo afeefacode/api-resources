@@ -5,4 +5,7 @@ export class Relation extends Field {
         relation._relatedType = json.related_type;
         return relation;
     }
+    getRelatedType() {
+        return this._relatedType;
+    }
 }

@@ -4,7 +4,7 @@ export class BatchApiRequest extends ApiRequest {
         if (this.currentPromise) {
             return this.currentPromise;
         }
-        this.currentPromise = new Promise((resolve, reject) => {
+        this.currentPromise = new Promise(resolve => {
             setTimeout(() => {
                 this.currentPromise = undefined;
                 resolve(super.send());

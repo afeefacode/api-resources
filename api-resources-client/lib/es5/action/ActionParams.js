@@ -6,4 +6,7 @@ export class ActionParam {
             this._values[key] = value;
         }
     }
+    getType() {
+        return this._type;
+    }
 }

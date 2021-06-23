@@ -14,4 +14,8 @@ export class ActionParam {
       this._values[key] = value
     }
   }
+
+  public getType (): string {
+    return this._type
+  }
 }

@@ -69,6 +69,14 @@ export class Action {
     return this.getResource().getName() + '.' + this._name
   }
 
+  public getResponse (): ActionResponse | null {
+    return this._response
+  }
+
+  public getInput (): ActionInput | null {
+    return this._input
+  }
+
   public getFilters (): ActionFilters {
     return this._filters
   }

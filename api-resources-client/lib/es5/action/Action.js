@@ -41,6 +41,12 @@ export class Action {
     getFullName() {
         return this.getResource().getName() + '.' + this._name;
     }
+    getResponse() {
+        return this._response;
+    }
+    getInput() {
+        return this._input;
+    }
     getFilters() {
         return this._filters;
     }
