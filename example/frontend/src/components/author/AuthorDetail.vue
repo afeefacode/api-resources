@@ -27,7 +27,7 @@
 <script>
 import { Component, Vue } from 'vue-property-decorator'
 import ArticlesList from '@/components/article/ArticlesList'
-import { ArticlesConfig } from '../article/ArticlesConfig'
+import { ArticlesConfig } from '@/components/article/ArticlesConfig'
 import { QuerySourceType } from '@a-vue/components/list/QuerySourceType'
 
 @Component({
