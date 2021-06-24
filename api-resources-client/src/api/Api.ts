@@ -58,12 +58,12 @@ export class Api {
     return schema
   }
 
-  public getResource (resourceName: string): Resource | null {
-    return this._resources[resourceName] || null
+  public getResource (resourceType: string): Resource | null {
+    return this._resources[resourceType] || null
   }
 
-  public getAction (resourceName: string, actionName: string): Action | null {
-    const resource = this._resources[resourceName]
+  public getAction (resourceType: string, actionName: string): Action | null {
+    const resource = this._resources[resourceType]
     if (!resource) {
       return null
     }

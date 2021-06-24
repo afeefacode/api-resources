@@ -33,11 +33,11 @@ export class Api {
         }
         return schema;
     }
-    getResource(resourceName) {
-        return this._resources[resourceName] || null;
+    getResource(resourceType) {
+        return this._resources[resourceType] || null;
     }
-    getAction(resourceName, actionName) {
-        const resource = this._resources[resourceName];
+    getAction(resourceType, actionName) {
+        const resource = this._resources[resourceType];
         if (!resource) {
             return null;
         }

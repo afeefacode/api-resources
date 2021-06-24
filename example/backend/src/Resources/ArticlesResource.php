@@ -30,7 +30,7 @@ class ArticlesResource extends Resource
                 $filters->add('author_id', function (IdFilter $filter) {
                     $filter->request(function (ApiRequest $request) {
                         $request
-                            ->resourceName(AuthorsResource::$type)
+                            ->resourceType(AuthorsResource::$type)
                             ->actionName('get_authors')
                             ->fields(['name' => true, 'count_articles' => true]);
                     });
@@ -39,7 +39,7 @@ class ArticlesResource extends Resource
                 $filters->add('tag_id', function (IdFilter $filter) {
                     $filter->request(function (ApiRequest $request) {
                         $request
-                            ->resourceName(TagsResource::$type)
+                            ->resourceType(TagsResource::$type)
                             ->actionName('get_tags')
                             ->fields(['name' => true, 'count_users' => true]);
                     });

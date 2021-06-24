@@ -48,8 +48,8 @@ export class ApiRequest {
         //   return this._lastRequest
         // }
         // this._lastRequestJSON = JSON.stringify(params)
-        const urlResourceName = this._action.getResource().getName().replace(/.+\./, '').replace(/Resource/, '');
-        let url = this._action.getApi().getBaseUrl() + '?' + urlResourceName + ':' + this._action.getName();
+        const urlResourceType = this._action.getResource().getName().replace(/.+\./, '').replace(/Resource/, '');
+        let url = this._action.getApi().getBaseUrl() + '?' + urlResourceType + ':' + this._action.getName();
         if (this._params && this._params.id) {
             url += ':' + this._params.id;
         }

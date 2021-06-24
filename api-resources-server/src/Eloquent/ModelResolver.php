@@ -157,7 +157,7 @@ class ModelResolver
 
                 $getResult = $r->forward(function (ApiRequest $apiRequest) {
                     $apiRequest
-                        ->resourceName($apiRequest->getResource()->getType())
+                        ->resourceType($apiRequest->getResource()->getType())
                         ->actionName('get');
                 });
                 return $getResult['data'];
@@ -181,7 +181,7 @@ class ModelResolver
 
                 $getResult = $r->forward(function (ApiRequest $apiRequest) use ($model) {
                     $apiRequest
-                        ->resourceName($apiRequest->getResource()->getType())
+                        ->resourceType($apiRequest->getResource()->getType())
                         ->actionName('get')
                         ->params(['id' => $model->id]);
                 });

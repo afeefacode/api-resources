@@ -64,7 +64,7 @@ $app->get('/backend-api/test', function (ServerRequest $request, Response $respo
     $result = $this->call(function (BackendApi $api) {
         return $api->request(function (ApiRequest $request) {
             $request
-                ->resourceName(ArticlesResource::$type)
+                ->resourceType(ArticlesResource::$type)
                 ->actionName('get_articles')
                 ->fields([
                     'title' => true,
@@ -111,7 +111,7 @@ $app->get('/backend-api/tags', function (ServerRequest $request, Response $respo
     $result = $this->call(function (BackendApi $api) {
         return $api->request(function (ApiRequest $request) {
             $request
-                ->resourceName(ArticlesResource::$type)
+                ->resourceType(ArticlesResource::$type)
                 ->actionName('get_articles')
                 ->fields([
                     'title' => true,
@@ -140,7 +140,7 @@ $app->get('/backend-api/author', function (ServerRequest $request, Response $res
     $result = $this->call(function (BackendApi $api, TypeClassMap $typeClassMap) {
         $result = $api->request(function (ApiRequest $request) {
             $request
-                ->resourceName(AuthorsResource::$type)
+                ->resourceType(AuthorsResource::$type)
                 ->actionName('get_author')
                 ->params([
                     'id' => 6
