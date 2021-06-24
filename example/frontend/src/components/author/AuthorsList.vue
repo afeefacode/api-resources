@@ -23,13 +23,13 @@
         </v-col>
       </v-row>
 
-      <v-row>
+      <div class="ml-n4 mt-1">
         <list-filter
           name="page"
           :count="count"
           :page_size="filters.page_size.value"
         />
-      </v-row>
+      </div>
     </template>
 
     <template #model="{ model: author }">
