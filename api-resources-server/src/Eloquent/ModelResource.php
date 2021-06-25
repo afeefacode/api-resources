@@ -63,6 +63,10 @@ class ModelResource extends Resource
         $query->orderBy($field, $direction);
     }
 
+    protected function filter(string $name, string $value, Builder $query): void
+    {
+    }
+
     protected function getEloquentResolver(): ModelResolver
     {
         $type = $this->container->get($this->ModelTypeClass);
@@ -73,6 +77,9 @@ class ModelResource extends Resource
             })
             ->order(function (string $field, string $direction, Builder $query) {
                 $this->order($field, $direction, $query);
+            })
+            ->filter(function (string $name, string $value, Builder $query) {
+                $this->filter($name, $value, $query);
             });
     }
 
