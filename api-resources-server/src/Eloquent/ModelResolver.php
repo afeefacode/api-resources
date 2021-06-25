@@ -168,9 +168,11 @@ class ModelResolver
                     $query->withCount($relationCounts);
                 }
 
-                return $query
-                    ->where('id', $request->getParam('id'))
-                    ->first();
+                if ($request->hasParam('id')) {
+                    $query->where('id', $request->getParam('id'));
+                }
+
+                return $query->first();
             });
     }
 
