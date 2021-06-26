@@ -1,5 +1,9 @@
 <template>
-  <v-container class="pl-8 d-flex flex-column">
+  <v-container
+    pl-8
+    d-flex
+    flex-column
+  >
     <a href="/">Backend</a>
 
     <router-link :to="{name: 'root'}">
