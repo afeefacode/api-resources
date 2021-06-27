@@ -11,6 +11,10 @@ class Model extends EloquentModel implements ModelInterface
 
     protected $visibleFields = [];
 
+    protected $casts = [
+        'id' => 'string'
+    ];
+
     public function getTypeAttribute()
     {
         return static::$type;
