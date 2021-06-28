@@ -7,6 +7,9 @@ export class ApiRequest {
         this._fields = {};
         if (json) {
             this._fields = json.fields;
+            if (json.scopes) {
+                this._scopes = json.scopes;
+            }
             if (json.filters) {
                 this._filters = json.filters;
             }
@@ -28,6 +31,10 @@ export class ApiRequest {
     }
     addField(name, value) {
         this._fields[name] = value;
+        return this;
+    }
+    scopes(scopes) {
+        this._scopes = scopes;
         return this;
     }
     filters(filters) {
@@ -69,8 +76,9 @@ export class ApiRequest {
             resource: this._action.getResource().getName(),
             action: this._action.getName(),
             params: this._params,
-            fields: this._fields,
+            scopes: this._scopes,
             filters: this._filters,
+            fields: this._fields,
             data: this._data
         };
     }

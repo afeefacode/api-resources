@@ -6,17 +6,17 @@ import { RequestFilters, UsedFilters } from './RequestFilters'
 export type FilterValueType = boolean | string | number | [string, FilterValueType] | null
 
 export type FilterJSON = {
-  type: string,
-  default: FilterValueType,
-  options: [],
+  type: string
+  default: FilterValueType
+  options: []
   request: ApiRequestJSON
 }
 
 export type FilterParams = object
 
 type FilterConstructor = {
-  new (requestFilters?: RequestFilters): Filter,
-  type: string,
+  new (requestFilters?: RequestFilters): Filter
+  type: string
 }
 
 type RequestFactory = (() => ApiRequest) | null

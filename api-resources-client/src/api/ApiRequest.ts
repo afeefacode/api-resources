@@ -4,16 +4,18 @@ import { Action } from '../action/Action'
 import { ApiResponse } from './ApiResponse'
 
 export type ApiRequestJSON = {
-  resource: string,
-  action: string,
-  fields: Record<string, unknown>,
+  resource: string
+  action: string
+  scopes: Record<string, unknown>
   filters: Record<string, unknown>
+  fields: Record<string, unknown>
   params: Record<string, unknown>
 }
 
 export class ApiRequest {
   private _action!: Action
   private _fields: Record<string, unknown> = {}
+  private _scopes!: Record<string, unknown>
   private _filters!: Record<string, unknown>
   private _params!: Record<string, unknown>
   private _data!: Record<string, unknown>
@@ -24,6 +26,10 @@ export class ApiRequest {
   constructor (json?: ApiRequestJSON) {
     if (json) {
       this._fields = json.fields
+
+      if (json.scopes) {
+        this._scopes = json.scopes
+      }
 
       if (json.filters) {
         this._filters = json.filters
@@ -51,6 +57,11 @@ export class ApiRequest {
 
   public addField (name: string, value: unknown): ApiRequest {
     this._fields[name] = value
+    return this
+  }
+
+  public scopes (scopes: Record<string, unknown>): ApiRequest {
+    this._scopes = scopes
     return this
   }
 
@@ -102,8 +113,9 @@ export class ApiRequest {
       resource: this._action.getResource().getName(),
       action: this._action.getName(),
       params: this._params,
-      fields: this._fields,
+      scopes: this._scopes,
       filters: this._filters,
+      fields: this._fields,
       data: this._data
     }
   }

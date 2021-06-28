@@ -1,6 +1,6 @@
 import { Filter } from '../Filter'
 
-type Direction = 'asc' | 'desc';
+type Direction = 'asc' | 'desc'
 
 type OrderFilterValue = Record<string, Direction>
 

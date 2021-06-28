@@ -5,16 +5,16 @@ import { Type } from './type/Type'
 import { enumerable } from './utils/enumerable'
 
 export type ModelJSON = {
-  [key: string]: FieldJSONValue | undefined,
+  [key: string]: FieldJSONValue | undefined
   type: string
-  id?: string | null,
+  id?: string | null
 }
 
 type ModelAttributes = Record<string, unknown>
 
 type ModelConstructor = {
-  new (): Model,
-  type: string,
+  new (): Model
+  type: string
 }
 
 let ID: number = 0

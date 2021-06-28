@@ -1,5 +1,5 @@
 export type ActionParamJSON = {
-  type: string,
+  type: string
   [key: string]: unknown
 }
 

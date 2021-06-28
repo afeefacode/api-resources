@@ -6,7 +6,7 @@ import { ApiRequest } from './ApiRequest'
 export type ApiResponseDataJSON = ModelJSON | ModelJSON[]
 
 export type ApiResponseJSON = {
-  data: ApiResponseDataJSON,
+  data: ApiResponseDataJSON
   meta: object
 }
 

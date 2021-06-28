@@ -11,14 +11,14 @@ import { ActionParam, ActionParamJSON } from './ActionParams'
 import { ActionResponse } from './ActionResponse'
 
 export type ActionJSON = {
-  params: Record<string, ActionParamJSON>,
-  filters: Record<string, FilterJSON>,
+  params: Record<string, ActionParamJSON>
+  filters: Record<string, FilterJSON>
   input: {
     type: string
-  },
+  }
   response: {
     type: string
-  },
+  }
 }
 
 export type ActionFilters = Record<string, Filter>

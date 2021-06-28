@@ -8,9 +8,9 @@ import { Type, TypeJSON } from '../type/Type'
 import { Validator, ValidatorJSON } from '../validator/Validator'
 
 export type ApiSchemaJSON = {
-  types: Record<string, TypeJSON>,
-  resources: Record<string, ResourceJSON>,
-  validators: Record<string, ValidatorJSON>,
+  types: Record<string, TypeJSON>
+  resources: Record<string, ResourceJSON>
+  validators: Record<string, ValidatorJSON>
 }
 
 export type ResultDataJSON = {

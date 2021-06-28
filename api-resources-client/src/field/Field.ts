@@ -3,7 +3,7 @@ import { Model, ModelJSON } from '../Model'
 import { Validator, ValidatorJSON } from '../validator/Validator'
 
 export type FieldJSON = {
-  type: string,
+  type: string
   validator: ValidatorJSON
 }
 
@@ -12,8 +12,8 @@ export type FieldValue = boolean | string | number | Date | null | Model | Model
 export type FieldJSONValue = boolean | string | number | null | ModelJSON | ModelJSON[]
 
 type FieldConstructor<T> = {
-  new (): T,
-  type: string,
+  new (): T
+  type: string
 }
 
 export class Field {

@@ -1,7 +1,7 @@
 import { Rule, RuleJSON } from './Rule'
 
 export type ValidatorJSON = {
-  type: string,
+  type: string
   rules: Record<string, RuleJSON>
   params: Record<string, unknown>
 }
