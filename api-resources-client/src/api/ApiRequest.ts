@@ -1,6 +1,7 @@
-import axios from 'axios'
+import axios, { AxiosError } from 'axios'
 
 import { Action } from '../action/Action'
+import { ApiError } from './ApiError'
 import { ApiResponse } from './ApiResponse'
 
 export type ApiRequestJSON = {
@@ -80,7 +81,7 @@ export class ApiRequest {
     return this
   }
 
-  public send (): Promise<ApiResponse | boolean> {
+  public send (): Promise<ApiResponse | ApiError> {
     const params = this.serialize()
 
     // if (this._lastRequestJSON === JSON.stringify(params)) {
@@ -97,11 +98,11 @@ export class ApiRequest {
 
     const axiosResponse = axios.post(url, params)
       .then(result => {
-        return new ApiResponse(new ApiRequest(), result)
+        return new ApiResponse(this, result)
       })
-      .catch((error) => {
+      .catch((error: AxiosError) => {
         console.error(error)
-        return false
+        return new ApiError(this, error)
       })
 
     // this._lastRequest = request

@@ -1,4 +1,5 @@
 import { Action } from '../action/Action';
+import { ApiError } from './ApiError';
 import { ApiResponse } from './ApiResponse';
 export declare type ApiRequestJSON = {
     resource: string;
@@ -24,7 +25,7 @@ export declare class ApiRequest {
     filters(filters: Record<string, unknown>): ApiRequest;
     params(params: Record<string, unknown>): ApiRequest;
     data(data: Record<string, unknown>): ApiRequest;
-    send(): Promise<ApiResponse | boolean>;
+    send(): Promise<ApiResponse | ApiError>;
     protected serialize(): object;
 }
 //# sourceMappingURL=ApiRequest.d.ts.map

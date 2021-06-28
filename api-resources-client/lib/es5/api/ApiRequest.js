@@ -1,4 +1,5 @@
 import axios from 'axios';
+import { ApiError } from './ApiError';
 import { ApiResponse } from './ApiResponse';
 export class ApiRequest {
     // private _lastRequestJSON: string = ''
@@ -62,11 +63,11 @@ export class ApiRequest {
         }
         const axiosResponse = axios.post(url, params)
             .then(result => {
-            return new ApiResponse(new ApiRequest(), result);
+            return new ApiResponse(this, result);
         })
             .catch((error) => {
             console.error(error);
-            return false;
+            return new ApiError(this, error);
         });
         // this._lastRequest = request
         return axiosResponse;
