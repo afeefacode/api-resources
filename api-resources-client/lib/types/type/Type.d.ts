@@ -15,7 +15,10 @@ export declare class Type {
     getTranslations(): Record<string, string>;
     t(key: string): string | null;
     getFields(): Record<string, Field>;
+    getField(name: string): Field | null;
     getUpdateFields(): Record<string, Field>;
+    getUpdateField(name: string): Field | null;
     getCreateFields(): Record<string, Field>;
+    getCreateField(name: string): Field | null;
 }
 //# sourceMappingURL=Type.d.ts.map

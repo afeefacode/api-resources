@@ -63,11 +63,23 @@ export class Type {
     return this._fields
   }
 
+  public getField (name: string): Field | null {
+    return this._fields[name] || null
+  }
+
   public getUpdateFields (): Record<string, Field> {
     return this._updateFields
   }
 
+  public getUpdateField (name: string): Field | null {
+    return this._updateFields[name] || null
+  }
+
   public getCreateFields (): Record<string, Field> {
     return this._createFields
+  }
+
+  public getCreateField (name: string): Field | null {
+    return this._createFields[name] || null
   }
 }

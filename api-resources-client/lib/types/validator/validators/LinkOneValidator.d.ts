@@ -1,4 +1,4 @@
-import { ModelJSON } from 'src/Model';
+import { ModelJSON } from '../../Model';
 import { Rule } from '../Rule';
 import { RuleValidator, Validator } from '../Validator';
 export declare class LinkOneValidator extends Validator<ModelJSON | null> {

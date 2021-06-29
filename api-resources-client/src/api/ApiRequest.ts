@@ -5,6 +5,7 @@ import { ApiError } from './ApiError'
 import { ApiResponse } from './ApiResponse'
 
 export type ApiRequestJSON = {
+  api: string,
   resource: string
   action: string
   scopes: Record<string, unknown>
@@ -61,6 +62,14 @@ export class ApiRequest {
     return this
   }
 
+  public addFields (fields: Record<string, unknown>): ApiRequest {
+    this._fields = {
+      ...this._fields,
+      ...fields
+    }
+    return this
+  }
+
   public scopes (scopes: Record<string, unknown>): ApiRequest {
     this._scopes = scopes
     return this
@@ -68,6 +77,19 @@ export class ApiRequest {
 
   public filters (filters: Record<string, unknown>): ApiRequest {
     this._filters = filters
+    return this
+  }
+
+  public addFilter (name: string, value: unknown): ApiRequest {
+    this._filters[name] = value
+    return this
+  }
+
+  public addFilters (filters: Record<string, unknown>): ApiRequest {
+    this._filters = {
+      ...this._filters,
+      ...filters
+    }
     return this
   }
 

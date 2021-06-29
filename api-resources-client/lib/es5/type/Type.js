@@ -44,10 +44,19 @@ export class Type {
     getFields() {
         return this._fields;
     }
+    getField(name) {
+        return this._fields[name] || null;
+    }
     getUpdateFields() {
         return this._updateFields;
     }
+    getUpdateField(name) {
+        return this._updateFields[name] || null;
+    }
     getCreateFields() {
         return this._createFields;
+    }
+    getCreateField(name) {
+        return this._createFields[name] || null;
     }
 }

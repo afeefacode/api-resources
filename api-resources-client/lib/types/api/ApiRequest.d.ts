@@ -2,6 +2,7 @@ import { Action } from '../action/Action';
 import { ApiError } from './ApiError';
 import { ApiResponse } from './ApiResponse';
 export declare type ApiRequestJSON = {
+    api: string;
     resource: string;
     action: string;
     scopes: Record<string, unknown>;
@@ -21,8 +22,11 @@ export declare class ApiRequest {
     getAction(): Action;
     fields(fields: Record<string, unknown>): ApiRequest;
     addField(name: string, value: unknown): ApiRequest;
+    addFields(fields: Record<string, unknown>): ApiRequest;
     scopes(scopes: Record<string, unknown>): ApiRequest;
     filters(filters: Record<string, unknown>): ApiRequest;
+    addFilter(name: string, value: unknown): ApiRequest;
+    addFilters(filters: Record<string, unknown>): ApiRequest;
     params(params: Record<string, unknown>): ApiRequest;
     data(data: Record<string, unknown>): ApiRequest;
     send(): Promise<ApiResponse | ApiError>;

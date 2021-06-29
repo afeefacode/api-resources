@@ -34,12 +34,24 @@ export class ApiRequest {
         this._fields[name] = value;
         return this;
     }
+    addFields(fields) {
+        this._fields = Object.assign(Object.assign({}, this._fields), fields);
+        return this;
+    }
     scopes(scopes) {
         this._scopes = scopes;
         return this;
     }
     filters(filters) {
         this._filters = filters;
+        return this;
+    }
+    addFilter(name, value) {
+        this._filters[name] = value;
+        return this;
+    }
+    addFilters(filters) {
+        this._filters = Object.assign(Object.assign({}, this._filters), filters);
         return this;
     }
     params(params) {

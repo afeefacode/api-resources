@@ -1,10 +1,13 @@
+import { Action } from '../action/Action'
+import { ApiRequest, ApiRequestJSON } from '../api/ApiRequest'
 import { apiResources } from '../ApiResources'
 import { Model, ModelJSON } from '../Model'
 import { Validator, ValidatorJSON } from '../validator/Validator'
 
 export type FieldJSON = {
   type: string
-  validator: ValidatorJSON
+  validator: ValidatorJSON,
+  options_request: ApiRequestJSON
 }
 
 export type FieldValue = boolean | string | number | Date | null | Model | Model[]
@@ -16,14 +19,18 @@ type FieldConstructor<T> = {
   type: string
 }
 
+type RequestFactory = (() => ApiRequest) | null
+
 export class Field {
   public type!: string
+
+  private _validator: Validator | null = null
+
+  private _optionsRequestFactory: RequestFactory = null
 
   constructor () {
     this.type = (this.constructor as FieldConstructor<Field>).type
   }
-
-  private _validator: Validator | null = null
 
   public newInstance<T> (): T {
     return new (this.constructor as { new (): T })()
@@ -31,12 +38,37 @@ export class Field {
 
   public createTypeField (json: FieldJSON): Field {
     const field = this.newInstance<Field>()
+
+    if (json.options_request) {
+      const optionsRequest = json.options_request
+      const api = apiResources.getApi(optionsRequest.api)
+      if (api) {
+        field._optionsRequestFactory = (): ApiRequest => {
+          const requestAction = api.getAction(optionsRequest.resource, optionsRequest.action)
+          return new ApiRequest(optionsRequest)
+            .action(requestAction as Action)
+        }
+      }
+    }
+
     field.setupTypeFieldValidator(json.validator)
+
     return field
   }
 
   public getValidator (): Validator | null {
     return this._validator
+  }
+
+  public hasOptionsRequest (): boolean {
+    return !!this._optionsRequestFactory
+  }
+
+  public getOptionsRequest (): ApiRequest | null {
+    if (this._optionsRequestFactory) {
+      return this._optionsRequestFactory()
+    }
+    return null
   }
 
   public default (): FieldValue {

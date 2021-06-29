@@ -29,7 +29,7 @@ class AuthorsResource extends Resource
                 $filters->add('q', KeywordFilter::class);
 
                 $filters->add('tag_id', function (IdFilter $filter) {
-                    $filter->request(function (ApiRequest $request) {
+                    $filter->optionsRequest(function (ApiRequest $request) {
                         $request
                             ->resourceType(TagsResource::$type)
                             ->actionName('get_tags')

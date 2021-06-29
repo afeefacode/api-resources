@@ -1,7 +1,9 @@
+import { ApiRequest } from '../api/ApiRequest';
 import { apiResources } from '../ApiResources';
 export class Field {
     constructor() {
         this._validator = null;
+        this._optionsRequestFactory = null;
         this.type = this.constructor.type;
     }
     newInstance() {
@@ -9,11 +11,31 @@ export class Field {
     }
     createTypeField(json) {
         const field = this.newInstance();
+        if (json.options_request) {
+            const optionsRequest = json.options_request;
+            const api = apiResources.getApi(optionsRequest.api);
+            if (api) {
+                field._optionsRequestFactory = () => {
+                    const requestAction = api.getAction(optionsRequest.resource, optionsRequest.action);
+                    return new ApiRequest(optionsRequest)
+                        .action(requestAction);
+                };
+            }
+        }
         field.setupTypeFieldValidator(json.validator);
         return field;
     }
     getValidator() {
         return this._validator;
+    }
+    hasOptionsRequest() {
+        return !!this._optionsRequestFactory;
+    }
+    getOptionsRequest() {
+        if (this._optionsRequestFactory) {
+            return this._optionsRequestFactory();
+        }
+        return null;
     }
     default() {
         return null;

@@ -28,7 +28,7 @@ class ArticlesResource extends Resource
         $actions->add('get_articles', function (Action $action) {
             $action->filters(function (FilterBag $filters) {
                 $filters->add('author_id', function (IdFilter $filter) {
-                    $filter->request(function (ApiRequest $request) {
+                    $filter->optionsRequest(function (ApiRequest $request) {
                         $request
                             ->resourceType(AuthorsResource::$type)
                             ->actionName('get_authors')
@@ -37,7 +37,7 @@ class ArticlesResource extends Resource
                 });
 
                 $filters->add('tag_id', function (IdFilter $filter) {
-                    $filter->request(function (ApiRequest $request) {
+                    $filter->optionsRequest(function (ApiRequest $request) {
                         $request
                             ->resourceType(TagsResource::$type)
                             ->actionName('get_tags')

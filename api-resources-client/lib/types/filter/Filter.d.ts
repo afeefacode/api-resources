@@ -7,7 +7,7 @@ export declare type FilterJSON = {
     type: string;
     default: FilterValueType;
     options: [];
-    request: ApiRequestJSON;
+    optionsRequest: ApiRequestJSON;
 };
 export declare type FilterParams = object;
 declare type RequestFactory = (() => ApiRequest) | null;
