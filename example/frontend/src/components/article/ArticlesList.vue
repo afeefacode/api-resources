@@ -2,7 +2,6 @@
   <list-view
     v-bind="$attrs"
     :filters.sync="filters"
-    :count.sync="count"
   >
     <template #filters>
       <v-row>
@@ -23,21 +22,11 @@
         </v-col>
 
         <v-col cols="3">
-          <list-filter name="page_size" />
-        </v-col>
-
-        <v-col cols="3">
           <list-filter name="order" />
         </v-col>
       </v-row>
 
-      <div class="ml-n4 mt-1">
-        <list-filter
-          name="page"
-          :count="count"
-          :page_size="filters.page_size.value"
-        />
-      </div>
+      <list-filter-page />
     </template>
 
     <template #model="{ model: article }">
@@ -75,7 +64,6 @@ import { Component, Vue } from 'vue-property-decorator'
 @Component
 export default class ArticlesList extends Vue {
   filters = []
-  count = 0
 
   clickTag (tag) {
     this.filters.tag_id.value = tag.id
