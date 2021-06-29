@@ -4,7 +4,7 @@
     :filters.sync="filters"
   >
     <template #filters>
-      <v-row>
+      <list-filter-row>
         <v-col cols="3">
           <list-filter name="author_id" />
         </v-col>
@@ -17,14 +17,14 @@
           <list-filter name="has_comments" />
         </v-col>
 
-        <v-col cols="3">
-          <list-filter name="q" />
-        </v-col>
+        <list-filter-row>
+          <list-filter-search />
+        </list-filter-row>
 
         <v-col cols="3">
           <list-filter name="order" />
         </v-col>
-      </v-row>
+      </list-filter-row>
 
       <list-filter-page />
     </template>

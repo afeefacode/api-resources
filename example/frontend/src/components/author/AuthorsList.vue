@@ -4,19 +4,19 @@
     :filters.sync="filters"
   >
     <template #filters>
-      <v-row>
+      <list-filter-row>
         <v-col cols="3">
           <list-filter name="tag_id" />
         </v-col>
 
-        <v-col cols="3">
-          <list-filter name="q" />
-        </v-col>
+        <list-filter-row>
+          <list-filter-search />
+        </list-filter-row>
 
         <v-col cols="3">
           <list-filter name="order" />
         </v-col>
-      </v-row>
+      </list-filter-row>
 
       <list-filter-page />
     </template>
