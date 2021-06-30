@@ -166,6 +166,10 @@ class RelationResolver extends DataResolver
             $models = ($this->flattenCallback)($objects);
         } else {
             $models = array_values($objects);
+            // nested array
+            if (is_array($models[0] ?? null)) {
+                $models = array_merge(...$models);
+            }
         }
 
         foreach ($resolveContext->getRelationResolvers() as $relationResolver) {
