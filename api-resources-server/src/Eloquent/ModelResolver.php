@@ -359,17 +359,6 @@ class ModelResolver
                 }
             }
         }
-
-        $attributeResolvers = $c->getAttributeResolvers();
-        foreach ($attributeResolvers as $attributeResolver) {
-            $count = $attributeResolver->getCount();
-            if ($count) {
-                foreach ($count as $field => $callback) {
-                    $relationCounts[$field] = $callback;
-                }
-            }
-        }
-
         return $relationCounts;
     }
 
@@ -386,17 +375,6 @@ class ModelResolver
                 }
             }
         }
-
-        $attributeResolvers = $c->getAttributeResolvers();
-        foreach ($attributeResolvers as $attributeResolver) {
-            $count = $attributeResolver->getCount();
-            if ($count) {
-                foreach ($count as $field => $callback) {
-                    $relationCounts[$field] = $callback;
-                }
-            }
-        }
-
         return $relationCounts;
     }
 

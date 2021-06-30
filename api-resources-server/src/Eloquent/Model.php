@@ -25,6 +25,11 @@ class Model extends EloquentModel implements ModelInterface
         return static::$type;
     }
 
+    public function apiResourcesSetAttribute(string $name, $value): void
+    {
+        $this->$name = $value;
+    }
+
     public function apiResourcesSetRelation(string $name, $value): void
     {
         $this->$name = $value;
