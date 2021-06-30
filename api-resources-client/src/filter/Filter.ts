@@ -95,7 +95,7 @@ export class Filter {
 
   public initFromUsed (usedFilters: UsedFilters): void {
     const usedFilter = usedFilters[this.name]
-    if (usedFilter) {
+    if (usedFilter !== undefined) {
       this.value = usedFilter
     }
   }

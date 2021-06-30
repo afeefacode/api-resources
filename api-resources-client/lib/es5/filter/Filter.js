@@ -53,7 +53,7 @@ export class Filter {
     }
     initFromUsed(usedFilters) {
         const usedFilter = usedFilters[this.name];
-        if (usedFilter) {
+        if (usedFilter !== undefined) {
             this.value = usedFilter;
         }
     }
