@@ -25,7 +25,7 @@ export class Model {
         const model = new ModelType();
         const type = apiResources.getType(this.type);
         for (const [name, field] of Object.entries(type.getCreateFields())) {
-            if (fields[name]) {
+            if (!fields || fields[name]) {
                 model[name] = field.default();
             }
         }
@@ -66,7 +66,8 @@ export class Model {
             json.id = this.id;
         }
         const type = apiResources.getType(this.type);
-        for (const [name, field] of Object.entries(type.getUpdateFields())) {
+        const typeFields = this.id ? type.getUpdateFields() : type.getCreateFields();
+        for (const [name, field] of Object.entries(typeFields)) {
             if (!fields || fields[name]) {
                 json[name] = field.serialize(this[name]);
             }

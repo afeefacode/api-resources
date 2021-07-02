@@ -12,7 +12,7 @@ export declare class Model {
     type: string;
     _ID: number;
     static create(json: ModelJSON): Model;
-    static createForNew(fields: ModelAttributes): Model;
+    static createForNew(fields?: ModelAttributes): Model;
     constructor(type?: string);
     deserialize(json: ModelJSON): void;
     cloneForEdit(fields?: ModelAttributes): Model;

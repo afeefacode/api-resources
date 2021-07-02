@@ -37,13 +37,13 @@ export class Model {
     return model
   }
 
-  public static createForNew (fields: ModelAttributes): Model {
+  public static createForNew (fields?: ModelAttributes): Model {
     const ModelType = this
     const model = new ModelType()
 
     const type: Type = apiResources.getType(this.type) as Type
     for (const [name, field] of Object.entries(type.getCreateFields())) {
-      if (fields[name]) {
+      if (!fields || fields[name]) {
         model[name] = field.default()
       }
     }
@@ -100,7 +100,8 @@ export class Model {
     }
 
     const type: Type = apiResources.getType(this.type) as Type
-    for (const [name, field] of Object.entries(type.getUpdateFields())) {
+    const typeFields = this.id ? type.getUpdateFields() : type.getCreateFields()
+    for (const [name, field] of Object.entries(typeFields)) {
       if (!fields || fields[name]) {
         json[name] = field.serialize(this[name] as FieldValue)
       }
