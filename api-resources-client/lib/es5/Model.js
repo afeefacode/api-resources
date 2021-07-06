@@ -12,6 +12,7 @@ export class Model {
     constructor(type) {
         this.id = null;
         this._ID = ++ID;
+        this.class = this.constructor;
         this.type = type || this.constructor.type;
     }
     static create(json) {
@@ -79,3 +80,6 @@ Model.type = 'Model';
 __decorate([
     enumerable(false)
 ], Model.prototype, "_ID", void 0);
+__decorate([
+    enumerable(false)
+], Model.prototype, "class", void 0);

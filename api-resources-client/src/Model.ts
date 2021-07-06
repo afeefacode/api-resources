@@ -14,7 +14,9 @@ type ModelAttributes = Record<string, unknown>
 
 type ModelConstructor = {
   new (): Model
-  type: string
+  type: string,
+  create (json: ModelJSON): Model,
+  createForNew (fields?: ModelAttributes): Model
 }
 
 let ID: number = 0
@@ -29,6 +31,9 @@ export class Model {
 
   @enumerable(false)
   public _ID: number = ++ID
+
+  @enumerable(false)
+  public class: ModelConstructor
 
   public static create (json: ModelJSON): Model {
     const ModelType = apiResources.getModel(json.type) || Model
@@ -52,6 +57,7 @@ export class Model {
   }
 
   constructor (type?: string) {
+    this.class = this.constructor as ModelConstructor
     this.type = type || (this.constructor as ModelConstructor).type
   }
 
