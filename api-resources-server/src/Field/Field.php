@@ -158,7 +158,7 @@ class Field extends BagEntry
 
     public function getSaveResolve(): ?Closure
     {
-        $callback = $this->resolveSaveCallback;
+        $callback = $this->resolveSaveCallback ?? null;
 
         if (!$callback) {
             throw new InvalidConfigurationException("Field {$this->name} does not have a save resolver.");
