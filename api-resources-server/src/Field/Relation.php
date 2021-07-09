@@ -14,6 +14,7 @@ use Closure;
  * @method Relation required(bool $required = true)
  * @method Relation allowed()
  * @method Relation resolve(string|callable|Closure $classOrCallback)
+ * @method Relation resolveSave(string|callable|Closure $classOrCallback)
  */
 class Relation extends Field
 {
