@@ -4,7 +4,6 @@ namespace Afeefa\ApiResources\Eloquent;
 
 use Afeefa\ApiResources\Api\ApiRequest;
 use Afeefa\ApiResources\DB\ActionResolver;
-use Afeefa\ApiResources\DB\RelationResolver;
 use Afeefa\ApiResources\DB\ResolveContext;
 use Afeefa\ApiResources\Field\Attribute;
 use Afeefa\ApiResources\Field\Fields\HasManyRelation;
