@@ -123,7 +123,7 @@ class Field extends BagEntry
 
     public function getResolve(): ?Closure
     {
-        $callback = $this->resolveCallback;
+        $callback = $this->resolveCallback ?? null;
 
         if (!$callback) {
             throw new InvalidConfigurationException("Field {$this->name} does not have a get resolver.");
