@@ -195,7 +195,7 @@ class ApiRequest implements ContainerAwareInterface, ToSchemaJsonInterface, Json
             }
         );
 
-        return $actionResolver->fetch();
+        return $actionResolver->resolve();
     }
 
     public function toSchemaJson(): array

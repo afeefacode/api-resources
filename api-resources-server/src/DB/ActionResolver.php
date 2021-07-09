@@ -42,7 +42,7 @@ class ActionResolver extends DataResolver
         return $this;
     }
 
-    public function fetch(): array
+    public function resolve(): array
     {
         $requestedFields = $this->request->getFields();
 
