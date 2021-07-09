@@ -15,6 +15,8 @@ use Closure;
  * @method Relation allowed()
  * @method Relation resolve(string|callable|Closure $classOrCallback)
  * @method Relation resolveSave(string|callable|Closure $classOrCallback)
+ * @method Relation resolveParam(string $key, $value)
+ * @method Relation resolveParams(array $params)
  */
 class Relation extends Field
 {

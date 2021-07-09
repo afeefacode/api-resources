@@ -30,6 +30,8 @@ class Field extends BagEntry
 
     protected Closure $optionsRequestCallback;
 
+    protected array $resolveParams = [];
+
     /**
      * @var string|callable|Closure
      */
@@ -62,6 +64,37 @@ class Field extends BagEntry
     {
         $this->optionsRequestCallback = $callback;
     }
+
+    // anfang
+
+    public function resolveParams(array $params): Field
+    {
+        $this->resolveParams = $params;
+        return $this;
+    }
+
+    public function resolveParam(string $key, $value): Field
+    {
+        $this->resolveParams[$key] = $value;
+        return $this;
+    }
+
+    public function hasResolveParam(string $name): bool
+    {
+        return isset($this->resolveParams[$name]);
+    }
+
+    public function getResolveParam(string $name)
+    {
+        return $this->resolveParams[$name];
+    }
+
+    public function getResolveParams(): array
+    {
+        return $this->resolveParams;
+    }
+
+    // ende
 
     public function validate(Closure $callback): Field
     {
