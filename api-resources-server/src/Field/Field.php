@@ -129,9 +129,14 @@ class Field extends BagEntry
         return $this;
     }
 
-    public function allowed(): Field
+    public function isRequired(): bool
     {
-        $this->allowed = true;
+        return $this->required;
+    }
+
+    public function allowed(bool $allowed): Field
+    {
+        $this->allowed = $allowed;
         return $this;
     }
 
