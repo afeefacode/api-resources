@@ -7,7 +7,6 @@ use Afeefa\ApiResources\DB\ActionResolver;
 use Afeefa\ApiResources\DB\MutationResolver;
 use Afeefa\ApiResources\DB\ResolveContext;
 use Afeefa\ApiResources\Field\Attribute;
-use Afeefa\ApiResources\Field\Fields\HasManyRelation;
 use Afeefa\ApiResources\Field\Fields\LinkOneRelation;
 use Afeefa\ApiResources\Field\Relation;
 use Afeefa\ApiResources\Filter\Filters\KeywordFilter;
@@ -15,6 +14,7 @@ use Afeefa\ApiResources\Filter\Filters\OrderFilter;
 use Afeefa\ApiResources\Filter\Filters\PageFilter;
 use Afeefa\ApiResources\Filter\Filters\PageSizeFilter;
 use Closure;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Query\Builder as EloquentBuilder;
 
 class ModelResolver
@@ -249,14 +249,69 @@ class ModelResolver
                         }
 
                         if ($field instanceof Relation) {
-                            if ($field instanceof LinkOneRelation) {
+                            $relation = $field;
+
+                            if ($relation->hasSaveResolver()) {
+                                $saveResolve = $relation->getSaveResolve();
+                                $saveResolve($model, $value);
+                                continue;
+                            }
+
+                            $eloquentRelationName = $relation->hasResolveParam('eloquent_relation')
+                                ? $relation->getResolveParam('eloquent_relation')
+                                : $relation->getName();
+                            $eloquentRelation = $model->$eloquentRelationName();
+
+                            if ($relation instanceof LinkOneRelation) {
                                 $id = $value['id'] ?? null;
                                 $model->$key()->associate($id);
                             }
 
-                            if ($field instanceof HasManyRelation) {
-                                $saveResolve = $field->getSaveResolve();
-                                $saveResolve($model, $value ?? []);
+                            if ($eloquentRelation instanceof HasMany) {
+                                $relatedSets = $value;
+
+                                foreach ($relatedSets as $relatedSet) {
+                                    /** @var ModelType */
+                                    $relatedType = $relation->getRelatedTypeInstance();
+                                    $relatedModel = $eloquentRelation->getRelated();
+                                    $foreignKeyName = $eloquentRelation->getForeignKeyName();
+                                    $createFields = $relatedType->getCreateFields();
+
+                                    $requiredRelatedFields = [];
+                                    foreach ($createFields->getEntries() as $name => $field) {
+                                        if ($field->isRequired()) {
+                                            if ($field instanceof Relation) {
+                                                $requiredEloquentRelation = $relatedModel->$name();
+                                                $keyName = $requiredEloquentRelation->getForeignKeyName();
+                                                if ($keyName !== $foreignKeyName) {
+                                                    $requiredRelatedFields[$keyName] = $relatedSet[$name]['id'] ?? '-1';
+                                                } else {
+                                                    $requiredRelatedFields[$keyName] = $model->id;
+                                                }
+                                            }
+                                        }
+                                    }
+
+                                    if ($relation->shallAddItems()) {
+                                        if ($eloquentRelation->where($requiredRelatedFields)->exists()) {
+                                            continue;
+                                        }
+
+                                        $relatedModel = $eloquentRelation->getRelated();
+                                        $relatedModel->fillable(array_keys($requiredRelatedFields));
+                                        $relatedModel->fill($requiredRelatedFields);
+                                        $relatedModel->save();
+                                    } elseif ($relation->shallDeleteItems()) {
+                                        $relatedModel = $eloquentRelation->where($requiredRelatedFields)->first();
+
+                                        if ($relatedModel) {
+                                            $relatedModel->delete();
+                                        }
+                                    } else {
+                                        $test = 'null';
+                                        // set items
+                                    }
+                                }
                             }
                         }
                     }
