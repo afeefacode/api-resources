@@ -98,7 +98,7 @@ class ApiRequest implements ContainerAwareInterface, ToSchemaJsonInterface, Json
         return $this->params;
     }
 
-    public function hasParam(string $name)
+    public function hasParam(string $name): bool
     {
         return isset($this->params[$name]);
     }
