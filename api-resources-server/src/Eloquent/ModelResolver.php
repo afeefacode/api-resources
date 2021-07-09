@@ -4,6 +4,7 @@ namespace Afeefa\ApiResources\Eloquent;
 
 use Afeefa\ApiResources\Api\ApiRequest;
 use Afeefa\ApiResources\DB\ActionResolver;
+use Afeefa\ApiResources\DB\MutationResolver;
 use Afeefa\ApiResources\DB\ResolveContext;
 use Afeefa\ApiResources\Field\Attribute;
 use Afeefa\ApiResources\Field\Fields\HasManyRelation;
@@ -226,10 +227,10 @@ class ModelResolver
             });
     }
 
-    public function update(ActionResolver $r)
+    public function update(MutationResolver $r)
     {
         $r
-            ->load(function (ResolveContext $c) use ($r) {
+            ->save(function (ResolveContext $c) use ($r) {
                 $request = $r->getRequest();
 
                 $data = $request->getData();
@@ -273,10 +274,10 @@ class ModelResolver
             });
     }
 
-    public function create(ActionResolver $r)
+    public function create(MutationResolver $r)
     {
         $r
-            ->load(function () use ($r) {
+            ->save(function () use ($r) {
                 $request = $r->getRequest();
 
                 $data = $request->getData();

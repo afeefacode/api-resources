@@ -8,6 +8,7 @@ use Afeefa\ApiResources\DI\ContainerAwareInterface;
 use Afeefa\ApiResources\DI\ContainerAwareTrait;
 use Afeefa\ApiResources\DI\DependencyResolver;
 use Afeefa\ApiResources\Exception\Exceptions\ApiException;
+use Afeefa\ApiResources\Exception\Exceptions\InvalidConfigurationException;
 use Afeefa\ApiResources\Resource\Resource;
 use JsonSerializable;
 
@@ -177,25 +178,35 @@ class ApiRequest implements ContainerAwareInterface, ToSchemaJsonInterface, Json
         }
 
         $action = $this->getAction();
-
-        $actionResolver = $this->container->create(function (ActionResolver $actionResolver) use ($action) {
-            $actionResolver
-                ->action($action)
-                ->request($this);
-        });
-
         $resolveCallback = $action->getResolve();
+
+        $actionResolver = null;
 
         $this->container->call(
             $resolveCallback,
-            function (DependencyResolver $r) use ($actionResolver) { // don't create a new action resolver
+            function (DependencyResolver $r) {
                 if ($r->isOf(ActionResolver::class)) {
-                    $r->fix($actionResolver);
+                    $r->create();
+                }
+            },
+            function () use (&$actionResolver) {
+                $arguments = func_get_args();
+                foreach ($arguments as $argument) {
+                    if ($argument instanceof ActionResolver) {
+                        $actionResolver = $argument;
+                    }
                 }
             }
         );
 
-        return $actionResolver->resolve();
+        if (!$actionResolver) {
+            throw new InvalidConfigurationException("Resolve callback for action {$this->actionName} on type {$this->resourceType} must receive an ActionResolver as argument.");
+        }
+
+        return $actionResolver
+            ->action($action)
+            ->request($this)
+            ->resolve();
     }
 
     public function toSchemaJson(): array
