@@ -9,7 +9,7 @@ use Closure;
 
 /**
  * @method Field get(string $name)
- * @method Field[] entries()
+ * @method Field[] getEntries()
  */
 class FieldBag extends Bag
 {
