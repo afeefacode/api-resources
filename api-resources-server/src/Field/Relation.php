@@ -2,7 +2,6 @@
 
 namespace Afeefa\ApiResources\Field;
 
-use Afeefa\ApiResources\Api\RequestParams;
 use Afeefa\ApiResources\Api\TypeRegistry;
 use Afeefa\ApiResources\Type\Type;
 use Closure;
@@ -22,25 +21,37 @@ class Relation extends Field
 {
     protected string $RelatedTypeClass;
 
-    protected RequestParams $params;
-
     protected bool $isSingle = false;
 
-    public function created(): void
-    {
-        parent::created();
+    protected bool $isAdd = false;
 
-        $this->params = new RequestParams();
+    protected bool $isDelete = false;
+
+    public function addsItems(): Relation
+    {
+        $this->isAdd = true;
+        return $this;
+    }
+
+    public function shallAddItems(): bool
+    {
+        return $this->isAdd;
+    }
+
+    public function deletesItems(): Relation
+    {
+        $this->isDelete = true;
+        return $this;
+    }
+
+    public function shallDeleteItems(): bool
+    {
+        return $this->isDelete;
     }
 
     public function isSingle(): bool
     {
         return $this->isSingle;
-    }
-
-    public function params(): RequestParams
-    {
-        return $this->params;
     }
 
     public function relatedTypeClass(string $RelatedTypeClass): Relation
