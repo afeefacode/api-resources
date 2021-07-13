@@ -75,10 +75,3 @@ export default class ArticlesList extends Vue {
   }
 }
 </script>
-
-
-<style lang="scss" scoped>
-::v-deep .v-pagination {
-  justify-content: left;
-}
-</style>
