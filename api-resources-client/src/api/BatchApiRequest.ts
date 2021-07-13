@@ -1,10 +1,11 @@
+import { ApiError } from './ApiError'
 import { ApiRequest } from './ApiRequest'
 import { ApiResponse } from './ApiResponse'
 
 export class BatchApiRequest extends ApiRequest {
-  private currentPromise?: Promise<ApiResponse | boolean>
+  private currentPromise?: Promise<ApiResponse | ApiError>
 
-  public send (): Promise<ApiResponse | boolean> {
+  public send (): Promise<ApiResponse | ApiError> {
     if (this.currentPromise) {
       return this.currentPromise
     }
