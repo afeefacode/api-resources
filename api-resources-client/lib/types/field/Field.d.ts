@@ -4,6 +4,7 @@ import { Validator, ValidatorJSON } from '../validator/Validator';
 export declare type FieldJSON = {
     type: string;
     validator: ValidatorJSON;
+    options: string[];
     options_request: ApiRequestJSON;
 };
 export declare type FieldValue = boolean | string | number | Date | null | Model | Model[];
@@ -11,6 +12,7 @@ export declare type FieldJSONValue = boolean | string | number | null | ModelJSO
 export declare class Field {
     type: string;
     private _validator;
+    private _options;
     private _optionsRequestFactory;
     constructor();
     newInstance<T>(): T;
@@ -18,6 +20,8 @@ export declare class Field {
     getValidator(): Validator | null;
     hasOptionsRequest(): boolean;
     getOptionsRequest(): ApiRequest | null;
+    hasOptions(): boolean;
+    getOptions(): string[];
     default(): FieldValue;
     deserialize(value: FieldJSONValue): FieldValue;
     serialize(value: FieldValue): FieldJSONValue;

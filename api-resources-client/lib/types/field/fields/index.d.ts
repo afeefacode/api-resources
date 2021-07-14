@@ -1,5 +1,6 @@
 import { BooleanAttribute } from './BooleanAttribute';
 import { DateAttribute } from './DateAttribute';
+import { EnumAttribute } from './EnumAttribute';
 import { HasManyRelation } from './HasManyRelation';
 import { HasOneRelation } from './HasOneRelation';
 import { IdAttribute } from './IdAttribute';
@@ -8,5 +9,5 @@ import { LinkManyRelation } from './LinkManyRelation';
 import { LinkOneRelation } from './LinkOneRelation';
 import { TextAttribute } from './TextAttribute';
 import { VarcharAttribute } from './VarcharAttribute';
-export declare const fields: (BooleanAttribute | DateAttribute | HasManyRelation | HasOneRelation | IdAttribute | IntAttribute | LinkManyRelation | LinkOneRelation | TextAttribute | VarcharAttribute)[];
+export declare const fields: (VarcharAttribute | TextAttribute | BooleanAttribute | IdAttribute | DateAttribute | IntAttribute | EnumAttribute | HasManyRelation | HasOneRelation | LinkOneRelation | LinkManyRelation)[];
 //# sourceMappingURL=index.d.ts.map

@@ -24,6 +24,7 @@ export declare class Model {
     deserialize(json: ModelJSON): void;
     cloneForEdit(fields?: ModelAttributes): Model;
     serialize(fields?: ModelAttributes): ModelJSON;
+    equals(model?: Model): boolean;
 }
 export {};
 //# sourceMappingURL=Model.d.ts.map

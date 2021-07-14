@@ -75,6 +75,12 @@ export class Model {
         }
         return json;
     }
+    equals(model) {
+        if (!model) {
+            return false;
+        }
+        return model.type === this.type && model.id === this.id;
+    }
 }
 Model.type = 'Model';
 __decorate([

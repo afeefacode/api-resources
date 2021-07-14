@@ -3,6 +3,7 @@ import { apiResources } from '../ApiResources';
 export class Field {
     constructor() {
         this._validator = null;
+        this._options = [];
         this._optionsRequestFactory = null;
         this.type = this.constructor.type;
     }
@@ -22,6 +23,9 @@ export class Field {
                 };
             }
         }
+        if (json.options) {
+            field._options = json.options;
+        }
         field.setupTypeFieldValidator(json.validator);
         return field;
     }
@@ -36,6 +40,12 @@ export class Field {
             return this._optionsRequestFactory();
         }
         return null;
+    }
+    hasOptions() {
+        return !!this._options.length;
+    }
+    getOptions() {
+        return this._options;
     }
     default() {
         return null;
