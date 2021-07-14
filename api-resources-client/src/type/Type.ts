@@ -27,6 +27,8 @@ export class Type {
       if (field) {
         const typeField = field.createTypeField(fieldJSON)
         this._fields[name] = typeField
+      } else {
+        console.warn(`No Field implementation for field ${name} type ${fieldJSON.type}`)
       }
     }
 
@@ -36,6 +38,8 @@ export class Type {
         if (field) {
           const typeField = field.createTypeField(fieldJSON)
           this._updateFields[name] = typeField
+        } else {
+          console.warn(`No Field implementation for field ${name} type ${fieldJSON.type}`)
         }
       }
     }
@@ -46,6 +50,8 @@ export class Type {
         if (field) {
           const typeField = field.createTypeField(fieldJSON)
           this._createFields[name] = typeField
+        } else {
+          console.warn(`No Field implementation for field ${name} type ${fieldJSON.type}`)
         }
       }
     }
