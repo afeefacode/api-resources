@@ -1,5 +1,6 @@
 import { BooleanAttribute } from './BooleanAttribute'
 import { DateAttribute } from './DateAttribute'
+import { EnumAttribute } from './EnumAttribute'
 import { HasManyRelation } from './HasManyRelation'
 import { HasOneRelation } from './HasOneRelation'
 import { IdAttribute } from './IdAttribute'
@@ -16,6 +17,7 @@ export const fields = [
   new IdAttribute(),
   new DateAttribute(),
   new IntAttribute(),
+  new EnumAttribute(),
 
   new HasManyRelation(),
   new HasOneRelation(),
