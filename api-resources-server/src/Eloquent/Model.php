@@ -15,7 +15,7 @@ class Model extends EloquentModel implements ModelInterface
         'id' => 'string'
     ];
 
-    public function getTypeAttribute()
+    public function getTypeAttribute(): string
     {
         return static::$type;
     }
