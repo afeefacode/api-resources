@@ -31,6 +31,11 @@ class FieldBag extends Bag
         return parent::get($name, $callback);
     }
 
+    public function getRelation(string $name, Closure $callback = null): Relation
+    {
+        return $this->get($name, $callback);
+    }
+
     public function attribute(string $name, $classOrCallback): FieldBag
     {
         $this->container->create($classOrCallback, function (Attribute $attribute) use ($name) {
