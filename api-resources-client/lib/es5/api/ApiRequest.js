@@ -64,14 +64,13 @@ export class ApiRequest {
     }
     send() {
         const params = this.serialize();
-        // if (this._lastRequestJSON === JSON.stringify(params)) {
-        //   return this._lastRequest
-        // }
-        // this._lastRequestJSON = JSON.stringify(params)
         const urlResourceType = this._action.getResource().getName().replace(/.+\./, '').replace(/Resource/, '');
         let url = this._action.getApi().getBaseUrl() + '?' + urlResourceType + ':' + this._action.getName();
         if (this._params && this._params.id) {
             url += ':' + this._params.id;
+        }
+        if (this._fields) {
+            url += ':' + (Object.keys(this._fields).join(','));
         }
         const axiosResponse = axios.post(url, params)
             .then(result => {

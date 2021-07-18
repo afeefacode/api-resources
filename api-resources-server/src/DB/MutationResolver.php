@@ -27,10 +27,12 @@ class MutationResolver extends ActionResolver
     public function resolve(): array
     {
         $requestedFields = $this->request->getFields();
+        $fieldsToSave = $this->request->getFieldsToSave();
 
         $resolveContext = $this
             ->resolveContext()
-            ->requestedFields($requestedFields);
+            ->requestedFields($requestedFields)
+            ->fieldsToSave($fieldsToSave);
 
         $saveCallback = $this->saveCallback;
         $model = $saveCallback($resolveContext);
@@ -38,6 +40,13 @@ class MutationResolver extends ActionResolver
         if (!$model instanceof ModelInterface) {
             throw new InvalidConfigurationException('A mutation resolver needs to return a ModelInterface instance.');
         }
+
+        foreach ($resolveContext->getSaveRelationResolvers() as $saveRelationResolver) {
+            $saveRelationResolver
+                ->addOwner($model)
+                ->resolve();
+        }
+
         if (isset($this->forwardCallback)) {
             $request = $this->getRequest();
             ($this->forwardCallback)($request, $model);

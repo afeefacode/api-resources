@@ -58,7 +58,7 @@ class AttributeResolver extends DataResolver
         return $this;
     }
 
-    public function fetch()
+    public function resolve()
     {
         $resolveContext = $this->resolveContext();
 

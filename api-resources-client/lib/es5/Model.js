@@ -54,6 +54,7 @@ export class Model {
         const type = apiResources.getType(this.type);
         for (const name of Object.keys(type.getUpdateFields())) {
             if (!fields || fields[name]) {
+                // TODO clone relations too
                 model[name] = this[name];
             }
         }

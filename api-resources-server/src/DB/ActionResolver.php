@@ -67,7 +67,7 @@ class ActionResolver extends DataResolver
                 foreach ($models as $model) {
                     $attributeResolver->addOwner($model);
                 }
-                $attributeResolver->fetch();
+                $attributeResolver->resolve();
             }
 
             // resolve relations
@@ -76,7 +76,7 @@ class ActionResolver extends DataResolver
                 foreach ($models as $model) {
                     $relationResolver->addOwner($model);
                 }
-                $relationResolver->fetch();
+                $relationResolver->resolve();
             }
 
             // mark visible fields

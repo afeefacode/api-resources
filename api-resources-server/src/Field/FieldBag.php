@@ -76,6 +76,22 @@ class FieldBag extends Bag
 
         // allow all allowed fields
         foreach ($names as $name) {
+            if (!$this->has($name)) {
+                if (preg_match('/^(.+)#(add|delete|update)$/', $name, $matches)) {
+                    $baseRelationName = $matches[1];
+                    $adds = $matches[2] === 'add';
+                    $deletes = $matches[2] === 'delete';
+                    $updates = $matches[2] === 'update';
+                    $relation = $this->getRelation($baseRelationName)
+                        ->clone()
+                        ->allowed(true)
+                        ->updatesItems($updates)
+                        ->addsItems($adds)
+                        ->deletesItems($deletes);
+                    $this->set($name, $relation);
+                    continue;
+                }
+            }
             $this->get($name)->allowed(true);
         }
         return $this;

@@ -3,7 +3,7 @@ import { apiResources } from '../ApiResources';
 export class Field {
     constructor() {
         this._validator = null;
-        this._options = [];
+        this._options = {};
         this._optionsRequestFactory = null;
         this.type = this.constructor.type;
     }
@@ -42,7 +42,7 @@ export class Field {
         return null;
     }
     hasOptions() {
-        return !!this._options.length;
+        return !!Object.keys(this._options).length;
     }
     getOptions() {
         return this._options;

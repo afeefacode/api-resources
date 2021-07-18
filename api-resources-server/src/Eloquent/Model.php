@@ -20,6 +20,11 @@ class Model extends EloquentModel implements ModelInterface
         return static::$type;
     }
 
+    public function getUniqueFields(): array
+    {
+        return [];
+    }
+
     public function apiResourcesGetType(): string
     {
         return static::$type;

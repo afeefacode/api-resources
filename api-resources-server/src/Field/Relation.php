@@ -23,9 +23,22 @@ class Relation extends Field
 
     protected bool $isSingle = false;
 
+    protected bool $isUpdate = false;
+
     protected bool $isAdd = false;
 
     protected bool $isDelete = false;
+
+    public function updatesItems(bool $updates = true): Relation
+    {
+        $this->isUpdate = $updates;
+        return $this;
+    }
+
+    public function shallUpdateItems(): bool
+    {
+        return $this->isUpdate;
+    }
 
     public function addsItems(bool $adds = true): Relation
     {
