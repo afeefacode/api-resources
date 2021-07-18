@@ -27,9 +27,9 @@ class Relation extends Field
 
     protected bool $isDelete = false;
 
-    public function addsItems(): Relation
+    public function addsItems(bool $adds = true): Relation
     {
-        $this->isAdd = true;
+        $this->isAdd = $adds;
         return $this;
     }
 
@@ -38,9 +38,9 @@ class Relation extends Field
         return $this->isAdd;
     }
 
-    public function deletesItems(): Relation
+    public function deletesItems(bool $deletes = true): Relation
     {
-        $this->isDelete = true;
+        $this->isDelete = $deletes;
         return $this;
     }
 
