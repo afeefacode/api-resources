@@ -56,7 +56,7 @@ class Type implements ToSchemaJsonInterface, ContainerAwareInterface
 
     public function hasUpdateField(string $name): bool
     {
-        return $this->getUpdateFields($name)->has($name);
+        return $this->getUpdateFields()->has($name);
     }
 
     public function getUpdateFields(): FieldBag
@@ -66,12 +66,12 @@ class Type implements ToSchemaJsonInterface, ContainerAwareInterface
 
     public function getUpdateField(string $name): Field
     {
-        return $this->getUpdateFields($name)->get($name);
+        return $this->getUpdateFields()->get($name);
     }
 
     public function hasCreateField(string $name): bool
     {
-        return $this->getCreateFields($name)->has($name);
+        return $this->getCreateFields()->has($name);
     }
 
     public function getCreateFields(): FieldBag
@@ -81,7 +81,7 @@ class Type implements ToSchemaJsonInterface, ContainerAwareInterface
 
     public function getCreateField(string $name): Field
     {
-        return $this->getCreateFields($name)->get($name);
+        return $this->getCreateFields()->get($name);
     }
 
     public function hasAttribute(string $name): bool
