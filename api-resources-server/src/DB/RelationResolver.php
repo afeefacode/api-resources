@@ -79,9 +79,10 @@ class RelationResolver extends DataResolver
         return $this->ownerIdFields ?? [];
     }
 
-    public function addOwner(ModelInterface $owner): void
+    public function addOwner(ModelInterface $owner): RelationResolver
     {
         $this->owners[] = $owner;
+        return $this;
     }
 
     /**
