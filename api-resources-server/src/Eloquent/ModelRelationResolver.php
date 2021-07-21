@@ -136,13 +136,15 @@ class ModelRelationResolver
 
         // check existance
         $uniqueFields = $relatedModel->getUniqueFields();
-        $testFields = [];
-        foreach ($uniqueFields as $uniqueField) {
-            $testFields[$uniqueField] = $updates[$uniqueField];
-        }
-        if ($eloquentRelation->where($testFields)->exists()) {
-            $relatedData->saved = false;
-            return;
+        if (count($uniqueFields)) {
+            $testFields = [];
+            foreach ($uniqueFields as $uniqueField) {
+                $testFields[$uniqueField] = $updates[$uniqueField];
+            }
+            if ($eloquentRelation->where($testFields)->exists()) {
+                $relatedData->saved = false;
+                return;
+            }
         }
 
         $relatedModel->fillable(array_keys($updates));
