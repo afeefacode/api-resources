@@ -67,7 +67,7 @@ export class Filter {
         }
     }
     toQuerySource() {
-        if (!this.hasDefaultValue()) {
+        if (!this.hasDefaultValueSet()) {
             const valueString = this.valueToQuery(this._value);
             if (valueString) {
                 return {
@@ -77,18 +77,18 @@ export class Filter {
         }
         return {};
     }
-    hasDefaultValue() {
+    hasDefaultValueSet() {
         return JSON.stringify(this._value) === JSON.stringify(this._defaultValue);
     }
     reset() {
-        if (!this.hasDefaultValue()) {
+        if (!this.hasDefaultValueSet()) {
             this._value = this._defaultValue;
             return true;
         }
         return false;
     }
     serialize() {
-        if (!this.hasDefaultValue()) {
+        if (!this.hasDefaultValueSet()) {
             const serialized = this.serializeValue(this._value);
             if (serialized !== undefined) {
                 return {

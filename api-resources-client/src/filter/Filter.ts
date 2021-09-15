@@ -110,7 +110,7 @@ export class Filter {
   }
 
   public toQuerySource (): QuerySource {
-    if (!this.hasDefaultValue()) {
+    if (!this.hasDefaultValueSet()) {
       const valueString = this.valueToQuery(this._value)
       if (valueString) {
         return {
@@ -122,12 +122,12 @@ export class Filter {
     return {}
   }
 
-  public hasDefaultValue (): boolean {
+  public hasDefaultValueSet (): boolean {
     return JSON.stringify(this._value) === JSON.stringify(this._defaultValue)
   }
 
   public reset (): boolean {
-    if (!this.hasDefaultValue()) {
+    if (!this.hasDefaultValueSet()) {
       this._value = this._defaultValue
       return true
     }
@@ -135,7 +135,7 @@ export class Filter {
   }
 
   public serialize (): UsedFilters {
-    if (!this.hasDefaultValue()) {
+    if (!this.hasDefaultValueSet()) {
       const serialized = this.serializeValue(this._value)
       if (serialized !== undefined) {
         return {

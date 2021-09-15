@@ -32,7 +32,7 @@ export declare class Filter {
     initFromUsed(usedFilters: UsedFilters): void;
     initFromQuerySource(query: QuerySource): void;
     toQuerySource(): QuerySource;
-    hasDefaultValue(): boolean;
+    hasDefaultValueSet(): boolean;
     reset(): boolean;
     serialize(): UsedFilters;
     protected valueToQuery(_value: unknown): string | undefined;
