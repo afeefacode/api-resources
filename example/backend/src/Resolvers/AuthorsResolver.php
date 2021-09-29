@@ -3,7 +3,7 @@
 namespace Backend\Resolvers;
 
 use Afeefa\ApiResources\DB\ActionResolver;
-use Afeefa\ApiResources\DB\RelationResolver;
+use Afeefa\ApiResources\DB\GetRelationResolver;
 use Afeefa\ApiResources\DB\ResolveContext;
 use Afeefa\ApiResources\Exception\Exceptions\ApiException;
 use Afeefa\ApiResources\Model\Model;
@@ -170,7 +170,7 @@ class AuthorsResolver
             });
     }
 
-    public function resolve_author_relation(RelationResolver $r, Medoo $db)
+    public function resolve_author_relation(GetRelationResolver $r, Medoo $db)
     {
         $r
             ->ownerIdFields(['author_id'])

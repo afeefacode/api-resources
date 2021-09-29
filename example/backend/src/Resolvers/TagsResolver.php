@@ -3,7 +3,7 @@
 namespace Backend\Resolvers;
 
 use Afeefa\ApiResources\DB\ActionResolver;
-use Afeefa\ApiResources\DB\RelationResolver;
+use Afeefa\ApiResources\DB\GetRelationResolver;
 use Afeefa\ApiResources\DB\ResolveContext;
 use Afeefa\ApiResources\Model\Model;
 use Afeefa\ApiResources\Model\ModelInterface;
@@ -43,7 +43,7 @@ class TagsResolver
             });
     }
 
-    public function resolve_tag_users_relation(RelationResolver $r, Medoo $db)
+    public function resolve_tag_users_relation(GetRelationResolver $r, Medoo $db)
     {
         $r
             ->load(function (array $owners, ResolveContext $c) use ($db) {
@@ -103,7 +103,7 @@ class TagsResolver
             });
     }
 
-    public function resolve_tags_relation(RelationResolver $r, Medoo $db)
+    public function resolve_tags_relation(GetRelationResolver $r, Medoo $db)
     {
         $r
             ->load(function (array $owners, ResolveContext $c) use ($db) {

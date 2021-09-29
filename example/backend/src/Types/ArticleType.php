@@ -2,7 +2,7 @@
 
 namespace Backend\Types;
 
-use Afeefa\ApiResources\DB\RelationResolver;
+use Afeefa\ApiResources\DB\GetRelationResolver;
 use Afeefa\ApiResources\Field\FieldBag;
 use Afeefa\ApiResources\Field\Fields\DateAttribute;
 use Afeefa\ApiResources\Field\Fields\HasManyRelation;
@@ -37,7 +37,7 @@ class ArticleType extends ModelType
         });
 
         $fields->relation('author2', AuthorType::class, function (LinkOneRelation $relation) {
-            $relation->resolve(function (RelationResolver $r) {
+            $relation->resolve(function (GetRelationResolver $r) {
                 $r
                     ->load(function () {
                         return Model::fromList('test', [

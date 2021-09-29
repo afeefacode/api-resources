@@ -3,7 +3,7 @@
 namespace Backend\Resolvers;
 
 use Afeefa\ApiResources\DB\ActionResolver;
-use Afeefa\ApiResources\DB\RelationResolver;
+use Afeefa\ApiResources\DB\GetRelationResolver;
 use Afeefa\ApiResources\DB\ResolveContext;
 use Afeefa\ApiResources\Exception\Exceptions\ApiException;
 use Afeefa\ApiResources\Model\Model;
@@ -239,7 +239,7 @@ class ArticlesResolver
             });
     }
 
-    public function resolve_articles_relation(RelationResolver $r, Medoo $db): void
+    public function resolve_articles_relation(GetRelationResolver $r, Medoo $db): void
     {
         $r
             ->load(function (array $owners, ResolveContext $c) use ($db) {

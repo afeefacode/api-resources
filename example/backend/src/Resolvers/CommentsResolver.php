@@ -2,7 +2,7 @@
 
 namespace Backend\Resolvers;
 
-use Afeefa\ApiResources\DB\RelationResolver;
+use Afeefa\ApiResources\DB\GetRelationResolver;
 use Afeefa\ApiResources\DB\ResolveContext;
 use Afeefa\ApiResources\Model\Model;
 use Afeefa\ApiResources\Model\ModelInterface;
@@ -11,7 +11,7 @@ use Medoo\Medoo;
 
 class CommentsResolver
 {
-    public function resolve_comments_relation(RelationResolver $r, Medoo $db)
+    public function resolve_comments_relation(GetRelationResolver $r, Medoo $db)
     {
         $r
             ->load(function (array $owners, ResolveContext $c) use ($db) {
