@@ -97,7 +97,8 @@ $app->get('/backend-api/test', function (ServerRequest $request, Response $respo
                     'author2' => [
                         'name' => true
                     ]
-                ]);
+                ])
+                ->fieldsToSave([]);
         });
     });
 

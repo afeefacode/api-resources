@@ -11,6 +11,8 @@ use Backend\Types\AuthorType;
 
 class BackendApi extends Api
 {
+    public static string $type = 'Example.BackendApi';
+
     protected function resources(ResourceBag $resources): void
     {
         $resources
