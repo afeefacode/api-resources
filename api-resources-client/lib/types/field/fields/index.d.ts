@@ -7,7 +7,8 @@ import { IdAttribute } from './IdAttribute';
 import { IntAttribute } from './IntAttribute';
 import { LinkManyRelation } from './LinkManyRelation';
 import { LinkOneRelation } from './LinkOneRelation';
+import { NumberAttribute } from './NumberAttribute';
 import { TextAttribute } from './TextAttribute';
 import { VarcharAttribute } from './VarcharAttribute';
-export declare const fields: (VarcharAttribute | TextAttribute | BooleanAttribute | IdAttribute | DateAttribute | IntAttribute | EnumAttribute | HasManyRelation | HasOneRelation | LinkOneRelation | LinkManyRelation)[];
+export declare const fields: (IntAttribute | VarcharAttribute | TextAttribute | BooleanAttribute | IdAttribute | DateAttribute | NumberAttribute | EnumAttribute | HasManyRelation | HasOneRelation | LinkOneRelation | LinkManyRelation)[];
 //# sourceMappingURL=index.d.ts.map
