@@ -10,11 +10,13 @@ Server API Documentation
 The API documentation will be served statically on GitHub and hence needs to be checked into the repository for now. There is no github action yet.
 
 * Install ``phpDocumentor`` globally: https://docs.phpdoc.org/3.0/guide/getting-started/installing.html and name it ``phpdoc``
+* After running the generator, you'll perhaps need to remove the packages folder since it contains two default.html files in different casing which may harm your git workflow.
 
 .. code-block:: bash
 
   rm -rf docs/server-api
   phpdoc --cache-folder=docs/build/server-api -d api-resources-server/src -t docs/server-api
+  rm -rf docs/server-api/packages
   firefox docs/server-api/index.html &
 
 Client API Documentation
