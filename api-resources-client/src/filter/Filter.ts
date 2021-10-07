@@ -9,7 +9,7 @@ export type FilterJSON = {
   type: string
   default: FilterValueType
   options: []
-  optionsRequest: ApiRequestJSON
+  options_request: ApiRequestJSON
 }
 
 export type FilterParams = object
@@ -71,10 +71,10 @@ export class Filter {
     const filter = new (this.constructor as FilterConstructor)()
 
     let requestFactory: RequestFactory = null
-    if (json.optionsRequest) {
+    if (json.options_request) {
       requestFactory = (): ApiRequest => {
-        const requestAction = action.getApi().getAction(json.optionsRequest.resource, json.optionsRequest.action)
-        return new ApiRequest(json.optionsRequest)
+        const requestAction = action.getApi().getAction(json.options_request.resource, json.options_request.action)
+        return new ApiRequest(json.options_request)
           .action(requestAction as Action)
       }
     }

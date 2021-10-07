@@ -32,10 +32,10 @@ export class Filter {
     createActionFilter(action, name, json) {
         const filter = new this.constructor();
         let requestFactory = null;
-        if (json.optionsRequest) {
+        if (json.options_request) {
             requestFactory = () => {
-                const requestAction = action.getApi().getAction(json.optionsRequest.resource, json.optionsRequest.action);
-                return new ApiRequest(json.optionsRequest)
+                const requestAction = action.getApi().getAction(json.options_request.resource, json.options_request.action);
+                return new ApiRequest(json.options_request)
                     .action(requestAction);
             };
         }
