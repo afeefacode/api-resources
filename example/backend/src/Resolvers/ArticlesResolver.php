@@ -20,6 +20,7 @@ class ArticlesResolver
                 $request = $r->getRequest();
                 $requestedFields = $request->getFields();
                 $filters = $request->getFilters();
+                $scopes = $request->getScopes();
 
                 $selectFields = array_map(function ($field) {
                     return 'articles.' . $field;
@@ -29,7 +30,16 @@ class ArticlesResolver
 
                 $where = [];
 
-                $countScope = $countFilters = $db->count('articles');
+                // author_id scope
+
+                $authorId = $scopes['author_id'] ?? null;
+
+                if ($authorId) {
+                    $where['author_id'] = $authorId;
+                    $countScope = $countFilters = $this->getCount($db, $selectFields, $where);
+                } else {
+                    $countScope = $countFilters = $db->count('articles');
+                }
 
                 // has comments
 

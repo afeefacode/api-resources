@@ -19,6 +19,8 @@
       :filterSource="filterSource"
       :action="articlesAction"
       :fields="articlesFields"
+      :authorId="model.id"
+      :scopes="{author_id: model.id}"
     />
   </div>
 </template>
@@ -29,6 +31,7 @@ import { Component, Vue } from 'vue-property-decorator'
 import ArticlesList from '@/components/article/ArticlesList'
 import { ArticlesConfig } from '@/components/article/ArticlesConfig'
 import { QuerySourceType } from '@a-vue/components/list/QuerySourceType'
+import { Author } from '@/models'
 
 @Component({
   props: ['model'],
@@ -38,6 +41,21 @@ import { QuerySourceType } from '@a-vue/components/list/QuerySourceType'
 })
 export default class AuthorDetail extends Vue {
   filterSource = QuerySourceType.OBJECT
+
+  static getDetailConfig (route) {
+    return {
+      action: Author.getAction(route.meta.routeDefinition, 'get_author'),
+
+      fields: {
+        name: true,
+        tags: {
+          name: true,
+          count_users: true
+        },
+        count_articles: true
+      }
+    }
+  }
 
   get author () {
     return this.model

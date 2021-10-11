@@ -9,9 +9,9 @@ use Afeefa\ApiResources\Type\Type;
 use Backend\Resolvers\TagsResolver;
 use Backend\Types\TagType;
 
-class TagsResource extends Resource
+class TagResource extends Resource
 {
-    public static string $type = 'Example.TagsResource';
+    public static string $type = 'Example.TagResource';
 
     protected function actions(ActionBag $actions): void
     {

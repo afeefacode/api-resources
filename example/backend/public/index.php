@@ -4,8 +4,8 @@ use Afeefa\ApiResources\Api\ApiRequest;
 use Afeefa\ApiResources\DB\TypeClassMap;
 use Afeefa\ApiResources\DI\Container;
 use Backend\Api\BackendApi;
-use Backend\Resources\ArticlesResource;
-use Backend\Resources\AuthorsResource;
+use Backend\Resources\ArticleResource;
+use Backend\Resources\AuthorResource;
 use Medoo\Medoo;
 use Slim\Factory\AppFactory;
 use Slim\Http\Response;
@@ -64,7 +64,7 @@ $app->get('/backend-api/test', function (ServerRequest $request, Response $respo
     $result = $this->call(function (BackendApi $api) {
         return $api->request(function (ApiRequest $request) {
             $request
-                ->resourceType(ArticlesResource::$type)
+                ->resourceType(ArticleResource::$type)
                 ->actionName('get_articles')
                 ->fields([
                     'title' => true,
@@ -112,7 +112,7 @@ $app->get('/backend-api/tags', function (ServerRequest $request, Response $respo
     $result = $this->call(function (BackendApi $api) {
         return $api->request(function (ApiRequest $request) {
             $request
-                ->resourceType(ArticlesResource::$type)
+                ->resourceType(ArticleResource::$type)
                 ->actionName('get_articles')
                 ->fields([
                     'title' => true,
@@ -141,7 +141,7 @@ $app->get('/backend-api/author', function (ServerRequest $request, Response $res
     $result = $this->call(function (BackendApi $api, TypeClassMap $typeClassMap) {
         $result = $api->request(function (ApiRequest $request) {
             $request
-                ->resourceType(AuthorsResource::$type)
+                ->resourceType(AuthorResource::$type)
                 ->actionName('get_author')
                 ->params([
                     'id' => 6

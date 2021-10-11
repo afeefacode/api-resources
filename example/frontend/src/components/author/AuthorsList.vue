@@ -1,21 +1,19 @@
 <template>
   <list-view
     v-bind="$attrs"
+    :action="action"
+    :fields="fields"
     :filters.sync="filters"
   >
     <template #filters>
       <list-filter-row>
-        <v-col cols="3">
-          <list-filter name="tag_id" />
-        </v-col>
+        <list-filter-search />
 
-        <list-filter-row>
-          <list-filter-search />
-        </list-filter-row>
-
-        <v-col cols="3">
-          <list-filter name="order" />
-        </v-col>
+        <list-filter-select
+          name="tag_id"
+          label="Tag"
+          maxWidth="200"
+        />
       </list-filter-row>
 
       <list-filter-page />
@@ -44,18 +42,34 @@
 
 
 <script>
+import { Author } from '@/models'
 import { Component, Vue } from 'vue-property-decorator'
 
 @Component
 export default class AuthorsList extends Vue {
+  static getListConfig (route) {
+    return {
+      action: Author.getAction(route.meta.routeDefinition, 'get_authors'),
+
+      fields: {
+        name: true,
+        tags: {
+          name: true,
+          count_users: true
+        },
+        count_articles: true
+      }
+    }
+  }
+
   filters = []
 
   get action () {
-    return this.$routeDefinition.config.routing.list.action
+    return AuthorsList.getListConfig(this.$route).action
   }
 
   get fields () {
-    return this.$routeDefinition.config.routing.list.fields
+    return AuthorsList.getListConfig(this.$route).fields
   }
 
   clickTag (tag) {

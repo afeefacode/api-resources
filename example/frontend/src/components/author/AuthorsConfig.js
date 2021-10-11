@@ -7,7 +7,7 @@ import AuthorsList from './AuthorsList'
 
 export class AuthorsConfig extends RouteConfig {
   model = {
-    action: this.api.getAction('Example.AuthorsResource', 'get_author'),
+    action: this.api.getAction('Example.AuthorResource', 'get_author'),
 
     fields: {
       name: true,
@@ -24,7 +24,7 @@ export class AuthorsConfig extends RouteConfig {
 
     Component: AuthorsList,
 
-    action: this.api.getAction('Example.AuthorsResource', 'get_authors'),
+    action: this.api.getAction('Example.AuthorResource', 'get_authors'),
 
     fields: {
       name: true,
@@ -43,7 +43,7 @@ export class AuthorsConfig extends RouteConfig {
   edit = {
     Component: AuthorForm,
 
-    action: this.api.getAction('Example.AuthorsResource', 'update_author'),
+    action: this.api.getAction('Example.AuthorResource', 'update_author'),
 
     fields: {
       name: true
@@ -55,7 +55,7 @@ export class AuthorsConfig extends RouteConfig {
 
     Component: AuthorForm,
 
-    action: this.api.getAction('Example.AuthorsResource', 'create_author'),
+    action: this.api.getAction('Example.AuthorResource', 'create_author'),
 
     fields: {
       name: true

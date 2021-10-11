@@ -18,9 +18,9 @@ use Afeefa\ApiResources\Type\Type;
 use Backend\Resolvers\AuthorsResolver;
 use Backend\Types\AuthorType;
 
-class AuthorsResource extends Resource
+class AuthorResource extends Resource
 {
-    public static string $type = 'Example.AuthorsResource';
+    public static string $type = 'Example.AuthorResource';
 
     protected function actions(ActionBag $actions): void
     {
@@ -31,7 +31,7 @@ class AuthorsResource extends Resource
                 $filters->add('tag_id', function (IdFilter $filter) {
                     $filter->optionsRequest(function (ApiRequest $request) {
                         $request
-                            ->resourceType(TagsResource::$type)
+                            ->resourceType(TagResource::$type)
                             ->actionName('get_tags')
                             ->fields(['name' => true, 'count_users' => true]);
                     });

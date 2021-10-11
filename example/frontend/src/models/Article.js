@@ -3,14 +3,11 @@ import { Model } from '@a-admin/models/Model'
 export class Article extends Model {
   static type = 'Example.ArticleType'
 
-  getLink (action = 'detail') {
-    return {
-      name: `articles.${action}`,
-      params: {
-        articleId: this.id
-      }
-    }
-  }
+  static resourceType = 'Example.ArticleResource'
+
+  static routeName = 'articles'
+
+  static routeIdKey = 'articleId'
 
   getTitle () {
     return this.title

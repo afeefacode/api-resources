@@ -8,7 +8,7 @@ import ArticlesList from './ArticlesList'
 
 export class ArticlesConfig extends RouteConfig {
   model = {
-    action: this.api.getAction('Example.ArticlesResource', 'get_article'),
+    action: this.api.getAction('Example.ArticleResource', 'get_article'),
 
     fields: {
       title: true,
@@ -31,7 +31,7 @@ export class ArticlesConfig extends RouteConfig {
 
     Component: ArticlesList,
 
-    action: this.api.getAction('Example.ArticlesResource', 'get_articles'),
+    action: this.api.getAction('Example.ArticleResource', 'get_articles'),
 
     fields: {
       title: true,
@@ -54,7 +54,7 @@ export class ArticlesConfig extends RouteConfig {
   edit = {
     Component: ArticleForm,
 
-    action: this.api.getAction('Example.ArticlesResource', 'update_article'),
+    action: this.api.getAction('Example.ArticleResource', 'update_article'),
 
     fields: {
       title: true,
@@ -68,7 +68,7 @@ export class ArticlesConfig extends RouteConfig {
 
     Component: ArticleCreateForm,
 
-    action: this.api.getAction('Example.ArticlesResource', 'create_article'),
+    action: this.api.getAction('Example.ArticleResource', 'create_article'),
 
     fields: {
       author: true,

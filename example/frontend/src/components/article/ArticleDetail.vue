@@ -31,12 +31,34 @@
 
 
 <script>
+import { Article } from '@/models'
 import { Component, Vue } from 'vue-property-decorator'
 
 @Component({
   props: ['model']
 })
 export default class ArticleDetail extends Vue {
+  static getDetailConfig (route) {
+    return {
+      action: Article.getAction(route.meta.routeDefinition, 'get_article'),
+
+      fields: {
+        title: true,
+        date: true,
+        summary: true,
+        content: true,
+        author: {
+          name: true
+        },
+        tags: {
+          name: true,
+          count_users: true
+        },
+        count_comments: true
+      }
+    }
+  }
+
   get article () {
     return this.model
   }
