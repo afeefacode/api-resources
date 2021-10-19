@@ -3,40 +3,30 @@
 namespace Afeefa\ApiResources\Tests\Api;
 
 use Afeefa\ApiResources\Action\Action;
-use Afeefa\ApiResources\Field\FieldBag;
+use Afeefa\ApiResources\Api\Api;
 use Afeefa\ApiResources\Field\Fields\HasOneRelation;
 use Afeefa\ApiResources\Field\Fields\VarcharAttribute;
 use Afeefa\ApiResources\Test\ApiBuilder;
 use Afeefa\ApiResources\Test\TestApi;
 use Afeefa\ApiResources\Test\TestResource;
+use Afeefa\ApiResources\Test\TestType;
+use Afeefa\ApiResources\Test\TypeBuilder;
 use Afeefa\ApiResources\Type\Type;
+use Closure;
 use PHPUnit\Framework\TestCase;
 
-class TypeTest extends TestCase
+class SchemaTypeTest extends TestCase
 {
     public function test_simple()
     {
-        $type = new class() extends Type {
-            public static string $type = 'Test.Type';
+        $type = $this->createType('Test.Type', function (TestType $type) {
+            $type
+                ->attribute('title', VarcharAttribute::class)
+                ->attribute('name', VarcharAttribute::class)
+                ->relation('related_type', get_class($type), HasOneRelation::class);
+        });
 
-            protected function fields(FieldBag $fields): void
-            {
-                $fields->attribute('title', VarcharAttribute::class);
-                $fields->attribute('name', VarcharAttribute::class);
-
-                $fields->relation('related_type', get_class($this), HasOneRelation::class);
-            }
-        };
-
-        $api = (new ApiBuilder())
-            ->api('Test.Api', function (TestApi $api) use ($type) {
-                $api->resource('Test.Resource', function (TestResource $resource) use ($type) {
-                    $resource->action('test_action', function (Action $action) use ($type) {
-                        $action->response(get_class($type));
-                    });
-                });
-            })
-            ->get();
+        $api = $this->createApi($type);
 
         // debug_dump($api->toSchemaJson());
 
@@ -57,5 +47,27 @@ class TypeTest extends TestCase
         $this->assertEquals([], $schema['validators']);
         $this->assertArrayNotHasKey('update_fields', $typeSchema);
         $this->assertArrayNotHasKey('created_fields', $typeSchema);
+    }
+
+    private function createType(string $type, Closure $callback): Type
+    {
+        return (new TypeBuilder())
+            ->type($type, function (Type $type) use ($callback) {
+                $callback($type, $type->getFields());
+            })
+            ->get();
+    }
+
+    private function createApi(Type $type): Api
+    {
+        return (new ApiBuilder())
+            ->api('Test.Api', function (TestApi $api) use ($type) {
+                $api->resource('Test.Resource', function (TestResource $resource) use ($type) {
+                    $resource->action('test_action', function (Action $action) use ($type) {
+                        $action->response(get_class($type));
+                    });
+                });
+            })
+            ->get();
     }
 }
