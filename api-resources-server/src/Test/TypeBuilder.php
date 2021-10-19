@@ -9,7 +9,7 @@ class TypeBuilder
 {
     public Type $type;
 
-    public function type(string $type, Closure $callback): TypeBuilder
+    public function type(string $type, ?Closure $callback = null): TypeBuilder
     {
         $newType = new class() extends TestType {};
         $TypeClass = get_class($newType);
@@ -29,13 +29,15 @@ class TypeBuilder
 
 class TestType extends Type
 {
-    public static Closure $createCallback;
+    public static ?Closure $createCallback;
 
     public function created(): void
     {
         parent::created();
 
-        (static::$createCallback)($this);
+        if (static::$createCallback) {
+            (static::$createCallback)($this);
+        }
     }
 
     public function attribute(string $name, $classOrCallback): TestType
