@@ -2,6 +2,7 @@
 
 namespace Afeefa\ApiResources\Test;
 
+use Afeefa\ApiResources\Field\FieldBag;
 use Afeefa\ApiResources\Type\Type;
 use Closure;
 
@@ -9,14 +10,47 @@ class TypeBuilder
 {
     public Type $type;
 
-    public function type(string $type, ?Closure $callback = null): TypeBuilder
-    {
-        $newType = new class() extends TestType {};
-        $TypeClass = get_class($newType);
-        $TypeClass::$type = $type;
-        $TypeClass::$createCallback = $callback;
+    public function type(
+        string $typeName,
+        ?Closure $fieldsCallback = null,
+        ?Closure $updateFieldsCallback = null,
+        ?Closure $createFieldsCallback = null
+    ): TypeBuilder {
+        $type = new class() extends Type {
+            public static ?Closure $fieldsCallback;
+            public static ?Closure $updateFieldsCallback;
+            public static ?Closure $createFieldsCallback;
 
-        $this->type = $newType;
+            protected function fields(FieldBag $fields): void
+            {
+                if (static::$fieldsCallback) {
+                    (static::$fieldsCallback)->call($this, $fields);
+                }
+            }
+
+            protected function updateFields(FieldBag $fields): void
+            {
+                if (static::$updateFieldsCallback) {
+                    (static::$updateFieldsCallback)->call($this, $fields);
+                }
+            }
+
+            protected function createFields(FieldBag $fields): void
+            {
+                if (static::$createFieldsCallback) {
+                    (static::$createFieldsCallback)->call($this, $fields);
+                }
+            }
+        };
+
+        $TypeClass = get_class($type);
+        $TypeClass::$type = $typeName;
+
+        $TypeClass::$fieldsCallback = $fieldsCallback;
+        $TypeClass::$updateFieldsCallback = $updateFieldsCallback;
+        $TypeClass::$createFieldsCallback = $createFieldsCallback;
+
+        $this->type = $type;
 
         return $this;
     }
@@ -24,31 +58,5 @@ class TypeBuilder
     public function get(): Type
     {
         return $this->type;
-    }
-}
-
-class TestType extends Type
-{
-    public static ?Closure $createCallback;
-
-    public function created(): void
-    {
-        parent::created();
-
-        if (static::$createCallback) {
-            (static::$createCallback)($this);
-        }
-    }
-
-    public function attribute(string $name, $classOrCallback): TestType
-    {
-        $this->fields->attribute($name, $classOrCallback);
-        return $this;
-    }
-
-    public function relation(string $name, string $RelatedTypeClass, $classOrCallback): TestType
-    {
-        $this->fields->relation($name, $RelatedTypeClass, $classOrCallback);
-        return $this;
     }
 }

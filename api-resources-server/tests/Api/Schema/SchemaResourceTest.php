@@ -3,13 +3,13 @@
 namespace Afeefa\ApiResources\Tests\Api;
 
 use Afeefa\ApiResources\Action\Action;
+use Afeefa\ApiResources\Action\ActionBag;
 use Afeefa\ApiResources\Api\Api;
+use Afeefa\ApiResources\Resource\ResourceBag;
 use Afeefa\ApiResources\Test\ApiBuilder;
-use Afeefa\ApiResources\Test\TestApi;
-use Afeefa\ApiResources\Test\TestResource;
+use Afeefa\ApiResources\Test\ResourceBuilder;
 use Afeefa\ApiResources\Test\TypeBuilder;
 use Afeefa\ApiResources\Type\Type;
-use Closure;
 use PHPUnit\Framework\TestCase;
 
 class SchemaResourceTest extends TestCase
@@ -20,24 +20,24 @@ class SchemaResourceTest extends TestCase
 
         $api = $this->createApi($type);
 
-        // debug_dump($api->toSchemaJson());
-
         $schema = $api->toSchemaJson();
 
-        $this->assertEquals(['Test.Resource'], array_keys($schema['resources']));
+        // debug_dump($schema);
 
-        $resourceSchema = $schema['resources']['Test.Resource'];
+        $expectedResourcesSchema = [
+            'Test.Resource' => [
+                'test_action' => [
+                    'response' => [
+                        'type' => 'Test.Type'
+                    ]
+                ]
+            ]
+        ];
 
-        $this->assertEquals(['test_action'], array_keys($resourceSchema));
-
-        $actionSchema = $resourceSchema['test_action'];
-
-        $this->assertEquals(['response' => [
-            'type' => 'Test.Type'
-        ]], $actionSchema);
+        $this->assertEquals($expectedResourcesSchema, $schema['resources']);
     }
 
-    private function createType(string $type, ?Closure $callback = null): Type
+    private function createType(string $type): Type
     {
         return (new TypeBuilder())
             ->type($type)
@@ -46,14 +46,24 @@ class SchemaResourceTest extends TestCase
 
     private function createApi(Type $type): Api
     {
-        return (new ApiBuilder())
-            ->api('Test.Api', function (TestApi $api) use ($type) {
-                $api->resource('Test.Resource', function (TestResource $resource) use ($type) {
-                    $resource->action('test_action', function (Action $action) use ($type) {
+        $resource = (new ResourceBuilder())
+            ->resource(
+                'Test.Resource',
+                function (ActionBag $actions) use ($type) {
+                    $actions->add('test_action', function (Action $action) use ($type) {
                         $action->response(get_class($type));
                     });
-                });
-            })
+                }
+            )
+            ->get();
+
+        return (new ApiBuilder())
+            ->api(
+                'Test.Api',
+                function (ResourceBag $resources) use ($resource) {
+                    $resources->add(get_class($resource));
+                }
+            )
             ->get();
     }
 }
