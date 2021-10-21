@@ -103,7 +103,7 @@ class SchemaTypeTest extends TestCase
         $this->assertEquals($expectedTypesSchema, $schema['types']);
 
         $this->assertEquals(['Afeefa.VarcharValidator'], array_keys($schema['validators']));
-        $this->assertEquals(['type', 'rules'], array_keys($schema['validators']['Afeefa.VarcharValidator']));
+        $this->assertEquals(['rules'], array_keys($schema['validators']['Afeefa.VarcharValidator']));
     }
 
     public function test_required()

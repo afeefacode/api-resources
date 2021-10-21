@@ -9,10 +9,18 @@ class ApiBuilderTest extends TestCase
 {
     public function test_creates_different_apis()
     {
-        $api = (new ApiBuilder())->api('Api1')->get();
+        $api = (new ApiBuilder())->api('Api')->get();
         $api2 = (new ApiBuilder())->api('Api2')->get();
 
-        $this->assertEquals('Api1', $api::$type);
+        $this->assertEquals('Api', $api::$type);
         $this->assertEquals('Api2', $api2::$type);
+    }
+
+    public function test_creates_different_apis2()
+    {
+        $api = (new ApiBuilder())->api('Api')->get();
+        $api2 = (new ApiBuilder())->api('Api')->get();
+
+        $this->assertNotEquals($api, $api2);
     }
 }
