@@ -94,22 +94,26 @@ class Field extends BagEntry
         return $this->resolveParams;
     }
 
-    public function validate(Closure $callback): Field
+    public function validate($validatorOrCallback): Field
     {
-        if ($this->validator) { // cloned validator
-            $this->container->call(
-                $callback,
-                function (DependencyResolver $r) {
-                    $r->fix($this->validator);
-                }
-            );
+        if ($validatorOrCallback instanceof Validator) {
+            $this->validator = $validatorOrCallback;
         } else {
-            $this->container->create(
-                $callback,
-                function (Validator $validator) {
-                    $this->validator = $validator;
-                }
-            );
+            if ($this->validator) { // cloned validator
+                $this->container->call(
+                    $validatorOrCallback,
+                    function (DependencyResolver $r) {
+                        $r->fix($this->validator);
+                    }
+                );
+            } else {
+                $this->container->create(
+                    $validatorOrCallback,
+                    function (Validator $validator) {
+                        $this->validator = $validator;
+                    }
+                );
+            }
         }
 
         return $this;
