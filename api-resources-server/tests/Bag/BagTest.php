@@ -184,9 +184,9 @@ class BagTest extends TestCase
         $container = new Container();
         $bag = $container->create(Bag::class);
 
-        $NoBagEntry = new class() {};
+        $NoBagEntry = new class () {};
 
-        $bag->setDefinition('one', get_class($NoBagEntry));
+        $bag->setDefinition('one', $NoBagEntry::class);
         $bag->get('one');
     }
 

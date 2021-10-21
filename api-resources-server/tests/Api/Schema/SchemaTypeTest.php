@@ -11,26 +11,31 @@ use Afeefa\ApiResources\Field\Fields\VarcharAttribute;
 use Afeefa\ApiResources\Resource\ResourceBag;
 use Afeefa\ApiResources\Test\ApiBuilder;
 use Afeefa\ApiResources\Test\ResourceBuilder;
+use function Afeefa\ApiResources\Test\T;
 use Afeefa\ApiResources\Test\TypeBuilder;
-use Afeefa\ApiResources\Type\Type;
+use Afeefa\ApiResources\Test\TypeRegistry;
 use Closure;
+
 use PHPUnit\Framework\TestCase;
 
 class SchemaTypeTest extends TestCase
 {
+    protected function setUp(): void
+    {
+        TypeRegistry::reset();
+    }
+
     public function test_simple()
     {
-        $type = $this->createType(
+        $api = $this->createApiWithType(
             'Test.Type',
             function (FieldBag $fields) {
                 $fields
                     ->attribute('title', VarcharAttribute::class)
                     ->attribute('name', VarcharAttribute::class)
-                    ->relation('related_type', get_class($this), HasOneRelation::class);
+                    ->relation('related_type', $this::class, HasOneRelation::class);
             }
         );
-
-        $api = $this->createApi($type);
 
         $schema = $api->toSchemaJson();
 
@@ -59,21 +64,16 @@ class SchemaTypeTest extends TestCase
         $this->assertEquals([], $schema['validators']);
     }
 
-    private function createType(string $type, ?Closure $fieldsCallback = null): Type
+    private function createApiWithType(string $typeName, ?Closure $fieldsCallback = null): Api
     {
-        return (new TypeBuilder())
-            ->type($type, $fieldsCallback)
-            ->get();
-    }
+        (new TypeBuilder())->type($typeName, $fieldsCallback);
 
-    private function createApi(Type $type): Api
-    {
         $resource = (new ResourceBuilder())
             ->resource(
                 'Test.Resource',
-                function (ActionBag $actions) use ($type) {
-                    $actions->add('test_action', function (Action $action) use ($type) {
-                        $action->response(get_class($type));
+                function (ActionBag $actions) use ($typeName) {
+                    $actions->add('test_action', function (Action $action) use ($typeName) {
+                        $action->response(T($typeName));
                     });
                 }
             )
@@ -83,7 +83,7 @@ class SchemaTypeTest extends TestCase
             ->api(
                 'Test.Api',
                 function (ResourceBag $resources) use ($resource) {
-                    $resources->add(get_class($resource));
+                    $resources->add($resource::class);
                 }
             )
             ->get();
