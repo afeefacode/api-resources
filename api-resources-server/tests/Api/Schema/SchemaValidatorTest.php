@@ -31,6 +31,10 @@ class SchemaValidatorTest extends TestCase
                     $rules
                         ->add('min')
                         ->message('{{ fieldLabel }} should be greater than {{ param }}.');
+
+                    $rules
+                        ->add('max')
+                        ->message('{{ fieldLabel }} should be lesser than {{ param }}.');
                 }
             )
             ->get();
@@ -40,7 +44,7 @@ class SchemaValidatorTest extends TestCase
             function (FieldBag $fields) use ($validator) {
                 $fields
                     ->attribute('title', function (VarcharAttribute $attribute) use ($validator) {
-                        $attribute->validate($validator->min(4));
+                        $attribute->validate($validator->min(4)->max(14));
                     });
             }
         );
@@ -58,7 +62,8 @@ class SchemaValidatorTest extends TestCase
                         'validator' => [
                             'type' => 'Test.Validator',
                             'params' => [
-                                'min' => 4
+                                'min' => 4,
+                                'max' => 14
                             ]
                         ]
                     ]
@@ -73,6 +78,9 @@ class SchemaValidatorTest extends TestCase
                 'rules' => [
                     'min' => [
                         'message' => '{{ fieldLabel }} should be greater than {{ param }}.'
+                    ],
+                    'max' => [
+                        'message' => '{{ fieldLabel }} should be lesser than {{ param }}.'
                     ]
                 ]
             ]
