@@ -62,17 +62,6 @@ class Field extends BagEntry
         return $this->name;
     }
 
-    public function optionsRequest(Closure $callback)
-    {
-        $this->optionsRequestCallback = $callback;
-    }
-
-    public function options(array $options): Field
-    {
-        $this->options = $options;
-        return $this;
-    }
-
     public function getOptions(): array
     {
         return $this->options;
@@ -123,12 +112,6 @@ class Field extends BagEntry
             );
         }
 
-        return $this;
-    }
-
-    public function validator(Validator $validator): Field
-    {
-        $this->validator = $validator;
         return $this;
     }
 
@@ -231,13 +214,13 @@ class Field extends BagEntry
                 ->name($this->name)
                 ->required($this->required);
             if ($this->validator) {
-                $field->validator($this->validator->clone());
+                $field->validator = $this->validator->clone();
             }
             if (isset($this->optionsRequestCallback)) {
-                $field->optionsRequest($this->optionsRequestCallback);
+                $field->optionsRequestCallback = $this->optionsRequestCallback;
             }
             if (isset($this->options)) {
-                $field->options($this->options);
+                $field->options = $this->options;
             }
         });
     }
