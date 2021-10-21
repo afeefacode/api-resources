@@ -80,6 +80,7 @@ class Api implements ContainerAwareInterface
             $validator = $this->container->get($ValidatorClass);
             $validators[$validator::$type] = $validator->toSchemaJson();
             unset($validators[$validator::$type]['params']);
+            unset($validators[$validator::$type]['type']);
         }
 
         return [
