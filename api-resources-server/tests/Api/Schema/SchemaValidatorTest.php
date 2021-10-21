@@ -7,6 +7,8 @@ use Afeefa\ApiResources\Field\FieldBag;
 use Afeefa\ApiResources\Field\Fields\VarcharAttribute;
 use function Afeefa\ApiResources\Test\createApiWithSingleType;
 
+use Afeefa\ApiResources\Test\TestValidator;
+
 use Afeefa\ApiResources\Test\TypeRegistry;
 use Afeefa\ApiResources\Test\ValidatorBuilder;
 use Afeefa\ApiResources\Validator\Rule\RuleBag;
@@ -21,6 +23,7 @@ class SchemaValidatorTest extends TestCase
 
     public function test_simple()
     {
+        /** @var TestValidator */
         $validator = (new ValidatorBuilder())
             ->validator(
                 'Test.Validator',
