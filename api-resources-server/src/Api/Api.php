@@ -79,6 +79,7 @@ class Api implements ContainerAwareInterface
         foreach ($typeRegistry->validators() as $ValidatorClass) {
             $validator = $this->container->get($ValidatorClass);
             $validators[$validator::$type] = $validator->toSchemaJson();
+            unset($validators[$validator::$type]['params']);
         }
 
         return [
@@ -86,8 +87,6 @@ class Api implements ContainerAwareInterface
             'resources' => $resources,
             'types' => $types,
             'validators' => $validators
-            // 'fields' => $fields,
-            // 'relations' => $relations,
         ];
     }
 

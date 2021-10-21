@@ -31,9 +31,9 @@ class TypeBuilder
         $type::$updateFieldsCallback = $updateFieldsCallback;
         $type::$createFieldsCallback = $createFieldsCallback;
 
-        $this->type = $type;
-
         TypeRegistry::register($type);
+
+        $this->type = $type;
 
         return $this;
     }

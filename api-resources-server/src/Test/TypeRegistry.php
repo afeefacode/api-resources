@@ -20,6 +20,16 @@ class TypeRegistry
         }
     }
 
+    public static function has(string $type): bool
+    {
+        return isset(self::$TypeClasses[$type]);
+    }
+
+    public static function get(string $type): Type
+    {
+        return self::$TypeClasses[$type];
+    }
+
     public static function getOrCreate(string $type): Type
     {
         if (!isset(self::$TypeClasses[$type])) {
