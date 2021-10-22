@@ -14,13 +14,10 @@
 
     <h2>Artikel</h2>
 
-    <articles-list
+    <articles-list-view
       :filterHistoryKey="model.id + '.articles'"
       :filterSource="filterSource"
-      :action="articlesAction"
-      :fields="articlesFields"
-      :authorId="model.id"
-      :scopes="{author_id: model.id}"
+      :has="{author: false}"
     />
   </div>
 </template>
@@ -28,7 +25,7 @@
 
 <script>
 import { Component, Vue } from 'vue-property-decorator'
-import ArticlesList from '@/components/article/ArticlesList'
+import ArticlesListView from '@/components/article/ArticlesListView'
 import { ArticlesConfig } from '@/components/article/ArticlesConfig'
 import { QuerySourceType } from '@a-vue/components/list/QuerySourceType'
 import { Author } from '@/models'
@@ -36,7 +33,7 @@ import { Author } from '@/models'
 @Component({
   props: ['model'],
   components: {
-    ArticlesList
+    ArticlesListView
   }
 })
 export default class AuthorDetail extends Vue {

@@ -1,62 +1,58 @@
 <template>
-  <list-page
-    v-bind="$attrs"
-    :table="true"
-    :filters.sync="filters"
-  >
-    <template #filters>
-      <list-filter-row>
-        <list-filter-search />
+  <list-page :ModelClass="Author">
+    <list-view
+      v-bind="$attrs"
+      :action="action"
+      :fields="fields"
+      :filters.sync="filters"
+    >
+      <template #filters>
+        <list-filter-row>
+          <list-filter-search />
 
-        <list-filter-select
-          name="tag_id"
-          label="Tag"
-          maxWidth="200"
+          <list-filter-select
+            name="tag_id"
+            label="Tag"
+            maxWidth="200"
+          />
+        </list-filter-row>
+
+        <list-filter-page />
+      </template>
+
+      <template #header-table>
+        <list-column-header
+          text="Name"
+          order="name"
         />
-      </list-filter-row>
 
-      <list-filter-page />
-    </template>
-
-    <template #header>
-      <list-column-header
-        text="ID"
-        order="id"
-      />
-
-      <list-column-header
-        text="Name"
-        order="name"
-      />
-
-      <list-column-header
-        text="Artikel"
-        order="count_articles"
-      />
-
-      <div>Tags</div>
-    </template>
-
-    <template #model="{ model: author }">
-      <div>{{ author.id }}</div>
-
-      <div>
-        <router-link :to="author.getLink()">
-          {{ author.name }}
-        </router-link>
-      </div>
-
-      <div class="info">
-        {{ author.count_articles }}
-      </div>
-
-      <div>
-        <tag-list
-          :model="author"
-          @clickTag="clickTag"
+        <list-column-header
+          text="Artikel"
+          order="count_articles"
         />
-      </div>
-    </template>
+
+        <div>Tags</div>
+      </template>
+
+      <template #model-table="{ model: author }">
+        <div>
+          <router-link :to="author.getLink()">
+            {{ author.name }}
+          </router-link>
+        </div>
+
+        <div class="info">
+          {{ author.count_articles }}
+        </div>
+
+        <div>
+          <tag-list
+            :model="author"
+            @clickTag="clickTag"
+          />
+        </div>
+      </template>
+    </list-view>
   </list-page>
 </template>
 
@@ -83,6 +79,8 @@ export default class AuthorsList extends Vue {
       }
     }
   }
+
+  Author = Author
 
   filters = []
 
