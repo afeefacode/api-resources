@@ -44,7 +44,7 @@ class AuthorResource extends Resource
                             'name' => [OrderFilter::ASC], OrderFilter::DESC,
                             'count_articles' => [OrderFilter::DESC, OrderFilter::ASC]
                         ])
-                        ->default(['id' => OrderFilter::ASC]);
+                        ->default(['name' => OrderFilter::ASC]);
                 });
 
                 $filters->add('page_size', function (PageSizeFilter $filter) {

@@ -55,7 +55,7 @@ class ArticleResource extends Resource
                             'count_comments' => [OrderFilter::DESC, OrderFilter::ASC],
                             'author_name' => [OrderFilter::ASC, OrderFilter::DESC]
                         ])
-                        ->default(['id' => OrderFilter::ASC]);
+                        ->default(['date' => OrderFilter::DESC]);
                 });
 
                 $filters->add('page_size', function (PageSizeFilter $filter) {
