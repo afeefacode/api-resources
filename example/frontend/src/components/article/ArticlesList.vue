@@ -35,11 +35,20 @@
         order="title"
       />
 
-      <div>Author</div>
+      <list-column-header
+        text="Autor"
+        order="author_name"
+      />
 
-      <div>Kommentare</div>
+      <list-column-header
+        text="Kommentare"
+        order="count_comments"
+      />
 
-      <div>Datum</div>
+      <list-column-header
+        text="Datum"
+        order="date"
+      />
 
       <div>Tags</div>
     </template>
@@ -126,7 +135,7 @@ export default class ArticlesList extends Vue {
       return ''
     }
 
-    const options = { year: 'numeric', month: 'long', day: 'numeric' }
+    const options = { year: 'numeric', month: '2-digit', day: '2-digit' }
     return article.date.toLocaleDateString('de-DE', options)
   }
 }

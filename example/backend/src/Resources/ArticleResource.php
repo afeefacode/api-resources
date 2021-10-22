@@ -8,7 +8,6 @@ use Afeefa\ApiResources\Action\ActionParams;
 use Afeefa\ApiResources\Api\ApiRequest;
 use Afeefa\ApiResources\Field\Fields\IdAttribute;
 use Afeefa\ApiResources\Filter\FilterBag;
-use Afeefa\ApiResources\Filter\Filters\BooleanFilter;
 use Afeefa\ApiResources\Filter\Filters\IdFilter;
 use Afeefa\ApiResources\Filter\Filters\KeywordFilter;
 use Afeefa\ApiResources\Filter\Filters\OrderFilter;
@@ -45,19 +44,16 @@ class ArticleResource extends Resource
                     });
                 });
 
-                $filters->add('has_comments', function (BooleanFilter $filter) {
-                    $filter->values([true, false]);
-                });
-
                 $filters->add('q', KeywordFilter::class);
 
                 $filters->add('order', function (OrderFilter $filter) {
                     $filter
                         ->fields([
                             'id' => [OrderFilter::DESC, OrderFilter::ASC],
-                            'title' => [OrderFilter::DESC, OrderFilter::ASC],
+                            'title' => [OrderFilter::ASC, OrderFilter::DESC],
                             'date' => [OrderFilter::DESC, OrderFilter::ASC],
-                            'count_comments' => [OrderFilter::DESC, OrderFilter::ASC]
+                            'count_comments' => [OrderFilter::DESC, OrderFilter::ASC],
+                            'author_name' => [OrderFilter::ASC, OrderFilter::DESC]
                         ])
                         ->default(['id' => OrderFilter::ASC]);
                 });

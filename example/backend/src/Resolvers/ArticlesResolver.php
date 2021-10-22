@@ -41,21 +41,6 @@ class ArticlesResolver
                     $countScope = $countFilters = $db->count('articles');
                 }
 
-                // has comments
-
-                $hasComments = array_key_exists('has_comments', $filters);
-
-                if ($hasComments) {
-                    $hasComments = $filters['has_comments'];
-
-                    $selectFields['count_comments'] = $this->selectCountComments();
-
-                    $operator = $hasComments ? '[>]' : '';
-                    $where['HAVING']['count_comments' . $operator] = 0;
-
-                    $usedFilters['has_comments'] = $hasComments;
-                }
-
                 // author_id search
 
                 $authorId = $filters['author_id'] ?? null;
@@ -116,6 +101,12 @@ class ArticlesResolver
                     if ($field === 'count_comments') {
                         if (!isset($selectFields['count_comments'])) {
                             $selectFields['count_comments'] = $this->selectCountComments();
+                        }
+                    }
+
+                    if ($field === 'author_name') {
+                        if (!isset($selectFields['author_name'])) {
+                            $selectFields['author_name'] = $this->selectAuthorName();
                         }
                     }
 
@@ -296,6 +287,18 @@ class ArticlesResolver
         );
 
         return intval($db->query('SELECT COUNT(*) from (' . $query . ') tmp')->fetchColumn());
+    }
+
+    private function selectAuthorName()
+    {
+        return Medoo::raw(
+            <<<EOT
+                (
+                    select name from authors
+                    where id = articles.author_id
+                )
+                EOT
+        );
     }
 
     private function selectCountComments()
