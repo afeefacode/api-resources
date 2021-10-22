@@ -119,10 +119,10 @@ $app->get('/backend-api/tags', function (ServerRequest $request, Response $respo
                     'tags' => [
                         'name' => true,
                         'users' => [
-                            '@Example.ArticleType' => [
+                            '@Example.Article' => [
                                 'title' => true
                             ],
-                            '@Example.AuthorType' => [
+                            '@Example.Author' => [
                                 'name' => true
                             ]
                         ]

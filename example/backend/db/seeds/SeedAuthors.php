@@ -38,7 +38,7 @@ class SeedAuthors extends BaseSeeder
             }
             $tags = $this->fetchAll('select * from tags order by RAND() limit ' . $numTags);
             $tags = array_map(function ($tag) use ($author) {
-                return '(' . implode(', ', [$tag['id'], $author['id'], "'Example.AuthorType'"]) . ')';
+                return '(' . implode(', ', [$tag['id'], $author['id'], "'Example.Author'"]) . ')';
             }, $tags);
             $tags = implode(', ', $tags);
 

@@ -2,7 +2,7 @@ import { Model } from '@a-admin/models/Model'
 import { mdiFileDocumentOutline } from '@mdi/js'
 
 export class Article extends Model {
-  static type = 'Example.ArticleType'
+  static type = 'Example.Article'
 
   static resourceType = 'Example.ArticleResource'
 

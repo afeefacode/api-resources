@@ -211,7 +211,7 @@ class AuthorsResolver
                 (
                     select 1 from tag_users
                     where user_id = authors.id
-                    and user_type = 'Example.AuthorType'
+                    and user_type = 'Example.Author'
                     and tag_id = {$tagId}
                 )
                 EOT

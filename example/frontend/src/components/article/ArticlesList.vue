@@ -56,7 +56,11 @@
     <template #model="{ model: article }">
       <div>{{ article.id }}</div>
 
-      <div>{{ article.title }}</div>
+      <div>
+        <router-link :to="article.getLink()">
+          {{ article.title }}
+        </router-link>
+      </div>
 
       <div>
         <router-link :to="article.author.getLink()">

@@ -2,7 +2,7 @@ import { Model } from '@a-admin/models/Model'
 import { mdiAccount } from '@mdi/js'
 
 export class Author extends Model {
-  static type = 'Example.AuthorType'
+  static type = 'Example.Author'
 
   static resourceType = 'Example.AuthorResource'
 

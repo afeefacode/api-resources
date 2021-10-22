@@ -20,7 +20,7 @@ use Backend\Resolvers\TagsResolver;
 
 class ArticleType extends ModelType
 {
-    public static string $type = 'Example.ArticleType';
+    public static string $type = 'Example.Article';
 
     protected function translations(): array
     {

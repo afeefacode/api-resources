@@ -73,7 +73,7 @@ class TagsResolver
                 $models = [];
 
                 foreach ($ownerIdsByType as $typeName => $ids) {
-                    $table = $typeName === 'Example.ArticleType' ? 'articles' : 'authors';
+                    $table = $typeName === 'Example.Article' ? 'articles' : 'authors';
 
                     $selectFields = $c->getSelectFields($typeName);
 

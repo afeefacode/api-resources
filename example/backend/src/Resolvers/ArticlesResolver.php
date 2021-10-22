@@ -308,7 +308,7 @@ class ArticlesResolver
                 (
                     select count(*) from comments
                     where owner_id = articles.id
-                    and owner_type = 'Example.ArticleType'
+                    and owner_type = 'Example.Article'
                 )
                 EOT
         );
@@ -321,7 +321,7 @@ class ArticlesResolver
                 (
                     select 1 from tag_users
                     where user_id = articles.id
-                    and user_type = 'Example.ArticleType'
+                    and user_type = 'Example.Article'
                     and tag_id = {$tagId}
                 )
                 EOT
