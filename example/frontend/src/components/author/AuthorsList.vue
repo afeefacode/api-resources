@@ -29,7 +29,10 @@
         order="name"
       />
 
-      <div>Artikel</div>
+      <list-column-header
+        text="Artikel"
+        order="count_articles"
+      />
 
       <div>Tags</div>
     </template>
