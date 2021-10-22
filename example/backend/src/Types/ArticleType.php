@@ -22,6 +22,16 @@ class ArticleType extends ModelType
 {
     public static string $type = 'Example.ArticleType';
 
+    protected function translations(): array
+    {
+        return [
+            'TITLE_SINGULAR' => 'Artikel',
+            'TITLE_PLURAL' => 'Artikel',
+            'TITLE_EMPTY' => 'Kein Titel',
+            'TITLE_NEW' => 'Neuer Artikel'
+        ];
+    }
+
     protected function fields(FieldBag $fields): void
     {
         $fields->attribute('title', VarcharAttribute::class);

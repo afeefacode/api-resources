@@ -1,8 +1,7 @@
 <template>
-  <list-view
+  <list-page
     v-bind="$attrs"
-    :action="action"
-    :fields="fields"
+    :table="true"
     :filters.sync="filters"
   >
     <template #filters>
@@ -19,25 +18,43 @@
       <list-filter-page />
     </template>
 
+    <template #header>
+      <list-column-header
+        text="ID"
+        order="id"
+      />
+
+      <list-column-header
+        text="Name"
+        order="name"
+      />
+
+      <div>Artikel</div>
+
+      <div>Tags</div>
+    </template>
+
     <template #model="{ model: author }">
-      <list-card>
-        <list-meta>
-          Autor #{{ author.id }}
-          |
-          {{ author.count_articles }} Artikel
-        </list-meta>
+      <div>{{ author.id }}</div>
 
-        <list-title :link="author.getLink()">
+      <div>
+        <router-link :to="author.getLink()">
           {{ author.name }}
-        </list-title>
+        </router-link>
+      </div>
 
+      <div class="info">
+        {{ author.count_articles }}
+      </div>
+
+      <div>
         <tag-list
           :model="author"
           @clickTag="clickTag"
         />
-      </list-card>
+      </div>
     </template>
-  </list-view>
+  </list-page>
 </template>
 
 
@@ -49,6 +66,8 @@ import { Component, Vue } from 'vue-property-decorator'
 export default class AuthorsList extends Vue {
   static getListConfig (route) {
     return {
+      ModelClass: Author,
+
       action: Author.getAction(route.meta.routeDefinition, 'get_authors'),
 
       fields: {

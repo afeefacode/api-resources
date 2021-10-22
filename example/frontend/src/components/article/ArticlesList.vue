@@ -1,8 +1,7 @@
 <template>
-  <list-view
+  <list-page
     v-bind="$attrs"
-    :action="action"
-    :fields="fields"
+    :table="true"
     :filters.sync="filters"
   >
     <template #filters>
@@ -20,54 +19,58 @@
           label="Tag"
           maxWidth="200"
         />
-
-        <list-filter-select
-          name="has_comments"
-          label="Mit Kommentar"
-          maxWidth="100"
-        />
       </list-filter-row>
 
       <list-filter-page />
     </template>
 
     <template #header>
-      <div>Name</div>
-      <div>Datum</div>
+      <list-column-header
+        text="ID"
+        order="id"
+      />
+
+      <list-column-header
+        text="Title"
+        order="title"
+      />
+
+      <div>Author</div>
+
       <div>Kommentare</div>
+
+      <div>Datum</div>
+
+      <div>Tags</div>
     </template>
 
     <template #model="{ model: article }">
-      <list-card>
-        <list-meta>
-          Artikel #{{ article.id }}
-          |
-          von
-          <router-link
-            v-if="article.author"
-            :to="article.author.getLink()"
-          >
-            {{ article.author.name }}
-          </router-link>
-          |
-          <template v-if="article.date">
-            am {{ date(article) }}
-            |
-          </template>
-          {{ article.count_comments }} Kommentare
-        </list-meta>
+      <div>{{ article.id }}</div>
 
-        <list-title :link="article.getLink()">
-          {{ article.title }}
-        </list-title>
+      <div>{{ article.title }}</div>
 
+      <div>
+        <router-link :to="article.author.getLink()">
+          {{ article.author.name }}
+        </router-link>
+      </div>
+
+      <div class="info">
+        {{ article.count_comments }}
+      </div>
+
+      <div class="info">
+        {{ date(article) }}
+      </div>
+
+      <div>
         <tag-list
           :model="article"
           @clickTag="clickTag"
         />
-      </list-card>
+      </div>
     </template>
-  </list-view>
+  </list-page>
 </template>
 
 
@@ -81,7 +84,13 @@ import { Component, Vue } from 'vue-property-decorator'
 export default class ArticlesList extends Vue {
   static getListConfig (route) {
     return {
+      ModelClass: Article,
+
       action: Article.getAction(route.meta.routeDefinition, 'get_articles'),
+
+      initialFilters: {
+        author_id: route.params.authorId
+      },
 
       fields: {
         title: true,
@@ -100,11 +109,6 @@ export default class ArticlesList extends Vue {
 
   filters = []
 
-  created () {
-    // this.filters.author_id.value = this.authorId
-    console.log(this.authorId, this.filters)
-  }
-
   get action () {
     return ArticlesList.getListConfig(this.$route).action
   }
@@ -115,10 +119,13 @@ export default class ArticlesList extends Vue {
 
   clickTag (tag) {
     this.filters.tag_id.value = tag.id
-    console.log(this.authorId, this.filters)
   }
 
   date (article) {
+    if (!article.date) {
+      return ''
+    }
+
     const options = { year: 'numeric', month: 'long', day: 'numeric' }
     return article.date.toLocaleDateString('de-DE', options)
   }

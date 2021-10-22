@@ -1,5 +1,5 @@
 import ModelCount from '@a-admin/components/model/ModelCount'
-import { mdiCogOutline, mdiHome } from '@mdi/js'
+import { mdiAccount, mdiFileDocumentOutline } from '@mdi/js'
 
 export class MenuConfig {
   constructor (routeDefinition) {
@@ -13,17 +13,17 @@ export class MenuConfig {
         to: {
           name: 'articles.list'
         },
-        icon: mdiHome,
-        iconColor: 'green'
+        icon: mdiFileDocumentOutline,
+        iconColor: 'yellow darken-3'
       },
 
       {
-        title: 'Autoren',
+        title: 'Autor:innen',
         to: {
           name: 'authors.list'
         },
-        icon: mdiCogOutline,
-        iconColor: 'gray'
+        icon: mdiAccount,
+        iconColor: 'yellow darken-3'
       }
     ]
   }

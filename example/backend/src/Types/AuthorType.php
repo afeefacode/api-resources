@@ -15,6 +15,16 @@ class AuthorType extends ModelType
 {
     public static string $type = 'Example.AuthorType';
 
+    protected function translations(): array
+    {
+        return [
+            'TITLE_SINGULAR' => 'Autor:in',
+            'TITLE_PLURAL' => 'Autor:innen',
+            'TITLE_EMPTY' => 'Kein Name',
+            'TITLE_NEW' => 'Neue Autor:in'
+        ];
+    }
+
     protected function fields(FieldBag $fields): void
     {
         $fields->attribute('name', VarcharAttribute::class);
