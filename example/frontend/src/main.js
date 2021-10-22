@@ -1,3 +1,4 @@
+import './main.scss'
 import './config/components'
 
 import * as models from '@/models'

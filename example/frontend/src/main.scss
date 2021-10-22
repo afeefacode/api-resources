@@ -1,0 +1,6 @@
+$ibmPlexSansFontUrl: '/frontend/fonts';
+@import '@afeefa/vue-app/src-admin/styles/ibm-plex-sans.scss';
+
+.v-application {
+  font-family: 'IBM Plex Sans', sans-serif !important;
+}
