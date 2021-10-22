@@ -24,7 +24,7 @@ class MedooWithSql extends Medoo
         return $this->generate($query, $map);
     }
 
-    protected function whereClause($where, &$map)
+    protected function whereClause($where, array &$map): string
     {
         if (isset($where['HAVING']) && !isset($where['GROUP'])) {
             $where['GROUP'] = 'id';
@@ -33,7 +33,7 @@ class MedooWithSql extends Medoo
         return parent::whereClause($where, $map);
     }
 
-    protected function dataImplode($data, &$map, $conjunctor)
+    protected function dataImplode(array $data, array &$map, string $conjunctor): string
     {
         $where = parent::dataImplode($data, $map, $conjunctor);
 
