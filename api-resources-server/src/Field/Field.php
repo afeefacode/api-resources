@@ -62,6 +62,17 @@ class Field extends BagEntry
         return $this->name;
     }
 
+    public function optionsRequest(Closure $callback)
+    {
+        $this->optionsRequestCallback = $callback;
+    }
+
+    public function options(array $options): Field
+    {
+        $this->options = $options;
+        return $this;
+    }
+
     public function getOptions(): array
     {
         return $this->options;
