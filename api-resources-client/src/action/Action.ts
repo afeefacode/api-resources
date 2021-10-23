@@ -66,7 +66,7 @@ export class Action {
   }
 
   public getFullName (): string {
-    return this.getResource().getName() + '.' + this._name
+    return this.getResource().getType() + '.' + this._name
   }
 
   public getResponse (): ActionResponse | null {

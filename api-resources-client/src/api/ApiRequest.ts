@@ -106,7 +106,7 @@ export class ApiRequest {
   public send (): Promise<ApiResponse | ApiError> {
     const params = this.serialize()
 
-    const urlResourceType = this._action.getResource().getName().replace(/.+\./, '').replace(/Resource/, '')
+    const urlResourceType = this._action.getResource().getType().replace(/.+\./, '').replace(/Resource/, '')
 
     let url = this._action.getApi().getBaseUrl() + '?' + urlResourceType + ':' + this._action.getName()
 
@@ -133,7 +133,7 @@ export class ApiRequest {
 
   protected serialize (): object {
     return {
-      resource: this._action.getResource().getName(),
+      resource: this._action.getResource().getType(),
       action: this._action.getName(),
       params: this._params,
       scopes: this._scopes,
