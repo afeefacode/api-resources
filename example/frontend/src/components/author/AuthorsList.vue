@@ -67,7 +67,7 @@ export default class AuthorsList extends Vue {
     return {
       ModelClass: Author,
 
-      action: Author.getAction(route.meta.routeDefinition, 'get_authors'),
+      action: Author.getAction('get_authors'),
 
       fields: {
         name: true,

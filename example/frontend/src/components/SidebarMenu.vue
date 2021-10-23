@@ -16,7 +16,7 @@ export default class SidebarMenu extends Vue {
   config = null
 
   created () {
-    this.config = new MenuConfig(this.$routeDefinition)
+    this.config = new MenuConfig()
   }
 }
 </script>

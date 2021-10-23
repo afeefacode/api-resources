@@ -22,9 +22,7 @@ import { Component, Vue } from 'vue-property-decorator'
 @Component
 export default class ArticleCreateForm extends Vue {
   async authorOptions () {
-    const api = this.$routeDefinition.config.api
-    const result = await api.getAction('Example.AuthorResource', 'get_authors')
-      .request()
+    const result = await this.$apiResources.createRequest({resource: 'Example.AuthorResource', action: 'get_authors'})
       .fields({
         name: true
       })

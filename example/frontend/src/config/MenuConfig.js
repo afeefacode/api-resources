@@ -1,11 +1,8 @@
 import ModelCount from '@a-admin/components/model/ModelCount'
+import { apiResources } from '@afeefa/api-resources-client'
 import { mdiAccount, mdiFileDocumentOutline } from '@mdi/js'
 
 export class MenuConfig {
-  constructor (routeDefinition) {
-    this.api = routeDefinition.config.api
-  }
-
   get items () {
     return [
       {
@@ -32,7 +29,7 @@ export class MenuConfig {
     return {
       component: ModelCount,
       props: {
-        action: this.api.getAction('ASYLBERATUNG.AppResource', 'get_counts'),
+        action: apiResources.getAction({resource: 'ASYLBERATUNG.AppResource', action: 'get_counts'}),
         field: 'count_' + field
       }
     }

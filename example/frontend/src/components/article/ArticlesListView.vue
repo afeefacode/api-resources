@@ -96,7 +96,7 @@ export default class ArticlesListView extends Vue {
     return {
       ModelClass: Article,
 
-      action: Article.getAction(route.meta.routeDefinition, 'get_articles'),
+      action: Article.getAction('get_articles'),
 
       scopes: {
         author_id: route.params.authorId

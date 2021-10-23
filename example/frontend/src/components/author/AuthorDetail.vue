@@ -26,7 +26,6 @@
 <script>
 import { Component, Vue } from 'vue-property-decorator'
 import ArticlesListView from '@/components/article/ArticlesListView'
-import { ArticlesConfig } from '@/components/article/ArticlesConfig'
 import { QuerySourceType } from '@a-vue/components/list/QuerySourceType'
 import { Author } from '@/models'
 
@@ -39,9 +38,9 @@ import { Author } from '@/models'
 export default class AuthorDetail extends Vue {
   filterSource = QuerySourceType.OBJECT
 
-  static getDetailConfig (route) {
+  static getDetailConfig () {
     return {
-      action: Author.getAction(route.meta.routeDefinition, 'get_author'),
+      action: Author.getAction('get_author'),
 
       fields: {
         name: true,
@@ -56,16 +55,6 @@ export default class AuthorDetail extends Vue {
 
   get author () {
     return this.model
-  }
-
-  get articlesAction () {
-    const api = this.$routeDefinition.config.api
-    return new ArticlesConfig(api).list.action
-  }
-
-  get articlesFields () {
-    const api = this.$routeDefinition.config.api
-    return new ArticlesConfig(api).list.fields
   }
 }
 </script>

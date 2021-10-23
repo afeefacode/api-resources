@@ -46,11 +46,11 @@ import { Component, Vue } from 'vue-property-decorator'
 export default class ArticleDetail extends Vue {
   article = null
 
-  static getDetailConfig (route) {
+  static getDetailConfig () {
     return {
       ModelClass: Article,
 
-      action: Article.getAction(route.meta.routeDefinition, 'get_article'),
+      action: Article.getAction('get_article'),
 
       fields: {
         title: true,

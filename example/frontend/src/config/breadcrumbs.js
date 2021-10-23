@@ -34,10 +34,8 @@ export function breadcrumbs ({BREADCRUMB, BREADCRUMBSET}) {
 }
 
 function getBreadcrumbTitleFunction (resourceType, idKey, action, fields) {
-  const api = apiResources.getApi('Example.BackendApi')
-
   return async routeParams => {
-    const result = await api.getAction(`Example.${resourceType}Resource`, action).request()
+    const result = await apiResources.createRequest({resource: `Example.${resourceType}Resource`, action})
       .params({id: routeParams[idKey]})
       .fields(fields)
       .send()
