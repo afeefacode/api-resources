@@ -39,6 +39,7 @@ export class Api {
     getAction(resourceType, actionName) {
         const resource = this._resources[resourceType];
         if (!resource) {
+            console.warn(`No resource '${resourceType}' configured.`);
             return null;
         }
         return resource.getAction(actionName);

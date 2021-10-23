@@ -85,7 +85,7 @@ export class Action {
     return RequestFilters.create(this._filters, historyKey, querySource)
   }
 
-  public request (): ApiRequest {
+  public createRequest (): ApiRequest {
     return new ApiRequest()
       .action(this)
   }

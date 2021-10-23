@@ -5,6 +5,7 @@ import { validators } from './validator/validators';
 class ApiResources {
     constructor() {
         this._apis = {};
+        this._defaultApiType = null;
         this._models = {};
         this._fields = {};
         this._validators = {};
@@ -18,21 +19,65 @@ class ApiResources {
     schemasLoaded() {
         return Promise.all(this._schemasToLoad);
     }
-    registerApi(name, baseUrl) {
+    registerApi(type, baseUrl) {
         const api = new Api(baseUrl);
-        this._apis[name] = api;
+        this._apis[type] = api;
+        if (!this._defaultApiType) {
+            this.defaultApi(type);
+        }
         const promise = api.loadSchema();
         this._schemasToLoad.push(promise);
         return this;
     }
     registerApis(apis) {
-        for (const [name, baseUrl] of Object.entries(apis)) {
-            this.registerApi(name, baseUrl);
+        for (const [type, baseUrl] of Object.entries(apis)) {
+            this.registerApi(type, baseUrl);
         }
         return this;
     }
-    getApi(name) {
-        return this._apis[name] || null;
+    defaultApi(type) {
+        if (this.hasApi(type)) {
+            this._defaultApiType = type;
+        }
+        else {
+            console.warn(`No api configured for type ${type}`);
+        }
+        return this;
+    }
+    getApi(type) {
+        return this._apis[type] || null;
+    }
+    hasApi(type) {
+        return !!this._apis[type];
+    }
+    createRequest({ api: apiType = null, resource: resourceType, action: actionName }) {
+        const action = this.getAction({
+            api: apiType,
+            resource: resourceType,
+            action: actionName
+        });
+        if (action) {
+            return action.createRequest();
+        }
+        return null;
+    }
+    getAction({ api: apiType = null, resource: resourceType, action: actionName }) {
+        apiType = apiType || this._defaultApiType;
+        if (!apiType) {
+            console.warn('No default api configured.');
+            return null;
+        }
+        if (!this.hasApi(apiType)) {
+            console.warn(`No api '${apiType}' configured.`);
+            return null;
+        }
+        const api = this.getApi(apiType);
+        const action = api.getAction(resourceType, actionName);
+        if (!action) {
+            console.warn(`No action '${actionName}' found for resource '${resourceType}'.`);
+            return null;
+        }
+        return action;
     }
     registerField(field) {
         this._fields[field.type] = field;

@@ -1,4 +1,6 @@
+import { Action } from './action/Action';
 import { Api, ApiSchemaJSON } from './api/Api';
+import { ApiRequest } from './api/ApiRequest';
 import { Field } from './field/Field';
 import { Filter } from './filter/Filter';
 import { Model } from './Model';
@@ -7,6 +9,7 @@ import { Validator } from './validator/Validator';
 declare type ModelType = typeof Model;
 declare class ApiResources {
     private _apis;
+    private _defaultApiType;
     private _models;
     private _fields;
     private _validators;
@@ -15,9 +18,21 @@ declare class ApiResources {
     private _schemasToLoad;
     constructor();
     schemasLoaded(): Promise<ApiSchemaJSON[]>;
-    registerApi(name: string, baseUrl: string): ApiResources;
+    registerApi(type: string, baseUrl: string): ApiResources;
     registerApis(apis: Record<string, string>): ApiResources;
-    getApi(name: string): Api | null;
+    defaultApi(type: string): ApiResources;
+    getApi(type: string): Api | null;
+    hasApi(type: string): boolean;
+    createRequest({ api: apiType, resource: resourceType, action: actionName }: {
+        api: string | null;
+        resource: string;
+        action: string;
+    }): ApiRequest | null;
+    getAction({ api: apiType, resource: resourceType, action: actionName }: {
+        api: string | null;
+        resource: string;
+        action: string;
+    }): Action | null;
     registerField(field: Field): ApiResources;
     registerFields(fields: Field[]): ApiResources;
     getField(type: string): Field | null;

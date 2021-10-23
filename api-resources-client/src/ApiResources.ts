@@ -1,4 +1,6 @@
+import { Action } from './action/Action'
 import { Api, ApiSchemaJSON } from './api/Api'
+import { ApiRequest } from './api/ApiRequest'
 import { Field } from './field/Field'
 import { fields } from './field/fields'
 import { Filter } from './filter/Filter'
@@ -12,6 +14,7 @@ type ModelType = typeof Model
 
 class ApiResources {
   private _apis: Record<string, Api> = {}
+  private _defaultApiType: string | null = null
   private _models: Record<string, typeof Model> = {}
   private _fields: Record<string, Field> = {}
   private _validators: Record<string, Validator> = {}
@@ -30,9 +33,13 @@ class ApiResources {
     return Promise.all(this._schemasToLoad)
   }
 
-  public registerApi (name: string, baseUrl: string): ApiResources {
+  public registerApi (type: string, baseUrl: string): ApiResources {
     const api = new Api(baseUrl)
-    this._apis[name] = api
+    this._apis[type] = api
+
+    if (!this._defaultApiType) {
+      this.defaultApi(type)
+    }
 
     const promise = api.loadSchema()
     this._schemasToLoad.push(promise)
@@ -41,14 +48,69 @@ class ApiResources {
   }
 
   public registerApis (apis: Record<string, string>): ApiResources {
-    for (const [name, baseUrl] of Object.entries(apis)) {
-      this.registerApi(name, baseUrl)
+    for (const [type, baseUrl] of Object.entries(apis)) {
+      this.registerApi(type, baseUrl)
     }
     return this
   }
 
-  public getApi (name: string): Api | null {
-    return this._apis[name] || null
+  public defaultApi (type: string): ApiResources {
+    if (this.hasApi(type)) {
+      this._defaultApiType = type
+    } else {
+      console.warn(`No api configured for type ${type}`)
+    }
+    return this
+  }
+
+  public getApi (type: string): Api | null {
+    return this._apis[type] || null
+  }
+
+  public hasApi (type: string): boolean {
+    return !!this._apis[type]
+  }
+
+  public createRequest (
+    {api: apiType = null, resource: resourceType, action: actionName}:
+    {api: string | null, resource: string, action: string}
+  ): ApiRequest | null {
+    const action = this.getAction({
+      api: apiType,
+      resource: resourceType,
+      action: actionName
+    })
+    if (action) {
+      return action.createRequest()
+    }
+    return null
+  }
+
+  public getAction (
+    {api: apiType = null, resource: resourceType, action: actionName}:
+    {api: string | null, resource: string, action: string}
+  ): Action | null {
+    apiType = apiType || this._defaultApiType
+
+    if (!apiType) {
+      console.warn('No default api configured.')
+      return null
+    }
+
+    if (!this.hasApi(apiType)) {
+      console.warn(`No api '${apiType}' configured.`)
+      return null
+    }
+
+    const api = this.getApi(apiType)!
+    const action = api.getAction(resourceType, actionName)
+
+    if (!action) {
+      console.warn(`No action '${actionName}' found for resource '${resourceType}'.`)
+      return null
+    }
+
+    return action
   }
 
   public registerField (field: Field): ApiResources {

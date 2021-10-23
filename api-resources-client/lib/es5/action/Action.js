@@ -39,7 +39,7 @@ export class Action {
         return this._name;
     }
     getFullName() {
-        return this.getResource().getName() + '.' + this._name;
+        return this.getResource().getType() + '.' + this._name;
     }
     getResponse() {
         return this._response;
@@ -53,7 +53,7 @@ export class Action {
     createRequestFilters(historyKey, querySource) {
         return RequestFilters.create(this._filters, historyKey, querySource);
     }
-    request() {
+    createRequest() {
         return new ApiRequest()
             .action(this);
     }

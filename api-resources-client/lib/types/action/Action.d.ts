@@ -33,7 +33,7 @@ export declare class Action {
     getInput(): ActionInput | null;
     getFilters(): ActionFilters;
     createRequestFilters(historyKey?: string, querySource?: BaseFilterSource): RequestFilters;
-    request(): ApiRequest;
+    createRequest(): ApiRequest;
     batchRequest(): BatchApiRequest;
     getResource(): Resource;
     getApi(): Api;
