@@ -20,7 +20,7 @@ class ArticlesResolver
                 $request = $r->getRequest();
                 $requestedFields = $request->getFields();
                 $filters = $request->getFilters();
-                $scopes = $request->getScopes();
+                $params = $request->getParams();
 
                 $selectFields = array_map(function ($field) {
                     return 'articles.' . $field;
@@ -30,15 +30,15 @@ class ArticlesResolver
 
                 $where = [];
 
-                // author_id scope
+                // author_id
 
-                $authorId = $scopes['author_id'] ?? null;
+                $authorId = $params['author_id'] ?? null;
 
                 if ($authorId) {
                     $where['author_id'] = $authorId;
-                    $countScope = $countFilters = $this->getCount($db, $selectFields, $where);
+                    $countAll = $countFilters = $this->getCount($db, $selectFields, $where);
                 } else {
-                    $countScope = $countFilters = $db->count('articles');
+                    $countAll = $countFilters = $db->count('articles');
                 }
 
                 // author_id search
@@ -141,7 +141,7 @@ class ArticlesResolver
                 }
 
                 $c->meta([
-                    'count_scope' => $countScope,
+                    'count_all' => $countAll,
                     'count_filter' => $countFilters,
                     'count_search' => $countSearch,
                     'used_filters' => $usedFilters

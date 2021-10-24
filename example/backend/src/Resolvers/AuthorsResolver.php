@@ -25,7 +25,7 @@ class AuthorsResolver
                 $usedFilters = [];
                 $where = [];
 
-                $countScope = $countFilters = $db->count('authors');
+                $countAll = $countFilters = $db->count('authors');
 
                 // tag_id search
 
@@ -104,7 +104,7 @@ class AuthorsResolver
                 );
 
                 $c->meta([
-                    'count_scope' => $countScope,
+                    'count_all' => $countAll,
                     'count_filter' => $countFilters,
                     'count_search' => $countSearch,
                     'used_filters' => $usedFilters

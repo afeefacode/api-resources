@@ -34,7 +34,7 @@ class TagsResolver
                 );
 
                 $c->meta([
-                    'count_scope' => $count,
+                    'count_all' => $count,
                     'count_filter' => $count,
                     'count_search' => $count
                 ]);
