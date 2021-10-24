@@ -25,6 +25,10 @@ class ArticleResource extends Resource
     protected function actions(ActionBag $actions): void
     {
         $actions->add('get_articles', function (Action $action) {
+            $action->params(function (ActionParams $params) {
+                $params->attribute('author_id', IdAttribute::class);
+            });
+
             $action->filters(function (FilterBag $filters) {
                 $filters->add('author_id', function (IdFilter $filter) {
                     $filter->optionsRequest(function (ApiRequest $request) {
