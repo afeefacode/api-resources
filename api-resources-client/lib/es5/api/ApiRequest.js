@@ -8,14 +8,11 @@ export class ApiRequest {
         this._fields = {};
         if (json) {
             this._fields = json.fields;
-            if (json.scopes) {
-                this._scopes = json.scopes;
+            if (json.params) {
+                this._params = json.params;
             }
             if (json.filters) {
                 this._filters = json.filters;
-            }
-            if (json.params) {
-                this._params = json.params;
             }
         }
     }
@@ -25,6 +22,13 @@ export class ApiRequest {
     }
     getAction() {
         return this._action;
+    }
+    params(params) {
+        this._params = params;
+        return this;
+    }
+    getParams() {
+        return this._params;
     }
     fields(fields) {
         this._fields = fields;
@@ -38,9 +42,8 @@ export class ApiRequest {
         this._fields = Object.assign(Object.assign({}, this._fields), fields);
         return this;
     }
-    scopes(scopes) {
-        this._scopes = scopes;
-        return this;
+    getFields() {
+        return this._fields;
     }
     filters(filters) {
         this._filters = filters;
@@ -54,9 +57,8 @@ export class ApiRequest {
         this._filters = Object.assign(Object.assign({}, this._filters), filters);
         return this;
     }
-    params(params) {
-        this._params = params;
-        return this;
+    getFilters() {
+        return this._filters;
     }
     data(data) {
         this._data = data;
@@ -88,7 +90,6 @@ export class ApiRequest {
             resource: this._action.getResource().getType(),
             action: this._action.getName(),
             params: this._params,
-            scopes: this._scopes,
             filters: this._filters,
             fields: this._fields,
             data: this._data
