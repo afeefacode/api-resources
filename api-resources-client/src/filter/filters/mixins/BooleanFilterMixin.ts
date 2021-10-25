@@ -11,10 +11,14 @@ export function BooleanFilterMixin<TFilter extends FilterMixinConstructor> (Filt
         return '0'
       }
 
+      if (value === null && this.options.includes(null)) {
+        return 'null'
+      }
+
       return undefined
     }
 
-    protected queryToValue (value: string): boolean | undefined {
+    protected queryToValue (value: string): boolean | null | undefined {
       if (value === '1') {
         return true
       }
@@ -23,16 +27,24 @@ export function BooleanFilterMixin<TFilter extends FilterMixinConstructor> (Filt
         return false
       }
 
+      if (value === 'null' && this.options.includes(null)) {
+        return null
+      }
+
       return undefined
     }
 
-    protected serializeValue (value: boolean): boolean | undefined {
+    protected serializeValue (value: boolean): boolean | null | undefined {
       if (value) {
         return value
       }
 
       if (value === false && this.options.includes(false)) {
         return false
+      }
+
+      if (value === null && this.options.includes(null)) {
+        return null
       }
 
       return undefined
