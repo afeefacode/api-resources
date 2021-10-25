@@ -50,8 +50,8 @@ export class Action {
     getFilters() {
         return this._filters;
     }
-    createRequestFilters(historyKey, querySource) {
-        return RequestFilters.create(this._filters, historyKey, querySource);
+    createRequestFilters(historyKey, filterSource) {
+        return RequestFilters.create(this._filters, historyKey, filterSource);
     }
     createRequest() {
         return new ApiRequest()

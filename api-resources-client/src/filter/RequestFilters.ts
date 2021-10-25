@@ -20,26 +20,26 @@ export type UsedFilters = Record<string, FilterValueType>
 export class RequestFilters {
   private _filters: Filters = {}
   private _historyKey?: string
-  private _querySource: BaseFilterSource
+  private _filterSource: BaseFilterSource
 
   private _lastQuery: QuerySource = {}
   private _disableUpdates: boolean = false
 
   private _eventTarget: EventTarget = new EventTarget()
 
-  public static create (filters: ActionFilters, historyKey?: string, querySource?: BaseFilterSource): RequestFilters {
+  public static create (filters: ActionFilters, historyKey?: string, filterSource?: BaseFilterSource): RequestFilters {
     let requestFilters: RequestFilters
-    querySource = querySource || new ObjectFilterSource({})
+    filterSource = filterSource || new ObjectFilterSource({})
 
     if (historyKey) {
       if (filterHistory.hasFilters(historyKey)) {
         requestFilters = filterHistory.getFilters(historyKey)
       } else {
-        requestFilters = new RequestFilters(filters, historyKey, querySource)
+        requestFilters = new RequestFilters(filters, historyKey, filterSource)
         filterHistory.addFilters(historyKey, requestFilters)
       }
     } else {
-      requestFilters = new RequestFilters(filters, undefined, querySource)
+      requestFilters = new RequestFilters(filters, undefined, filterSource)
     }
 
     return requestFilters
@@ -53,9 +53,9 @@ export class RequestFilters {
     }
   }
 
-  constructor (filters: ActionFilters, historyKey?: string, querySource?: BaseFilterSource) {
+  constructor (filters: ActionFilters, historyKey?: string, filterSource?: BaseFilterSource) {
     this._historyKey = historyKey
-    this._querySource = querySource || new ObjectFilterSource({})
+    this._filterSource = filterSource || new ObjectFilterSource({})
 
     for (const [name, filter] of Object.entries(filters)) {
       this._filters[name] = filter.createRequestFilter(this)
@@ -90,8 +90,8 @@ export class RequestFilters {
     }
   }
 
-  public querySourceChanged (): void {
-    const query = this._querySource.getQuery()
+  public filterSourceChanged (): void {
+    const query = this._filterSource.getQuery()
 
     if (JSON.stringify(this._lastQuery) === JSON.stringify(query)) {
       return
@@ -135,12 +135,13 @@ export class RequestFilters {
   }
 
   public serialize (options: {} = {}): UsedFilters {
-    return Object.values(this._filters).reduce((map: UsedFilters, filter: Filter) => {
-      return {
-        ...map,
-        ...filter.serialize()
-      }
-    }, options)
+    return Object.values(this._filters)
+      .reduce((map: UsedFilters, filter: Filter) => {
+        return {
+          ...map,
+          ...filter.serialize() // returns {} if not set
+        }
+      }, options)
   }
 
   private dispatchUpdate (): void {
@@ -148,7 +149,7 @@ export class RequestFilters {
   }
 
   private initFromQuerySource (): void {
-    const query = this._querySource.getQuery()
+    const query = this._filterSource.getQuery()
 
     for (const filter of Object.values(this._filters)) {
       filter.initFromQuerySource(query)
@@ -165,7 +166,7 @@ export class RequestFilters {
       }
     }, {})
 
-    this._querySource.push(query)
+    this._filterSource.push(query)
 
     this._lastQuery = query
   }

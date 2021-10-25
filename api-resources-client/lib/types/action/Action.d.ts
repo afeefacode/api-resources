@@ -32,7 +32,7 @@ export declare class Action {
     getResponse(): ActionResponse | null;
     getInput(): ActionInput | null;
     getFilters(): ActionFilters;
-    createRequestFilters(historyKey?: string, querySource?: BaseFilterSource): RequestFilters;
+    createRequestFilters(historyKey?: string, filterSource?: BaseFilterSource): RequestFilters;
     createRequest(): ApiRequest;
     batchRequest(): BatchApiRequest;
     getResource(): Resource;

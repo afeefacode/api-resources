@@ -11,32 +11,32 @@ import { ObjectFilterSource } from './ObjectFilterSource';
  * - init used filters: update filter values and update query string
  */
 export class RequestFilters {
-    constructor(filters, historyKey, querySource) {
+    constructor(filters, historyKey, filterSource) {
         this._filters = {};
         this._lastQuery = {};
         this._disableUpdates = false;
         this._eventTarget = new EventTarget();
         this._historyKey = historyKey;
-        this._querySource = querySource || new ObjectFilterSource({});
+        this._filterSource = filterSource || new ObjectFilterSource({});
         for (const [name, filter] of Object.entries(filters)) {
             this._filters[name] = filter.createRequestFilter(this);
         }
         this.initFromQuerySource();
     }
-    static create(filters, historyKey, querySource) {
+    static create(filters, historyKey, filterSource) {
         let requestFilters;
-        querySource = querySource || new ObjectFilterSource({});
+        filterSource = filterSource || new ObjectFilterSource({});
         if (historyKey) {
             if (filterHistory.hasFilters(historyKey)) {
                 requestFilters = filterHistory.getFilters(historyKey);
             }
             else {
-                requestFilters = new RequestFilters(filters, historyKey, querySource);
+                requestFilters = new RequestFilters(filters, historyKey, filterSource);
                 filterHistory.addFilters(historyKey, requestFilters);
             }
         }
         else {
-            requestFilters = new RequestFilters(filters, undefined, querySource);
+            requestFilters = new RequestFilters(filters, undefined, filterSource);
         }
         return requestFilters;
     }
@@ -68,8 +68,8 @@ export class RequestFilters {
             filterHistory.removeFilters(this._historyKey);
         }
     }
-    querySourceChanged() {
-        const query = this._querySource.getQuery();
+    filterSourceChanged() {
+        const query = this._filterSource.getQuery();
         if (JSON.stringify(this._lastQuery) === JSON.stringify(query)) {
             return;
         }
@@ -103,15 +103,17 @@ export class RequestFilters {
         this.valueChanged(changedFilters);
     }
     serialize(options = {}) {
-        return Object.values(this._filters).reduce((map, filter) => {
-            return Object.assign(Object.assign({}, map), filter.serialize());
+        return Object.values(this._filters)
+            .reduce((map, filter) => {
+            return Object.assign(Object.assign({}, map), filter.serialize() // returns {} if not set
+            );
         }, options);
     }
     dispatchUpdate() {
         this._eventTarget.dispatchEvent(new FilterChangeEvent('change', {}));
     }
     initFromQuerySource() {
-        const query = this._querySource.getQuery();
+        const query = this._filterSource.getQuery();
         for (const filter of Object.values(this._filters)) {
             filter.initFromQuerySource(query);
         }
@@ -121,7 +123,7 @@ export class RequestFilters {
         const query = Object.values(this._filters).reduce((map, filter) => {
             return Object.assign(Object.assign({}, map), filter.toQuerySource());
         }, {});
-        this._querySource.push(query);
+        this._filterSource.push(query);
         this._lastQuery = query;
     }
 }
