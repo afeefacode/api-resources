@@ -1,5 +1,5 @@
 <template>
-  <list-page :ModelClass="Article">
+  <list-page :Model="Article">
     <articles-list-view v-bind="$attrs" />
   </list-page>
 </template>
@@ -8,18 +8,15 @@
 <script>
 import { Article } from '@/models'
 import { Component, Vue } from 'vue-property-decorator'
-import ArticlesListView from './ArticlesListView'
+import ArticlesListView, { getListViewRequest } from './ArticlesListView'
 
 @Component({
   components: {
     ArticlesListView
   }
 })
-export default class ArticlesPage extends Vue {
-  static getListConfig (route) {
-    return ArticlesListView.getListConfig(route)
-  }
-
+export default class ArticlesList extends Vue {
+  static listViewRequest = getListViewRequest()
   Article = Article
 }
 </script>

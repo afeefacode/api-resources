@@ -1,10 +1,8 @@
 <template>
-  <list-page :ModelClass="Author">
+  <list-page :Model="Author">
     <list-view
       v-bind="$attrs"
-      :action="action"
-      :fields="fields"
-      :filters.sync="filters"
+      :listViewRequest="listViewRequest"
     >
       <template #filters>
         <list-filter-row>
@@ -34,7 +32,7 @@
         <div>Tags</div>
       </template>
 
-      <template #model-table="{ model: author }">
+      <template #model-table="{ model: author, setFilter }">
         <div>
           <router-link :to="author.getLink()">
             {{ author.name }}
@@ -48,7 +46,7 @@
         <div>
           <tag-list
             :model="author"
-            @clickTag="clickTag"
+            @clickTag="setFilter('tag_id', $event.id)"
           />
         </div>
       </template>
@@ -60,40 +58,29 @@
 <script>
 import { Author } from '@/models'
 import { Component, Vue } from 'vue-property-decorator'
+import { ListViewRequest } from '@a-vue/components/list/ListViewRequest'
+
+function getListViewRequest () {
+  return new ListViewRequest()
+    .action({
+      resource: 'Example.AuthorResource',
+      action: 'get_authors'
+    })
+    .fields({
+      name: true,
+      tags: {
+        name: true,
+        count_users: true
+      },
+      count_articles: true
+    })
+}
 
 @Component
 export default class AuthorsList extends Vue {
-  static getListConfig (route) {
-    return {
-      ModelClass: Author,
-
-      action: Author.getAction('get_authors'),
-
-      fields: {
-        name: true,
-        tags: {
-          name: true,
-          count_users: true
-        },
-        count_articles: true
-      }
-    }
-  }
+  static listViewRequest = getListViewRequest()
 
   Author = Author
-
-  filters = []
-
-  get action () {
-    return AuthorsList.getListConfig(this.$route).action
-  }
-
-  get fields () {
-    return AuthorsList.getListConfig(this.$route).fields
-  }
-
-  clickTag (tag) {
-    this.filters.tag_id.value = tag.id
-  }
+  listViewRequest = getListViewRequest()
 }
 </script>

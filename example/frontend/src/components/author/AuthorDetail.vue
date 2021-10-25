@@ -15,6 +15,7 @@
     <h2>Artikel</h2>
 
     <articles-list-view
+      :author_id="$route.params.authorId"
       :filterHistoryKey="model.id + '.articles'"
       :filterSource="filterSource"
       :has="{author: false}"
@@ -26,7 +27,7 @@
 <script>
 import { Component, Vue } from 'vue-property-decorator'
 import ArticlesListView from '@/components/article/ArticlesListView'
-import { QuerySourceType } from '@a-vue/components/list/QuerySourceType'
+import { FilterSourceType } from '@a-vue/components/list/FilterSourceType'
 import { Author } from '@/models'
 
 @Component({
@@ -36,7 +37,7 @@ import { Author } from '@/models'
   }
 })
 export default class AuthorDetail extends Vue {
-  filterSource = QuerySourceType.OBJECT
+  filterSource = FilterSourceType.OBJECT
 
   static getDetailConfig () {
     return {

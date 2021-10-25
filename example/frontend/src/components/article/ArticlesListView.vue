@@ -1,10 +1,7 @@
 <template>
   <list-view
     v-bind="$attrs"
-    :action="action"
-    :scopes="scopes"
-    :fields="fields"
-    :filters.sync="filters"
+    :listViewRequest="listViewRequest"
   >
     <template #filters>
       <list-filter-row>
@@ -51,7 +48,7 @@
       <div>Tags</div>
     </template>
 
-    <template #model-table="{ model: article }">
+    <template #model-table="{ model: article, setFilter }">
       <div class="info">
         {{ date(article) }}
       </div>
@@ -65,7 +62,7 @@
       <div v-if="$has.author">
         <a
           href=""
-          @click.prevent="clickAuthor(article.author)"
+          @click.prevent="setFilter('author_id', article.author.id)"
         >{{ article.author.name }}</a>
       </div>
 
@@ -76,7 +73,7 @@
       <div>
         <tag-list
           :model="article"
-          @clickTag="clickTag"
+          @clickTag="setFilter('tag_id', $event.id)"
         />
       </div>
     </template>
@@ -85,59 +82,42 @@
 
 
 <script>
-import { Article } from '@/models'
 import { Component, Vue } from 'vue-property-decorator'
+import { ListViewRequest } from '@a-vue/components/list/ListViewRequest'
 
-@Component
+export function getListViewRequest (authorId) {
+  return new ListViewRequest()
+    .action({
+      resource: 'Example.ArticleResource',
+      action: 'get_articles'
+    })
+    .params({
+      author_id: authorId
+    })
+    .filters({
+      author_id: '2'
+    })
+    .fields({
+      title: true,
+      date: true,
+      author: {
+        name: true
+      },
+      tags: {
+        name: true,
+        count_users: true
+      },
+      count_comments: true
+    })
+}
+
+@Component({
+  props: ['author_id']
+})
 export default class ArticlesListView extends Vue {
   $hasOptions = ['author']
 
-  static getListConfig (route) {
-    return {
-      ModelClass: Article,
-
-      action: Article.getAction('get_articles'),
-
-      scopes: {
-        author_id: route.params.authorId
-      },
-
-      fields: {
-        title: true,
-        date: true,
-        author: {
-          name: true
-        },
-        tags: {
-          name: true,
-          count_users: true
-        },
-        count_comments: true
-      }
-    }
-  }
-
-  filters = []
-
-  get action () {
-    return ArticlesListView.getListConfig(this.$route).action
-  }
-
-  get scopes () {
-    return ArticlesListView.getListConfig(this.$route).scopes
-  }
-
-  get fields () {
-    return ArticlesListView.getListConfig(this.$route).fields
-  }
-
-  clickTag (tag) {
-    this.filters.tag_id.value = tag.id
-  }
-
-  clickAuthor (author) {
-    this.filters.author_id.value = author.id
-  }
+  listViewRequest = getListViewRequest(this.author_id)
 
   date (article) {
     if (!article.date) {
