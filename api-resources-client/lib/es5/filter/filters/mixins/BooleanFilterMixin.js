@@ -7,6 +7,9 @@ export function BooleanFilterMixin(Filter) {
             if (value === false && this.options.includes(false)) {
                 return '0';
             }
+            if (value === null && this.options.includes(null)) {
+                return 'null';
+            }
             return undefined;
         }
         queryToValue(value) {
@@ -16,6 +19,9 @@ export function BooleanFilterMixin(Filter) {
             if (value === '0' && this.options.includes(false)) {
                 return false;
             }
+            if (value === 'null' && this.options.includes(null)) {
+                return null;
+            }
             return undefined;
         }
         serializeValue(value) {
@@ -24,6 +30,9 @@ export function BooleanFilterMixin(Filter) {
             }
             if (value === false && this.options.includes(false)) {
                 return false;
+            }
+            if (value === null && this.options.includes(null)) {
+                return null;
             }
             return undefined;
         }

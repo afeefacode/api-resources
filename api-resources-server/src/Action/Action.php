@@ -117,6 +117,11 @@ class Action extends BagEntry
         return $this->filters->get($name);
     }
 
+    public function getFilters(): FilterBag
+    {
+        return $this->filters;
+    }
+
     public function response($TypeClassOrClassesOrMeta, Closure $callback = null): Action
     {
         $this->response = $this->container->create(ActionResponse::class);

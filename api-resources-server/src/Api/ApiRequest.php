@@ -44,12 +44,15 @@ class ApiRequest implements ContainerAwareInterface, ToSchemaJsonInterface, Json
             throw new ApiException('No action field');
         }
 
+        // todo validate params
         $this->params = $input['params'] ?? [];
 
+        // todo validate filters
         $this->filters = $input['filters'] ?? [];
 
         $this->fields($input['fields'] ?? []);
 
+        // todo validate data
         $this->fieldsToSave($input['data'] ?? []);
 
         return $this;

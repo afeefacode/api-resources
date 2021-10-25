@@ -100,12 +100,24 @@ class ModelResolver
 
                 $filterUsed = false;
 
-                foreach ($filters as $name => $value) {
-                    if ($action->hasFilter($name)) {
-                        $actionFilter = $action->getFilter($name);
-                        if (!in_array(get_class($actionFilter), $coreFilters)) {
+                $actionFilters = $action->getFilters()->getEntries();
+                foreach ($actionFilters as $name => $filter) {
+                    if (!in_array(get_class($filter), $coreFilters)) {
+                        $useFilter = false;
+                        $value = null;
+
+                        if (array_key_exists($name, $filters)) {
+                            $useFilter = true;
+                            $value = $filters[$name];
+                        } elseif ($filter->hasDefaultValue()) {
+                            $useFilter = true;
+                            $value = $filter->getDefaultValue();
+                        }
+
+                        if ($useFilter) {
                             ($this->filterFunction)($name, $value, $query);
                             $filterUsed = true;
+                            $usedFilters[$name] = $value;
                         }
                     }
                 }
