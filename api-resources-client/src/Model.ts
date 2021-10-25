@@ -35,9 +35,13 @@ export class Model {
   @enumerable(false)
   public class: ModelConstructor
 
+  public static getType (): Type {
+    return apiResources.getType(this.type) as Type
+  }
+
   public static create (json: ModelJSON): Model {
-    const ModelType = apiResources.getModel(json.type) || Model
-    const model = new ModelType()
+    const ModelClass = apiResources.getModelClass(json.type)
+    const model = new ModelClass()
     model.deserialize(json)
     return model
   }
@@ -46,7 +50,7 @@ export class Model {
     const ModelType = this
     const model = new ModelType()
 
-    const type: Type = apiResources.getType(this.type) as Type
+    const type: Type = this.getType()
     for (const [name, field] of Object.entries(type.getCreateFields())) {
       if (!fields || fields[name]) {
         model[name] = field.default()
@@ -59,6 +63,10 @@ export class Model {
   constructor (type?: string) {
     this.class = this.constructor as ModelConstructor
     this.type = type || (this.constructor as ModelConstructor).type
+  }
+
+  public getType (): Type {
+    return apiResources.getType(this.type) as Type
   }
 
   public deserialize (json: ModelJSON): void {
@@ -79,8 +87,8 @@ export class Model {
   }
 
   public cloneForEdit (fields?: ModelAttributes): Model {
-    const ModelType = apiResources.getModel(this.type) || Model
-    const model = new ModelType()
+    const ModelClass = apiResources.getModelClass(this.type)
+    const model = new ModelClass()
 
     if (this.id) {
       model.id = this.id

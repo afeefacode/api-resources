@@ -1,6 +1,7 @@
 import { Api } from './api/Api';
 import { fields } from './field/fields';
 import { filters } from './filter/filters';
+import { Model } from './Model';
 import { validators } from './validator/validators';
 class ApiResources {
     constructor() {
@@ -102,8 +103,8 @@ class ApiResources {
         }
         return this;
     }
-    getModel(type) {
-        return this._models[type] || null;
+    getModelClass(type) {
+        return this._models[type] || Model;
     }
     registerValidator(type, validator) {
         this._validators[type] = validator;

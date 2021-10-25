@@ -38,7 +38,7 @@ declare class ApiResources {
     getField(type: string): Field | null;
     registerModel(Model: ModelType): ApiResources;
     registerModels(models: ModelType[]): ApiResources;
-    getModel(type: string): ModelType | null;
+    getModelClass(type: string): ModelType;
     registerValidator(type: string, validator: Validator): ApiResources;
     registerValidators(validators: Record<string, Validator>): ApiResources;
     getValidator(type: string): Validator | null;

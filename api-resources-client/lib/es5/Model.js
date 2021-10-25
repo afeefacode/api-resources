@@ -15,22 +15,28 @@ export class Model {
         this.class = this.constructor;
         this.type = type || this.constructor.type;
     }
+    static getType() {
+        return apiResources.getType(this.type);
+    }
     static create(json) {
-        const ModelType = apiResources.getModel(json.type) || Model;
-        const model = new ModelType();
+        const ModelClass = apiResources.getModelClass(json.type);
+        const model = new ModelClass();
         model.deserialize(json);
         return model;
     }
     static createForNew(fields) {
         const ModelType = this;
         const model = new ModelType();
-        const type = apiResources.getType(this.type);
+        const type = this.getType();
         for (const [name, field] of Object.entries(type.getCreateFields())) {
             if (!fields || fields[name]) {
                 model[name] = field.default();
             }
         }
         return model;
+    }
+    getType() {
+        return apiResources.getType(this.type);
     }
     deserialize(json) {
         const type = apiResources.getType(json.type);
@@ -46,8 +52,8 @@ export class Model {
         }
     }
     cloneForEdit(fields) {
-        const ModelType = apiResources.getModel(this.type) || Model;
-        const model = new ModelType();
+        const ModelClass = apiResources.getModelClass(this.type);
+        const model = new ModelClass();
         if (this.id) {
             model.id = this.id;
         }

@@ -145,8 +145,8 @@ class ApiResources {
     return this
   }
 
-  public getModel (type: string): ModelType | null {
-    return this._models[type] || null
+  public getModelClass (type: string): ModelType {
+    return this._models[type] || Model
   }
 
   public registerValidator (type: string, validator: Validator): ApiResources {
