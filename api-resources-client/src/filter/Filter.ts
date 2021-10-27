@@ -10,6 +10,7 @@ export type FilterJSON = {
   default: FilterValueType
   options: []
   options_request: ApiRequestJSON
+  allow_null: boolean
 }
 
 export type FilterParams = object
@@ -27,8 +28,9 @@ export class Filter {
 
   private _action!: Action
   private _defaultValue!: FilterValueType
+  private _allowNull!: boolean
   private _value!: FilterValueType
-  public options: unknown[] = []
+  private _options: unknown[] = []
   private _requestFactory: RequestFactory = null
   private _request: ApiRequest | null = null
 
@@ -63,6 +65,14 @@ export class Filter {
     return this._defaultValue
   }
 
+  public get options (): unknown[] {
+    return this._options
+  }
+
+  public get allowNull (): boolean {
+    return this._allowNull
+  }
+
   public get request (): ApiRequest | null {
     return this._request
   }
@@ -79,13 +89,27 @@ export class Filter {
       }
     }
 
-    filter.init(action, name, json.default || null, json.options, requestFactory)
+    filter.init(
+      action,
+      name,
+      json.default || null,
+      json.options,
+      json.allow_null || false,
+      requestFactory
+    )
     return filter
   }
 
   public createRequestFilter (requestFilters: RequestFilters): Filter {
     const filter = new (this.constructor as FilterConstructor)(requestFilters)
-    filter.init(this._action, this.name, this._defaultValue, this.options, this._requestFactory)
+    filter.init(
+      this._action,
+      this.name,
+      this._defaultValue,
+      this._options,
+      this._allowNull,
+      this._requestFactory
+    )
     if (filter._requestFactory) {
       filter._request = filter._requestFactory()
     }
@@ -158,11 +182,19 @@ export class Filter {
     return value
   }
 
-  protected init (action: Action, name: string, defaultValue: FilterValueType, options: unknown[] = [], _requestFactory: RequestFactory): void {
+  protected init (
+    action: Action,
+    name: string,
+    defaultValue: FilterValueType,
+    options: unknown[] = [],
+    allowNull: boolean,
+    _requestFactory: RequestFactory
+  ): void {
     this._action = action
     this.name = name
     this._defaultValue = defaultValue
-    this.options = options
+    this._options = options
+    this._allowNull = allowNull
     this._requestFactory = _requestFactory
   }
 }

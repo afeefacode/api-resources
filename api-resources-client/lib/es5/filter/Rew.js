@@ -1,7 +1,7 @@
 import { ApiRequest } from '../api/ApiRequest';
 export class Filter {
     constructor(requestFilters) {
-        this._options = [];
+        this.options = [];
         this._requestFactory = null;
         this._request = null;
         this.type = this.constructor.type;
@@ -26,12 +26,6 @@ export class Filter {
     get defaultValue() {
         return this._defaultValue;
     }
-    get options() {
-        return this._options;
-    }
-    get allowNull() {
-        return this._allowNull;
-    }
     get request() {
         return this._request;
     }
@@ -45,12 +39,12 @@ export class Filter {
                     .action(requestAction);
             };
         }
-        filter.init(action, name, json.default || null, json.options, json.allow_null || false, requestFactory);
+        filter.init(action, name, json.default || null, json.options, requestFactory);
         return filter;
     }
     createRequestFilter(requestFilters) {
         const filter = new this.constructor(requestFilters);
-        filter.init(this._action, this.name, this._defaultValue, this._options, this._allowNull, this._requestFactory);
+        filter.init(this._action, this.name, this._defaultValue, this.options, this._requestFactory);
         if (filter._requestFactory) {
             filter._request = filter._requestFactory();
         }
@@ -113,12 +107,11 @@ export class Filter {
     serializeValue(value) {
         return value;
     }
-    init(action, name, defaultValue, options = [], allowNull, _requestFactory) {
+    init(action, name, defaultValue, options = [], _requestFactory) {
         this._action = action;
         this.name = name;
         this._defaultValue = defaultValue;
-        this._options = options;
-        this._allowNull = allowNull;
+        this.options = options;
         this._requestFactory = _requestFactory;
     }
 }

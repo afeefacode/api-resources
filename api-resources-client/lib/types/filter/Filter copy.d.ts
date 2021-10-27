@@ -6,9 +6,9 @@ export declare type FilterValueType = boolean | string | number | [string, Filte
 export declare type FilterJSON = {
     type: string;
     default: FilterValueType;
+    null: boolean;
     options: [];
     options_request: ApiRequestJSON;
-    allow_null: boolean;
 };
 export declare type FilterParams = object;
 declare type RequestFactory = (() => ApiRequest) | null;
@@ -17,9 +17,8 @@ export declare class Filter {
     name: string;
     private _action;
     private _defaultValue;
-    private _allowNull;
     private _value;
-    private _options;
+    options: unknown[];
     private _requestFactory;
     private _request;
     private _requestFilters;
@@ -28,8 +27,6 @@ export declare class Filter {
     get value(): FilterValueType;
     set value(value: FilterValueType);
     get defaultValue(): FilterValueType;
-    get options(): unknown[];
-    get allowNull(): boolean;
     get request(): ApiRequest | null;
     createActionFilter(action: Action, name: string, json: FilterJSON): Filter;
     createRequestFilter(requestFilters: RequestFilters): Filter;
@@ -42,7 +39,7 @@ export declare class Filter {
     protected valueToQuery(_value: unknown): string | undefined;
     protected queryToValue(_value: string): unknown | undefined;
     protected serializeValue(value: unknown): unknown | undefined;
-    protected init(action: Action, name: string, defaultValue: FilterValueType, options: unknown[] | undefined, allowNull: boolean, _requestFactory: RequestFactory): void;
+    protected init(action: Action, name: string, defaultValue: FilterValueType, options: unknown[] | undefined, _requestFactory: RequestFactory): void;
 }
 export {};
-//# sourceMappingURL=Filter.d.ts.map
+//# sourceMappingURL=Filter%20copy.d.ts.map

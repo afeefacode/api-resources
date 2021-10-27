@@ -20,6 +20,8 @@ class Filter extends BagEntry
 
     protected $default;
 
+    protected bool $allowNull = false;
+
     protected bool $defaultValueSet = false;
 
     public function created(): void
@@ -41,6 +43,17 @@ class Filter extends BagEntry
     {
         $this->name = $name;
         return $this;
+    }
+
+    public function allowNull(bool $allowNull = true): Filter
+    {
+        $this->allowNull = $allowNull;
+        return $this;
+    }
+
+    public function nullIsAllowed(): bool
+    {
+        return $this->allowNull;
     }
 
     public function default($default): Filter
@@ -83,15 +96,17 @@ class Filter extends BagEntry
 
         if (isset($this->options)) {
             $json['options'] = $this->options;
-        }
-
-        if (isset($this->optionsRequestCallback)) {
+        } elseif (isset($this->optionsRequestCallback)) {
             $api = $this->container->get(Api::class);
             $request = $this->container->create(function (ApiRequest $request) use ($api) {
                 $request->api($api);
                 ($this->optionsRequestCallback)($request);
             });
             $json['options_request'] = $request->toSchemaJson();
+        }
+
+        if ($this->allowNull) {
+            $json['allow_null'] = $this->allowNull;
         }
 
         return $json;
