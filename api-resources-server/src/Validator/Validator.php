@@ -6,6 +6,7 @@ use Afeefa\ApiResources\Api\ToSchemaJsonInterface;
 use Afeefa\ApiResources\Utils\HasStaticTypeTrait;
 use Afeefa\ApiResources\Validator\Rule\RuleBag;
 use ArrayObject;
+use ReflectionFunction;
 
 class Validator implements ToSchemaJsonInterface
 {
@@ -30,10 +31,36 @@ class Validator implements ToSchemaJsonInterface
         return $validator;
     }
 
+    public function validate($value): bool
+    {
+        foreach ($this->rules->getEntries() as $ruleName => $rule) {
+            $validate = $rule->getValidate();
+            $f = new ReflectionFunction($validate);
+            $fParams = array_slice($f->getParameters(), 1);
+
+            $args = array_map(function ($param) use ($rule) {
+                return $this->getParam($param->name, $rule->getDefaultParam());
+            }, $fParams);
+
+            $result = $validate($value, ...$args);
+
+            if (!$result) {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
     protected function param($name, $value): Validator
     {
         $this->params[$name] = $value;
         return $this;
+    }
+
+    protected function getParam(string $name, $default = null)
+    {
+        return $this->params[$name] ?? $default;
     }
 
     protected function rules(RuleBag $rules): void

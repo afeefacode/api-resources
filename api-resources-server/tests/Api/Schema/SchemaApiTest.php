@@ -77,6 +77,12 @@ class SchemaApiTest extends TestCase
             'validators' => [
                 'Afeefa.VarcharValidator' => [
                     'rules' => [
+                        'string' => [
+                            'message' => '{{ fieldLabel }} sollte eine Zeichenkette sein.'
+                        ],
+                        'null' => [
+                            'message' => '{{ fieldLabel }} sollte eine Zeichenkette sein.'
+                        ],
                         'min' => [
                             'message' => '{{ fieldLabel }} sollte mindestens {{ param }} Zeichen beinhalten.'
                         ],
