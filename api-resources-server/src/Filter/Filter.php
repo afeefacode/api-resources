@@ -75,9 +75,14 @@ class Filter extends BagEntry
         return $this;
     }
 
+    public function hasOption($option): bool
+    {
+        return isset($this->options) && in_array($option, $this->options);
+    }
+
     public function getOptions(): array
     {
-        return $this->options;
+        return $this->options ?? [];
     }
 
     public function toSchemaJson(): array
