@@ -26,11 +26,17 @@ export class Filter {
     get defaultValue() {
         return this._defaultValue;
     }
+    hasOptions() {
+        return !!this._options;
+    }
     get options() {
         return this._options;
     }
     get allowNull() {
         return this._allowNull;
+    }
+    hasRequest() {
+        return !!this._request;
     }
     get request() {
         return this._request;

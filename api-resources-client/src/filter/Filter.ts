@@ -65,12 +65,20 @@ export class Filter {
     return this._defaultValue
   }
 
+  public hasOptions (): boolean {
+    return !!this._options
+  }
+
   public get options (): unknown[] {
     return this._options
   }
 
   public get allowNull (): boolean {
     return this._allowNull
+  }
+
+  public hasRequest (): boolean {
+    return !!this._request
   }
 
   public get request (): ApiRequest | null {

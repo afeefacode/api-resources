@@ -28,8 +28,10 @@ export declare class Filter {
     get value(): FilterValueType;
     set value(value: FilterValueType);
     get defaultValue(): FilterValueType;
+    hasOptions(): boolean;
     get options(): unknown[];
     get allowNull(): boolean;
+    hasRequest(): boolean;
     get request(): ApiRequest | null;
     createActionFilter(action: Action, name: string, json: FilterJSON): Filter;
     createRequestFilter(requestFilters: RequestFilters): Filter;
