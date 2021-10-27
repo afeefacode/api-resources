@@ -11,7 +11,7 @@ export function BooleanFilterMixin<TFilter extends FilterMixinConstructor> (Filt
         return '0'
       }
 
-      if (value === null && (this.options.includes(null) || this.allowNull)) {
+      if (value === null && this.allowNull) {
         return '0,1'
       }
 
@@ -27,7 +27,7 @@ export function BooleanFilterMixin<TFilter extends FilterMixinConstructor> (Filt
         return false
       }
 
-      if (value === '0,1' && (this.options.includes(null) || this.allowNull)) {
+      if (value === '0,1' && this.allowNull) {
         return null
       }
 
@@ -43,7 +43,7 @@ export function BooleanFilterMixin<TFilter extends FilterMixinConstructor> (Filt
         return false
       }
 
-      if (value === null && (this.options.includes(null) || this.allowNull)) {
+      if (value === null && this.allowNull) {
         return null
       }
 
