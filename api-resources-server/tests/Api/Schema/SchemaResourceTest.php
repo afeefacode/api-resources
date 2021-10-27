@@ -73,6 +73,7 @@ class SchemaResourceTest extends TestCase
                 function (ResourceBag $resources) use ($resource) {
                     $resources->add($resource::class);
                 }
-            );
+            )
+            ->get();
     }
 }

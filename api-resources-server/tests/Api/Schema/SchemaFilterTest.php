@@ -2,95 +2,98 @@
 
 namespace Afeefa\ApiResources\Tests\Api;
 
+use Afeefa\ApiResources\Action\Action;
+use Afeefa\ApiResources\Action\ActionBag;
 use Afeefa\ApiResources\Exception\Exceptions\MissingTypeException;
-use Afeefa\ApiResources\Field\FieldBag;
+use Afeefa\ApiResources\Filter\Filter;
+use Afeefa\ApiResources\Filter\FilterBag;
+use function Afeefa\ApiResources\Test\createApiWithSingleResource;
+use Afeefa\ApiResources\Test\FilterBuilder;
 
-use Afeefa\ApiResources\Field\Fields\VarcharAttribute;
-use function Afeefa\ApiResources\Test\createApiWithSingleType;
-
-use Afeefa\ApiResources\Test\TestValidator;
-
-use Afeefa\ApiResources\Test\ValidatorBuilder;
-use Afeefa\ApiResources\Validator\Rule\RuleBag;
+use function Afeefa\ApiResources\Test\T;
+use Closure;
 use PHPUnit\Framework\TestCase;
 
 class SchemaFilterTest extends TestCase
 {
     public function test_simple()
     {
-        /** @var TestValidator */
-        $validator = (new ValidatorBuilder())
-            ->validator(
-                'Test.Validator',
-                function (RuleBag $rules) {
-                    $rules
-                        ->add('min')
-                        ->message('{{ fieldLabel }} should be greater than {{ param }}.');
-
-                    $rules
-                        ->add('max')
-                        ->message('{{ fieldLabel }} should be lesser than {{ param }}.');
-                }
-            )
-            ->get();
-
-        $api = createApiWithSingleType(
-            'Test.Type',
-            function (FieldBag $fields) use ($validator) {
-                $fields
-                    ->attribute('title', function (VarcharAttribute $attribute) use ($validator) {
-                        $attribute->validate($validator->min(4)->max(14));
-                    });
-            }
-        );
+        $api = $this->createApiWithFilter('check', function (Filter $filter) {
+            $filter
+                ->options([true, false])
+                ->default('default')
+                ->allowNull(true);
+        });
 
         $schema = $api->toSchemaJson();
 
-        $expectedTypesSchema = [
-            'Test.Type' => [
-                'translations' => [],
-                'fields' => [
-                    'title' => [
-                        'type' => 'Afeefa.VarcharAttribute',
-                        'validator' => [
-                            'type' => 'Test.Validator',
-                            'params' => [
-                                'min' => 4,
-                                'max' => 14
-                            ]
+        $expectedResourcesSchema = [
+            'Test.Resource' => [
+                'test_action' => [
+                    'filters' => [
+                        'check' => [
+                            'type' => 'Test.Filter',
+                            'options' => [true, false],
+                            'default' => 'default',
+                            'allow_null' => true
                         ]
-                    ]
-                ]
-            ]
-        ];
-
-        $this->assertEquals($expectedTypesSchema, $schema['types']);
-
-        $expectedValidatorsSchema = [
-            'Test.Validator' => [
-                'rules' => [
-                    'min' => [
-                        'message' => '{{ fieldLabel }} should be greater than {{ param }}.'
                     ],
-                    'max' => [
-                        'message' => '{{ fieldLabel }} should be lesser than {{ param }}.'
+                    'response' => [
+                        'type' => 'Test.Type'
                     ]
                 ]
             ]
         ];
 
-        $this->assertEquals($expectedValidatorsSchema, $schema['validators']);
+        $this->assertEquals($expectedResourcesSchema, $schema['resources']);
     }
 
     public function test_get_type_with_missing_type()
     {
         $this->expectException(MissingTypeException::class);
-        $this->expectExceptionMessageMatches('/^Missing type for class Afeefa\\\ApiResources\\\Test\\\TestValidator@anonymous/');
+        $this->expectExceptionMessageMatches('/^Missing type for class Afeefa\\\ApiResources\\\Test\\\TestFilter@anonymous/');
 
-        $validator = (new ValidatorBuilder())
-            ->validator()
+        $filter = (new FilterBuilder())
+            ->filter()
             ->get();
 
-        $validator->type();
+        $filter->type();
+    }
+
+    public function test_add_with_missing_type()
+    {
+        $this->expectException(MissingTypeException::class);
+        $this->expectExceptionMessageMatches('/^Missing type for class Afeefa\\\ApiResources\\\Test\\\TestFilter@anonymous/');
+
+        $filter = (new FilterBuilder())->filter()->get();
+
+        $api = createApiWithSingleResource(function (ActionBag $actions) use ($filter) {
+            $actions
+                ->add('test_action', function (Action $action) use ($filter) {
+                    $action
+                        ->filters(function (FilterBag $filters) use ($filter) {
+                            $filters->add('test_filter', $filter::class);
+                        });
+                });
+        });
+
+        $api->toSchemaJson();
+    }
+
+    private function createApiWithFilter($name, Closure $filterCallback)
+    {
+        $filter = (new FilterBuilder())->filter('Test.Filter')->get();
+
+        return createApiWithSingleResource(function (ActionBag $actions) use ($name, $filter, $filterCallback) {
+            $actions
+                ->add('test_action', function (Action $action) use ($name, $filter, $filterCallback) {
+                    $action
+                        ->filters(function (FilterBag $filters) use ($name, $filter, $filterCallback) {
+                            $filters->add($name, $filter::class);
+                            $filterCallback($filters->get($name));
+                        })
+                        ->response(T('Test.Type'));
+                });
+        });
     }
 }

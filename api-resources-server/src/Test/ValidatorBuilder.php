@@ -19,7 +19,7 @@ class ValidatorBuilder
         // creating unique anonymous class is difficult
         // https://stackoverflow.com/questions/40833199/static-properties-in-php7-anonymous-classes
         // https://www.php.net/language.oop5.anonymous#121839
-        $code = file_get_contents(Path::join(__DIR__, 'uniquevalidatorclass.php'));
+        $code = file_get_contents(Path::join(__DIR__, 'class-templates', 'validator.php'));
         $code = preg_replace("/<\?php/", '', $code);
 
         if ($typeName) {

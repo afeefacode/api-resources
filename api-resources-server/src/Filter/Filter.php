@@ -41,6 +41,11 @@ class Filter extends BagEntry
         return $this;
     }
 
+    public function getName(): string
+    {
+        return $this->name;
+    }
+
     public function allowNull(bool $allowNull = true): Filter
     {
         $this->allowNull = $allowNull;

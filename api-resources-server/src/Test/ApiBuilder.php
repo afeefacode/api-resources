@@ -6,12 +6,14 @@ use Afeefa\ApiResources\Api\Api;
 use Afeefa\ApiResources\DI\Container;
 use Afeefa\ApiResources\Resource\ResourceBag;
 use Closure;
+
 use Webmozart\PathUtil\Path;
 
 class ApiBuilder
 {
     public Container $container;
     public Api $api;
+    private $useTestContainer = false;
 
     public function api(
         ?string $type = null,
@@ -20,7 +22,7 @@ class ApiBuilder
         // creating unique anonymous class is difficult
         // https://stackoverflow.com/questions/40833199/static-properties-in-php7-anonymous-classes
         // https://www.php.net/language.oop5.anonymous#121839
-        $code = file_get_contents(Path::join(__DIR__, 'uniqueapiclass.php'));
+        $code = file_get_contents(Path::join(__DIR__, 'class-templates', 'api.php'));
         $code = preg_replace("/<\?php/", '', $code);
 
         if ($type) {
@@ -35,14 +37,29 @@ class ApiBuilder
 
         $api::$resourcesCallback = $resourcesCallback;
 
-        $this->api = (new Container())->create($api::class);
+        $this->api = $api;
 
+        return $this;
+    }
+
+    /**
+     * Enables ActionBag to create actions with pre-configured response and resolver.
+     */
+    public function useTestContainer(): ApiBuilder
+    {
+        $this->useTestContainer = true;
         return $this;
     }
 
     public function get(): Api
     {
-        return $this->api;
+        if ($this->useTestContainer) {
+            $api = (new TestContainer())->create($this->api::class);
+        } else {
+            $api = (new Container())->create($this->api::class);
+        }
+
+        return $api;
     }
 }
 

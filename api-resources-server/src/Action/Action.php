@@ -25,8 +25,6 @@ class Action extends BagEntry
 
     protected ActionResponse $response;
 
-    protected Closure $executor;
-
     /**
      * @var string|callable|Closure
      */
@@ -53,7 +51,7 @@ class Action extends BagEntry
 
     public function hasParam(string $name): bool
     {
-        return $this->params->has($name);
+        return isset($this->params) && $this->params->has($name);
     }
 
     public function getParam(string $name): Attribute
@@ -94,6 +92,11 @@ class Action extends BagEntry
         return $this;
     }
 
+    public function hasInput(): bool
+    {
+        return isset($this->input);
+    }
+
     public function getInput(): ActionInput
     {
         return $this->input;
@@ -128,7 +131,7 @@ class Action extends BagEntry
 
         if ($TypeClassOrClassesOrMeta instanceof TypeMeta) {
             $typeMeta = $TypeClassOrClassesOrMeta;
-            $TypeClassOrClasses = $typeMeta->TypeClass;
+            $TypeClassOrClasses = $typeMeta->TypeClassOrClasses;
 
             $this->response->list($typeMeta->list);
         } else {
@@ -148,7 +151,7 @@ class Action extends BagEntry
             }
             $this->response->typeClass($TypeClassOrClasses);
         } else {
-            throw new NotATypeException('Value for response $TypeClassOrClasses is not a type or a list of type.');
+            throw new NotATypeException('Value for response $TypeClassOrClasses is not a type or a list of types.');
         }
 
         if ($callback) {
@@ -163,6 +166,14 @@ class Action extends BagEntry
         });
 
         return $this;
+    }
+
+    /**
+     * Useful for testing purposes
+     */
+    public function hasResponse(): bool
+    {
+        return isset($this->response);
     }
 
     public function getResponse(): ActionResponse
@@ -183,12 +194,20 @@ class Action extends BagEntry
         return $this;
     }
 
+    /**
+     * Useful for testing purposes
+     */
+    public function hasResolver(): bool
+    {
+        return isset($this->resolveCallback);
+    }
+
     public function getResolve(): ?Closure
     {
         $callback = $this->resolveCallback ?? null;
 
         if (!$callback) {
-            throw new InvalidConfigurationException("Action {$this->name} does not have a field resolver.");
+            throw new InvalidConfigurationException("Action {$this->name} does not have a resolver.");
         }
 
         if (is_array($callback) && is_string($callback[0])) { // static class -> create instance
@@ -206,6 +225,14 @@ class Action extends BagEntry
 
     public function toSchemaJson(): array
     {
+        if (!isset($this->response)) {
+            throw new InvalidConfigurationException("Action {$this->name} does not have a response type.");
+        }
+
+        if (!isset($this->resolveCallback)) {
+            throw new InvalidConfigurationException("Action {$this->name} does not have a resolver.");
+        }
+
         $json = [
             // 'name' => $this->name
         ];
@@ -222,9 +249,7 @@ class Action extends BagEntry
             $json['filters'] = $this->filters->toSchemaJson();
         }
 
-        if (isset($this->response)) {
-            $json['response'] = $this->response->toSchemaJson();
-        }
+        $json['response'] = $this->response->toSchemaJson();
 
         return $json;
     }
