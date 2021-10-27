@@ -3,13 +3,13 @@
 namespace Afeefa\ApiResources\Validator;
 
 use Afeefa\ApiResources\Api\ToSchemaJsonInterface;
-use Afeefa\ApiResources\Exception\Exceptions\MissingTypeException;
+use Afeefa\ApiResources\Utils\HasStaticTypeTrait;
 use Afeefa\ApiResources\Validator\Rule\RuleBag;
 use ArrayObject;
 
 class Validator implements ToSchemaJsonInterface
 {
-    public static string $type;
+    use HasStaticTypeTrait;
 
     public array $params = [];
 
@@ -17,10 +17,6 @@ class Validator implements ToSchemaJsonInterface
 
     public function __construct()
     {
-        if (!static::$type) {
-            throw new MissingTypeException('Missing type for validator of class ' . static::class . '.');
-        };
-
         $this->rules = new RuleBag();
         $this->rules($this->rules);
     }
@@ -47,7 +43,7 @@ class Validator implements ToSchemaJsonInterface
     public function toSchemaJson(): array
     {
         return [
-            'type' => static::$type,
+            'type' => $this->type(),
             'params' => $this->params,
             'rules' => $this->rules->toSchemaJson(),
         ];

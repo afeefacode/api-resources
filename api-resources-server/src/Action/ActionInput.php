@@ -54,7 +54,7 @@ class ActionInput implements ToSchemaJsonInterface, ContainerAwareInterface
         $typeRegistry->registerType($this->TypeClass);
 
         $json = [
-            'type' => $this->TypeClass::$type
+            'type' => $this->TypeClass::type()
         ];
 
         if ($this->list) {

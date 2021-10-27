@@ -5,6 +5,7 @@ namespace Afeefa\ApiResources\Tests\Api;
 use Afeefa\ApiResources\Action\Action;
 use Afeefa\ApiResources\Action\ActionBag;
 use Afeefa\ApiResources\Api\Api;
+use Afeefa\ApiResources\Exception\Exceptions\MissingTypeException;
 use Afeefa\ApiResources\Field\FieldBag;
 use Afeefa\ApiResources\Field\Fields\HasOneRelation;
 use Afeefa\ApiResources\Field\Fields\VarcharAttribute;
@@ -227,6 +228,34 @@ class SchemaTypeTest extends TestCase
         $schema = $api->toSchemaJson();
 
         $this->assertEquals(['Test.Type', 'Test.Type2'], array_keys($schema['types']));
+    }
+
+    public function test_get_type_with_missing_type()
+    {
+        $this->expectException(MissingTypeException::class);
+        $this->expectExceptionMessageMatches('/^Missing type for class Afeefa\\\ApiResources\\\Test\\\TestType@anonymous/');
+
+        $type = (new TypeBuilder())->type()->get();
+
+        $type->type();
+    }
+
+    public function test_add_with_missing_type()
+    {
+        $this->expectException(MissingTypeException::class);
+        $this->expectExceptionMessageMatches('/^Missing type for class Afeefa\\\ApiResources\\\Test\\\TestType@anonymous/');
+
+        $type = (new TypeBuilder())->type()->get();
+
+        $api = $this->createApi(
+            actionsCallback: function (ActionBag $actions) use ($type) {
+                $actions->add('type', function (Action $action) use ($type) {
+                    $action->response($type::class);
+                });
+            }
+        );
+
+        $api->toSchemaJson();
     }
 
     private function createApiWithType(

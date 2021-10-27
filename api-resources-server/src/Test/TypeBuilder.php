@@ -12,7 +12,7 @@ class TypeBuilder
     public Type $type;
 
     public function type(
-        string $typeName,
+        ?string $typeName = null,
         ?Closure $fieldsCallback = null,
         ?Closure $updateFieldsCallback = null,
         ?Closure $createFieldsCallback = null
@@ -23,15 +23,23 @@ class TypeBuilder
         $code = file_get_contents(Path::join(__DIR__, 'uniquetypeclass.php'));
         $code = preg_replace("/<\?php/", '', $code);
 
+        if ($typeName) {
+            $code = preg_replace('/Test.Type/', $typeName, $code);
+        } else {
+            // remove type information for no type given tests
+            $code = preg_replace('/protected static string \$type.+/', '', $code);
+        }
+
         /** @var TestType */
         $type = eval($code); // eval is not always evil
 
-        $type::$type = $typeName;
         $type::$fieldsCallback = $fieldsCallback;
         $type::$updateFieldsCallback = $updateFieldsCallback;
         $type::$createFieldsCallback = $createFieldsCallback;
 
-        TypeRegistry::register($type);
+        if ($typeName) { // do not register in missing type test
+            TypeRegistry::register($type);
+        }
 
         $this->type = $type;
 

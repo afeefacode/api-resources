@@ -259,7 +259,7 @@ class ModelResolver
 
             ->forward(function (ApiRequest $apiRequest) {
                 $apiRequest
-                    ->resourceType($apiRequest->getResource()->getType())
+                    ->resourceType($apiRequest->getResource()::type())
                     ->actionName('get');
             });
     }
@@ -284,7 +284,7 @@ class ModelResolver
 
             ->forward(function (ApiRequest $apiRequest, Model $model) {
                 $apiRequest
-                    ->resourceType($apiRequest->getResource()->getType())
+                    ->resourceType($apiRequest->getResource()::type())
                     ->actionName('get')
                     ->params(['id' => $model->id]);
             });

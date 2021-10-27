@@ -13,7 +13,7 @@ class ValidatorBuilder
     public Validator $validator;
 
     public function validator(
-        string $typeName,
+        ?string $typeName = null,
         ?Closure $rulesCallback = null
     ): ValidatorBuilder {
         // creating unique anonymous class is difficult
@@ -22,10 +22,16 @@ class ValidatorBuilder
         $code = file_get_contents(Path::join(__DIR__, 'uniquevalidatorclass.php'));
         $code = preg_replace("/<\?php/", '', $code);
 
+        if ($typeName) {
+            $code = preg_replace('/Test.Validator/', $typeName, $code);
+        } else {
+            // remove type information for no type given tests
+            $code = preg_replace('/protected static string \$type.+/', '', $code);
+        }
+
         /** @var TestValidator */
         $validator = eval($code); // eval is not always evil
 
-        $validator::$type = $typeName;
         $validator::$rulesCallback = $rulesCallback;
 
         // create a new validator to apply rulesCallback

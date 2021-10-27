@@ -9,12 +9,12 @@ use Afeefa\ApiResources\Field\Attribute;
 use Afeefa\ApiResources\Field\Field;
 use Afeefa\ApiResources\Field\FieldBag;
 use Afeefa\ApiResources\Field\Relation;
+use Afeefa\ApiResources\Utils\HasStaticTypeTrait;
 
 class Type implements ToSchemaJsonInterface, ContainerAwareInterface
 {
+    use HasStaticTypeTrait;
     use ContainerAwareTrait;
-
-    public static string $type = 'Afeefa.Type';
 
     protected FieldBag $fields;
 

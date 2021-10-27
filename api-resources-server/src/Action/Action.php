@@ -88,7 +88,7 @@ class Action extends BagEntry
         }
 
         $this->container->get(function (TypeClassMap $typeClassMap) use ($TypeClass) {
-            $typeClassMap->add($TypeClass::$type, $TypeClass);
+            $typeClassMap->add($TypeClass::type(), $TypeClass);
         });
 
         return $this;
@@ -158,7 +158,7 @@ class Action extends BagEntry
         $TypeClasses = is_array($TypeClassOrClasses) ? $TypeClassOrClasses : [$TypeClassOrClasses];
         $this->container->get(function (TypeClassMap $typeClassMap) use ($TypeClasses) {
             foreach ($TypeClasses as $TypeClass) {
-                $typeClassMap->add($TypeClass::$type, $TypeClass);
+                $typeClassMap->add($TypeClass::type(), $TypeClass);
             }
         });
 
