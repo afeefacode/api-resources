@@ -49,7 +49,7 @@ class Filter extends BagEntry
 
     public function nullIsAllowed(): bool
     {
-        return $this->allowNull;
+        return $this->allowNull || $this->hasOption(null);
     }
 
     public function default($default): Filter
