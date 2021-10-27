@@ -52,7 +52,7 @@ class CommentsResolver
                         debug_dump($key, $row);
                     }
 
-                    $objects[$key][] = Model::fromSingle(CommentType::$type, $row);
+                    $objects[$key][] = Model::fromSingle(CommentType::type(), $row);
                 }
                 return $objects;
             })

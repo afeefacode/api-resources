@@ -11,7 +11,7 @@ use Afeefa\ApiResources\Type\Type;
 
 class CommentType extends Type
 {
-    public static string $type = 'Example.CommentType';
+    protected static string $type = 'Example.CommentType';
 
     protected function fields(FieldBag $fields): void
     {

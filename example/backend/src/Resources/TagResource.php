@@ -11,7 +11,7 @@ use Backend\Types\TagType;
 
 class TagResource extends Resource
 {
-    public static string $type = 'Example.TagResource';
+    protected static string $type = 'Example.TagResource';
 
     protected function actions(ActionBag $actions): void
     {

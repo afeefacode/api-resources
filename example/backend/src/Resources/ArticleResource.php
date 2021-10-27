@@ -20,7 +20,7 @@ use Backend\Types\ArticleType;
 
 class ArticleResource extends Resource
 {
-    public static string $type = 'Example.ArticleResource';
+    protected static string $type = 'Example.ArticleResource';
 
     protected function actions(ActionBag $actions): void
     {
@@ -33,7 +33,7 @@ class ArticleResource extends Resource
                 $filters->add('author_id', function (IdFilter $filter) {
                     $filter->optionsRequest(function (ApiRequest $request) {
                         $request
-                            ->resourceType(AuthorResource::$type)
+                            ->resourceType(AuthorResource::type())
                             ->actionName('get_authors')
                             ->fields(['name' => true, 'count_articles' => true]);
                     });
@@ -42,7 +42,7 @@ class ArticleResource extends Resource
                 $filters->add('tag_id', function (IdFilter $filter) {
                     $filter->optionsRequest(function (ApiRequest $request) {
                         $request
-                            ->resourceType(TagResource::$type)
+                            ->resourceType(TagResource::type())
                             ->actionName('get_tags')
                             ->fields(['name' => true, 'count_users' => true]);
                     });

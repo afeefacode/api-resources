@@ -29,7 +29,7 @@ class Resource extends BagEntry
         return $this->actions->toSchemaJson();
 
         $json = [
-            // 'type' => static::$type,
+            // 'type' => $this::type(),
             'actions' => $this->actions->toSchemaJson()
         ];
 

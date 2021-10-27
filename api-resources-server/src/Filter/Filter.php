@@ -5,12 +5,12 @@ namespace Afeefa\ApiResources\Filter;
 use Afeefa\ApiResources\Api\Api;
 use Afeefa\ApiResources\Api\ApiRequest;
 use Afeefa\ApiResources\Bag\BagEntry;
-use Afeefa\ApiResources\Exception\Exceptions\MissingTypeException;
+use Afeefa\ApiResources\Utils\HasStaticTypeTrait;
 use Closure;
 
 class Filter extends BagEntry
 {
-    public static string $type;
+    use HasStaticTypeTrait;
 
     protected string $name;
 
@@ -26,10 +26,6 @@ class Filter extends BagEntry
 
     public function created(): void
     {
-        if (!static::$type) {
-            throw new MissingTypeException('Missing type for filter of class ' . static::class . '.');
-        };
-
         $this->setup();
     }
 
@@ -87,7 +83,7 @@ class Filter extends BagEntry
     public function toSchemaJson(): array
     {
         $json = [
-            'type' => static::$type
+            'type' => $this::type()
         ];
 
         if ($this->defaultValueSet) {

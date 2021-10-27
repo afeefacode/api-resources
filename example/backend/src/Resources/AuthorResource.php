@@ -20,7 +20,7 @@ use Backend\Types\AuthorType;
 
 class AuthorResource extends Resource
 {
-    public static string $type = 'Example.AuthorResource';
+    protected static string $type = 'Example.AuthorResource';
 
     protected function actions(ActionBag $actions): void
     {
@@ -31,7 +31,7 @@ class AuthorResource extends Resource
                 $filters->add('tag_id', function (IdFilter $filter) {
                     $filter->optionsRequest(function (ApiRequest $request) {
                         $request
-                            ->resourceType(TagResource::$type)
+                            ->resourceType(TagResource::type())
                             ->actionName('get_tags')
                             ->fields(['name' => true, 'count_users' => true]);
                     });

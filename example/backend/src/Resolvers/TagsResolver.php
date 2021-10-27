@@ -39,7 +39,7 @@ class TagsResolver
                     'count_search' => $count
                 ]);
 
-                return Model::fromList(TagType::$type, $objects);
+                return Model::fromList(TagType::type(), $objects);
             });
     }
 
@@ -158,7 +158,7 @@ class TagsResolver
                     foreach (array_keys($fieldMap) as $selectField) {
                         $object[$selectField] = $row[$fieldMap[$selectField]];
                     }
-                    $models[$key][] = Model::fromSingle(TagType::$type, $object);
+                    $models[$key][] = Model::fromSingle(TagType::type(), $object);
                 }
                 return $models;
             })

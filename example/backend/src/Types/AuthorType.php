@@ -13,7 +13,7 @@ use Backend\Resolvers\TagsResolver;
 
 class AuthorType extends ModelType
 {
-    public static string $type = 'Example.Author';
+    protected static string $type = 'Example.Author';
 
     protected function translations(): array
     {

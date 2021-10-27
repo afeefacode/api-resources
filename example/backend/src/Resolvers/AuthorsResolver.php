@@ -110,7 +110,7 @@ class AuthorsResolver
                     'used_filters' => $usedFilters
                 ]);
 
-                return Model::fromList(AuthorType::$type, $objects);
+                return Model::fromList(AuthorType::type(), $objects);
             });
     }
 
@@ -140,7 +140,7 @@ class AuthorsResolver
                     $where
                 );
 
-                return Model::fromSingle(AuthorType::$type, $object);
+                return Model::fromSingle(AuthorType::type(), $object);
             });
     }
 
@@ -194,7 +194,7 @@ class AuthorsResolver
 
                 $models = [];
                 foreach ($result as $row) {
-                    $models[$row['id']] = Model::fromSingle(AuthorType::$type, $row);
+                    $models[$row['id']] = Model::fromSingle(AuthorType::type(), $row);
                 }
                 return $models;
             })

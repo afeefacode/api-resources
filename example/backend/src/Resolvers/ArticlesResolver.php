@@ -147,7 +147,7 @@ class ArticlesResolver
                     'used_filters' => $usedFilters
                 ]);
 
-                return Model::fromList(ArticleType::$type, $objects);
+                return Model::fromList(ArticleType::type(), $objects);
             });
     }
 
@@ -184,7 +184,7 @@ class ArticlesResolver
                     ]));
                 }
 
-                return Model::fromSingle(ArticleType::$type, $object);
+                return Model::fromSingle(ArticleType::type(), $object);
             });
     }
 
@@ -234,7 +234,7 @@ class ArticlesResolver
                     ]));
                 }
 
-                return Model::fromSingle(ArticleType::$type, [
+                return Model::fromSingle(ArticleType::type(), [
                     'id' => $db->id()
                 ]);
             });
@@ -267,7 +267,7 @@ class ArticlesResolver
                 $objects = [];
                 foreach ($result as $row) {
                     $key = 'Author:' . $row['author_id'];
-                    $objects[$key][] = Model::fromSingle(ArticleType::$type, $row);
+                    $objects[$key][] = Model::fromSingle(ArticleType::type(), $row);
                 }
                 return $objects;
             })

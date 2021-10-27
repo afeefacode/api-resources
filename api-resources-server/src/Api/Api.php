@@ -79,7 +79,7 @@ class Api implements ContainerAwareInterface
         }
 
         return [
-            'type' => $this->type(),
+            'type' => $this::type(),
             'resources' => $resources,
             'types' => $types,
             'validators' => $validators

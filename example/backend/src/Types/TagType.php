@@ -10,13 +10,13 @@ use Backend\Resolvers\TagsResolver;
 
 class TagType extends Type
 {
-    public static string $type = 'Example.TagType';
+    protected static string $type = 'Example.TagType';
 
     protected function fields(FieldBag $fields): void
     {
         $fields->attribute('name', VarcharAttribute::class);
 
-        $fields->relation('users', Type::class, function (HasManyRelation $relation) {
+        $fields->relation('users', ArticleType::class, function (HasManyRelation $relation) {
             $relation->resolve([TagsResolver::class, 'resolve_tag_users_relation']);
         });
     }

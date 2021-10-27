@@ -43,7 +43,7 @@ class Validator implements ToSchemaJsonInterface
     public function toSchemaJson(): array
     {
         return [
-            'type' => $this->type(),
+            'type' => $this::type(),
             'params' => $this->params,
             'rules' => $this->rules->toSchemaJson(),
         ];

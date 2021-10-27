@@ -214,7 +214,7 @@ class ApiRequest implements ContainerAwareInterface, ToSchemaJsonInterface, Json
     public function toSchemaJson(): array
     {
         $json = [
-            'api' => $this->api::$type,
+            'api' => $this->api::type(),
             'resource' => $this->resourceType,
             'action' => $this->actionName,
             'fields' => $this->fields
@@ -234,7 +234,7 @@ class ApiRequest implements ContainerAwareInterface, ToSchemaJsonInterface, Json
     public function jsonSerialize()
     {
         $json = [
-            'api' => $this->api::$type,
+            'api' => $this->api::type(),
             'resource' => $this->resourceType,
             'action' => $this->actionName,
             'params' => $this->params,

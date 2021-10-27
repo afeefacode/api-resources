@@ -31,7 +31,7 @@ Konfiguration
 
   class BlogApi extends Api
   {
-      public static string $type = 'Blog.Api';
+      protected static string $type = 'Blog.Api';
 
       protected function resources(ResourceBag $resources): void
       {
@@ -66,7 +66,7 @@ Im Beispiel wird eine Blog-API angelegt, welche durch einen Authentifizierungs-S
 
   class BlogApi extends Api
   {
-      public static string $type = 'Blog.Api';
+      protected static string $type = 'Blog.Api';
 
       protected function resources(ResourceBag $resources): void
       {
@@ -96,7 +96,7 @@ Eine Resource ist ein Set von inhaltlich zusammengehörigen Actions. In den meis
 
   class ArticleResource extends Resource
   {
-      public static string $type = 'Blog.ArticleResource';
+      protected static string $type = 'Blog.ArticleResource';
 
       protected function actions(ActionBag $actions): void
       {
@@ -133,7 +133,7 @@ Eine Action ist ein verfügbarer Endpunkt auf einer API. Eine Action kann belieb
 
   class ArticleType extends Type
   {
-      public static string $type = 'Blog.Article';
+      protected static string $type = 'Blog.Article';
 
       protected function fields(FieldBag $fields): void
       {
