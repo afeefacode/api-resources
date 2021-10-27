@@ -64,6 +64,8 @@ class ActionTest extends TestCase
 
     public function test_input()
     {
+        TypeRegistry::reset();
+
         $type = (new TypeBuilder())->type('Test.Type')->get();
         $action = (new ActionBuilder())->createInContainer();
 
@@ -72,9 +74,122 @@ class ActionTest extends TestCase
         $action->input($type::class);
 
         $this->assertTrue($action->hasInput());
-        $this->assertInstanceOf(ActionInput::class, $action->getInput());
 
-        $this->assertEquals(T('Test.Type'), $action->getInput()->getType()::class);
+        $input = $action->getInput();
+
+        $this->assertInstanceOf(ActionInput::class, $input);
+        $this->assertEquals(T('Test.Type'), $input->getTypeClass());
+        $this->assertEquals([], $input->getTypeClasses());
+        $this->assertFalse($input->isList());
+    }
+
+    public function test_input_list()
+    {
+        TypeRegistry::reset();
+
+        $type = (new TypeBuilder())->type('Test.Type')->get();
+        $action = (new ActionBuilder())->createInContainer();
+
+        $action->input(Type::list($type::class));
+
+        $input = $action->getInput();
+
+        $this->assertEquals(T('Test.Type'), $input->getTypeClass());
+        $this->assertEquals([], $input->getTypeClasses());
+        $this->assertTrue($input->isList());
+    }
+
+    public function test_input_mixed()
+    {
+        $type = (new TypeBuilder())->type('Test.Type')->get();
+        $action = (new ActionBuilder())->createInContainer();
+
+        $TypeClasses = [
+            T('Test.Type'),
+            T('Test.Type2'),
+            T('Test.Type3'),
+        ];
+
+        $action->input($TypeClasses);
+
+        $input = $action->getInput();
+
+        $this->assertNull($input->getTypeClass());
+        $this->assertEquals($TypeClasses, $input->getTypeClasses());
+        $this->assertFalse($input->isList());
+    }
+
+    public function test_input_mixed_list()
+    {
+        TypeRegistry::reset();
+
+        $action = (new ActionBuilder())->createInContainer();
+
+        $TypeClasses = [
+            T('Test.Type'),
+            T('Test.Type2'),
+            T('Test.Type3'),
+        ];
+
+        $action->input(Type::list($TypeClasses));
+
+        $input = $action->getInput();
+
+        $this->assertNull($input->getTypeClass());
+        $this->assertEquals($TypeClasses, $input->getTypeClasses());
+        $this->assertTrue($input->isList());
+    }
+
+    public function test_input_invalid_type()
+    {
+        $this->expectException(NotATypeException::class);
+        $this->expectExceptionMessage('Value for input $TypeClassOrClasses is not a type.');
+
+        $action = (new ActionBuilder())->createInContainer();
+        $action->input('TEST');
+    }
+
+    public function test_input_invalid_type_list()
+    {
+        $this->expectException(NotATypeException::class);
+        $this->expectExceptionMessage('Value for input $TypeClassOrClasses is not a type.');
+
+        $action = (new ActionBuilder())->createInContainer();
+        $action->input(Type::list('TEST'));
+    }
+
+    public function test_input_invalid_type_mixed()
+    {
+        $this->expectException(NotATypeException::class);
+        $this->expectExceptionMessage('Value for input $TypeClassOrClasses is not a list of types.');
+
+        $action = (new ActionBuilder())->createInContainer();
+        $action->input(['TEST', 'TEST2']);
+    }
+
+    public function test_input_invalid_type_mixed_list()
+    {
+        $this->expectException(NotATypeException::class);
+        $this->expectExceptionMessage('Value for input $TypeClassOrClasses is not a list of types.');
+
+        $action = (new ActionBuilder())->createInContainer();
+        $action->input(Type::list(['TEST', 'TEST2']));
+    }
+
+    public function test_input_invalid_type_number()
+    {
+        $this->expectException(NotATypeException::class);
+        $this->expectExceptionMessage('Value for input $TypeClassOrClasses is not a type or a list of types.');
+
+        $action = (new ActionBuilder())->createInContainer();
+        $action->input(123);
+    }
+
+    public function test_missing_input()
+    {
+        $action = (new ActionBuilder())->action('test_action')->get();
+        $this->assertFalse($action->hasInput());
+        $this->assertNull($action->getInput());
     }
 
     public function test_response()
@@ -84,12 +199,15 @@ class ActionTest extends TestCase
         $type = (new TypeBuilder())->type('Test.Type')->get();
         $action = (new ActionBuilder())->createInContainer();
 
+        $this->assertFalse($action->hasResponse());
+
         $action->response($type::class);
 
-        $this->assertInstanceOf(ActionResponse::class, $action->getResponse());
+        $this->assertTrue($action->hasResponse());
 
         $response = $action->getResponse();
 
+        $this->assertInstanceOf(ActionResponse::class, $response);
         $this->assertEquals(T('Test.Type'), $response->getTypeClass());
         $this->assertEquals([], $response->getTypeClasses());
         $this->assertFalse($response->isList());
@@ -103,8 +221,6 @@ class ActionTest extends TestCase
         $action = (new ActionBuilder())->createInContainer();
 
         $action->response(Type::list($type::class));
-
-        $this->assertInstanceOf(ActionResponse::class, $action->getResponse());
 
         $response = $action->getResponse();
 
@@ -127,8 +243,6 @@ class ActionTest extends TestCase
 
         $action->response($TypeClasses);
 
-        $this->assertInstanceOf(ActionResponse::class, $action->getResponse());
-
         $response = $action->getResponse();
 
         $this->assertNull($response->getTypeClass());
@@ -149,8 +263,6 @@ class ActionTest extends TestCase
         ];
 
         $action->response(Type::list($TypeClasses));
-
-        $this->assertInstanceOf(ActionResponse::class, $action->getResponse());
 
         $response = $action->getResponse();
 
