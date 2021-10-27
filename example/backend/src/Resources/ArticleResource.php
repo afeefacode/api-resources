@@ -109,25 +109,25 @@ class ArticleResource extends Resource
                 ->resolve([ArticlesResolver::class, 'update_article']);
         });
 
-        $actions->add('update_articles', function (Action $action) {
-            $action
-                ->params(function (ActionParams $params) {
-                    $params->attribute('id', IdAttribute::class);
-                    // $params->id('id')->list();
-                })
+        // $actions->add('update_articles', function (Action $action) {
+        //     $action
+        //         ->params(function (ActionParams $params) {
+        //             $params->attribute('id', IdAttribute::class);
+        //             // $params->id('id')->list();
+        //         })
 
-                ->input(ArticleType::class)
+        //         ->input(ArticleType::class)
 
-                ->response(ArticleType::class);
-        });
+        //         ->response(ArticleType::class);
+        // });
 
-        $actions->add('delete_article', function (Action $action) {
-            $action->params(function (ActionParams $params) {
-                $params->attribute('id', IdAttribute::class);
-            });
-        });
+        // $actions->add('delete_article', function (Action $action) {
+        //     $action->params(function (ActionParams $params) {
+        //         $params->attribute('id', IdAttribute::class);
+        //     });
+        // });
 
-        $actions->add('delete_articles', function (Action $action) {
-        });
+        // $actions->add('delete_articles', function (Action $action) {
+        // });
     }
 }
