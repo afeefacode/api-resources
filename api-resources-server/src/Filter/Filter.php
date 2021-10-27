@@ -111,8 +111,8 @@ class Filter extends BagEntry
             $json['options_request'] = $request->toSchemaJson();
         }
 
-        if ($this->allowNull) {
-            $json['allow_null'] = $this->allowNull;
+        if ($this->nullIsAllowed()) {
+            $json['allow_null'] = true;
         }
 
         return $json;

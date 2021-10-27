@@ -48,6 +48,35 @@ class SchemaFilterTest extends TestCase
         $this->assertEquals($expectedResourcesSchema, $schema['resources']);
     }
 
+    public function test_implicitly_allow_null()
+    {
+        $api = $this->createApiWithFilter('check', function (Filter $filter) {
+            $filter
+                ->options([null, true, false]);
+        });
+
+        $schema = $api->toSchemaJson();
+
+        $expectedResourcesSchema = [
+            'Test.Resource' => [
+                'test_action' => [
+                    'filters' => [
+                        'check' => [
+                            'type' => 'Test.Filter',
+                            'options' => [null, true, false],
+                            'allow_null' => true
+                        ]
+                    ],
+                    'response' => [
+                        'type' => 'Test.Type'
+                    ]
+                ]
+            ]
+        ];
+
+        $this->assertEquals($expectedResourcesSchema, $schema['resources']);
+    }
+
     public function test_get_type_with_missing_type()
     {
         $this->expectException(MissingTypeException::class);
