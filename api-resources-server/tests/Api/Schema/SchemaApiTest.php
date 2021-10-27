@@ -8,9 +8,9 @@ use Afeefa\ApiResources\Api\Api;
 use Afeefa\ApiResources\Exception\Exceptions\MissingTypeException;
 use Afeefa\ApiResources\Field\FieldBag;
 use Afeefa\ApiResources\Field\Fields\VarcharAttribute;
-use Afeefa\ApiResources\Resource\ResourceBag;
 use Afeefa\ApiResources\Test\ApiBuilder;
-use Afeefa\ApiResources\Test\ResourceBuilder;
+use function Afeefa\ApiResources\Test\createApiWithSingleResource;
+
 use function Afeefa\ApiResources\Test\T;
 use Afeefa\ApiResources\Test\TypeBuilder;
 use Afeefa\ApiResources\Test\TypeRegistry;
@@ -132,22 +132,6 @@ class SchemaApiTest extends TestCase
             };
         }
 
-        return $this->createApi($actionsCallback);
-    }
-
-    private function createApi(?Closure $actionsCallback = null): Api
-    {
-        $resource = (new ResourceBuilder())
-            ->resource('Test.Resource', $actionsCallback)
-            ->get();
-
-        return (new ApiBuilder())
-            ->api(
-                'Test.Api',
-                function (ResourceBag $resources) use ($resource) {
-                    $resources->add($resource::class);
-                }
-            )
-            ->get();
+        return createApiWithSingleResource($actionsCallback);
     }
 }

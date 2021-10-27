@@ -4,19 +4,16 @@ namespace Afeefa\ApiResources\Tests\Api;
 
 use Afeefa\ApiResources\Action\Action;
 use Afeefa\ApiResources\Action\ActionBag;
-use Afeefa\ApiResources\Api\Api;
 use Afeefa\ApiResources\Exception\Exceptions\MissingTypeException;
 use Afeefa\ApiResources\Field\FieldBag;
 use Afeefa\ApiResources\Field\Fields\HasOneRelation;
 use Afeefa\ApiResources\Field\Fields\VarcharAttribute;
-use Afeefa\ApiResources\Resource\ResourceBag;
-use Afeefa\ApiResources\Test\ApiBuilder;
-use Afeefa\ApiResources\Test\ResourceBuilder;
+use function Afeefa\ApiResources\Test\createApiWithSingleResource;
+use function Afeefa\ApiResources\Test\createApiWithSingleType;
 use function Afeefa\ApiResources\Test\T;
 use Afeefa\ApiResources\Test\TypeBuilder;
 use Afeefa\ApiResources\Test\TypeRegistry;
 use Afeefa\ApiResources\Validator\Validators\VarcharValidator;
-use Closure;
 
 use PHPUnit\Framework\TestCase;
 
@@ -29,7 +26,7 @@ class SchemaTypeTest extends TestCase
 
     public function test_simple()
     {
-        $api = $this->createApiWithType(
+        $api = createApiWithSingleType(
             'Test.Type',
             function (FieldBag $fields) {
                 $fields
@@ -68,7 +65,7 @@ class SchemaTypeTest extends TestCase
 
     public function test_validator()
     {
-        $api = $this->createApiWithType(
+        $api = createApiWithSingleType(
             'Test.Type',
             function (FieldBag $fields) {
                 $fields
@@ -109,7 +106,7 @@ class SchemaTypeTest extends TestCase
 
     public function test_required()
     {
-        $api = $this->createApiWithType(
+        $api = createApiWithSingleType(
             'Test.Type',
             function (FieldBag $fields) {
                 $fields
@@ -140,7 +137,7 @@ class SchemaTypeTest extends TestCase
 
     public function test_allowed_fields()
     {
-        $api = $this->createApiWithType(
+        $api = createApiWithSingleType(
             'Test.Type',
             function (FieldBag $fields) {
                 $fields
@@ -172,7 +169,7 @@ class SchemaTypeTest extends TestCase
     {
         (new TypeBuilder())->type('Test.Type');
 
-        $api = $this->createApi();
+        $api = createApiWithSingleResource();
 
         $schema = $api->toSchemaJson();
 
@@ -183,7 +180,7 @@ class SchemaTypeTest extends TestCase
     {
         (new TypeBuilder())->type('Test.Type');
 
-        $api = $this->createApi(
+        $api = createApiWithSingleResource(
             actionsCallback: function (ActionBag $actions) {
                 $actions->add('type', function (Action $action) {
                     $action->input(T('Test.Type'));
@@ -200,7 +197,7 @@ class SchemaTypeTest extends TestCase
     {
         (new TypeBuilder())->type('Test.Type');
 
-        $api = $this->createApi(
+        $api = createApiWithSingleResource(
             actionsCallback: function (ActionBag $actions) {
                 $actions->add('type', function (Action $action) {
                     $action->response(T('Test.Type'));
@@ -217,7 +214,7 @@ class SchemaTypeTest extends TestCase
     {
         (new TypeBuilder())->type('Test.Type2');
 
-        $api = $this->createApiWithType(
+        $api = createApiWithSingleType(
             'Test.Type',
             function (FieldBag $fields) {
                 $fields
@@ -247,7 +244,7 @@ class SchemaTypeTest extends TestCase
 
         $type = (new TypeBuilder())->type()->get();
 
-        $api = $this->createApi(
+        $api = createApiWithSingleResource(
             actionsCallback: function (ActionBag $actions) use ($type) {
                 $actions->add('type', function (Action $action) use ($type) {
                     $action->response($type::class);
@@ -256,39 +253,5 @@ class SchemaTypeTest extends TestCase
         );
 
         $api->toSchemaJson();
-    }
-
-    private function createApiWithType(
-        string $typeName,
-        ?Closure $fieldsCallback = null,
-        ?Closure $actionsCallback = null
-    ): Api {
-        (new TypeBuilder())->type($typeName, $fieldsCallback);
-
-        if (!$actionsCallback) {
-            $actionsCallback = function (ActionBag $actions) use ($typeName) {
-                $actions->add('test_action', function (Action $action) use ($typeName) {
-                    $action->response(T($typeName));
-                });
-            };
-        }
-
-        return $this->createApi($actionsCallback);
-    }
-
-    private function createApi(?Closure $actionsCallback = null): Api
-    {
-        $resource = (new ResourceBuilder())
-            ->resource('Test.Resource', $actionsCallback)
-            ->get();
-
-        return (new ApiBuilder())
-            ->api(
-                'Test.Api',
-                function (ResourceBag $resources) use ($resource) {
-                    $resources->add($resource::class);
-                }
-            )
-            ->get();
     }
 }
