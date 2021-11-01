@@ -72,6 +72,20 @@ class FilterTest extends TestCase
         $this->assertTrue($filter->hasNullAsOption());
     }
 
+    public function test_has_option()
+    {
+        $filter = (new FilterBuilder())->filter('Test.Filter')->get();
+
+        $filter->options([true, false]);
+
+        $this->assertTrue($filter->hasOption(true));
+        $this->assertTrue($filter->hasOption(false));
+
+        $this->assertFalse($filter->hasOption('test'));
+        $this->assertFalse($filter->hasOption(null));
+        $this->assertFalse($filter->hasNullAsOption());
+    }
+
     public function test_options_with_null_auto_allows_null()
     {
         $filter = (new FilterBuilder())->filter('Test.Filter')->get();

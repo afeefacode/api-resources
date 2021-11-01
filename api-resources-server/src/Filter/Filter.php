@@ -82,7 +82,7 @@ class Filter extends BagEntry
 
     public function hasOption($option): bool
     {
-        return isset($this->options) && in_array($option, $this->options);
+        return isset($this->options) && in_array($option, $this->options, true);
     }
 
     public function getOptions(): array
