@@ -29,9 +29,9 @@ export declare class Filter {
     set value(value: FilterValueType);
     get defaultValue(): FilterValueType;
     hasOptions(): boolean;
-    hasOption(name: string): boolean;
+    hasOption(value: unknown): boolean;
     get options(): unknown[];
-    get hasNullAsOption(): boolean;
+    get nullIsOption(): boolean;
     hasRequest(): boolean;
     get request(): ApiRequest | null;
     createActionFilter(action: Action, name: string, json: FilterJSON): Filter;

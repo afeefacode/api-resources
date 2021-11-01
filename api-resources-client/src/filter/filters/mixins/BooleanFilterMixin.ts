@@ -7,11 +7,11 @@ export function BooleanFilterMixin<TFilter extends FilterMixinConstructor> (Filt
         return '1'
       }
 
-      if (value === false && this.options.includes(false)) {
+      if (value === false && this.hasOption(false)) {
         return '0'
       }
 
-      if (value === null && this.hasNullAsOption) {
+      if (value === null && this.nullIsOption) {
         return '0,1'
       }
 
@@ -23,11 +23,11 @@ export function BooleanFilterMixin<TFilter extends FilterMixinConstructor> (Filt
         return true
       }
 
-      if (value === '0' && this.options.includes(false)) {
+      if (value === '0' && this.hasOption(false)) {
         return false
       }
 
-      if (value === '0,1' && this.hasNullAsOption) {
+      if (value === '0,1' && this.nullIsOption) {
         return null
       }
 
@@ -39,11 +39,11 @@ export function BooleanFilterMixin<TFilter extends FilterMixinConstructor> (Filt
         return value
       }
 
-      if (value === false && this.options.includes(false)) {
+      if (value === false && this.hasOption(false)) {
         return false
       }
 
-      if (value === null && this.hasNullAsOption) {
+      if (value === null && this.nullIsOption) {
         return null
       }
 

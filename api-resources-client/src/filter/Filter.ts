@@ -69,15 +69,15 @@ export class Filter {
     return !!this._options.length
   }
 
-  public hasOption (name: string): boolean {
-    return this._options.includes(name)
+  public hasOption (value: unknown): boolean {
+    return this._options.includes(value)
   }
 
   public get options (): unknown[] {
     return this._options
   }
 
-  public get hasNullAsOption (): boolean {
+  public get nullIsOption (): boolean {
     return this._nullIsOption
   }
 
@@ -105,7 +105,7 @@ export class Filter {
       action,
       name,
       json.default || null,
-      json.options,
+      json.options || [],
       json.null_is_option || false,
       requestFactory
     )

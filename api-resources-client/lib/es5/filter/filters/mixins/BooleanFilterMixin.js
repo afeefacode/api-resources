@@ -4,10 +4,10 @@ export function BooleanFilterMixin(Filter) {
             if (value === true) {
                 return '1';
             }
-            if (value === false && this.options.includes(false)) {
+            if (value === false && this.hasOption(false)) {
                 return '0';
             }
-            if (value === null && this.hasNullAsOption) {
+            if (value === null && this.nullIsOption) {
                 return '0,1';
             }
             return undefined;
@@ -16,10 +16,10 @@ export function BooleanFilterMixin(Filter) {
             if (value === '1') {
                 return true;
             }
-            if (value === '0' && this.options.includes(false)) {
+            if (value === '0' && this.hasOption(false)) {
                 return false;
             }
-            if (value === '0,1' && this.hasNullAsOption) {
+            if (value === '0,1' && this.nullIsOption) {
                 return null;
             }
             return undefined;
@@ -28,10 +28,10 @@ export function BooleanFilterMixin(Filter) {
             if (value) {
                 return value;
             }
-            if (value === false && this.options.includes(false)) {
+            if (value === false && this.hasOption(false)) {
                 return false;
             }
-            if (value === null && this.hasNullAsOption) {
+            if (value === null && this.nullIsOption) {
                 return null;
             }
             return undefined;

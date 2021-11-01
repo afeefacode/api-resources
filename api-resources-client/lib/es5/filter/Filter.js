@@ -32,13 +32,13 @@ export class Filter {
     hasOptions() {
         return !!this._options.length;
     }
-    hasOption(name) {
-        return this._options.includes(name);
+    hasOption(value) {
+        return this._options.includes(value);
     }
     get options() {
         return this._options;
     }
-    get hasNullAsOption() {
+    get nullIsOption() {
         return this._nullIsOption;
     }
     hasRequest() {
@@ -57,7 +57,7 @@ export class Filter {
                     .action(requestAction);
             };
         }
-        filter.init(action, name, json.default || null, json.options, json.null_is_option || false, requestFactory);
+        filter.init(action, name, json.default || null, json.options || [], json.null_is_option || false, requestFactory);
         return filter;
     }
     createRequestFilter(requestFilters) {
