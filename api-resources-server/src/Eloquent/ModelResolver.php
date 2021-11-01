@@ -106,12 +106,12 @@ class ModelResolver
                         $useFilter = false;
                         $value = null;
 
-                        if (array_key_exists($name, $filters)) {
-                            $useFilter = true;
+                        if (array_key_exists($name, $filters)) { // filter is given
                             $value = $filters[$name];
-                        } elseif ($filter->hasDefaultValue()) {
                             $useFilter = true;
+                        } elseif ($filter->hasDefaultValue()) { // filter not given but has default
                             $value = $filter->getDefaultValue();
+                            $useFilter = true;
                         }
 
                         if ($useFilter) {
