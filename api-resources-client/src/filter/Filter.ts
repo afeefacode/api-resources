@@ -55,6 +55,9 @@ export class Filter {
     return this._value
   }
 
+  /**
+   * Sets the filter value and dispatches a change event
+   */
   public set value (value: FilterValueType) {
     if (value !== this._value) {
       this._value = value
@@ -135,7 +138,7 @@ export class Filter {
   public initFromUsed (usedFilters: UsedFilters): void {
     const usedFilter = usedFilters[this.name]
     if (usedFilter !== undefined) {
-      this.value = usedFilter
+      this._value = usedFilter
     }
   }
 

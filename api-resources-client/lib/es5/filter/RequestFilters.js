@@ -14,7 +14,6 @@ export class RequestFilters {
     constructor(filters, historyKey, filterSource) {
         this._filters = {};
         this._lastQuery = {};
-        this._disableUpdates = false;
         this._eventTarget = new EventTarget();
         this._historyKey = historyKey;
         this._filterSource = filterSource || new ObjectFilterSource({});
@@ -58,10 +57,8 @@ export class RequestFilters {
         return this._filters;
     }
     initFromUsed(usedFilters, count) {
-        // disable valueChanged() upon f.initFromUsed()
-        this._disableUpdates = true;
+        // reset filter values
         Object.values(this._filters).forEach(f => f.initFromUsed(usedFilters));
-        this._disableUpdates = false;
         // push to query source here since updates are disabled in valueChanged()
         this.pushToQuerySource();
         if (this._historyKey && !count) {
@@ -77,11 +74,7 @@ export class RequestFilters {
         this.dispatchUpdate();
     }
     valueChanged(filters) {
-        // update events are disabled if initialized from used filters
-        if (this._disableUpdates) {
-            return;
-        }
-        // reset page filter if any filter changes
+        // reset page filter if any other filter changes
         if (!Object.values(filters).find(f => f instanceof PageFilter)) {
             const pageFilter = Object.values(this._filters).find(f => f instanceof PageFilter);
             if (pageFilter) {

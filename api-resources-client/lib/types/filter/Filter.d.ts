@@ -26,6 +26,9 @@ export declare class Filter {
     constructor(requestFilters?: RequestFilters);
     getAction(): Action;
     get value(): FilterValueType;
+    /**
+     * Sets the filter value and dispatches a change event
+     */
     set value(value: FilterValueType);
     get defaultValue(): FilterValueType;
     hasOptions(): boolean;

@@ -18,6 +18,9 @@ export class Filter {
     get value() {
         return this._value;
     }
+    /**
+     * Sets the filter value and dispatches a change event
+     */
     set value(value) {
         if (value !== this._value) {
             this._value = value;
@@ -72,7 +75,7 @@ export class Filter {
     initFromUsed(usedFilters) {
         const usedFilter = usedFilters[this.name];
         if (usedFilter !== undefined) {
-            this.value = usedFilter;
+            this._value = usedFilter;
         }
     }
     initFromQuerySource(query) {

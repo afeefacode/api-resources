@@ -16,7 +16,6 @@ export declare class RequestFilters {
     private _historyKey?;
     private _filterSource;
     private _lastQuery;
-    private _disableUpdates;
     private _eventTarget;
     static create(filters: ActionFilters, historyKey?: string, filterSource?: BaseFilterSource): RequestFilters;
     static fromHistory(historyKey: string): RequestFilters | null;
