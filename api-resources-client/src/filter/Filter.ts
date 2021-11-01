@@ -10,7 +10,7 @@ export type FilterJSON = {
   default: FilterValueType
   options: []
   options_request: ApiRequestJSON
-  allow_null: boolean
+  null_is_option: boolean
 }
 
 export type FilterParams = object
@@ -27,9 +27,9 @@ export class Filter {
   public name!: string
 
   private _action!: Action
-  private _defaultValue!: FilterValueType
-  private _allowNull!: boolean
-  private _value!: FilterValueType
+  private _defaultValue: FilterValueType = null
+  private _nullIsOption: boolean = false
+  private _value: FilterValueType = null
   private _options: unknown[] = []
   private _requestFactory: RequestFactory = null
   private _request: ApiRequest | null = null
@@ -66,15 +66,15 @@ export class Filter {
   }
 
   public hasOptions (): boolean {
-    return !!this._options
+    return !!this._options.length
   }
 
   public get options (): unknown[] {
     return this._options
   }
 
-  public get allowNull (): boolean {
-    return this._allowNull
+  public get hasNullAsOption (): boolean {
+    return this._nullIsOption
   }
 
   public hasRequest (): boolean {
@@ -102,7 +102,7 @@ export class Filter {
       name,
       json.default || null,
       json.options,
-      json.allow_null || false,
+      json.null_is_option || false,
       requestFactory
     )
     return filter
@@ -115,7 +115,7 @@ export class Filter {
       this.name,
       this._defaultValue,
       this._options,
-      this._allowNull,
+      this._nullIsOption,
       this._requestFactory
     )
     if (filter._requestFactory) {
@@ -194,15 +194,15 @@ export class Filter {
     action: Action,
     name: string,
     defaultValue: FilterValueType,
-    options: unknown[] = [],
-    allowNull: boolean,
+    options: unknown[],
+    nullIsOption: boolean,
     _requestFactory: RequestFactory
   ): void {
     this._action = action
     this.name = name
     this._defaultValue = defaultValue
     this._options = options
-    this._allowNull = allowNull
+    this._nullIsOption = nullIsOption
     this._requestFactory = _requestFactory
   }
 }

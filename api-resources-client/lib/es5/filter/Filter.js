@@ -1,6 +1,9 @@
 import { ApiRequest } from '../api/ApiRequest';
 export class Filter {
     constructor(requestFilters) {
+        this._defaultValue = null;
+        this._nullIsOption = false;
+        this._value = null;
         this._options = [];
         this._requestFactory = null;
         this._request = null;
@@ -27,13 +30,13 @@ export class Filter {
         return this._defaultValue;
     }
     hasOptions() {
-        return !!this._options;
+        return !!this._options.length;
     }
     get options() {
         return this._options;
     }
-    get allowNull() {
-        return this._allowNull;
+    get hasNullAsOption() {
+        return this._nullIsOption;
     }
     hasRequest() {
         return !!this._request;
@@ -51,12 +54,12 @@ export class Filter {
                     .action(requestAction);
             };
         }
-        filter.init(action, name, json.default || null, json.options, json.allow_null || false, requestFactory);
+        filter.init(action, name, json.default || null, json.options, json.null_is_option || false, requestFactory);
         return filter;
     }
     createRequestFilter(requestFilters) {
         const filter = new this.constructor(requestFilters);
-        filter.init(this._action, this.name, this._defaultValue, this._options, this._allowNull, this._requestFactory);
+        filter.init(this._action, this.name, this._defaultValue, this._options, this._nullIsOption, this._requestFactory);
         if (filter._requestFactory) {
             filter._request = filter._requestFactory();
         }
@@ -119,12 +122,12 @@ export class Filter {
     serializeValue(value) {
         return value;
     }
-    init(action, name, defaultValue, options = [], allowNull, _requestFactory) {
+    init(action, name, defaultValue, options, nullIsOption, _requestFactory) {
         this._action = action;
         this.name = name;
         this._defaultValue = defaultValue;
         this._options = options;
-        this._allowNull = allowNull;
+        this._nullIsOption = nullIsOption;
         this._requestFactory = _requestFactory;
     }
 }

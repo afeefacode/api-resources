@@ -22,7 +22,7 @@ class SchemaFilterTest extends TestCase
             $filter
                 ->options([true, false])
                 ->default('default')
-                ->allowNull(true);
+                ->nullIsOption(true);
         });
 
         $schema = $api->toSchemaJson();
@@ -35,7 +35,7 @@ class SchemaFilterTest extends TestCase
                             'type' => 'Test.Filter',
                             'options' => [true, false],
                             'default' => 'default',
-                            'allow_null' => true
+                            'null_is_option' => true
                         ]
                     ],
                     'response' => [
@@ -48,7 +48,7 @@ class SchemaFilterTest extends TestCase
         $this->assertEquals($expectedResourcesSchema, $schema['resources']);
     }
 
-    public function test_implicitly_allow_null()
+    public function test_implicitly_null_is_option()
     {
         $api = $this->createApiWithFilter('check', function (Filter $filter) {
             $filter
@@ -64,7 +64,7 @@ class SchemaFilterTest extends TestCase
                         'check' => [
                             'type' => 'Test.Filter',
                             'options' => [null, true, false],
-                            'allow_null' => true
+                            'null_is_option' => true
                         ]
                     ],
                     'response' => [

@@ -20,7 +20,7 @@ class Filter extends BagEntry
 
     protected $default;
 
-    protected bool $allowNull = false;
+    protected bool $nullIsOption = false;
 
     protected bool $defaultValueSet = false;
 
@@ -46,21 +46,21 @@ class Filter extends BagEntry
         return $this->name;
     }
 
-    public function allowNull(bool $allowNull = true): Filter
+    public function nullIsOption(bool $nullIsOption = true): Filter
     {
-        $this->allowNull = $allowNull;
+        $this->nullIsOption = $nullIsOption;
         return $this;
     }
 
-    public function nullIsAllowed(): bool
+    public function hasNullAsOption(): bool
     {
-        return $this->allowNull || $this->hasOption(null);
+        return $this->nullIsOption || $this->hasOption(null);
     }
 
     public function default($default): Filter
     {
         $this->default = $default;
-        $this->defaultValueSet = true;
+        $this->defaultValueSet = $default !== null;
         return $this;
     }
 
@@ -111,8 +111,8 @@ class Filter extends BagEntry
             $json['options_request'] = $request->toSchemaJson();
         }
 
-        if ($this->nullIsAllowed()) {
-            $json['allow_null'] = true;
+        if ($this->hasNullAsOption()) {
+            $json['null_is_option'] = true;
         }
 
         return $json;

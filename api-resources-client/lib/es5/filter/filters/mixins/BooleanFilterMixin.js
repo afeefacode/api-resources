@@ -7,7 +7,7 @@ export function BooleanFilterMixin(Filter) {
             if (value === false && this.options.includes(false)) {
                 return '0';
             }
-            if (value === null && this.allowNull) {
+            if (value === null && this.hasNullAsOption) {
                 return '0,1';
             }
             return undefined;
@@ -19,7 +19,7 @@ export function BooleanFilterMixin(Filter) {
             if (value === '0' && this.options.includes(false)) {
                 return false;
             }
-            if (value === '0,1' && this.allowNull) {
+            if (value === '0,1' && this.hasNullAsOption) {
                 return null;
             }
             return undefined;
@@ -31,7 +31,7 @@ export function BooleanFilterMixin(Filter) {
             if (value === false && this.options.includes(false)) {
                 return false;
             }
-            if (value === null && this.allowNull) {
+            if (value === null && this.hasNullAsOption) {
                 return null;
             }
             return undefined;

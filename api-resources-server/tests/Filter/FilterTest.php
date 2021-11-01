@@ -35,42 +35,54 @@ class FilterTest extends TestCase
         $this->assertFalse($filter->hasDefaultValue());
         $this->assertNull($filter->getDefaultValue());
 
-        $filter->default(null);
-        $this->assertTrue($filter->hasDefaultValue());
-        $this->assertNull($filter->getDefaultValue());
-
         $filter->default('my_default');
         $this->assertTrue($filter->hasDefaultValue());
         $this->assertEquals('my_default', $filter->getDefaultValue());
     }
 
-    public function test_allow_null()
+    public function test_default_null()
     {
         $filter = (new FilterBuilder())->filter('Test.Filter')->get();
 
-        $this->assertFalse($filter->nullIsAllowed());
+        $this->assertFalse($filter->hasDefaultValue());
+        $this->assertNull($filter->getDefaultValue());
 
-        $filter->allowNull();
-        $this->assertTrue($filter->nullIsAllowed());
+        $filter->default('my_default');
+        $this->assertTrue($filter->hasDefaultValue());
+        $this->assertEquals('my_default', $filter->getDefaultValue());
 
-        $filter->allowNull(false);
-        $this->assertFalse($filter->nullIsAllowed());
+        $filter->default(null);
+        $this->assertFalse($filter->hasDefaultValue());
+        $this->assertNull($filter->getDefaultValue());
+    }
 
-        $filter->allowNull(true);
-        $this->assertTrue($filter->nullIsAllowed());
+    public function test_null_is_option()
+    {
+        $filter = (new FilterBuilder())->filter('Test.Filter')->get();
+
+        $this->assertFalse($filter->hasNullAsOption());
+
+        $filter->nullIsOption();
+        $this->assertTrue($filter->hasNullAsOption());
+
+        $filter->nullIsOption(false);
+        $this->assertFalse($filter->hasNullAsOption());
+
+        $filter->nullIsOption(true);
+        $this->assertTrue($filter->hasNullAsOption());
     }
 
     public function test_options_with_null_auto_allows_null()
     {
         $filter = (new FilterBuilder())->filter('Test.Filter')->get();
 
-        $this->assertFalse($filter->nullIsAllowed());
+        $this->assertFalse($filter->hasNullAsOption());
 
         $filter->options([null]);
-        $this->assertTrue($filter->nullIsAllowed());
+        $this->assertTrue($filter->hasNullAsOption());
 
         $filter->options(['test']);
-        $this->assertFalse($filter->nullIsAllowed());
+        $this->assertFalse($filter->hasNullAsOption());
     }
 
     public function test_missing_name()
