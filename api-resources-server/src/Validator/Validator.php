@@ -33,10 +33,10 @@ class Validator implements ToSchemaJsonInterface
 
     public function validate($value): bool
     {
-        foreach ($this->rules->getEntries() as $ruleName => $rule) {
+        foreach ($this->rules->getEntries() as $rule) {
             $validate = $rule->getValidate();
             $f = new ReflectionFunction($validate);
-            $fParams = array_slice($f->getParameters(), 1);
+            $fParams = array_slice($f->getParameters(), 1); // remove '$value' from arg list
 
             $args = array_map(function ($param) use ($rule) {
                 return $this->getParam($param->name, $rule->getDefaultParam());
