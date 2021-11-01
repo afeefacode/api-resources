@@ -32,6 +32,9 @@ export class Filter {
     hasOptions() {
         return !!this._options.length;
     }
+    hasOption(name) {
+        return this._options.includes(name);
+    }
     get options() {
         return this._options;
     }

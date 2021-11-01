@@ -69,6 +69,10 @@ export class Filter {
     return !!this._options.length
   }
 
+  public hasOption (name: string): boolean {
+    return this._options.includes(name)
+  }
+
   public get options (): unknown[] {
     return this._options
   }

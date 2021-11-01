@@ -29,6 +29,7 @@ export declare class Filter {
     set value(value: FilterValueType);
     get defaultValue(): FilterValueType;
     hasOptions(): boolean;
+    hasOption(name: string): boolean;
     get options(): unknown[];
     get hasNullAsOption(): boolean;
     hasRequest(): boolean;
