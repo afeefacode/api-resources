@@ -77,16 +77,18 @@ export class Filter {
     }
     initFromQuerySource(query) {
         const queryValue = query[this.name];
-        if (queryValue) {
-            this._value = this.queryToValue(queryValue);
+        if (queryValue) { // has query value
+            const value = this.queryToValue(queryValue); // query value valid
+            if (value !== undefined) {
+                this._value = value;
+                return;
+            }
         }
-        else {
-            this.reset();
-        }
+        this.reset(); // reset to default
     }
     toQuerySource() {
         if (!this.hasDefaultValueSet()) {
-            const valueString = this.valueToQuery(this._value);
+            const valueString = this.valueToQuery(this._value); // value can be represented in query
             if (valueString) {
                 return {
                     [this.name]: valueString
@@ -106,22 +108,34 @@ export class Filter {
         return false;
     }
     serialize() {
-        if (!this.hasDefaultValueSet()) {
-            const serialized = this.serializeValue(this._value);
-            if (serialized !== undefined) {
+        if (!this.hasDefaultValueSet()) { // send only if no default
+            let useFilter = true;
+            if (this._value === null) { // send null only if it's an option
+                useFilter = this._nullIsOption;
+            }
+            if (useFilter) {
                 return {
-                    [this.name]: this._value
+                    [this.name]: this.serializeValue(this._value)
                 };
             }
         }
         return {};
     }
+    /**
+     * Serializes a filter value into a stringified query value
+     */
     valueToQuery(_value) {
         return undefined;
     }
+    /**
+     * Converts a stringified query value into a valid filter value
+     */
     queryToValue(_value) {
         return undefined;
     }
+    /**
+     * Converts a filter value into a serialized form to be used in api requests
+     */
     serializeValue(value) {
         return value;
     }

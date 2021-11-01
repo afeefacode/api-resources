@@ -2,18 +2,20 @@ import { Filter } from '../Filter'
 
 type Direction = 'asc' | 'desc'
 
-type OrderFilterValue = Record<string, Direction>
+type OrderFilterValue = Record<string, Direction> | null
 
 export class OrderFilter extends Filter {
   public static type: string = 'Afeefa.OrderFilter'
 
   protected valueToQuery (value: OrderFilterValue): string | undefined {
     let query: string | undefined
+
     if (value) {
       for (const [field, direction] of Object.entries(value)) {
-        query = [field, direction].join('-')
+        query = [field, direction].join('-') // only 1 order possible by now
       }
     }
+
     return query
   }
 
@@ -23,13 +25,6 @@ export class OrderFilter extends Filter {
       return {
         [field]: direction
       }
-    }
-    return undefined
-  }
-
-  protected serializeValue (value: OrderFilterValue): OrderFilterValue | undefined {
-    if (value) {
-      return value
     }
 
     return undefined

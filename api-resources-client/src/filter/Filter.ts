@@ -3,7 +3,10 @@ import { ApiRequest, ApiRequestJSON } from '../api/ApiRequest'
 import { QuerySource } from './BaseFilterSource'
 import { RequestFilters, UsedFilters } from './RequestFilters'
 
-export type FilterValueType = boolean | string | number | [string, FilterValueType] | null
+export type FilterValueType = (
+  boolean | string | number | null |
+  Record<string, boolean | string | number | null>
+)
 
 export type FilterJSON = {
   type: string
@@ -138,23 +141,25 @@ export class Filter {
 
   public initFromQuerySource (query: QuerySource): void {
     const queryValue = query[this.name]
-    if (queryValue) {
-      this._value = this.queryToValue(queryValue) as FilterValueType
-    } else {
-      this.reset()
+    if (queryValue) { // has query value
+      const value = this.queryToValue(queryValue) // query value valid
+      if (value !== undefined) {
+        this._value = value
+        return
+      }
     }
+    this.reset() // reset to default
   }
 
   public toQuerySource (): QuerySource {
     if (!this.hasDefaultValueSet()) {
-      const valueString = this.valueToQuery(this._value)
+      const valueString = this.valueToQuery(this._value) // value can be represented in query
       if (valueString) {
         return {
           [this.name]: valueString
         }
       }
     }
-
     return {}
   }
 
@@ -171,26 +176,38 @@ export class Filter {
   }
 
   public serialize (): UsedFilters {
-    if (!this.hasDefaultValueSet()) {
-      const serialized = this.serializeValue(this._value)
-      if (serialized !== undefined) {
+    if (!this.hasDefaultValueSet()) { // send only if no default
+      let useFilter = true
+      if (this._value === null) { // send null only if it's an option
+        useFilter = this._nullIsOption
+      }
+      if (useFilter) {
         return {
-          [this.name]: this._value
+          [this.name]: this.serializeValue(this._value)
         }
       }
     }
     return {}
   }
 
-  protected valueToQuery (_value: unknown): string | undefined {
+  /**
+   * Serializes a filter value into a stringified query value
+   */
+  protected valueToQuery (_value: FilterValueType): string | undefined {
     return undefined
   }
 
-  protected queryToValue (_value: string): unknown | undefined {
+  /**
+   * Converts a stringified query value into a valid filter value
+   */
+  protected queryToValue (_value: string): FilterValueType | undefined {
     return undefined
   }
 
-  protected serializeValue (value: unknown): unknown | undefined {
+  /**
+   * Converts a filter value into a serialized form to be used in api requests
+   */
+  protected serializeValue (value: FilterValueType): FilterValueType {
     return value
   }
 

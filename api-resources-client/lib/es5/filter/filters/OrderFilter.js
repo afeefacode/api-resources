@@ -4,7 +4,7 @@ export class OrderFilter extends Filter {
         let query;
         if (value) {
             for (const [field, direction] of Object.entries(value)) {
-                query = [field, direction].join('-');
+                query = [field, direction].join('-'); // only 1 order possible by now
             }
         }
         return query;
@@ -15,12 +15,6 @@ export class OrderFilter extends Filter {
             return {
                 [field]: direction
             };
-        }
-        return undefined;
-    }
-    serializeValue(value) {
-        if (value) {
-            return value;
         }
         return undefined;
     }

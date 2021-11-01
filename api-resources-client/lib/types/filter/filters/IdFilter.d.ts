@@ -1,9 +1,7 @@
 import { Filter } from '../Filter';
-declare type IdFilterValue = string;
-export declare class IdFilter extends Filter {
+declare const IdFilter_base: typeof Filter;
+export declare class IdFilter extends IdFilter_base {
     static type: string;
-    protected valueToQuery(value: IdFilterValue): string | undefined;
-    protected queryToValue(value: string): IdFilterValue | undefined;
 }
 export {};
 //# sourceMappingURL=IdFilter.d.ts.map

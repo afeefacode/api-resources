@@ -1,21 +1,6 @@
 import { Filter } from '../Filter'
+import { StringFilterMixin } from './mixins/StringFilterMixin'
 
-type IdFilterValue = string
-
-export class IdFilter extends Filter {
+export class IdFilter extends StringFilterMixin(Filter) {
   public static type: string = 'Afeefa.IdFilter'
-
-  protected valueToQuery (value: IdFilterValue): string | undefined {
-    if (value) {
-      return value
-    }
-    return undefined
-  }
-
-  protected queryToValue (value: string): IdFilterValue | undefined {
-    if (value) {
-      return value
-    }
-    return undefined
-  }
 }

@@ -2,7 +2,7 @@ import { Action } from '../action/Action';
 import { ApiRequest, ApiRequestJSON } from '../api/ApiRequest';
 import { QuerySource } from './BaseFilterSource';
 import { RequestFilters, UsedFilters } from './RequestFilters';
-export declare type FilterValueType = boolean | string | number | [string, FilterValueType] | null;
+export declare type FilterValueType = (boolean | string | number | null | Record<string, boolean | string | number | null>);
 export declare type FilterJSON = {
     type: string;
     default: FilterValueType;
@@ -42,9 +42,18 @@ export declare class Filter {
     hasDefaultValueSet(): boolean;
     reset(): boolean;
     serialize(): UsedFilters;
-    protected valueToQuery(_value: unknown): string | undefined;
-    protected queryToValue(_value: string): unknown | undefined;
-    protected serializeValue(value: unknown): unknown | undefined;
+    /**
+     * Serializes a filter value into a stringified query value
+     */
+    protected valueToQuery(_value: FilterValueType): string | undefined;
+    /**
+     * Converts a stringified query value into a valid filter value
+     */
+    protected queryToValue(_value: string): FilterValueType | undefined;
+    /**
+     * Converts a filter value into a serialized form to be used in api requests
+     */
+    protected serializeValue(value: FilterValueType): FilterValueType;
     protected init(action: Action, name: string, defaultValue: FilterValueType, options: unknown[], nullIsOption: boolean, _requestFactory: RequestFactory): void;
 }
 export {};

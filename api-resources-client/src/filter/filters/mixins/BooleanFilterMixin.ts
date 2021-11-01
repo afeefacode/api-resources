@@ -1,49 +1,35 @@
 import { FilterMixinConstructor } from './FilterMixinConstructor'
 
+type BooleanFilterValue = boolean | null
+
 export function BooleanFilterMixin<TFilter extends FilterMixinConstructor> (Filter: TFilter): typeof Filter {
   return class BooleanFilterMixin extends Filter {
-    protected valueToQuery (value: unknown): string | undefined {
+    protected valueToQuery (value: BooleanFilterValue): string | undefined {
       if (value === true) {
         return '1'
       }
 
-      if (value === false && this.hasOption(false)) {
+      if (value === false) {
         return '0'
       }
 
-      if (value === null && this.nullIsOption) {
+      if (value === null) {
         return '0,1'
       }
 
       return undefined
     }
 
-    protected queryToValue (value: string): boolean | null | undefined {
-      if (value === '1') {
+    protected queryToValue (query: string): BooleanFilterValue | undefined {
+      if (query === '1') {
         return true
       }
 
-      if (value === '0' && this.hasOption(false)) {
+      if (query === '0') {
         return false
       }
 
-      if (value === '0,1' && this.nullIsOption) {
-        return null
-      }
-
-      return undefined
-    }
-
-    protected serializeValue (value: boolean): boolean | null | undefined {
-      if (value) {
-        return value
-      }
-
-      if (value === false && this.hasOption(false)) {
-        return false
-      }
-
-      if (value === null && this.nullIsOption) {
+      if (query === '0,1') {
         return null
       }
 
