@@ -2,7 +2,8 @@ import { Api } from '../api/Api';
 import { ApiRequest } from '../api/ApiRequest';
 import { BatchApiRequest } from '../api/BatchApiRequest';
 import { BaseFilterSource } from '../filter/BaseFilterSource';
-import { Filter, FilterJSON } from '../filter/Filter';
+import { FilterJSON } from '../filter/Filter';
+import { FilterBag } from '../filter/FilterBag';
 import { RequestFilters } from '../filter/RequestFilters';
 import { Resource } from '../resource/Resource';
 import { ActionInput } from './ActionInput';
@@ -18,7 +19,6 @@ export declare type ActionJSON = {
         type: string;
     };
 };
-export declare type ActionFilters = Record<string, Filter>;
 export declare class Action {
     private _resource;
     private _name;
@@ -31,7 +31,7 @@ export declare class Action {
     getFullName(): string;
     getResponse(): ActionResponse | null;
     getInput(): ActionInput | null;
-    getFilters(): ActionFilters;
+    getFilters(): FilterBag;
     createRequestFilters(historyKey?: string, filterSource?: BaseFilterSource): RequestFilters;
     createRequest(): ApiRequest;
     batchRequest(): BatchApiRequest;

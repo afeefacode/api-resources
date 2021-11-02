@@ -1,8 +1,7 @@
-import { ActionFilters } from '../action/Action';
+import { BagEntries } from '../bag/Bag';
 import { BaseFilterSource } from './BaseFilterSource';
 import { Filter, FilterValueType } from './Filter';
-export declare type Filters = Record<string, Filter>;
-export declare type UsedFilters = Record<string, FilterValueType>;
+import { FilterBag } from './FilterBag';
 /**
  * Request filters do have multiple change entry points:
  * - create: read existing query string and init filter values -> consumer should initially -> LOAD
@@ -17,17 +16,17 @@ export declare class RequestFilters {
     private _filterSource;
     private _lastQuery;
     private _eventTarget;
-    static create(filters: ActionFilters, historyKey?: string, filterSource?: BaseFilterSource): RequestFilters;
+    static create(filters: FilterBag, historyKey?: string, filterSource?: BaseFilterSource): RequestFilters;
     static fromHistory(historyKey: string): RequestFilters | null;
-    constructor(filters: ActionFilters, historyKey?: string, filterSource?: BaseFilterSource);
+    constructor(filters: FilterBag, historyKey?: string, filterSource?: BaseFilterSource);
     on(type: string, handler: () => {}): void;
     off(type: string, handler: () => {}): void;
-    getFilters(): Filters;
-    initFromUsed(usedFilters: UsedFilters, count: number): void;
+    getFilters(): BagEntries<Filter>;
+    initFromUsed(usedFilters: BagEntries<FilterValueType>, count: number): void;
     filterSourceChanged(): void;
-    valueChanged(filters: Filters): void;
+    valueChanged(filters: BagEntries<Filter>): void;
     reset(): void;
-    serialize(options?: {}): UsedFilters;
+    serialize(options?: {}): BagEntries<FilterValueType>;
     private dispatchUpdate;
     private initFromQuerySource;
     private pushToQuerySource;

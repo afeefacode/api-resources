@@ -1,7 +1,8 @@
 import { Action } from '../action/Action'
 import { ApiRequest, ApiRequestJSON } from '../api/ApiRequest'
+import { BagEntries } from '../bag/Bag'
 import { QuerySource } from './BaseFilterSource'
-import { RequestFilters, UsedFilters } from './RequestFilters'
+import { RequestFilters } from './RequestFilters'
 
 export type FilterValueType = (
   boolean | string | number | null |
@@ -135,7 +136,7 @@ export class Filter {
     return filter
   }
 
-  public initFromUsed (usedFilters: UsedFilters): void {
+  public initFromUsed (usedFilters: BagEntries<FilterValueType>): void {
     const usedFilter = usedFilters[this.name]
     if (usedFilter !== undefined) {
       this._value = usedFilter
@@ -180,7 +181,7 @@ export class Filter {
     return false
   }
 
-  public serialize (): UsedFilters {
+  public serialize (): BagEntries<FilterValueType> {
     if (!this.hasDefaultValueSet()) { // send only if no default
       let useFilter = true
       if (this._value === null) { // send null only if it's an option

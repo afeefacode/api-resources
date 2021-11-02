@@ -1,4 +1,5 @@
 import { filterHistory } from '../filter/FilterHistory';
+import { FilterBag } from './FilterBag';
 import { FilterChangeEvent } from './FilterChangeEvent';
 import { PageFilter } from './filters/PageFilter';
 import { ObjectFilterSource } from './ObjectFilterSource';
@@ -12,13 +13,13 @@ import { ObjectFilterSource } from './ObjectFilterSource';
  */
 export class RequestFilters {
     constructor(filters, historyKey, filterSource) {
-        this._filters = {};
+        this._filters = new FilterBag();
         this._lastQuery = {};
         this._eventTarget = new EventTarget();
         this._historyKey = historyKey;
         this._filterSource = filterSource || new ObjectFilterSource({});
-        for (const [name, filter] of Object.entries(filters)) {
-            this._filters[name] = filter.createRequestFilter(this);
+        for (const [name, filter] of filters.entries()) {
+            this._filters.add(name, filter.createRequestFilter(this));
         }
         this.initFromQuerySource();
     }
@@ -54,11 +55,11 @@ export class RequestFilters {
         this._eventTarget.removeEventListener(type, handler);
     }
     getFilters() {
-        return this._filters;
+        return this._filters.getEntries();
     }
     initFromUsed(usedFilters, count) {
         // reset filter values
-        Object.values(this._filters).forEach(f => f.initFromUsed(usedFilters));
+        this._filters.values().forEach(f => f.initFromUsed(usedFilters));
         // push to query source here since updates are disabled in valueChanged()
         this.pushToQuerySource();
         if (this._historyKey && !count) {
@@ -76,7 +77,7 @@ export class RequestFilters {
     valueChanged(filters) {
         // reset page filter if any other filter changes
         if (!Object.values(filters).find(f => f instanceof PageFilter)) {
-            const pageFilter = Object.values(this._filters).find(f => f instanceof PageFilter);
+            const pageFilter = this._filters.values().find(f => f instanceof PageFilter);
             if (pageFilter) {
                 pageFilter.reset();
             }
@@ -86,7 +87,7 @@ export class RequestFilters {
     }
     reset() {
         const changedFilters = {};
-        Object.values(this._filters).forEach(f => {
+        this._filters.values().forEach(f => {
             const changed = f.reset();
             if (changed) {
                 changedFilters[f.name] = f;
@@ -96,7 +97,7 @@ export class RequestFilters {
         this.valueChanged(changedFilters);
     }
     serialize(options = {}) {
-        return Object.values(this._filters)
+        return this._filters.values()
             .reduce((map, filter) => {
             return Object.assign(Object.assign({}, map), filter.serialize() // returns {} if not set
             );
@@ -107,13 +108,13 @@ export class RequestFilters {
     }
     initFromQuerySource() {
         const query = this._filterSource.getQuery();
-        for (const filter of Object.values(this._filters)) {
+        for (const filter of this._filters.values()) {
             filter.initFromQuerySource(query);
         }
         this._lastQuery = query;
     }
     pushToQuerySource() {
-        const query = Object.values(this._filters).reduce((map, filter) => {
+        const query = this._filters.values().reduce((map, filter) => {
             return Object.assign(Object.assign({}, map), filter.toQuerySource());
         }, {});
         this._filterSource.push(query);

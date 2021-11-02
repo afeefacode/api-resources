@@ -3,7 +3,8 @@ import { ApiRequest } from '../api/ApiRequest'
 import { BatchApiRequest } from '../api/BatchApiRequest'
 import { apiResources } from '../ApiResources'
 import { BaseFilterSource } from '../filter/BaseFilterSource'
-import { Filter, FilterJSON } from '../filter/Filter'
+import { FilterJSON } from '../filter/Filter'
+import { FilterBag } from '../filter/FilterBag'
 import { RequestFilters } from '../filter/RequestFilters'
 import { Resource } from '../resource/Resource'
 import { ActionInput } from './ActionInput'
@@ -21,15 +22,13 @@ export type ActionJSON = {
   }
 }
 
-export type ActionFilters = Record<string, Filter>
-
 export class Action {
   private _resource: Resource
   private _name: string
   private _response: ActionResponse | null = null
   private _params: Record<string, ActionParam> = {}
   private _input: ActionInput | null = null
-  private _filters: ActionFilters = {}
+  private _filters: FilterBag = new FilterBag()
 
   constructor (resource: Resource, name: string, json: ActionJSON) {
     this._resource = resource
@@ -55,7 +54,7 @@ export class Action {
         const filter = apiResources.getFilter(filterJSON.type)
         if (filter) {
           const actionFilter = filter.createActionFilter(this, name, filterJSON)
-          this._filters[name] = actionFilter
+          this._filters.add(name, actionFilter)
         }
       }
     }
@@ -77,7 +76,7 @@ export class Action {
     return this._input
   }
 
-  public getFilters (): ActionFilters {
+  public getFilters (): FilterBag {
     return this._filters
   }
 

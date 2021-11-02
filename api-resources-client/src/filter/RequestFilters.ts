@@ -1,13 +1,11 @@
-import { ActionFilters } from '../action/Action'
+import { BagEntries } from '../bag/Bag'
 import { filterHistory } from '../filter/FilterHistory'
 import { BaseFilterSource, QuerySource } from './BaseFilterSource'
 import { Filter, FilterValueType } from './Filter'
+import { FilterBag } from './FilterBag'
 import { FilterChangeEvent } from './FilterChangeEvent'
 import { PageFilter } from './filters/PageFilter'
 import { ObjectFilterSource } from './ObjectFilterSource'
-
-export type Filters = Record<string, Filter>
-export type UsedFilters = Record<string, FilterValueType>
 
 /**
  * Request filters do have multiple change entry points:
@@ -18,13 +16,13 @@ export type UsedFilters = Record<string, FilterValueType>
  * - init used filters: update filter values and update query string
  */
 export class RequestFilters {
-  private _filters: Filters = {}
+  private _filters: FilterBag = new FilterBag()
   private _historyKey?: string
   private _filterSource: BaseFilterSource
   private _lastQuery: QuerySource = {}
   private _eventTarget: EventTarget = new EventTarget()
 
-  public static create (filters: ActionFilters, historyKey?: string, filterSource?: BaseFilterSource): RequestFilters {
+  public static create (filters: FilterBag, historyKey?: string, filterSource?: BaseFilterSource): RequestFilters {
     let requestFilters: RequestFilters
     filterSource = filterSource || new ObjectFilterSource({})
 
@@ -50,12 +48,12 @@ export class RequestFilters {
     }
   }
 
-  constructor (filters: ActionFilters, historyKey?: string, filterSource?: BaseFilterSource) {
+  constructor (filters: FilterBag, historyKey?: string, filterSource?: BaseFilterSource) {
     this._historyKey = historyKey
     this._filterSource = filterSource || new ObjectFilterSource({})
 
-    for (const [name, filter] of Object.entries(filters)) {
-      this._filters[name] = filter.createRequestFilter(this)
+    for (const [name, filter] of filters.entries()) {
+      this._filters.add(name, filter.createRequestFilter(this))
     }
 
     this.initFromQuerySource()
@@ -69,13 +67,13 @@ export class RequestFilters {
     this._eventTarget.removeEventListener(type, handler)
   }
 
-  public getFilters (): Filters {
-    return this._filters
+  public getFilters (): BagEntries<Filter> {
+    return this._filters.getEntries()
   }
 
-  public initFromUsed (usedFilters: UsedFilters, count: number): void {
+  public initFromUsed (usedFilters: BagEntries<FilterValueType>, count: number): void {
     // reset filter values
-    Object.values(this._filters).forEach(f => f.initFromUsed(usedFilters))
+    this._filters.values().forEach(f => f.initFromUsed(usedFilters))
 
     // push to query source here since updates are disabled in valueChanged()
     this.pushToQuerySource()
@@ -97,10 +95,10 @@ export class RequestFilters {
     this.dispatchUpdate()
   }
 
-  public valueChanged (filters: Filters): void {
+  public valueChanged (filters: BagEntries<Filter>): void {
     // reset page filter if any other filter changes
     if (!Object.values(filters).find(f => f instanceof PageFilter)) {
-      const pageFilter = Object.values(this._filters).find(f => f instanceof PageFilter)
+      const pageFilter = this._filters.values().find(f => f instanceof PageFilter)
       if (pageFilter) {
         pageFilter.reset()
       }
@@ -112,8 +110,8 @@ export class RequestFilters {
   }
 
   public reset (): void {
-    const changedFilters: Filters = {}
-    Object.values(this._filters).forEach(f => {
+    const changedFilters: BagEntries<Filter> = {}
+    this._filters.values().forEach(f => {
       const changed = f.reset()
       if (changed) {
         changedFilters[f.name] = f
@@ -124,9 +122,9 @@ export class RequestFilters {
     this.valueChanged(changedFilters)
   }
 
-  public serialize (options: {} = {}): UsedFilters {
-    return Object.values(this._filters)
-      .reduce((map: UsedFilters, filter: Filter) => {
+  public serialize (options: {} = {}): BagEntries<FilterValueType> {
+    return this._filters.values()
+      .reduce((map: BagEntries<FilterValueType>, filter: Filter) => {
         return {
           ...map,
           ...filter.serialize() // returns {} if not set
@@ -141,7 +139,7 @@ export class RequestFilters {
   private initFromQuerySource (): void {
     const query = this._filterSource.getQuery()
 
-    for (const filter of Object.values(this._filters)) {
+    for (const filter of this._filters.values()) {
       filter.initFromQuerySource(query)
     }
 
@@ -149,7 +147,7 @@ export class RequestFilters {
   }
 
   private pushToQuerySource (): void {
-    const query = Object.values(this._filters).reduce((map: QuerySource, filter: Filter) => {
+    const query = this._filters.values().reduce((map: QuerySource, filter: Filter) => {
       return {
         ...map,
         ...filter.toQuerySource()
