@@ -1,4 +1,5 @@
 import { FilterChangeEvent } from '../filter/FilterChangeEvent';
+import { filterHistory } from '../filter/FilterHistory';
 import { ListViewFilter } from './ListViewFilter';
 import { ListViewFilterBag } from './ListViewFilterBag';
 export class ListViewModel {
@@ -14,6 +15,7 @@ export class ListViewModel {
                 this._filters.add(name, new ListViewFilter(filter, this));
             }
         }
+        this.initFilters();
     }
     getConfig() {
         return this._config;
@@ -46,5 +48,41 @@ export class ListViewModel {
     }
     dispatchChange() {
         this._eventTarget.dispatchEvent(new FilterChangeEvent('change', {}));
+    }
+    initFilters() {
+        let filtersToUse = {};
+        // create and init request filters based on the current filter source state
+        if (this._filterSource) {
+            filtersToUse = this.getFiltersFromFilterSource();
+        }
+        // no filters based on filter source found, check history
+        if (!Object.keys(filtersToUse).length) {
+            if (this._historyKey) {
+                // check any already stored filters from a previous request
+                filtersToUse = this.getFiltersFromHistory();
+            }
+        }
+        // no source or history filters found, check given filters at last
+        if (!Object.keys(filtersToUse).length) {
+            filtersToUse = this._config.getFilters();
+        }
+    }
+    getFiltersFromFilterSource() {
+        if (this._filterSource) {
+            const query = this._filterSource.getQuery();
+            for (const filter of this._filters.values()) {
+                filter.initFromQuerySource(query);
+            }
+        }
+        return {};
+    }
+    getFiltersFromHistory() {
+        if (this._historyKey) {
+            if (filterHistory.hasFilters(this._historyKey)) {
+                const historyFilters = filterHistory.getFilters(this._historyKey);
+                return historyFilters.serialize();
+            }
+        }
+        return {};
     }
 }

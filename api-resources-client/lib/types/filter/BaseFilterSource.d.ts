@@ -1,8 +1,6 @@
-export declare type QuerySource = {
-    [key: string]: string;
-};
+import { BagEntries } from '../bag/Bag';
 export declare class BaseFilterSource {
-    getQuery(): QuerySource;
-    push(_query: QuerySource): void;
+    getQuery(): BagEntries<string>;
+    push(_query: BagEntries<string>): void;
 }
 //# sourceMappingURL=BaseFilterSource.d.ts.map

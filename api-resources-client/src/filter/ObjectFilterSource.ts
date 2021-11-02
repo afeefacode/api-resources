@@ -1,18 +1,19 @@
-import { BaseFilterSource, QuerySource } from './BaseFilterSource'
+import { BagEntries } from '../bag/Bag'
+import { BaseFilterSource } from './BaseFilterSource'
 
 export class ObjectFilterSource extends BaseFilterSource {
-  public query: QuerySource = {}
+  public query: BagEntries<string> = {}
 
-  constructor (query: QuerySource) {
+  constructor (query: BagEntries<string>) {
     super()
     this.query = query
   }
 
-  public getQuery (): QuerySource {
+  public getQuery (): BagEntries<string> {
     return this.query
   }
 
-  public push (query: QuerySource): void {
+  public push (query: BagEntries<string>): void {
     this.query = {
       ...query
     }

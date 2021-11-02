@@ -1,7 +1,6 @@
 import { Action } from '../action/Action';
 import { ApiRequest, ApiRequestJSON } from '../api/ApiRequest';
 import { BagEntries } from '../bag/Bag';
-import { QuerySource } from './BaseFilterSource';
 import { RequestFilters } from './RequestFilters';
 export declare type FilterValueType = (boolean | string | number | null | Record<string, boolean | string | number | null>);
 export declare type FilterJSON = {
@@ -41,8 +40,8 @@ export declare class Filter {
     createActionFilter(action: Action, name: string, json: FilterJSON): Filter;
     createRequestFilter(requestFilters: RequestFilters): Filter;
     initFromUsed(usedFilters: BagEntries<FilterValueType>): void;
-    initFromQuerySource(query: QuerySource): void;
-    toQuerySource(): QuerySource;
+    initFromQuerySource(query: BagEntries<string>): void;
+    toQuerySource(): BagEntries<string>;
     hasDefaultValueSet(): boolean;
     reset(): boolean;
     serialize(): BagEntries<FilterValueType>;

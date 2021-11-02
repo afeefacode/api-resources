@@ -1,5 +1,6 @@
+import { BagEntries } from 'src/bag/Bag';
+import { FilterValueType } from 'src/filter/Filter';
 import { Action } from '../action/Action';
-declare type BagType = Record<string, unknown>;
 export declare class ListViewConfig {
     private _action;
     private _fields;
@@ -11,12 +12,11 @@ export declare class ListViewConfig {
         actionName: string;
     }): ListViewConfig;
     getAction(): Action | null;
-    params(params: BagType): ListViewConfig;
-    getParams(): BagType;
-    filters(filters: BagType): ListViewConfig;
-    getFilters(): BagType;
-    fields(fields: BagType): ListViewConfig;
-    getFields(): BagType;
+    params(params: BagEntries<unknown>): ListViewConfig;
+    getParams(): BagEntries<unknown>;
+    filters(filters: BagEntries<FilterValueType>): ListViewConfig;
+    getFilters(): BagEntries<FilterValueType>;
+    fields(fields: BagEntries<unknown>): ListViewConfig;
+    getFields(): BagEntries<unknown>;
 }
-export {};
 //# sourceMappingURL=ListViewConfig.d.ts.map

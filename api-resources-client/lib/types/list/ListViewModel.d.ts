@@ -18,5 +18,8 @@ export declare class ListViewModel {
     off(handler: () => {}): void;
     filterValueChanged(): void;
     private dispatchChange;
+    private initFilters;
+    private getFiltersFromFilterSource;
+    private getFiltersFromHistory;
 }
 //# sourceMappingURL=ListViewModel.d.ts.map

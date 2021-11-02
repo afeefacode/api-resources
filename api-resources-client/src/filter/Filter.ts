@@ -1,7 +1,6 @@
 import { Action } from '../action/Action'
 import { ApiRequest, ApiRequestJSON } from '../api/ApiRequest'
 import { BagEntries } from '../bag/Bag'
-import { QuerySource } from './BaseFilterSource'
 import { RequestFilters } from './RequestFilters'
 
 export type FilterValueType = (
@@ -145,7 +144,7 @@ export class Filter {
     }
   }
 
-  public initFromQuerySource (query: QuerySource): void {
+  public initFromQuerySource (query: BagEntries<string>): void {
     const queryValue = query[this.name]
     if (queryValue) { // has query value, typeof === string
       const value = this.queryToValue(queryValue) // query value valid
@@ -157,7 +156,7 @@ export class Filter {
     this.reset() // reset to default
   }
 
-  public toQuerySource (): QuerySource {
+  public toQuerySource (): BagEntries<string> {
     if (!this.hasDefaultValueSet()) {
       const valueString = this.valueToQuery(this._value) // value can be represented in query
       if (valueString) {

@@ -1,6 +1,6 @@
 import { BagEntries } from '../bag/Bag'
 import { filterHistory } from '../filter/FilterHistory'
-import { BaseFilterSource, QuerySource } from './BaseFilterSource'
+import { BaseFilterSource } from './BaseFilterSource'
 import { Filter, FilterValueType } from './Filter'
 import { FilterBag } from './FilterBag'
 import { FilterChangeEvent } from './FilterChangeEvent'
@@ -19,7 +19,7 @@ export class RequestFilters {
   private _filters: FilterBag = new FilterBag()
   private _historyKey?: string
   private _filterSource: BaseFilterSource
-  private _lastQuery: QuerySource = {}
+  private _lastQuery: BagEntries<string> = {}
   private _eventTarget: EventTarget = new EventTarget()
 
   public static create (filters: FilterBag, historyKey?: string, filterSource?: BaseFilterSource): RequestFilters {
@@ -147,7 +147,7 @@ export class RequestFilters {
   }
 
   private pushToQuerySource (): void {
-    const query = this._filters.values().reduce((map: QuerySource, filter: Filter) => {
+    const query = this._filters.values().reduce((map: BagEntries<string>, filter: Filter) => {
       return {
         ...map,
         ...filter.toQuerySource()

@@ -1,12 +1,10 @@
-export type QuerySource = {
-  [key: string]: string
-}
+import { BagEntries } from '../bag/Bag'
 
 export class BaseFilterSource {
-  public getQuery (): QuerySource {
+  public getQuery (): BagEntries<string> {
     return {}
   }
 
-  public push (_query: QuerySource): void {
+  public push (_query: BagEntries<string>): void {
   }
 }
