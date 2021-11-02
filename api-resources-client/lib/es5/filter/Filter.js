@@ -77,10 +77,13 @@ export class Filter {
         if (usedFilter !== undefined) {
             this._value = usedFilter;
         }
+        else {
+            this.reset();
+        }
     }
     initFromQuerySource(query) {
         const queryValue = query[this.name];
-        if (queryValue) { // has query value
+        if (queryValue) { // has query value, typeof === string
             const value = this.queryToValue(queryValue); // query value valid
             if (value !== undefined) {
                 this._value = value;
