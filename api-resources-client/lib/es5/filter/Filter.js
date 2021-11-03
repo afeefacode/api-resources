@@ -45,10 +45,13 @@ export class Filter {
         return this._nullIsOption;
     }
     hasRequest() {
-        return !!this._request;
+        return !!this._requestFactory;
     }
     get request() {
-        return this._request;
+        if (this._requestFactory) {
+            return this._requestFactory();
+        }
+        return null;
     }
     createActionFilter(action, name, json) {
         const filter = new this.constructor();

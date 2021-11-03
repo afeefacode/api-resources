@@ -48,15 +48,15 @@ export declare class Filter {
     /**
      * Serializes a filter value into a stringified query value
      */
-    protected valueToQuery(_value: FilterValueType): string | undefined;
+    valueToQuery(_value: FilterValueType): string | undefined;
     /**
      * Converts a stringified query value into a valid filter value
      */
-    protected queryToValue(_value: string): FilterValueType | undefined;
+    queryToValue(_value: string): FilterValueType | undefined;
     /**
      * Converts a filter value into a serialized form to be used in api requests
      */
-    protected serializeValue(value: FilterValueType): FilterValueType;
+    serializeValue(value: FilterValueType): FilterValueType;
     protected init(action: Action, name: string, defaultValue: FilterValueType, options: unknown[], nullIsOption: boolean, _requestFactory: RequestFactory): void;
 }
 export {};

@@ -1,3 +1,4 @@
+import { ApiRequest } from 'src';
 import { BagEntries } from 'src/bag/Bag';
 import { Filter, FilterValueType } from '../filter/Filter';
 import { ListViewModel } from './ListViewModel';
@@ -9,22 +10,28 @@ export declare class ListViewFilter {
     get name(): string;
     get defaultValue(): FilterValueType;
     hasDefaultValueSet(): boolean;
+    get nullIsOption(): boolean;
+    hasOptions(): boolean;
+    get options(): unknown[];
+    hasRequest(): boolean;
+    get request(): ApiRequest | null;
     get value(): FilterValueType;
     set value(value: FilterValueType);
-    initFromQuerySource(query: BagEntries<string>): void;
+    setInternalValue(value: FilterValueType): void;
     toQuerySource(): BagEntries<string>;
     reset(): boolean;
+    serialize(): FilterValueType | undefined;
     /**
      * Serializes a filter value into a stringified query value
      */
-    protected valueToQuery(_value: FilterValueType): string | undefined;
+    valueToQuery(value: FilterValueType): string | undefined;
     /**
      * Converts a stringified query value into a valid filter value
      */
-    protected queryToValue(_value: string): FilterValueType | undefined;
+    queryToValue(value: string): FilterValueType | undefined;
     /**
      * Converts a filter value into a serialized form to be used in api requests
      */
-    protected serializeValue(value: FilterValueType): FilterValueType;
+    serializeValue(value: FilterValueType): FilterValueType;
 }
 //# sourceMappingURL=ListViewFilter.d.ts.map

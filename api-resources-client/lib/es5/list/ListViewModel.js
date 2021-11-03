@@ -8,6 +8,8 @@ export class ListViewModel {
         this._historyKey = null;
         this._filters = new ListViewFilterBag();
         this._eventTarget = new EventTarget();
+        this.changedFilters = {};
+        this.changedFiltersTimeout = null;
         this._config = config;
         const action = this._config.getAction();
         if (action) {
@@ -15,21 +17,18 @@ export class ListViewModel {
                 this._filters.add(name, new ListViewFilter(filter, this));
             }
         }
-        this.initFilters();
     }
     getConfig() {
         return this._config;
     }
-    filterSource(filterSource) {
-        this._filterSource = filterSource;
+    initFilters({ filterSource, historyKey } = {}) {
+        this._filterSource = filterSource || null;
+        this._historyKey = historyKey || null;
+        this.initFilterValues();
         return this;
     }
     getFilterSource() {
         return this._filterSource;
-    }
-    historyKey(historyKey) {
-        this._historyKey = historyKey;
-        return this;
     }
     getHistoryKey() {
         return this._historyKey;
@@ -37,44 +36,115 @@ export class ListViewModel {
     getFilters() {
         return this._filters;
     }
-    on(handler) {
-        this._eventTarget.addEventListener('change', handler);
+    on(type, handler) {
+        this._eventTarget.addEventListener(type, handler);
+        return this;
     }
-    off(handler) {
-        this._eventTarget.removeEventListener('change', handler);
+    off(type, handler) {
+        this._eventTarget.removeEventListener(type, handler);
+        return this;
     }
-    filterValueChanged() {
-        this.dispatchChange();
+    filterValueChanged(name) {
+        this.changedFilters[name] = this._filters.get(name).value;
+        if (this.changedFiltersTimeout) {
+            return;
+        }
+        this.changedFiltersTimeout = setTimeout(() => {
+            clearTimeout(this.changedFiltersTimeout);
+            this.changedFiltersTimeout = null;
+            this.dispatchChange(this.changedFilters);
+            this.changedFilters = {};
+        }, 10);
     }
-    dispatchChange() {
-        this._eventTarget.dispatchEvent(new FilterChangeEvent('change', {}));
+    getApiRequest() {
+        const action = this._config.getAction();
+        if (action) {
+            const request = action.createRequest()
+                .params(this._config.getParams())
+                .fields(this._config.getFields())
+                .filters(this._filters.serialize());
+            return request;
+        }
+        return null;
     }
-    initFilters() {
+    /**
+     * called if the the filter sources has changed and should
+     * be reinitialized
+     */
+    filterSourceChanged() {
+        let filtersToUse = {};
+        if (this._filterSource) {
+            filtersToUse = this.getFiltersFromFilterSource();
+        }
+        this.setFilterValues(filtersToUse);
+    }
+    initFromUsedFilters(usedFilters, count) {
+        this.setFilterValues(usedFilters);
+        this.pushToQuerySource();
+        if (this._historyKey && !count) {
+            filterHistory.removeFilters(this._historyKey);
+        }
+    }
+    resetFilters() {
+        const changedFilters = {};
+        this._filters.values().forEach(f => {
+            const changed = f.reset();
+            if (changed) {
+                changedFilters[f.name] = f.value;
+            }
+        });
+        this.pushToQuerySource();
+        console.log('dispatch change', changedFilters);
+        this.dispatchChange(changedFilters);
+    }
+    dispatchChange(changedFilters) {
+        this._eventTarget.dispatchEvent(new FilterChangeEvent('change', changedFilters));
+    }
+    initFilterValues() {
         let filtersToUse = {};
         // create and init request filters based on the current filter source state
         if (this._filterSource) {
             filtersToUse = this.getFiltersFromFilterSource();
         }
         // no filters based on filter source found, check history
-        if (!Object.keys(filtersToUse).length) {
-            if (this._historyKey) {
-                // check any already stored filters from a previous request
-                filtersToUse = this.getFiltersFromHistory();
-            }
+        if (!Object.keys(filtersToUse).length && this._historyKey) {
+            // check any already stored filters from a previous request
+            filtersToUse = this.getFiltersFromHistory();
         }
         // no source or history filters found, check given filters at last
         if (!Object.keys(filtersToUse).length) {
             filtersToUse = this._config.getFilters();
         }
+        this.setFilterValues(filtersToUse);
     }
-    getFiltersFromFilterSource() {
-        if (this._filterSource) {
-            const query = this._filterSource.getQuery();
-            for (const filter of this._filters.values()) {
-                filter.initFromQuerySource(query);
+    setFilterValues(filters) {
+        // reset all filters not used
+        for (const filter of this._filters.values()) {
+            if (!filters.hasOwnProperty(filter.name)) {
+                filter.reset();
             }
         }
-        return {};
+        // set filters to use
+        for (const [name, value] of Object.entries(filters)) {
+            const filter = this._filters.get(name);
+            if (filter) {
+                filter.setInternalValue(value);
+            }
+        }
+    }
+    getFiltersFromFilterSource() {
+        const filters = {};
+        const query = this._filterSource.getQuery();
+        for (const [name, filter] of this._filters.entries()) {
+            const queryValue = query[name];
+            if (queryValue) { // has query value, typeof === string
+                const value = filter.queryToValue(queryValue); // query value valid
+                if (value !== undefined) {
+                    filters[name] = value;
+                }
+            }
+        }
+        return filters;
     }
     getFiltersFromHistory() {
         if (this._historyKey) {
@@ -84,5 +154,14 @@ export class ListViewModel {
             }
         }
         return {};
+    }
+    pushToQuerySource() {
+        const query = this._filters.values().reduce((map, filter) => {
+            return Object.assign(Object.assign({}, map), filter.toQuerySource());
+        }, {});
+        if (this._filterSource) {
+            this._filterSource.push(query);
+        }
+        // this._lastQuery = query
     }
 }
