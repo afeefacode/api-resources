@@ -4,7 +4,7 @@ type BooleanFilterValue = boolean | null
 
 export function BooleanFilterMixin<TFilter extends FilterMixinConstructor> (Filter: TFilter): typeof Filter {
   return class BooleanFilterMixin extends Filter {
-    protected valueToQuery (value: BooleanFilterValue): string | undefined {
+    public valueToQuery (value: BooleanFilterValue): string | undefined {
       if (value === true) {
         return '1'
       }
@@ -20,7 +20,7 @@ export function BooleanFilterMixin<TFilter extends FilterMixinConstructor> (Filt
       return undefined
     }
 
-    protected queryToValue (query: string): BooleanFilterValue | undefined {
+    public queryToValue (query: string): BooleanFilterValue | undefined {
       if (query === '1') {
         return true
       }

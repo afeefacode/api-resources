@@ -7,7 +7,7 @@ type OrderFilterValue = Record<string, Direction> | null
 export class OrderFilter extends Filter {
   public static type: string = 'Afeefa.OrderFilter'
 
-  protected valueToQuery (value: OrderFilterValue): string | undefined {
+  public valueToQuery (value: OrderFilterValue): string | undefined {
     let query: string | undefined
 
     if (value) {
@@ -19,7 +19,7 @@ export class OrderFilter extends Filter {
     return query
   }
 
-  protected queryToValue (value: string): OrderFilterValue | undefined {
+  public queryToValue (value: string): OrderFilterValue | undefined {
     if (value) {
       const [field, direction] = value.split('-') as [string, Direction]
       return {

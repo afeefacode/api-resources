@@ -198,21 +198,21 @@ export class Filter {
   /**
    * Serializes a filter value into a stringified query value
    */
-  protected valueToQuery (_value: FilterValueType): string | undefined {
+  public valueToQuery (_value: FilterValueType): string | undefined {
     return undefined
   }
 
   /**
    * Converts a stringified query value into a valid filter value
    */
-  protected queryToValue (_value: string): FilterValueType | undefined {
+  public queryToValue (_value: string): FilterValueType | undefined {
     return undefined
   }
 
   /**
    * Converts a filter value into a serialized form to be used in api requests
    */
-  protected serializeValue (value: FilterValueType): FilterValueType {
+  public serializeValue (value: FilterValueType): FilterValueType {
     return value
   }
 
