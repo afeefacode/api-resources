@@ -1,10 +1,10 @@
 import { BagEntries } from '../bag/Bag'
-import { Filter } from './Filter'
+import { FilterValueType } from './Filter'
 
 export class FilterChangeEvent extends Event {
-  public filters: BagEntries<Filter>
+  public filters: BagEntries<FilterValueType>
 
-  constructor (type: string, filters: BagEntries<Filter>) {
+  constructor (type: string, filters: BagEntries<FilterValueType>) {
     super(type)
 
     this.filters = filters

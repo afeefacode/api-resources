@@ -88,11 +88,14 @@ export class Filter {
   }
 
   public hasRequest (): boolean {
-    return !!this._request
+    return !!this._requestFactory
   }
 
   public get request (): ApiRequest | null {
-    return this._request
+    if (this._requestFactory) {
+      return this._requestFactory()
+    }
+    return null
   }
 
   public createActionFilter (action: Action, name: string, json: FilterJSON): Filter {
