@@ -1,7 +1,7 @@
 <template>
   <list-view
     v-bind="$attrs"
-    :listViewRequest="listViewRequest"
+    :listViewConfig="listViewConfig"
   >
     <template #filters>
       <list-filter-row>
@@ -83,13 +83,13 @@
 
 <script>
 import { Component, Vue } from 'vue-property-decorator'
-import { ListViewRequest } from '@a-vue/components/list/ListViewRequest'
+import { ListViewConfig } from '@afeefa/api-resources-client'
 
-export function getListViewRequest (authorId) {
-  return new ListViewRequest()
+export function getListViewConfig (authorId) {
+  return new ListViewConfig()
     .action({
-      resource: 'Example.ArticleResource',
-      action: 'get_articles'
+      resourceType: 'Example.ArticleResource',
+      actionName: 'get_articles'
     })
     .params({
       author_id: authorId
@@ -117,7 +117,7 @@ export function getListViewRequest (authorId) {
 export default class ArticlesListView extends Vue {
   $hasOptions = ['author']
 
-  listViewRequest = getListViewRequest(this.author_id)
+  listViewConfig = getListViewConfig(this.author_id)
 
   date (article) {
     if (!article.date) {

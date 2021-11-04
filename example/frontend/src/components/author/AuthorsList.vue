@@ -2,7 +2,7 @@
   <list-page :Model="Author">
     <list-view
       v-bind="$attrs"
-      :listViewRequest="listViewRequest"
+      :listViewConfig="listViewConfig"
     >
       <template #filters>
         <list-filter-row>
@@ -58,13 +58,13 @@
 <script>
 import { Author } from '@/models'
 import { Component, Vue } from 'vue-property-decorator'
-import { ListViewRequest } from '@a-vue/components/list/ListViewRequest'
+import { ListViewConfig } from '@afeefa/api-resources-client'
 
-function getListViewRequest () {
-  return new ListViewRequest()
+function getListViewConfig () {
+  return new ListViewConfig()
     .action({
-      resource: 'Example.AuthorResource',
-      action: 'get_authors'
+      resourceType: 'Example.AuthorResource',
+      actionName: 'get_authors'
     })
     .fields({
       name: true,
@@ -78,9 +78,11 @@ function getListViewRequest () {
 
 @Component
 export default class AuthorsList extends Vue {
-  static listViewRequest = getListViewRequest()
+  static get listViewConfig () {
+    return getListViewConfig()
+  }
 
   Author = Author
-  listViewRequest = getListViewRequest()
+  listViewConfig = getListViewConfig()
 }
 </script>

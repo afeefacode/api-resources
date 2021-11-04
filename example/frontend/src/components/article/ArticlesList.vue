@@ -8,7 +8,7 @@
 <script>
 import { Article } from '@/models'
 import { Component, Vue } from 'vue-property-decorator'
-import ArticlesListView, { getListViewRequest } from './ArticlesListView'
+import ArticlesListView, { getListViewConfig } from './ArticlesListView'
 
 @Component({
   components: {
@@ -16,7 +16,10 @@ import ArticlesListView, { getListViewRequest } from './ArticlesListView'
   }
 })
 export default class ArticlesList extends Vue {
-  static listViewRequest = getListViewRequest()
+  static get listViewConfig () {
+    return getListViewConfig()
+  }
+
   Article = Article
 }
 </script>
