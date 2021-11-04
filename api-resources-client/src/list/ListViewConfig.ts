@@ -1,8 +1,7 @@
-import { BagEntries } from 'src/bag/Bag'
-import { FilterValueType } from 'src/filter/Filter'
-
 import { Action } from '../action/Action'
 import { apiResources } from '../ApiResources'
+import { BagEntries } from '../bag/Bag'
+import { FilterValueType } from '../filter/Filter'
 
 export class ListViewConfig {
   private _action!: Action | null

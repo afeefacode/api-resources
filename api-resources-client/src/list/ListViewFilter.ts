@@ -1,6 +1,5 @@
-import { ApiRequest } from 'src'
-import { BagEntries } from 'src/bag/Bag'
-
+import { ApiRequest } from '../api/ApiRequest'
+import { BagEntries } from '../bag/Bag'
 import { Filter, FilterValueType } from '../filter/Filter'
 import { ListViewModel } from './ListViewModel'
 

@@ -1,8 +1,7 @@
-import { ApiRequest } from 'src'
-import { BagEntries } from 'src/bag/Bag'
-import { FilterValueType } from 'src/filter/Filter'
-
+import { ApiRequest } from '../api/ApiRequest'
+import { BagEntries } from '../bag/Bag'
 import { BaseFilterSource } from '../filter/BaseFilterSource'
+import { FilterValueType } from '../filter/Filter'
 import { FilterChangeEvent } from '../filter/FilterChangeEvent'
 import { filterHistory } from '../filter/FilterHistory'
 import { ListViewConfig } from './ListViewConfig'

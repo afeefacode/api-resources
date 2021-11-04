@@ -1,6 +1,5 @@
-import { FilterValueType } from 'src/filter/Filter'
-
 import { Bag, BagEntries } from '../bag/Bag'
+import { FilterValueType } from '../filter/Filter'
 import { ListViewFilter } from './ListViewFilter'
 
 export class ListViewFilterBag extends Bag<ListViewFilter> {
