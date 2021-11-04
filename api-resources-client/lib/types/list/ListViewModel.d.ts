@@ -1,7 +1,7 @@
-import { ApiRequest } from 'src';
-import { BagEntries } from 'src/bag/Bag';
-import { FilterValueType } from 'src/filter/Filter';
+import { ApiRequest } from '../api/ApiRequest';
+import { BagEntries } from '../bag/Bag';
 import { BaseFilterSource } from '../filter/BaseFilterSource';
+import { FilterValueType } from '../filter/Filter';
 import { ListViewConfig } from './ListViewConfig';
 import { ListViewFilterBag } from './ListViewFilterBag';
 export declare class ListViewModel {
@@ -21,6 +21,7 @@ export declare class ListViewModel {
     getFilterSource(): BaseFilterSource | null;
     getHistoryKey(): string | null;
     getFilters(): ListViewFilterBag;
+    saveFiltersInHistory(): ListViewModel;
     on(type: string, handler: () => {}): ListViewModel;
     off(type: string, handler: () => {}): ListViewModel;
     filterValueChanged(name: string): void;

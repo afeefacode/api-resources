@@ -1,5 +1,5 @@
-import { ApiRequest } from 'src';
-import { BagEntries } from 'src/bag/Bag';
+import { ApiRequest } from '../api/ApiRequest';
+import { BagEntries } from '../bag/Bag';
 import { Filter, FilterValueType } from '../filter/Filter';
 import { ListViewModel } from './ListViewModel';
 export declare class ListViewFilter {
@@ -8,6 +8,7 @@ export declare class ListViewFilter {
     private _value;
     constructor(filter: Filter, model: ListViewModel);
     get name(): string;
+    get filter(): Filter;
     get defaultValue(): FilterValueType;
     hasDefaultValueSet(): boolean;
     get nullIsOption(): boolean;
@@ -17,7 +18,7 @@ export declare class ListViewFilter {
     get request(): ApiRequest | null;
     get value(): FilterValueType;
     set value(value: FilterValueType);
-    setInternalValue(value: FilterValueType): void;
+    setInternalValue(value: FilterValueType, dispatchChange?: boolean): boolean;
     toQuerySource(): BagEntries<string>;
     reset(): boolean;
     serialize(): FilterValueType | undefined;

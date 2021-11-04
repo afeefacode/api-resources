@@ -1,6 +1,6 @@
-import { BagEntries } from 'src/bag/Bag';
-import { FilterValueType } from 'src/filter/Filter';
 import { Action } from '../action/Action';
+import { BagEntries } from '../bag/Bag';
+import { FilterValueType } from '../filter/Filter';
 export declare class ListViewConfig {
     private _action;
     private _fields;

@@ -63,7 +63,7 @@ export class Field {
                 this._validator = validator.createFieldValidator(json);
             }
             else {
-                console.warn('No field validator of type', json.type);
+                console.warn(`No field validator of type ${json.type}.`);
             }
         }
     }

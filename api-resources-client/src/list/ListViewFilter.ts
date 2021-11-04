@@ -17,6 +17,10 @@ export class ListViewFilter {
     return this._filter.name
   }
 
+  public get filter (): Filter {
+    return this._filter
+  }
+
   public get defaultValue (): FilterValueType {
     return this._filter.defaultValue
   }
@@ -50,17 +54,20 @@ export class ListViewFilter {
   }
 
   public set value (value: FilterValueType) {
+    this.setInternalValue(value, true)
+  }
+
+  public setInternalValue (value: FilterValueType, dispatchChange: boolean = false): boolean {
     const newJson = JSON.stringify(value)
     const oldJson = JSON.stringify(this._value)
     if (newJson !== oldJson) {
-      console.log(newJson, oldJson)
       this._value = value
-      this._model.filterValueChanged(this.name)
+      if (dispatchChange) {
+        this._model.filterValueChanged(this.name)
+      }
+      return true
     }
-  }
-
-  public setInternalValue (value: FilterValueType): void {
-    this._value = value
+    return false
   }
 
   public toQuerySource (): BagEntries<string> {

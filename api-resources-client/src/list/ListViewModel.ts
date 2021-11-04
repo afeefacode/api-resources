@@ -4,6 +4,7 @@ import { BaseFilterSource } from '../filter/BaseFilterSource'
 import { FilterValueType } from '../filter/Filter'
 import { FilterChangeEvent } from '../filter/FilterChangeEvent'
 import { filterHistory } from '../filter/FilterHistory'
+import { PageFilter } from '../filter/filters/PageFilter'
 import { ListViewConfig } from './ListViewConfig'
 import { ListViewFilter } from './ListViewFilter'
 import { ListViewFilterBag } from './ListViewFilterBag'
@@ -55,6 +56,16 @@ export class ListViewModel {
     return this._filters
   }
 
+  public saveFiltersInHistory (): ListViewModel {
+    if (!this._historyKey) {
+      console.warn('Can\'t add list view model without history key to history.')
+      return this
+    }
+
+    filterHistory.setFilters(this._historyKey, this._filters)
+    return this
+  }
+
   public on (type: string, handler: () => {}): ListViewModel {
     this._eventTarget.addEventListener(type, handler)
     return this
@@ -66,6 +77,14 @@ export class ListViewModel {
   }
 
   public filterValueChanged (name: string): void {
+    // reset page filter if any other filter changes
+    if (!(this._filters.get(name)!.filter instanceof PageFilter)) {
+      const pageFilter = this._filters.values().find(f => f.filter instanceof PageFilter)
+      if (pageFilter) {
+        pageFilter.reset()
+      }
+    }
+
     this.changedFilters[name] = this._filters.get(name)!.value
 
     if (this.changedFiltersTimeout) {
@@ -97,13 +116,17 @@ export class ListViewModel {
    * be reinitialized
    */
   public filterSourceChanged (): void {
-    let filtersToUse: BagEntries<FilterValueType> = {}
-
-    if (this._filterSource) {
-      filtersToUse = this.getFiltersFromFilterSource()
+    if (!this._filterSource) {
+      console.warn('Can\'t notify about changed filter source without setting up a filter source.')
+      return
     }
 
-    this.setFilterValues(filtersToUse)
+    const filtersToUse = this.getFiltersFromFilterSource()
+    const changedFilters = this.setFilterValues(filtersToUse)
+
+    if (Object.keys(changedFilters).length) {
+      this.dispatchChange(changedFilters)
+    }
   }
 
   public initFromUsedFilters (usedFilters: BagEntries<FilterValueType>, count: number): void {
@@ -125,10 +148,11 @@ export class ListViewModel {
       }
     })
 
-    this.pushToQuerySource()
+    if (Object.keys(changedFilters).length) {
+      this.pushToQuerySource()
 
-    console.log('dispatch change', changedFilters)
-    this.dispatchChange(changedFilters)
+      this.dispatchChange(changedFilters)
+    }
   }
 
   private dispatchChange (changedFilters: BagEntries<FilterValueType>): void {
@@ -157,11 +181,16 @@ export class ListViewModel {
     this.setFilterValues(filtersToUse)
   }
 
-  private setFilterValues (filters: BagEntries<FilterValueType>): void {
+  private setFilterValues (filters: BagEntries<FilterValueType>): BagEntries<FilterValueType> {
+    const changedFilters: BagEntries<FilterValueType> = {}
+
     // reset all filters not used
     for (const filter of this._filters.values()) {
       if (!filters.hasOwnProperty(filter.name)) {
-        filter.reset()
+        const changed = filter.reset()
+        if (changed) {
+          changedFilters[filter.name] = filter.value
+        }
       }
     }
 
@@ -169,9 +198,14 @@ export class ListViewModel {
     for (const [name, value] of Object.entries(filters)) {
       const filter = this._filters.get(name)
       if (filter) {
-        filter.setInternalValue(value)
+        const changed = filter.setInternalValue(value)
+        if (changed) {
+          changedFilters[filter.name] = filter.value
+        }
       }
     }
+
+    return changedFilters
   }
 
   private getFiltersFromFilterSource (): BagEntries<FilterValueType> {
@@ -193,8 +227,8 @@ export class ListViewModel {
   private getFiltersFromHistory (): BagEntries<FilterValueType> {
     if (this._historyKey) {
       if (filterHistory.hasFilters(this._historyKey)) {
-        const historyFilters = filterHistory.getFilters(this._historyKey)
-        return historyFilters.serialize()
+        const filters = filterHistory.getFilters(this._historyKey)
+        return filters.serialize()
       }
     }
     return {}
@@ -211,7 +245,5 @@ export class ListViewModel {
     if (this._filterSource) {
       this._filterSource.push(query)
     }
-
-    // this._lastQuery = query
   }
 }

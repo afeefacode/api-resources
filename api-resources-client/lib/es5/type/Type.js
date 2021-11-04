@@ -16,7 +16,7 @@ export class Type {
                 this._fields[name] = typeField;
             }
             else {
-                console.warn(`No Field implementation for field ${name} type ${fieldJSON.type}`);
+                console.warn(`No Field implementation for field ${name} type ${fieldJSON.type}.`);
             }
         }
         if (json.update_fields) {
@@ -27,7 +27,7 @@ export class Type {
                     this._updateFields[name] = typeField;
                 }
                 else {
-                    console.warn(`No Field implementation for field ${name} type ${fieldJSON.type}`);
+                    console.warn(`No Field implementation for field ${name} type ${fieldJSON.type}.`);
                 }
             }
         }
@@ -39,7 +39,7 @@ export class Type {
                     this._createFields[name] = typeField;
                 }
                 else {
-                    console.warn(`No Field implementation for field ${name} type ${fieldJSON.type}`);
+                    console.warn(`No Field implementation for field ${name} type ${fieldJSON.type}.`);
                 }
             }
         }

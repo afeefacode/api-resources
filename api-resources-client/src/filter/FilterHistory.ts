@@ -1,17 +1,18 @@
-import { RequestFilters } from './RequestFilters'
+import { BagEntries } from '../bag/Bag'
+import { ListViewFilterBag } from '../list/ListViewFilterBag'
 
 class FilterHistory {
-  private filters: Record<string, RequestFilters> = {}
+  private filters: BagEntries<ListViewFilterBag> = {}
 
   public hasFilters (historyKey: string): boolean {
     return !!this.filters[historyKey]
   }
 
-  public getFilters (historyKey: string): RequestFilters {
+  public getFilters (historyKey: string): ListViewFilterBag {
     return this.filters[historyKey]!
   }
 
-  public addFilters (historyKey: string, filters: RequestFilters): void {
+  public setFilters (historyKey: string, filters: ListViewFilterBag): void {
     this.filters[historyKey] = filters
   }
 

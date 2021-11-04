@@ -7,6 +7,9 @@ export class ListViewFilter {
     get name() {
         return this._filter.name;
     }
+    get filter() {
+        return this._filter;
+    }
     get defaultValue() {
         return this._filter.defaultValue;
     }
@@ -32,16 +35,19 @@ export class ListViewFilter {
         return this._value;
     }
     set value(value) {
+        this.setInternalValue(value, true);
+    }
+    setInternalValue(value, dispatchChange = false) {
         const newJson = JSON.stringify(value);
         const oldJson = JSON.stringify(this._value);
         if (newJson !== oldJson) {
-            console.log(newJson, oldJson);
             this._value = value;
-            this._model.filterValueChanged(this.name);
+            if (dispatchChange) {
+                this._model.filterValueChanged(this.name);
+            }
+            return true;
         }
-    }
-    setInternalValue(value) {
-        this._value = value;
+        return false;
     }
     toQuerySource() {
         if (!this.hasDefaultValueSet()) {

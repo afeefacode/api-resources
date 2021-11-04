@@ -1,9 +1,9 @@
-import { RequestFilters } from './RequestFilters';
+import { ListViewFilterBag } from '../list/ListViewFilterBag';
 declare class FilterHistory {
     private filters;
     hasFilters(historyKey: string): boolean;
-    getFilters(historyKey: string): RequestFilters;
-    addFilters(historyKey: string, filters: RequestFilters): void;
+    getFilters(historyKey: string): ListViewFilterBag;
+    setFilters(historyKey: string, filters: ListViewFilterBag): void;
     removeFilters(historyKey: string): void;
 }
 export declare const filterHistory: FilterHistory;

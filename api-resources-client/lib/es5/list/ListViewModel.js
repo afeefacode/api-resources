@@ -1,5 +1,6 @@
 import { FilterChangeEvent } from '../filter/FilterChangeEvent';
 import { filterHistory } from '../filter/FilterHistory';
+import { PageFilter } from '../filter/filters/PageFilter';
 import { ListViewFilter } from './ListViewFilter';
 import { ListViewFilterBag } from './ListViewFilterBag';
 export class ListViewModel {
@@ -36,6 +37,14 @@ export class ListViewModel {
     getFilters() {
         return this._filters;
     }
+    saveFiltersInHistory() {
+        if (!this._historyKey) {
+            console.warn('Can\'t add list view model without history key to history.');
+            return this;
+        }
+        filterHistory.setFilters(this._historyKey, this._filters);
+        return this;
+    }
     on(type, handler) {
         this._eventTarget.addEventListener(type, handler);
         return this;
@@ -45,6 +54,13 @@ export class ListViewModel {
         return this;
     }
     filterValueChanged(name) {
+        // reset page filter if any other filter changes
+        if (!(this._filters.get(name).filter instanceof PageFilter)) {
+            const pageFilter = this._filters.values().find(f => f.filter instanceof PageFilter);
+            if (pageFilter) {
+                pageFilter.reset();
+            }
+        }
         this.changedFilters[name] = this._filters.get(name).value;
         if (this.changedFiltersTimeout) {
             return;
@@ -72,11 +88,15 @@ export class ListViewModel {
      * be reinitialized
      */
     filterSourceChanged() {
-        let filtersToUse = {};
-        if (this._filterSource) {
-            filtersToUse = this.getFiltersFromFilterSource();
+        if (!this._filterSource) {
+            console.warn('Can\'t notify about changed filter source without setting up a filter source.');
+            return;
         }
-        this.setFilterValues(filtersToUse);
+        const filtersToUse = this.getFiltersFromFilterSource();
+        const changedFilters = this.setFilterValues(filtersToUse);
+        if (Object.keys(changedFilters).length) {
+            this.dispatchChange(changedFilters);
+        }
     }
     initFromUsedFilters(usedFilters, count) {
         this.setFilterValues(usedFilters);
@@ -93,9 +113,10 @@ export class ListViewModel {
                 changedFilters[f.name] = f.value;
             }
         });
-        this.pushToQuerySource();
-        console.log('dispatch change', changedFilters);
-        this.dispatchChange(changedFilters);
+        if (Object.keys(changedFilters).length) {
+            this.pushToQuerySource();
+            this.dispatchChange(changedFilters);
+        }
     }
     dispatchChange(changedFilters) {
         this._eventTarget.dispatchEvent(new FilterChangeEvent('change', changedFilters));
@@ -118,19 +139,27 @@ export class ListViewModel {
         this.setFilterValues(filtersToUse);
     }
     setFilterValues(filters) {
+        const changedFilters = {};
         // reset all filters not used
         for (const filter of this._filters.values()) {
             if (!filters.hasOwnProperty(filter.name)) {
-                filter.reset();
+                const changed = filter.reset();
+                if (changed) {
+                    changedFilters[filter.name] = filter.value;
+                }
             }
         }
         // set filters to use
         for (const [name, value] of Object.entries(filters)) {
             const filter = this._filters.get(name);
             if (filter) {
-                filter.setInternalValue(value);
+                const changed = filter.setInternalValue(value);
+                if (changed) {
+                    changedFilters[filter.name] = filter.value;
+                }
             }
         }
+        return changedFilters;
     }
     getFiltersFromFilterSource() {
         const filters = {};
@@ -149,8 +178,8 @@ export class ListViewModel {
     getFiltersFromHistory() {
         if (this._historyKey) {
             if (filterHistory.hasFilters(this._historyKey)) {
-                const historyFilters = filterHistory.getFilters(this._historyKey);
-                return historyFilters.serialize();
+                const filters = filterHistory.getFilters(this._historyKey);
+                return filters.serialize();
             }
         }
         return {};
@@ -162,6 +191,5 @@ export class ListViewModel {
         if (this._filterSource) {
             this._filterSource.push(query);
         }
-        // this._lastQuery = query
     }
 }

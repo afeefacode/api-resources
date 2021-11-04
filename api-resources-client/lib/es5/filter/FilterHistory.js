@@ -8,7 +8,7 @@ class FilterHistory {
     getFilters(historyKey) {
         return this.filters[historyKey];
     }
-    addFilters(historyKey, filters) {
+    setFilters(historyKey, filters) {
         this.filters[historyKey] = filters;
     }
     removeFilters(historyKey) {
