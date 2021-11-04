@@ -58,7 +58,7 @@ class ApiResources {
     if (this.hasApi(type)) {
       this._defaultApiType = type
     } else {
-      console.warn(`No api configured for type ${type}`)
+      console.warn(`No api configured for type ${type}.`)
     }
     return this
   }
