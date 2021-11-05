@@ -11,13 +11,20 @@ import { ListViewFilterBag } from './ListViewFilterBag'
 
 export class ListViewModel {
   private _config: ListViewConfig
+
   private _filterSource: BaseFilterSource | null = null
+  private _pushToFilterSource: boolean = false
+
   private _historyKey: string | null = null
+  private _saveInHistory: boolean = false
+  private _usedFilters: BagEntries<FilterValueType> | null = null
+  private _usedFiltersCount: number = 0
   private _filters: ListViewFilterBag = new ListViewFilterBag()
 
   private _eventTarget: EventTarget = new EventTarget()
-  private changedFilters: BagEntries<FilterValueType> = {}
-  private changedFiltersTimeout: number | null = null
+  private _changedFilters: BagEntries<FilterValueType> = {}
+  private _changedFiltersTimeout: number | null = null
+  private _lastSavedQuery: BagEntries<string> | null = null
 
   constructor (config: ListViewConfig) {
     this._config = config
@@ -35,12 +42,36 @@ export class ListViewModel {
   }
 
   public initFilters (
-    {filterSource, historyKey}:
-    {filterSource?: BaseFilterSource, historyKey?: string} = {}
+    {source, history, used}:
+    {source: boolean, history: boolean, used: boolean}
+    = {source: false, history: false, used: false}
   ): ListViewModel {
-    this._filterSource = filterSource || null
-    this._historyKey = historyKey || null
-    this.initFilterValues()
+    if (source && !this._filterSource) {
+      console.warn('Can\'t init from filter source without setting up a filter source.')
+    }
+
+    if (history && !this._historyKey) {
+      console.warn('Can\'t init from history without setting up a history key.')
+    }
+
+    if (used && !this._usedFilters) {
+      console.warn('Can\'t init from used filters without setting up used filters.')
+    }
+
+    this.initFilterValues({source, history, used, filters: true})
+
+    if (this._usedFilters) {
+      this.handleFilterHistory(this._usedFiltersCount)
+    }
+
+    this.pushToFilterSource()
+
+    return this
+  }
+
+  public filterSource (filterSource: BaseFilterSource, pushToFilterSource: boolean): ListViewModel {
+    this._filterSource = filterSource
+    this._pushToFilterSource = pushToFilterSource
     return this
   }
 
@@ -48,22 +79,28 @@ export class ListViewModel {
     return this._filterSource
   }
 
+  public historyKey (historyKey: string, saveInHistory: boolean): ListViewModel {
+    this._historyKey = historyKey
+    this._saveInHistory = saveInHistory
+    return this
+  }
+
   public getHistoryKey (): string | null {
     return this._historyKey
   }
 
-  public getFilters (): ListViewFilterBag {
-    return this._filters
+  public usedFilters (usedFilters: BagEntries<FilterValueType> | null, count: number): ListViewModel {
+    this._usedFilters = usedFilters
+    this._usedFiltersCount = count
+    return this
   }
 
-  public saveFiltersInHistory (): ListViewModel {
-    if (!this._historyKey) {
-      console.warn('Can\'t add list view model without history key to history.')
-      return this
-    }
+  public getUsedFilters (): BagEntries<FilterValueType> | null {
+    return this._usedFilters
+  }
 
-    filterHistory.setFilters(this._historyKey, this._filters)
-    return this
+  public getFilters (): ListViewFilterBag {
+    return this._filters
   }
 
   public on (type: string, handler: () => {}): ListViewModel {
@@ -85,17 +122,17 @@ export class ListViewModel {
       }
     }
 
-    this.changedFilters[name] = this._filters.get(name)!.value
+    this._changedFilters[name] = this._filters.get(name)!.value
 
-    if (this.changedFiltersTimeout) {
+    if (this._changedFiltersTimeout) {
       return
     }
 
-    this.changedFiltersTimeout = setTimeout(() => {
-      clearTimeout(this.changedFiltersTimeout!)
-      this.changedFiltersTimeout = null
-      this.dispatchChange(this.changedFilters)
-      this.changedFilters = {}
+    this._changedFiltersTimeout = setTimeout(() => {
+      clearTimeout(this._changedFiltersTimeout!)
+      this._changedFiltersTimeout = null
+      this.dispatchChange(this._changedFilters)
+      this._changedFilters = {}
     }, 10)
   }
 
@@ -121,8 +158,18 @@ export class ListViewModel {
       return
     }
 
-    const filtersToUse = this.getFiltersFromFilterSource()
-    const changedFilters = this.setFilterValues(filtersToUse)
+    // source did not really change, this is a looped hook
+    const query = this._filterSource.getQuery()
+    if (JSON.stringify(this._lastSavedQuery) === JSON.stringify(query)) {
+      return
+    }
+
+    const changedFilters = this.initFilterValues({
+      source: true,
+      history: false,
+      used: false,
+      filters: true
+    })
 
     if (Object.keys(changedFilters).length) {
       this.dispatchChange(changedFilters)
@@ -132,11 +179,9 @@ export class ListViewModel {
   public initFromUsedFilters (usedFilters: BagEntries<FilterValueType>, count: number): void {
     this.setFilterValues(usedFilters)
 
-    this.pushToQuerySource()
+    this.handleFilterHistory(count)
 
-    if (this._historyKey && !count) {
-      filterHistory.removeFilters(this._historyKey)
-    }
+    this.pushToFilterSource()
   }
 
   public resetFilters (): void {
@@ -149,9 +194,22 @@ export class ListViewModel {
     })
 
     if (Object.keys(changedFilters).length) {
-      this.pushToQuerySource()
+      this.pushToFilterSource()
 
       this.dispatchChange(changedFilters)
+    }
+  }
+
+  private handleFilterHistory (count: number): void {
+    const historyKey = this._historyKey!
+
+    if (this._saveInHistory) {
+      if (!count) {
+        filterHistory.removeFilters(historyKey)
+      } else {
+        // always overwrite saved filters with current ones
+        filterHistory.setFilters(historyKey, this._filters)
+      }
     }
   }
 
@@ -159,26 +217,43 @@ export class ListViewModel {
     this._eventTarget.dispatchEvent(new FilterChangeEvent('change', changedFilters))
   }
 
-  private initFilterValues (): void {
+  private initFilterValues (
+    {source, history, used, filters}:
+    {source: boolean, history: boolean, used: boolean, filters: boolean}
+  ): BagEntries<FilterValueType> {
     let filtersToUse: BagEntries<FilterValueType> = {}
 
-    // create and init request filters based on the current filter source state
-    if (this._filterSource) {
-      filtersToUse = this.getFiltersFromFilterSource()
+    // check used filters
+    if (used) {
+      filtersToUse = this._usedFilters!
+
+      history = false
+      source = false
+      filters = false
     }
 
-    // no filters based on filter source found, check history
-    if (!Object.keys(filtersToUse).length && this._historyKey) {
-      // check any already stored filters from a previous request
+    // check any already stored filters from a previous request
+    if (history && filterHistory.hasFilters(this._historyKey!)) {
       filtersToUse = this.getFiltersFromHistory()
+
+      source = false
+      filters = false
     }
 
-    // no source or history filters found, check given filters at last
-    if (!Object.keys(filtersToUse).length) {
+    if (source) {
+      filtersToUse = this.getFiltersFromFilterSource()
+
+      // source filters found, ignore any custom set up filter
+      if (Object.keys(filtersToUse).length) {
+        filters = false
+      }
+    }
+
+    if (filters) {
       filtersToUse = this._config.getFilters()
     }
 
-    this.setFilterValues(filtersToUse)
+    return this.setFilterValues(filtersToUse)
   }
 
   private setFilterValues (filters: BagEntries<FilterValueType>): BagEntries<FilterValueType> {
@@ -234,16 +309,18 @@ export class ListViewModel {
     return {}
   }
 
-  private pushToQuerySource (): void {
-    const query = this._filters.values().reduce((map: BagEntries<string>, filter: ListViewFilter) => {
-      return {
-        ...map,
-        ...filter.toQuerySource()
-      }
-    }, {})
+  private pushToFilterSource (): void {
+    if (this._pushToFilterSource) {
+      const query = this._filters.values()
+        .reduce((map: BagEntries<string>, filter: ListViewFilter) => {
+          return {
+            ...map,
+            ...filter.toQuerySource()
+          }
+        }, {})
 
-    if (this._filterSource) {
-      this._filterSource.push(query)
+      this._filterSource!.push(query)
+      this._lastSavedQuery = query
     }
   }
 }

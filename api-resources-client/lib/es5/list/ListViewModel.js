@@ -6,11 +6,16 @@ import { ListViewFilterBag } from './ListViewFilterBag';
 export class ListViewModel {
     constructor(config) {
         this._filterSource = null;
+        this._pushToFilterSource = false;
         this._historyKey = null;
+        this._saveInHistory = false;
+        this._usedFilters = null;
+        this._usedFiltersCount = 0;
         this._filters = new ListViewFilterBag();
         this._eventTarget = new EventTarget();
-        this.changedFilters = {};
-        this.changedFiltersTimeout = null;
+        this._changedFilters = {};
+        this._changedFiltersTimeout = null;
+        this._lastSavedQuery = null;
         this._config = config;
         const action = this._config.getAction();
         if (action) {
@@ -22,28 +27,49 @@ export class ListViewModel {
     getConfig() {
         return this._config;
     }
-    initFilters({ filterSource, historyKey } = {}) {
-        this._filterSource = filterSource || null;
-        this._historyKey = historyKey || null;
-        this.initFilterValues();
+    initFilters({ source, history, used } = { source: false, history: false, used: false }) {
+        if (source && !this._filterSource) {
+            console.warn('Can\'t init from filter source without setting up a filter source.');
+        }
+        if (history && !this._historyKey) {
+            console.warn('Can\'t init from history without setting up a history key.');
+        }
+        if (used && !this._usedFilters) {
+            console.warn('Can\'t init from used filters without setting up used filters.');
+        }
+        this.initFilterValues({ source, history, used, filters: true });
+        if (this._usedFilters) {
+            this.handleFilterHistory(this._usedFiltersCount);
+        }
+        this.pushToFilterSource();
+        return this;
+    }
+    filterSource(filterSource, pushToFilterSource) {
+        this._filterSource = filterSource;
+        this._pushToFilterSource = pushToFilterSource;
         return this;
     }
     getFilterSource() {
         return this._filterSource;
     }
+    historyKey(historyKey, saveInHistory) {
+        this._historyKey = historyKey;
+        this._saveInHistory = saveInHistory;
+        return this;
+    }
     getHistoryKey() {
         return this._historyKey;
     }
+    usedFilters(usedFilters, count) {
+        this._usedFilters = usedFilters;
+        this._usedFiltersCount = count;
+        return this;
+    }
+    getUsedFilters() {
+        return this._usedFilters;
+    }
     getFilters() {
         return this._filters;
-    }
-    saveFiltersInHistory() {
-        if (!this._historyKey) {
-            console.warn('Can\'t add list view model without history key to history.');
-            return this;
-        }
-        filterHistory.setFilters(this._historyKey, this._filters);
-        return this;
     }
     on(type, handler) {
         this._eventTarget.addEventListener(type, handler);
@@ -61,15 +87,15 @@ export class ListViewModel {
                 pageFilter.reset();
             }
         }
-        this.changedFilters[name] = this._filters.get(name).value;
-        if (this.changedFiltersTimeout) {
+        this._changedFilters[name] = this._filters.get(name).value;
+        if (this._changedFiltersTimeout) {
             return;
         }
-        this.changedFiltersTimeout = setTimeout(() => {
-            clearTimeout(this.changedFiltersTimeout);
-            this.changedFiltersTimeout = null;
-            this.dispatchChange(this.changedFilters);
-            this.changedFilters = {};
+        this._changedFiltersTimeout = setTimeout(() => {
+            clearTimeout(this._changedFiltersTimeout);
+            this._changedFiltersTimeout = null;
+            this.dispatchChange(this._changedFilters);
+            this._changedFilters = {};
         }, 10);
     }
     getApiRequest() {
@@ -92,18 +118,25 @@ export class ListViewModel {
             console.warn('Can\'t notify about changed filter source without setting up a filter source.');
             return;
         }
-        const filtersToUse = this.getFiltersFromFilterSource();
-        const changedFilters = this.setFilterValues(filtersToUse);
+        // source did not really change, this is a looped hook
+        const query = this._filterSource.getQuery();
+        if (JSON.stringify(this._lastSavedQuery) === JSON.stringify(query)) {
+            return;
+        }
+        const changedFilters = this.initFilterValues({
+            source: true,
+            history: false,
+            used: false,
+            filters: true
+        });
         if (Object.keys(changedFilters).length) {
             this.dispatchChange(changedFilters);
         }
     }
     initFromUsedFilters(usedFilters, count) {
         this.setFilterValues(usedFilters);
-        this.pushToQuerySource();
-        if (this._historyKey && !count) {
-            filterHistory.removeFilters(this._historyKey);
-        }
+        this.handleFilterHistory(count);
+        this.pushToFilterSource();
     }
     resetFilters() {
         const changedFilters = {};
@@ -114,29 +147,51 @@ export class ListViewModel {
             }
         });
         if (Object.keys(changedFilters).length) {
-            this.pushToQuerySource();
+            this.pushToFilterSource();
             this.dispatchChange(changedFilters);
+        }
+    }
+    handleFilterHistory(count) {
+        const historyKey = this._historyKey;
+        if (this._saveInHistory) {
+            if (!count) {
+                filterHistory.removeFilters(historyKey);
+            }
+            else {
+                // always overwrite saved filters with current ones
+                filterHistory.setFilters(historyKey, this._filters);
+            }
         }
     }
     dispatchChange(changedFilters) {
         this._eventTarget.dispatchEvent(new FilterChangeEvent('change', changedFilters));
     }
-    initFilterValues() {
+    initFilterValues({ source, history, used, filters }) {
         let filtersToUse = {};
-        // create and init request filters based on the current filter source state
-        if (this._filterSource) {
-            filtersToUse = this.getFiltersFromFilterSource();
+        // check used filters
+        if (used) {
+            filtersToUse = this._usedFilters;
+            history = false;
+            source = false;
+            filters = false;
         }
-        // no filters based on filter source found, check history
-        if (!Object.keys(filtersToUse).length && this._historyKey) {
-            // check any already stored filters from a previous request
+        // check any already stored filters from a previous request
+        if (history && filterHistory.hasFilters(this._historyKey)) {
             filtersToUse = this.getFiltersFromHistory();
+            source = false;
+            filters = false;
         }
-        // no source or history filters found, check given filters at last
-        if (!Object.keys(filtersToUse).length) {
+        if (source) {
+            filtersToUse = this.getFiltersFromFilterSource();
+            // source filters found, ignore any custom set up filter
+            if (Object.keys(filtersToUse).length) {
+                filters = false;
+            }
+        }
+        if (filters) {
             filtersToUse = this._config.getFilters();
         }
-        this.setFilterValues(filtersToUse);
+        return this.setFilterValues(filtersToUse);
     }
     setFilterValues(filters) {
         const changedFilters = {};
@@ -184,12 +239,14 @@ export class ListViewModel {
         }
         return {};
     }
-    pushToQuerySource() {
-        const query = this._filters.values().reduce((map, filter) => {
-            return Object.assign(Object.assign({}, map), filter.toQuerySource());
-        }, {});
-        if (this._filterSource) {
+    pushToFilterSource() {
+        if (this._pushToFilterSource) {
+            const query = this._filters.values()
+                .reduce((map, filter) => {
+                return Object.assign(Object.assign({}, map), filter.toQuerySource());
+            }, {});
             this._filterSource.push(query);
+            this._lastSavedQuery = query;
         }
     }
 }
