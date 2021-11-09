@@ -164,7 +164,11 @@ class ApiResources {
   }
 
   public getValidator (type: string): Validator | null {
-    return this._validators[type] || null
+    const validator = this._validators[type] || null
+    if (!validator) {
+      console.warn(`No validator of type '${type}' registered.`)
+    }
+    return validator
   }
 
   public registerFilter (filter: Filter): ApiResources {
@@ -182,7 +186,11 @@ class ApiResources {
   }
 
   public getFilter (type: string): (Filter | null) {
-    return this._filters[type] || null
+    const filter = this._filters[type] || null
+    if (!filter) {
+      console.warn(`No filter of type '${type}' registered.`)
+    }
+    return filter
   }
 
   public registerType (typeName: string, type: Type): ApiResources {
