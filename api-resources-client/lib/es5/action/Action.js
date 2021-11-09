@@ -2,7 +2,6 @@ import { ApiRequest } from '../api/ApiRequest';
 import { BatchApiRequest } from '../api/BatchApiRequest';
 import { apiResources } from '../ApiResources';
 import { FilterBag } from '../filter/FilterBag';
-import { RequestFilters } from '../filter/RequestFilters';
 import { ActionInput } from './ActionInput';
 import { ActionParam } from './ActionParams';
 import { ActionResponse } from './ActionResponse';
@@ -50,9 +49,6 @@ export class Action {
     }
     getFilters() {
         return this._filters;
-    }
-    createRequestFilters(historyKey, filterSource) {
-        return RequestFilters.create(this._filters, historyKey, filterSource);
     }
     createRequest() {
         return new ApiRequest()

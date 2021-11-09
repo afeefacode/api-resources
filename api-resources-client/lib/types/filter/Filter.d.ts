@@ -1,7 +1,5 @@
 import { Action } from '../action/Action';
 import { ApiRequest, ApiRequestJSON } from '../api/ApiRequest';
-import { BagEntries } from '../bag/Bag';
-import { RequestFilters } from './RequestFilters';
 export declare type FilterValueType = (boolean | string | number | null | Record<string, boolean | string | number | null>);
 export declare type FilterJSON = {
     type: string;
@@ -18,18 +16,10 @@ export declare class Filter {
     private _action;
     private _defaultValue;
     private _nullIsOption;
-    private _value;
     private _options;
     private _requestFactory;
-    private _request;
-    private _requestFilters;
-    constructor(requestFilters?: RequestFilters);
+    constructor();
     getAction(): Action;
-    get value(): FilterValueType;
-    /**
-     * Sets the filter value and dispatches a change event
-     */
-    set value(value: FilterValueType);
     get defaultValue(): FilterValueType;
     hasOptions(): boolean;
     hasOption(value: unknown): boolean;
@@ -38,13 +28,6 @@ export declare class Filter {
     hasRequest(): boolean;
     get request(): ApiRequest | null;
     createActionFilter(action: Action, name: string, json: FilterJSON): Filter;
-    createRequestFilter(requestFilters: RequestFilters): Filter;
-    initFromUsed(usedFilters: BagEntries<FilterValueType>): void;
-    initFromQuerySource(query: BagEntries<string>): void;
-    toQuerySource(): BagEntries<string>;
-    hasDefaultValueSet(): boolean;
-    reset(): boolean;
-    serialize(): BagEntries<FilterValueType>;
     /**
      * Serializes a filter value into a stringified query value
      */

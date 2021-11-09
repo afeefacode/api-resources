@@ -1,10 +1,8 @@
 import { Api } from '../api/Api';
 import { ApiRequest } from '../api/ApiRequest';
 import { BatchApiRequest } from '../api/BatchApiRequest';
-import { BaseFilterSource } from '../filter/BaseFilterSource';
 import { FilterJSON } from '../filter/Filter';
 import { FilterBag } from '../filter/FilterBag';
-import { RequestFilters } from '../filter/RequestFilters';
 import { Resource } from '../resource/Resource';
 import { ActionInput } from './ActionInput';
 import { ActionParamJSON } from './ActionParams';
@@ -32,7 +30,6 @@ export declare class Action {
     getResponse(): ActionResponse | null;
     getInput(): ActionInput | null;
     getFilters(): FilterBag;
-    createRequestFilters(historyKey?: string, filterSource?: BaseFilterSource): RequestFilters;
     createRequest(): ApiRequest;
     batchRequest(): BatchApiRequest;
     getResource(): Resource;
