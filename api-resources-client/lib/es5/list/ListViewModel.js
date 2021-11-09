@@ -132,6 +132,10 @@ export class ListViewModel {
         if (Object.keys(changedFilters).length) {
             this.dispatchChange(changedFilters);
         }
+        // if a link without query is clicked,
+        // and custom fiters apply, then this should
+        // be set to the query string
+        this.pushToFilterSource();
     }
     initFromUsedFilters(usedFilters, count) {
         this.setFilterValues(usedFilters);
