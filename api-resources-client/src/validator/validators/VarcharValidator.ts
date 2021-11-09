@@ -2,7 +2,7 @@ import { Rule } from '../Rule'
 import { RuleValidator, Validator } from '../Validator'
 
 export class VarcharValidator extends Validator<string> {
-  protected createRuleValidator (fieldLabel: string, ruleName: string, rule: Rule, params: unknown): RuleValidator<string> {
+  public createRuleValidator (fieldLabel: string, ruleName: string, rule: Rule, params: unknown): RuleValidator<string> {
     if (ruleName === 'filled') {
       return value => {
         if (params === true && !value.length) {

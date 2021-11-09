@@ -2,11 +2,11 @@ import { Action } from '../action/Action'
 import { ApiRequest, ApiRequestJSON } from '../api/ApiRequest'
 import { apiResources } from '../ApiResources'
 import { Model, ModelJSON } from '../Model'
-import { Validator, ValidatorJSON } from '../validator/Validator'
+import { FieldValidator, FieldValidatorJSON } from '../validator/FieldValidator'
 
 export type FieldJSON = {
   type: string
-  validator: ValidatorJSON
+  validator: FieldValidatorJSON
   options: Record<string, string>
   options_request: ApiRequestJSON
 }
@@ -25,7 +25,7 @@ type RequestFactory = (() => ApiRequest) | null
 export class Field {
   public type!: string
 
-  private _validator: Validator | null = null
+  private _validator: FieldValidator | null = null
 
   private _options: Record<string, string> = {}
   private _optionsRequestFactory: RequestFactory = null
@@ -57,12 +57,12 @@ export class Field {
       field._options = json.options
     }
 
-    field.setupTypeFieldValidator(json.validator)
+    field.setupFieldValidator(json.validator)
 
     return field
   }
 
-  public getValidator (): Validator | null {
+  public getValidator (): FieldValidator | null {
     return this._validator
   }
 
@@ -97,7 +97,7 @@ export class Field {
     return value as FieldJSONValue
   }
 
-  protected setupTypeFieldValidator (json: ValidatorJSON): void {
+  protected setupFieldValidator (json: FieldValidatorJSON): void {
     if (json) {
       const validator = apiResources.getValidator(json.type)
       if (validator) {

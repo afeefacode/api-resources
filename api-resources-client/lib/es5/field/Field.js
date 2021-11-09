@@ -26,7 +26,7 @@ export class Field {
         if (json.options) {
             field._options = json.options;
         }
-        field.setupTypeFieldValidator(json.validator);
+        field.setupFieldValidator(json.validator);
         return field;
     }
     getValidator() {
@@ -56,7 +56,7 @@ export class Field {
     serialize(value) {
         return value;
     }
-    setupTypeFieldValidator(json) {
+    setupFieldValidator(json) {
         if (json) {
             const validator = apiResources.getValidator(json.type);
             if (validator) {

@@ -10,5 +10,5 @@ import { LinkOneRelation } from './LinkOneRelation';
 import { NumberAttribute } from './NumberAttribute';
 import { TextAttribute } from './TextAttribute';
 import { VarcharAttribute } from './VarcharAttribute';
-export declare const fields: (BooleanAttribute | DateAttribute | EnumAttribute | HasManyRelation | HasOneRelation | IdAttribute | IntAttribute | LinkManyRelation | LinkOneRelation | NumberAttribute | TextAttribute | VarcharAttribute)[];
+export declare const fields: (VarcharAttribute | TextAttribute | BooleanAttribute | IdAttribute | DateAttribute | IntAttribute | NumberAttribute | EnumAttribute | HasManyRelation | HasOneRelation | LinkOneRelation | LinkManyRelation)[];
 //# sourceMappingURL=index.d.ts.map

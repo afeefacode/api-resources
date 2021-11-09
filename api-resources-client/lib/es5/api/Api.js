@@ -22,7 +22,7 @@ export class Api {
         for (const [type, validatorJSON] of Object.entries(schema.validators)) {
             const validator = apiResources.getValidator(type);
             if (validator) {
-                validator.setupRules(validatorJSON.rules);
+                validator.setRules(validatorJSON.rules);
                 this._validators[type] = validator;
             }
         }

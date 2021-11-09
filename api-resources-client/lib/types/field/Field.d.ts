@@ -1,9 +1,9 @@
 import { ApiRequest, ApiRequestJSON } from '../api/ApiRequest';
 import { Model, ModelJSON } from '../Model';
-import { Validator, ValidatorJSON } from '../validator/Validator';
+import { FieldValidator, FieldValidatorJSON } from '../validator/FieldValidator';
 export declare type FieldJSON = {
     type: string;
-    validator: ValidatorJSON;
+    validator: FieldValidatorJSON;
     options: Record<string, string>;
     options_request: ApiRequestJSON;
 };
@@ -17,7 +17,7 @@ export declare class Field {
     constructor();
     newInstance<T>(): T;
     createTypeField(json: FieldJSON): Field;
-    getValidator(): Validator | null;
+    getValidator(): FieldValidator | null;
     hasOptionsRequest(): boolean;
     getOptionsRequest(): ApiRequest | null;
     hasOptions(): boolean;
@@ -25,6 +25,6 @@ export declare class Field {
     default(): FieldValue;
     deserialize(value: FieldJSONValue): FieldValue;
     serialize(value: FieldValue): FieldJSONValue;
-    protected setupTypeFieldValidator(json: ValidatorJSON): void;
+    protected setupFieldValidator(json: FieldValidatorJSON): void;
 }
 //# sourceMappingURL=Field.d.ts.map
