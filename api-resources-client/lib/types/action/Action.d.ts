@@ -1,15 +1,15 @@
 import { Api } from '../api/Api';
 import { ApiRequest } from '../api/ApiRequest';
 import { BatchApiRequest } from '../api/BatchApiRequest';
-import { FilterJSON } from '../filter/Filter';
-import { FilterBag } from '../filter/FilterBag';
+import { ActionFilterJSON } from '../filter/ActionFilter';
+import { ActionFilterBag } from '../filter/ActionFilterBag';
 import { Resource } from '../resource/Resource';
 import { ActionInput } from './ActionInput';
 import { ActionParamJSON } from './ActionParams';
 import { ActionResponse } from './ActionResponse';
 export declare type ActionJSON = {
     params: Record<string, ActionParamJSON>;
-    filters: Record<string, FilterJSON>;
+    filters: Record<string, ActionFilterJSON>;
     input: {
         type: string;
     };
@@ -29,7 +29,7 @@ export declare class Action {
     getFullName(): string;
     getResponse(): ActionResponse | null;
     getInput(): ActionInput | null;
-    getFilters(): FilterBag;
+    getFilters(): ActionFilterBag;
     createRequest(): ApiRequest;
     batchRequest(): BatchApiRequest;
     getResource(): Resource;

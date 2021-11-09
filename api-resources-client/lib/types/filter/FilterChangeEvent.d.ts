@@ -1,7 +1,7 @@
 import { BagEntries } from '../bag/Bag';
-import { FilterValueType } from './Filter';
+import { ActionFilterValueType } from './ActionFilter';
 export declare class FilterChangeEvent extends Event {
-    filters: BagEntries<FilterValueType>;
-    constructor(type: string, filters: BagEntries<FilterValueType>);
+    filters: BagEntries<ActionFilterValueType>;
+    constructor(type: string, filters: BagEntries<ActionFilterValueType>);
 }
 //# sourceMappingURL=FilterChangeEvent.d.ts.map

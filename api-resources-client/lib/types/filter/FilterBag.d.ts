@@ -1,5 +1,5 @@
 import { Bag } from '../bag/Bag';
-import { Filter } from './Filter';
-export declare class FilterBag extends Bag<Filter> {
+import { ActionFilter } from './ActionFilter';
+export declare class FilterBag extends Bag<ActionFilter> {
 }
 //# sourceMappingURL=FilterBag.d.ts.map

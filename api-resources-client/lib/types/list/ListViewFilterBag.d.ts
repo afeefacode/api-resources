@@ -1,7 +1,7 @@
 import { Bag, BagEntries } from '../bag/Bag';
-import { FilterValueType } from '../filter/Filter';
+import { ActionFilterValueType } from '../filter/ActionFilter';
 import { ListViewFilter } from './ListViewFilter';
 export declare class ListViewFilterBag extends Bag<ListViewFilter> {
-    serialize(): BagEntries<FilterValueType>;
+    serialize(): BagEntries<ActionFilterValueType>;
 }
 //# sourceMappingURL=ListViewFilterBag.d.ts.map

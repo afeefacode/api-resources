@@ -1,6 +1,6 @@
 import { Action } from '../action/Action';
 import { BagEntries } from '../bag/Bag';
-import { FilterValueType } from '../filter/Filter';
+import { ActionFilterValueType } from '../filter/ActionFilter';
 export declare class ListViewConfig {
     private _action;
     private _fields;
@@ -14,8 +14,8 @@ export declare class ListViewConfig {
     getAction(): Action | null;
     params(params: BagEntries<unknown>): ListViewConfig;
     getParams(): BagEntries<unknown>;
-    filters(filters: BagEntries<FilterValueType>): ListViewConfig;
-    getFilters(): BagEntries<FilterValueType>;
+    filters(filters: BagEntries<ActionFilterValueType>): ListViewConfig;
+    getFilters(): BagEntries<ActionFilterValueType>;
     fields(fields: BagEntries<unknown>): ListViewConfig;
     getFields(): BagEntries<unknown>;
 }

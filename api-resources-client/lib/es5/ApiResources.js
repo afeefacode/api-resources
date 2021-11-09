@@ -117,7 +117,11 @@ class ApiResources {
         return this;
     }
     getValidator(type) {
-        return this._validators[type] || null;
+        const validator = this._validators[type] || null;
+        if (!validator) {
+            console.warn(`No validator of type '${type}' registered.`);
+        }
+        return validator;
     }
     registerFilter(filter) {
         this._filters[filter.type] = filter;
@@ -130,7 +134,11 @@ class ApiResources {
         return this;
     }
     getFilter(type) {
-        return this._filters[type] || null;
+        const filter = this._filters[type] || null;
+        if (!filter) {
+            console.warn(`No filter of type '${type}' registered.`);
+        }
+        return filter;
     }
     registerType(typeName, type) {
         this._types[typeName] = type;

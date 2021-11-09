@@ -1,7 +1,7 @@
 import { ApiRequest } from '../api/ApiRequest';
 import { BatchApiRequest } from '../api/BatchApiRequest';
 import { apiResources } from '../ApiResources';
-import { FilterBag } from '../filter/FilterBag';
+import { ActionFilterBag } from '../filter/ActionFilterBag';
 import { ActionInput } from './ActionInput';
 import { ActionParam } from './ActionParams';
 import { ActionResponse } from './ActionResponse';
@@ -10,7 +10,7 @@ export class Action {
         this._response = null;
         this._params = {};
         this._input = null;
-        this._filters = new FilterBag();
+        this._filters = new ActionFilterBag();
         this._resource = resource;
         this._name = name;
         if (json.response) {
@@ -26,10 +26,10 @@ export class Action {
             }
         }
         if (json.filters) {
-            for (const [name, filterJSON] of Object.entries(json.filters)) {
-                const filter = apiResources.getFilter(filterJSON.type);
+            for (const [name, actionFilterJSON] of Object.entries(json.filters)) {
+                const filter = apiResources.getFilter(actionFilterJSON.type);
                 if (filter) {
-                    const actionFilter = filter.createActionFilter(this, name, filterJSON);
+                    const actionFilter = filter.createActionFilter(this, name, actionFilterJSON);
                     this._filters.add(name, actionFilter);
                 }
             }

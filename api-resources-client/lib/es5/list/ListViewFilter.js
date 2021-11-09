@@ -25,11 +25,11 @@ export class ListViewFilter {
     get options() {
         return this._filter.options;
     }
-    hasRequest() {
-        return this._filter.hasRequest();
+    hasOptionsRequest() {
+        return this._filter.hasOptionsRequest();
     }
-    get request() {
-        return this._filter.request;
+    createOptionsRequest() {
+        return this._filter.createOptionsRequest();
     }
     get value() {
         return this._value;

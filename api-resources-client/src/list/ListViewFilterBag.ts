@@ -1,10 +1,10 @@
 import { Bag, BagEntries } from '../bag/Bag'
-import { FilterValueType } from '../filter/Filter'
+import { ActionFilterValueType } from '../filter/ActionFilter'
 import { ListViewFilter } from './ListViewFilter'
 
 export class ListViewFilterBag extends Bag<ListViewFilter> {
-  public serialize (): BagEntries<FilterValueType> {
-    const filters: BagEntries<FilterValueType> = {}
+  public serialize (): BagEntries<ActionFilterValueType> {
+    const filters: BagEntries<ActionFilterValueType> = {}
     for (const [name, filter] of this.entries()) {
       const value = filter.serialize()
       if (value !== undefined) {

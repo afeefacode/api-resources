@@ -1,13 +1,13 @@
 import { Action } from '../action/Action'
 import { apiResources } from '../ApiResources'
 import { BagEntries } from '../bag/Bag'
-import { FilterValueType } from '../filter/Filter'
+import { ActionFilterValueType } from '../filter/ActionFilter'
 
 export class ListViewConfig {
   private _action!: Action | null
   private _fields: BagEntries<unknown> = {}
   private _params: BagEntries<unknown> = {}
-  private _filters: BagEntries<FilterValueType> = {}
+  private _filters: BagEntries<ActionFilterValueType> = {}
 
   public action (
     {apiType = null, resourceType, actionName}:
@@ -34,12 +34,12 @@ export class ListViewConfig {
     return this._params
   }
 
-  public filters (filters: BagEntries<FilterValueType>): ListViewConfig {
+  public filters (filters: BagEntries<ActionFilterValueType>): ListViewConfig {
     this._filters = filters
     return this
   }
 
-  public getFilters (): BagEntries<FilterValueType> {
+  public getFilters (): BagEntries<ActionFilterValueType> {
     return this._filters
   }
 

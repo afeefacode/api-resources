@@ -1,1 +1,1 @@
-{"version":3,"file":"FilterBag.d.ts","sourceRoot":"","sources":["../../../src/filter/FilterBag.ts"],"names":[],"mappings":"AAAA,OAAO,EAAE,GAAG,EAAE,MAAM,YAAY,CAAA;AAChC,OAAO,EAAE,MAAM,EAAE,MAAM,UAAU,CAAA;AAEjC,qBAAa,SAAU,SAAQ,GAAG,CAAC,MAAM,CAAC;CACzC"}
+{"version":3,"file":"FilterBag.d.ts","sourceRoot":"","sources":["../../../src/filter/FilterBag.ts"],"names":[],"mappings":"AAAA,OAAO,EAAE,GAAG,EAAE,MAAM,YAAY,CAAA;AAChC,OAAO,EAAE,YAAY,EAAE,MAAM,gBAAgB,CAAA;AAE7C,qBAAa,SAAU,SAAQ,GAAG,CAAC,YAAY,CAAC;CAC/C"}

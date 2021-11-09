@@ -1,14 +1,15 @@
 import { ApiRequest } from '../api/ApiRequest'
 import { BagEntries } from '../bag/Bag'
-import { Filter, FilterValueType } from '../filter/Filter'
+import { ActionFilter, ActionFilterValueType } from '../filter/ActionFilter'
+
 import { ListViewModel } from './ListViewModel'
 
 export class ListViewFilter {
-  private _filter: Filter
+  private _filter: ActionFilter
   private _model: ListViewModel
-  private _value: FilterValueType = null
+  private _value: ActionFilterValueType = null
 
-  constructor (filter: Filter, model: ListViewModel) {
+  constructor (filter: ActionFilter, model: ListViewModel) {
     this._filter = filter
     this._model = model
   }
@@ -17,11 +18,11 @@ export class ListViewFilter {
     return this._filter.name
   }
 
-  public get filter (): Filter {
+  public get filter (): ActionFilter {
     return this._filter
   }
 
-  public get defaultValue (): FilterValueType {
+  public get defaultValue (): ActionFilterValueType {
     return this._filter.defaultValue
   }
 
@@ -41,23 +42,23 @@ export class ListViewFilter {
     return this._filter.options
   }
 
-  public hasRequest (): boolean {
-    return this._filter.hasRequest()
+  public hasOptionsRequest (): boolean {
+    return this._filter.hasOptionsRequest()
   }
 
-  public get request (): ApiRequest | null {
-    return this._filter.request
+  public createOptionsRequest (): ApiRequest | null {
+    return this._filter.createOptionsRequest()
   }
 
-  public get value (): FilterValueType {
+  public get value (): ActionFilterValueType {
     return this._value
   }
 
-  public set value (value: FilterValueType) {
+  public set value (value: ActionFilterValueType) {
     this.setInternalValue(value, true)
   }
 
-  public setInternalValue (value: FilterValueType, dispatchChange: boolean = false): boolean {
+  public setInternalValue (value: ActionFilterValueType, dispatchChange: boolean = false): boolean {
     const newJson = JSON.stringify(value)
     const oldJson = JSON.stringify(this._value)
     if (newJson !== oldJson) {
@@ -90,7 +91,7 @@ export class ListViewFilter {
     return false
   }
 
-  public serialize (): FilterValueType | undefined {
+  public serialize (): ActionFilterValueType | undefined {
     if (!this.hasDefaultValueSet()) { // send only if no default
       let useFilter = true
       if (this._value === null) { // send null only if it's an option
@@ -106,21 +107,21 @@ export class ListViewFilter {
   /**
    * Serializes a filter value into a stringified query value
    */
-  public valueToQuery (value: FilterValueType): string | undefined {
+  public valueToQuery (value: ActionFilterValueType): string | undefined {
     return this._filter.valueToQuery(value)
   }
 
   /**
    * Converts a stringified query value into a valid filter value
    */
-  public queryToValue (value: string): FilterValueType | undefined {
+  public queryToValue (value: string): ActionFilterValueType | undefined {
     return this._filter.queryToValue(value)
   }
 
   /**
    * Converts a filter value into a serialized form to be used in api requests
    */
-  public serializeValue (value: FilterValueType): FilterValueType {
+  public serializeValue (value: ActionFilterValueType): ActionFilterValueType {
     return this._filter.serializeValue(value)
   }
 }
