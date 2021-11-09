@@ -1,6 +1,6 @@
 import { BagEntries } from '../bag/Bag'
 
-export class BaseFilterSource {
+export class ListViewFilterSource {
   public getQuery (): BagEntries<string> {
     return {}
   }

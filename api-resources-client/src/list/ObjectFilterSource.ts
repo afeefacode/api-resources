@@ -1,7 +1,7 @@
 import { BagEntries } from '../bag/Bag'
-import { BaseFilterSource } from './BaseFilterSource'
+import { ListViewFilterSource } from './ListViewFilterSource'
 
-export class ObjectFilterSource extends BaseFilterSource {
+export class ObjectFilterSource extends ListViewFilterSource {
   public query: BagEntries<string> = {}
 
   constructor (query: BagEntries<string>) {

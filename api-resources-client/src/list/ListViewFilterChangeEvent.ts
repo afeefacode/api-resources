@@ -1,7 +1,7 @@
 import { BagEntries } from '../bag/Bag'
-import { ActionFilterValueType } from './ActionFilter'
+import { ActionFilterValueType } from '../filter/ActionFilter'
 
-export class FilterChangeEvent extends Event {
+export class ListViewFilterChangeEvent extends Event {
   public filters: BagEntries<ActionFilterValueType>
 
   constructor (type: string, filters: BagEntries<ActionFilterValueType>) {

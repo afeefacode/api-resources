@@ -1,4 +1,4 @@
-class FilterHistory {
+class ListViewFilterHistory {
     constructor() {
         this.filters = {};
     }
@@ -15,4 +15,4 @@ class FilterHistory {
         delete this.filters[historyKey];
     }
 }
-export const filterHistory = new FilterHistory();
+export const filterHistory = new ListViewFilterHistory();

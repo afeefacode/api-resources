@@ -1,18 +1,18 @@
 import { ApiRequest } from '../api/ApiRequest'
 import { BagEntries } from '../bag/Bag'
 import { ActionFilterValueType } from '../filter/ActionFilter'
-import { BaseFilterSource } from '../filter/BaseFilterSource'
-import { FilterChangeEvent } from '../filter/FilterChangeEvent'
-import { filterHistory } from '../filter/FilterHistory'
 import { PageFilter } from '../filter/filters/PageFilter'
 import { ListViewConfig } from './ListViewConfig'
 import { ListViewFilter } from './ListViewFilter'
 import { ListViewFilterBag } from './ListViewFilterBag'
+import { ListViewFilterChangeEvent } from './ListViewFilterChangeEvent'
+import { filterHistory } from './ListViewFilterHistory'
+import { ListViewFilterSource } from './ListViewFilterSource'
 
 export class ListViewModel {
   private _config: ListViewConfig
 
-  private _filterSource: BaseFilterSource | null = null
+  private _filterSource: ListViewFilterSource | null = null
   private _pushToFilterSource: boolean = false
 
   private _historyKey: string | null = null
@@ -69,13 +69,13 @@ export class ListViewModel {
     return this
   }
 
-  public filterSource (filterSource: BaseFilterSource, pushToFilterSource: boolean): ListViewModel {
+  public filterSource (filterSource: ListViewFilterSource, pushToFilterSource: boolean): ListViewModel {
     this._filterSource = filterSource
     this._pushToFilterSource = pushToFilterSource
     return this
   }
 
-  public getFilterSource (): BaseFilterSource | null {
+  public getFilterSource (): ListViewFilterSource | null {
     return this._filterSource
   }
 
@@ -219,7 +219,7 @@ export class ListViewModel {
   }
 
   private dispatchChange (changedFilters: BagEntries<ActionFilterValueType>): void {
-    this._eventTarget.dispatchEvent(new FilterChangeEvent('change', changedFilters))
+    this._eventTarget.dispatchEvent(new ListViewFilterChangeEvent('change', changedFilters))
   }
 
   private initFilterValues (

@@ -1,7 +1,7 @@
 import { BagEntries } from '../bag/Bag'
-import { ListViewFilterBag } from '../list/ListViewFilterBag'
+import { ListViewFilterBag } from './ListViewFilterBag'
 
-class FilterHistory {
+class ListViewFilterHistory {
   private filters: BagEntries<ListViewFilterBag> = {}
 
   public hasFilters (historyKey: string): boolean {
@@ -21,4 +21,4 @@ class FilterHistory {
   }
 }
 
-export const filterHistory = new FilterHistory()
+export const filterHistory = new ListViewFilterHistory()

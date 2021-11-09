@@ -1,1 +1,0 @@
-{"version":3,"file":"FilterChangeEvent.d.ts","sourceRoot":"","sources":["../../../src/filter/FilterChangeEvent.ts"],"names":[],"mappings":"AAAA,OAAO,EAAE,UAAU,EAAE,MAAM,YAAY,CAAA;AACvC,OAAO,EAAE,qBAAqB,EAAE,MAAM,gBAAgB,CAAA;AAEtD,qBAAa,iBAAkB,SAAQ,KAAK;IACnC,OAAO,EAAE,UAAU,CAAC,qBAAqB,CAAC,CAAA;gBAEpC,IAAI,EAAE,MAAM,EAAE,OAAO,EAAE,UAAU,CAAC,qBAAqB,CAAC;CAKtE"}

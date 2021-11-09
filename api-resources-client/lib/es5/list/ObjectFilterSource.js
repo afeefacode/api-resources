@@ -1,5 +1,5 @@
-import { BaseFilterSource } from './BaseFilterSource';
-export class ObjectFilterSource extends BaseFilterSource {
+import { ListViewFilterSource } from './ListViewFilterSource';
+export class ObjectFilterSource extends ListViewFilterSource {
     constructor(query) {
         super();
         this.query = {};

@@ -1,9 +1,9 @@
 import { ApiRequest } from '../api/ApiRequest';
 import { BagEntries } from '../bag/Bag';
 import { ActionFilterValueType } from '../filter/ActionFilter';
-import { BaseFilterSource } from '../filter/BaseFilterSource';
 import { ListViewConfig } from './ListViewConfig';
 import { ListViewFilterBag } from './ListViewFilterBag';
+import { ListViewFilterSource } from './ListViewFilterSource';
 export declare class ListViewModel {
     private _config;
     private _filterSource;
@@ -24,8 +24,8 @@ export declare class ListViewModel {
         history: boolean;
         used: boolean;
     }): ListViewModel;
-    filterSource(filterSource: BaseFilterSource, pushToFilterSource: boolean): ListViewModel;
-    getFilterSource(): BaseFilterSource | null;
+    filterSource(filterSource: ListViewFilterSource, pushToFilterSource: boolean): ListViewModel;
+    getFilterSource(): ListViewFilterSource | null;
     historyKey(historyKey: string, saveInHistory: boolean): ListViewModel;
     getHistoryKey(): string | null;
     usedFilters(usedFilters: BagEntries<ActionFilterValueType> | null, count: number): ListViewModel;

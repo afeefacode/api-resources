@@ -1,8 +1,8 @@
-import { FilterChangeEvent } from '../filter/FilterChangeEvent';
-import { filterHistory } from '../filter/FilterHistory';
 import { PageFilter } from '../filter/filters/PageFilter';
 import { ListViewFilter } from './ListViewFilter';
 import { ListViewFilterBag } from './ListViewFilterBag';
+import { ListViewFilterChangeEvent } from './ListViewFilterChangeEvent';
+import { filterHistory } from './ListViewFilterHistory';
 export class ListViewModel {
     constructor(config) {
         this._filterSource = null;
@@ -168,7 +168,7 @@ export class ListViewModel {
         }
     }
     dispatchChange(changedFilters) {
-        this._eventTarget.dispatchEvent(new FilterChangeEvent('change', changedFilters));
+        this._eventTarget.dispatchEvent(new ListViewFilterChangeEvent('change', changedFilters));
     }
     initFilterValues({ source, history, used, filters }) {
         let filtersToUse = {};
