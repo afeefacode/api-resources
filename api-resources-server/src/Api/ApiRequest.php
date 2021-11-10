@@ -217,7 +217,7 @@ class ApiRequest implements ContainerAwareInterface, ToSchemaJsonInterface, Json
             'api' => $this->api::type(),
             'resource' => $this->resourceType,
             'action' => $this->actionName,
-            'fields' => $this->fields
+            'fields' => $this->fields->toSchemaJson()
         ];
 
         if (count($this->params)) {

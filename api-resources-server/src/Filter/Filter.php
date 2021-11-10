@@ -104,6 +104,7 @@ class Filter extends BagEntry
             $json['options'] = $this->options;
         } elseif (isset($this->optionsRequestCallback)) {
             $api = $this->container->get(Api::class);
+            /** @var ApiRequest */
             $request = $this->container->create(function (ApiRequest $request) use ($api) {
                 $request->api($api);
                 ($this->optionsRequestCallback)($request);

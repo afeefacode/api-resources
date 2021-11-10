@@ -4,13 +4,18 @@ namespace Afeefa\ApiResources\Tests\Api;
 
 use Afeefa\ApiResources\Action\Action;
 use Afeefa\ApiResources\Action\ActionBag;
+use Afeefa\ApiResources\Api\ApiRequest;
 use Afeefa\ApiResources\Exception\Exceptions\MissingTypeException;
+use Afeefa\ApiResources\Field\FieldBag;
+use Afeefa\ApiResources\Field\Fields\VarcharAttribute;
 use Afeefa\ApiResources\Filter\Filter;
 use Afeefa\ApiResources\Filter\FilterBag;
 use function Afeefa\ApiResources\Test\createApiWithSingleResource;
 use Afeefa\ApiResources\Test\FilterBuilder;
-
 use function Afeefa\ApiResources\Test\T;
+
+use Afeefa\ApiResources\Test\TypeBuilder;
+use Afeefa\ApiResources\Test\TypeRegistry;
 use Closure;
 use PHPUnit\Framework\TestCase;
 
@@ -65,6 +70,53 @@ class SchemaFilterTest extends TestCase
                             'type' => 'Test.Filter',
                             'options' => [null, true, false],
                             'null_is_option' => true
+                        ]
+                    ],
+                    'response' => [
+                        'type' => 'Test.Type'
+                    ]
+                ]
+            ]
+        ];
+
+        $this->assertEquals($expectedResourcesSchema, $schema['resources']);
+    }
+
+    public function test_options_request()
+    {
+        TypeRegistry::reset();
+
+        // auto save type with field 'name' into registry
+        (new TypeBuilder())->type('Test.Type', function (FieldBag $fields) {
+            $fields->attribute('name', VarcharAttribute::class);
+        });
+
+        $api = $this->createApiWithFilter('check', function (Filter $filter) {
+            $filter
+                ->optionsRequest(function (ApiRequest $request) {
+                    $request
+                        ->resourceType('Test.Resource')
+                        ->actionName('test_action')
+                        ->fields(['name' => true]);
+                });
+        });
+
+        $schema = $api->toSchemaJson();
+
+        $expectedResourcesSchema = [
+            'Test.Resource' => [
+                'test_action' => [
+                    'filters' => [
+                        'check' => [
+                            'type' => 'Test.Filter',
+                            'options_request' => [
+                                'api' => 'Test.Api',
+                                'resource' => 'Test.Resource',
+                                'action' => 'test_action',
+                                'fields' => [
+                                    'name' => true
+                                ],
+                            ],
                         ]
                     ],
                     'response' => [

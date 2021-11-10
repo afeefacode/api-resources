@@ -8,7 +8,7 @@ use Afeefa\ApiResources\DI\ContainerAwareTrait;
 use Afeefa\ApiResources\Type\Type;
 use JsonSerializable;
 
-class RequestedFields implements ContainerAwareInterface, JsonSerializable
+class RequestedFields implements ContainerAwareInterface, JsonSerializable, ToSchemaJsonInterface
 {
     use ContainerAwareTrait;
 
@@ -91,6 +91,11 @@ class RequestedFields implements ContainerAwareInterface, JsonSerializable
     public function getNestedField($fieldName): RequestedFields
     {
         return $this->fields[$fieldName];
+    }
+
+    public function toSchemaJson(): array
+    {
+        return $this->fields;
     }
 
     public function jsonSerialize()
