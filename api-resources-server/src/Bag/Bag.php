@@ -37,7 +37,7 @@ class Bag implements ToSchemaJsonInterface, ContainerAwareInterface
                 if ($createCallback) {
                     $createCallback($entry);
                 }
-                $this->set($name, $entry);
+                $this->setInternal($name, $entry);
             });
         }
 
@@ -56,8 +56,7 @@ class Bag implements ToSchemaJsonInterface, ContainerAwareInterface
 
     public function set(string $name, BagEntryInterface $value): Bag
     {
-        $this->entries[$name] = $value;
-        return $this;
+        return $this->setInternal($name, $value);
     }
 
     public function has(string $name): bool
@@ -111,5 +110,11 @@ class Bag implements ToSchemaJsonInterface, ContainerAwareInterface
             }
             return $entry->toSchemaJson();
         }, $this->getEntries()));
+    }
+
+    protected function setInternal(string $name, BagEntryInterface $value): Bag
+    {
+        $this->entries[$name] = $value;
+        return $this;
     }
 }
