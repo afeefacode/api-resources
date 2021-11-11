@@ -36,6 +36,19 @@ class FieldBagTest extends ApiResourcesTest
         $fields->attribute('name', 'Hoho');
     }
 
+    public function test_relation()
+    {
+        /** @var FieldBag */
+        $fields = $this->container->create(FieldBag::class);
+        $fields->relation('name', T('Test.Type'), HasOneRelation::class);
+
+        $relation = $fields->getRelation('name');
+        $relation2 = $fields->get('name');
+
+        $this->assertSame($relation, $relation2);
+        $this->assertEquals(T('Test.Type'), $relation->getRelatedType()->getTypeClass());
+    }
+
     public function test_wrong_relation_related_type()
     {
         $this->expectException(NotATypeException::class);
