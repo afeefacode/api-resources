@@ -21,9 +21,18 @@ class FieldBag extends Bag
         return $this;
     }
 
+    public function has(string $name, bool $ownFields = false): bool
+    {
+        if ($this->original && !$this->hasInternal($name) && !$ownFields) {
+            return $this->original->has($name);
+        }
+
+        return parent::has($name);
+    }
+
     public function get(string $name, Closure $callback = null): Field
     {
-        if ($this->original && !$this->has($name)) {
+        if ($this->original && !$this->hasInternal($name)) {
             $field = $this->original->get($name)->clone();
             $this->setInternal($name, $field);
         }

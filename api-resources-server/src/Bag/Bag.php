@@ -61,7 +61,7 @@ class Bag implements ToSchemaJsonInterface, ContainerAwareInterface
 
     public function has(string $name): bool
     {
-        return isset($this->entries[$name]) || isset($this->definitions[$name]);
+        return $this->hasInternal($name);
     }
 
     public function remove(string $name): Bag
@@ -110,6 +110,11 @@ class Bag implements ToSchemaJsonInterface, ContainerAwareInterface
             }
             return $entry->toSchemaJson();
         }, $this->getEntries()));
+    }
+
+    public function hasInternal(string $name): bool
+    {
+        return isset($this->entries[$name]) || isset($this->definitions[$name]);
     }
 
     protected function setInternal(string $name, BagEntryInterface $value): Bag
