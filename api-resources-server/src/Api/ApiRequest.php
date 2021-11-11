@@ -70,6 +70,11 @@ class ApiRequest implements ContainerAwareInterface, ToSchemaJsonInterface, Json
         return $this;
     }
 
+    public function getApi(): Api
+    {
+        return $this->api;
+    }
+
     public function actionName(string $actionName): ApiRequest
     {
         $this->actionName = $actionName;
