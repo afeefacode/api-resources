@@ -110,6 +110,13 @@ class FieldBag extends Bag
         return $this;
     }
 
+    public function clone(): FieldBag
+    {
+        return $this->container->create(function (FieldBag $fieldBag) {
+            $fieldBag->original($this);
+        });
+    }
+
     public function getEntrySchemaJson(Field $field, TypeRegistry $typeRegistry): ?array
     {
         $typeRegistry->registerField(get_class($field));
