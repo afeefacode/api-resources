@@ -132,7 +132,7 @@ class FieldsToSave implements ContainerAwareInterface, JsonSerializable
 
             if ($this->hasRelation($fieldName)) {
                 $relation = $this->getRelation($fieldName);
-                $TypeClass = $relation->getRelatedTypeClass();
+                $TypeClass = $relation->getRelatedType()->getTypeClass();
 
                 if ($relation->isSingle()) {
                     $normalizedFields[$fieldName] = $value ? $this->createNestedFields($TypeClass, $value) : null;

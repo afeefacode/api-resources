@@ -125,7 +125,7 @@ class RequestedFields implements ContainerAwareInterface, JsonSerializable, ToSc
                     $nested = [];
                 }
                 if (is_array($nested)) {
-                    $TypeClass = $type->getRelation($fieldName)->getRelatedTypeClass();
+                    $TypeClass = $type->getRelation($fieldName)->getRelatedType()->getTypeClass();
                     $normalizedFields[$fieldName] = $this->createNestedFields($TypeClass, $nested);
                 }
             }
