@@ -43,6 +43,11 @@ class ActionResponse implements ToSchemaJsonInterface, ContainerAwareInterface
             $TypeClassOrClasses = $TypeClassOrClassesOrMeta;
         }
 
+        // make array [Type] to string Type
+        if (is_array($TypeClassOrClasses) && count($TypeClassOrClasses) === 1) {
+            $TypeClassOrClasses = $TypeClassOrClasses[0];
+        }
+
         if (is_array($TypeClassOrClasses)) {
             foreach ($TypeClassOrClasses as $TypeClass) {
                 if (!class_exists($TypeClass)) {
@@ -109,11 +114,19 @@ class ActionResponse implements ToSchemaJsonInterface, ContainerAwareInterface
 
     public function getSchemaJson(TypeRegistry $typeRegistry): array
     {
-        $typeRegistry->registerType($this->TypeClass);
+        $json = [];
 
-        $json = [
-            'type' => $this->TypeClass::type()
-        ];
+        if (isset($this->TypeClass)) {
+            $typeRegistry->registerType($this->TypeClass);
+            $json['type'] = $this->TypeClass::type();
+        }
+
+        if (isset($this->TypeClasses)) {
+            $json['types'] = array_map(function ($TypeClass) use ($typeRegistry) {
+                $typeRegistry->registerType($TypeClass);
+                return $TypeClass::type();
+            }, $this->TypeClasses);
+        }
 
         if ($this->list) {
             $json['list'] = true;

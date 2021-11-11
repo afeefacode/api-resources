@@ -5,7 +5,6 @@ namespace Afeefa\ApiResources\Type;
 class TypeMeta
 {
     public $TypeClassOrClasses = [];
-    public bool $mixed = false;
     public bool $list = false;
     public bool $create = false;
     public bool $update = false;
@@ -13,7 +12,6 @@ class TypeMeta
     public function typeClassOrClasses($TypeClassOrClasses): TypeMeta
     {
         $this->TypeClassOrClasses = $TypeClassOrClasses;
-        $this->mixed = is_array($TypeClassOrClasses);
         return $this;
     }
 

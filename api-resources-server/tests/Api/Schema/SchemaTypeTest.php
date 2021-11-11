@@ -9,10 +9,11 @@ use Afeefa\ApiResources\Field\FieldBag;
 use Afeefa\ApiResources\Field\Fields\HasOneRelation;
 use Afeefa\ApiResources\Field\Fields\VarcharAttribute;
 use Afeefa\ApiResources\Test\ApiResourcesTest;
-
 use function Afeefa\ApiResources\Test\createApiWithSingleResource;
+
 use function Afeefa\ApiResources\Test\createApiWithSingleType;
 use function Afeefa\ApiResources\Test\T;
+use Afeefa\ApiResources\Type\Type;
 use Afeefa\ApiResources\Validator\Validators\VarcharValidator;
 
 class SchemaTypeTest extends ApiResourcesTest
@@ -248,5 +249,139 @@ class SchemaTypeTest extends ApiResourcesTest
         );
 
         $api->toSchemaJson();
+    }
+
+    public function test_relation()
+    {
+        $this->typeBuilder()->type('Test.Type2')->get();
+
+        $api = createApiWithSingleType(
+            'Test.Type',
+            function (FieldBag $fields) {
+                $fields
+                    ->relation('other_type', T('Test.Type2'), HasOneRelation::class)
+                    ->relation('other_type2', [T('Test.Type2')], HasOneRelation::class); // single array element
+            }
+        );
+
+        $schema = $api->toSchemaJson();
+
+        $expectedTypesSchema = [
+            'Test.Type' => [
+                'translations' => [],
+                'fields' => [
+                    'other_type' => [
+                        'type' => 'Afeefa.HasOneRelation',
+                        'related_type' => [
+                            'type' => 'Test.Type2'
+                        ]
+                    ],
+                    'other_type2' => [
+                        'type' => 'Afeefa.HasOneRelation',
+                        'related_type' => [
+                            'type' => 'Test.Type2'
+                        ]
+                    ]
+                ]
+            ],
+            'Test.Type2' => [
+                'translations' => [],
+                'fields' => []
+            ]
+        ];
+
+        $this->assertEquals($expectedTypesSchema, $schema['types']);
+    }
+
+    public function test_relation_list()
+    {
+        $this->typeBuilder()->type('Test.Type2')->get();
+
+        $api = createApiWithSingleType(
+            'Test.Type',
+            function (FieldBag $fields) {
+                $fields
+                    ->relation('other_types', Type::list(T('Test.Type2')), HasOneRelation::class)
+                    ->relation('other_types2', Type::list([T('Test.Type2')]), HasOneRelation::class); // single array element
+            }
+        );
+
+        $schema = $api->toSchemaJson();
+
+        $expectedTypesSchema = [
+            'Test.Type' => [
+                'translations' => [],
+                'fields' => [
+                    'other_types' => [
+                        'type' => 'Afeefa.HasOneRelation',
+                        'related_type' => [
+                            'type' => 'Test.Type2',
+                            'list' => true
+                        ]
+                    ],
+                    'other_types2' => [
+                        'type' => 'Afeefa.HasOneRelation',
+                        'related_type' => [
+                            'type' => 'Test.Type2',
+                            'list' => true
+                        ]
+                    ]
+                ]
+            ],
+            'Test.Type2' => [
+                'translations' => [],
+                'fields' => []
+            ]
+        ];
+
+        $this->assertEquals($expectedTypesSchema, $schema['types']);
+    }
+
+    public function test_relation_mixed()
+    {
+        $this->typeBuilder()->type('Test.Type2')->get();
+        $this->typeBuilder()->type('Test.Type3')->get();
+
+        $api = createApiWithSingleType(
+            'Test.Type',
+            function (FieldBag $fields) {
+                $fields
+                    ->relation('other_type', [T('Test.Type2'), T('Test.Type3')], HasOneRelation::class)
+                    ->relation('other_types', Type::list([T('Test.Type2'), T('Test.Type3')]), HasOneRelation::class);
+            }
+        );
+
+        $schema = $api->toSchemaJson();
+
+        $expectedTypesSchema = [
+            'Test.Type' => [
+                'translations' => [],
+                'fields' => [
+                    'other_type' => [
+                        'type' => 'Afeefa.HasOneRelation',
+                        'related_type' => [
+                            'types' => ['Test.Type2', 'Test.Type3']
+                        ]
+                    ],
+                    'other_types' => [
+                        'type' => 'Afeefa.HasOneRelation',
+                        'related_type' => [
+                            'types' => ['Test.Type2', 'Test.Type3'],
+                            'list' => true
+                        ]
+                    ]
+                ]
+            ],
+            'Test.Type2' => [
+                'translations' => [],
+                'fields' => []
+            ],
+            'Test.Type3' => [
+                'translations' => [],
+                'fields' => []
+            ]
+        ];
+
+        $this->assertEquals($expectedTypesSchema, $schema['types']);
     }
 }

@@ -4,7 +4,6 @@ namespace Afeefa\ApiResources\Field;
 
 use Afeefa\ApiResources\Api\TypeRegistry;
 use Afeefa\ApiResources\Type\RelatedType;
-use Afeefa\ApiResources\Type\Type;
 use Closure;
 
 /**
@@ -21,8 +20,6 @@ use Closure;
 class Relation extends Field
 {
     protected RelatedType $relatedType;
-
-    protected string $RelatedTypeClass;
 
     protected bool $isSingle = false;
 
@@ -83,29 +80,11 @@ class Relation extends Field
         return $this->relatedType;
     }
 
-    public function relatedTypeClass(string $RelatedTypeClass): Relation
-    {
-        $this->RelatedTypeClass = $RelatedTypeClass;
-
-        return $this;
-    }
-
-    public function getRelatedTypeClass(): string
-    {
-        return $this->RelatedTypeClass;
-    }
-
-    public function getRelatedTypeInstance(): Type
-    {
-        return $this->container->get($this->RelatedTypeClass);
-    }
-
     public function clone(): Relation
     {
         /** @var Relation */
         $relation = parent::clone();
         $relation->relatedType = $this->relatedType;
-        $relation->relatedTypeClass($this->RelatedTypeClass);
         return $relation;
     }
 
