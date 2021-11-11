@@ -112,8 +112,8 @@ class SchemaFilterTest extends ApiResourcesTest
                                 'action' => 'test_action',
                                 'fields' => [
                                     'name' => true
-                                ],
-                            ],
+                                ]
+                            ]
                         ]
                     ],
                     'response' => [
@@ -124,18 +124,6 @@ class SchemaFilterTest extends ApiResourcesTest
         ];
 
         $this->assertEquals($expectedResourcesSchema, $schema['resources']);
-    }
-
-    public function test_get_type_with_missing_type()
-    {
-        $this->expectException(MissingTypeException::class);
-        $this->expectExceptionMessageMatches('/^Missing type for class Afeefa\\\ApiResources\\\Test\\\TestFilter@anonymous/');
-
-        $filter = (new FilterBuilder())
-            ->filter()
-            ->get();
-
-        $filter::type();
     }
 
     public function test_add_with_missing_type()
@@ -151,6 +139,9 @@ class SchemaFilterTest extends ApiResourcesTest
                     $action
                         ->filters(function (FilterBag $filters) use ($filter) {
                             $filters->add('test_filter', $filter::class);
+                        })
+                        ->response(T('Test.Type'))
+                        ->resolve(function () {
                         });
                 });
         });
@@ -170,7 +161,9 @@ class SchemaFilterTest extends ApiResourcesTest
                             $filters->add($name, $filter::class);
                             $filterCallback($filters->get($name));
                         })
-                        ->response(T('Test.Type'));
+                        ->response(T('Test.Type'))
+                        ->resolve(function () {
+                        });
                 });
         });
     }

@@ -40,9 +40,19 @@ class FieldBag extends Bag
         return parent::get($name, $callback);
     }
 
+    public function getAttribute(string $name, Closure $callback = null): Attribute
+    {
+        return $this->get($name, $callback);
+    }
+
     public function getRelation(string $name, Closure $callback = null): Relation
     {
         return $this->get($name, $callback);
+    }
+
+    public function getOriginal(): ?FieldBag
+    {
+        return $this->original;
     }
 
     /**
@@ -89,7 +99,7 @@ class FieldBag extends Bag
 
         // allow all allowed fields
         foreach ($names as $name) {
-            if (!$this->has($name)) {
+            if (!$this->has($name)) { // check special relations
                 if (preg_match('/^(.+)#(add|delete|update)$/', $name, $matches)) {
                     $baseRelationName = $matches[1];
                     $adds = $matches[2] === 'add';

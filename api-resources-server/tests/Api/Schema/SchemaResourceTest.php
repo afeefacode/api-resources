@@ -22,10 +22,14 @@ class SchemaResourceTest extends TestCase
             function (ActionBag $actions) {
                 $actions
                     ->add('test_action', function (Action $action) {
-                        $action->response(T('Test.Type'));
+                        $action->response(T('Test.Type'))
+                            ->resolve(function () {
+                        });
                     })
                     ->add('test_action2', function (Action $action) {
-                        $action->response(T('Test.Type2'));
+                        $action->response(T('Test.Type2'))
+                            ->resolve(function () {
+                        });
                     });
             }
         );

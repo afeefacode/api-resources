@@ -8,15 +8,15 @@ use Afeefa\ApiResources\Action\ActionParams;
 use Afeefa\ApiResources\Field\Fields\IdAttribute;
 use Afeefa\ApiResources\Filter\FilterBag;
 use Afeefa\ApiResources\Filter\Filters\KeywordFilter;
+use Afeefa\ApiResources\Test\ApiResourcesTest;
+
 use function Afeefa\ApiResources\Test\createApiWithSingleResource;
 
 use function Afeefa\ApiResources\Test\T;
 
 use Afeefa\ApiResources\Type\Type;
 
-use PHPUnit\Framework\TestCase;
-
-class SchemaActionTest extends TestCase
+class SchemaActionTest extends ApiResourcesTest
 {
     public function test_simple()
     {
@@ -31,7 +31,9 @@ class SchemaActionTest extends TestCase
                         ->filters(function (FilterBag $filters) {
                             $filters->add('search', KeywordFilter::class);
                         })
-                        ->response(T('Test.ResponseType'));
+                        ->response(T('Test.ResponseType'))
+                        ->resolve(function () {
+                        });
                 });
         });
 
@@ -69,7 +71,9 @@ class SchemaActionTest extends TestCase
             $actions
                 ->add('test_action', function (Action $action) {
                     $action
-                        ->response(Type::list(T('Test.ResponseType')));
+                        ->response(Type::list(T('Test.ResponseType')))
+                        ->resolve(function () {
+                        });
                 });
         });
 

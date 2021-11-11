@@ -126,7 +126,10 @@ class SchemaApiTest extends ApiResourcesTest
         if (!$actionsCallback) {
             $actionsCallback = function (ActionBag $actions) use ($typeName) {
                 $actions->add('test_action', function (Action $action) use ($typeName) {
-                    $action->response(T($typeName));
+                    $action
+                        ->response(T($typeName))
+                        ->resolve(function () {
+                        });
                 });
             };
         }

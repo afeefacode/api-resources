@@ -2,6 +2,7 @@
 
 namespace Afeefa\ApiResources\Tests\Type;
 
+use Afeefa\ApiResources\Exception\Exceptions\MissingTypeException;
 use Afeefa\ApiResources\Exception\Exceptions\NotATypeOrCallbackException;
 use Afeefa\ApiResources\Field\FieldBag;
 use Afeefa\ApiResources\Field\Fields\VarcharAttribute;
@@ -39,5 +40,15 @@ class TypeTest extends ApiResourcesTest
         $this->assertEquals(1, $type->getFields()->numEntries());
         $this->assertEquals(1, $type->getUpdateFields()->numEntries());
         $this->assertEquals(1, $type->getCreateFields()->numEntries());
+    }
+
+    public function test_get_type_with_missing_type()
+    {
+        $this->expectException(MissingTypeException::class);
+        $this->expectExceptionMessageMatches('/^Missing type for class Afeefa\\\ApiResources\\\Test\\\TestType@anonymous/');
+
+        $type = $this->typeBuilder()->type()->get();
+
+        $type::type();
     }
 }

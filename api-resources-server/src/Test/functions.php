@@ -32,7 +32,7 @@ function T(string $type, bool $create = true): ?string
 }
 
 function createApiWithSingleType(
-    string $typeName,
+    string $typeName = 'Test.Type',
     ?Closure $fieldsCallback = null,
     ?Closure $actionsCallback = null
 ): Api {
@@ -54,11 +54,12 @@ function createApiWithSingleType(
 
 function createApiWithSingleResource(?Closure $actionsCallback = null): Api
 {
-    $resource = (new ResourceBuilder())
+    $container = ApiResourcesTest::$staticContainer;
+    $resource = (new ResourceBuilder($container))
         ->resource('Test.Resource', $actionsCallback)
         ->get();
 
-    return (new ApiBuilder(new TestContainer()))
+    return (new ApiBuilder($container))
         ->api(
             'Test.Api',
             function (ResourceBag $resources) use ($resource) {

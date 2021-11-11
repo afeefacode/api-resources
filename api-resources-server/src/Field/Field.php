@@ -25,7 +25,7 @@ class Field extends BagEntry
 
     protected bool $required = false;
 
-    protected bool $allowed = false;
+    protected bool $allowed = true;
 
     protected Closure $optionsRequestCallback;
 
@@ -58,20 +58,42 @@ class Field extends BagEntry
         return $this->name;
     }
 
-    public function optionsRequest(Closure $callback)
-    {
-        $this->optionsRequestCallback = $callback;
-    }
-
     public function options(array $options): Field
     {
         $this->options = $options;
         return $this;
     }
 
+    public function hasOptions(): bool
+    {
+        return count($this->options);
+    }
+
     public function getOptions(): array
     {
         return $this->options;
+    }
+
+    public function optionsRequest(Closure $callback): Field
+    {
+        $this->optionsRequestCallback = $callback;
+        return $this;
+    }
+
+    public function hasOptionsRequest(): bool
+    {
+        return isset($this->optionsRequestCallback);
+    }
+
+    public function getOptionsRequest(): ?ApiRequest
+    {
+        if (isset($this->optionsRequestCallback)) {
+            return $this->container->create(function (ApiRequest $request) {
+                $request->api($this->container->get(Api::class));
+                ($this->optionsRequestCallback)($request);
+            });
+        }
+        return null;
     }
 
     public function resolveParams(array $params): Field
@@ -223,7 +245,8 @@ class Field extends BagEntry
         return $this->container->create(static::class, function (Field $field) {
             $field
                 ->name($this->name)
-                ->required($this->required);
+                ->required($this->required)
+                ->allowed(false);
             if ($this->validator) {
                 $field->validator = $this->validator->clone();
             }
@@ -247,11 +270,7 @@ class Field extends BagEntry
         }
 
         if (isset($this->optionsRequestCallback)) {
-            $api = $this->container->get(Api::class);
-            $request = $this->container->create(function (ApiRequest $request) use ($api) {
-                $request->api($api);
-                ($this->optionsRequestCallback)($request);
-            });
+            $request = $this->getOptionsRequest();
             $json['options_request'] = $request->toSchemaJson();
         }
 

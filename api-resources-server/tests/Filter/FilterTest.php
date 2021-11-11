@@ -2,6 +2,7 @@
 
 namespace Afeefa\ApiResources\Tests\Filter;
 
+use Afeefa\ApiResources\Exception\Exceptions\MissingTypeException;
 use Afeefa\ApiResources\Test\FilterBuilder;
 use Error;
 use PHPUnit\Framework\TestCase;
@@ -134,5 +135,17 @@ class FilterTest extends TestCase
         $this->assertEquals('hans', $filter->getName());
         $this->assertEquals(['test'], $filter->getOptions());
         $this->assertEquals('my_default', $filter->getDefaultValue());
+    }
+
+    public function test_get_type_with_missing_type()
+    {
+        $this->expectException(MissingTypeException::class);
+        $this->expectExceptionMessageMatches('/^Missing type for class Afeefa\\\ApiResources\\\Test\\\TestFilter@anonymous/');
+
+        $filter = (new FilterBuilder())
+            ->filter()
+            ->get();
+
+        $filter::type();
     }
 }

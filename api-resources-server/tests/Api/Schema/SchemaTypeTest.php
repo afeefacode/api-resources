@@ -179,7 +179,11 @@ class SchemaTypeTest extends ApiResourcesTest
         $api = createApiWithSingleResource(
             actionsCallback: function (ActionBag $actions) {
                 $actions->add('type', function (Action $action) {
-                    $action->input(T('Test.Type'));
+                    $action
+                        ->input(T('Test.Type'))
+                        ->response(T('Test.Type'))
+                        ->resolve(function () {
+                        });
                 });
             }
         );
@@ -196,7 +200,10 @@ class SchemaTypeTest extends ApiResourcesTest
         $api = createApiWithSingleResource(
             actionsCallback: function (ActionBag $actions) {
                 $actions->add('type', function (Action $action) {
-                    $action->response(T('Test.Type'));
+                    $action
+                        ->response(T('Test.Type'))
+                        ->resolve(function () {
+                        });
                 });
             }
         );
@@ -221,16 +228,6 @@ class SchemaTypeTest extends ApiResourcesTest
         $schema = $api->toSchemaJson();
 
         $this->assertEquals(['Test.Type', 'Test.Type2'], array_keys($schema['types']));
-    }
-
-    public function test_get_type_with_missing_type()
-    {
-        $this->expectException(MissingTypeException::class);
-        $this->expectExceptionMessageMatches('/^Missing type for class Afeefa\\\ApiResources\\\Test\\\TestType@anonymous/');
-
-        $type = $this->typeBuilder()->type()->get();
-
-        $type::type();
     }
 
     public function test_add_with_missing_type()
