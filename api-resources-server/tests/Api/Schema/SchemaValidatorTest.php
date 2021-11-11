@@ -97,6 +97,6 @@ class SchemaValidatorTest extends TestCase
             ->validator()
             ->get();
 
-        $validator->type();
+        $validator::type();
     }
 }

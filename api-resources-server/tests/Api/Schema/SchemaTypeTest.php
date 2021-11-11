@@ -234,7 +234,7 @@ class SchemaTypeTest extends TestCase
 
         $type = (new TypeBuilder())->type()->get();
 
-        $type->type();
+        $type::type();
     }
 
     public function test_add_with_missing_type()

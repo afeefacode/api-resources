@@ -110,7 +110,7 @@ class SchemaApiTest extends TestCase
 
         $api = (new ApiBuilder())->api()->get();
 
-        $api->type();
+        $api::type();
     }
 
     public function test_schema_with_missing_type()

@@ -138,7 +138,7 @@ class SchemaFilterTest extends TestCase
             ->filter()
             ->get();
 
-        $filter->type();
+        $filter::type();
     }
 
     public function test_add_with_missing_type()

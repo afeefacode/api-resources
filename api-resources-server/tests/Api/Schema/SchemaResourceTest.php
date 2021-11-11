@@ -57,7 +57,7 @@ class SchemaResourceTest extends TestCase
 
         $resource = (new ResourceBuilder())->resource()->get();
 
-        $resource->type();
+        $resource::type();
     }
 
     public function test_add_with_missing_type()
