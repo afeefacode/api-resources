@@ -1,6 +1,6 @@
 <?php
 
-namespace Afeefa\ApiResources\Tests\DI;
+namespace Afeefa\ApiResources\Tests\Bag;
 
 use Afeefa\ApiResources\Bag\Bag;
 use Afeefa\ApiResources\Bag\BagEntry;

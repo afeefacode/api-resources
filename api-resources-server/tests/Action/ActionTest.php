@@ -1,6 +1,6 @@
 <?php
 
-namespace Afeefa\ApiResources\Tests\ActionTest;
+namespace Afeefa\ApiResources\Tests\Action;
 
 use Afeefa\ApiResources\Action\Action;
 use Afeefa\ApiResources\Action\ActionInput;
