@@ -2,20 +2,42 @@
 
 namespace Afeefa\ApiResources\Tests\Type;
 
+use Afeefa\ApiResources\Exception\Exceptions\NotATypeOrCallbackException;
+use Afeefa\ApiResources\Field\FieldBag;
+use Afeefa\ApiResources\Field\Fields\VarcharAttribute;
 use Afeefa\ApiResources\Test\ApiResourcesTest;
-
-use function Afeefa\ApiResources\Test\T;
 
 class TypeTest extends ApiResourcesTest
 {
     public function test_type()
     {
-        $type = $this->typeBuilder()->type('MyType')->get();
+        $type = $this->typeBuilder()->type('Test.Type')->get();
 
-        $this->assertEquals('MyType', $type::type());
+        $this->assertEquals('Test.Type', $type::type());
 
-        $type->getFields();
+        $this->assertEquals(0, $type->getFields()->numEntries());
+        $this->assertEquals(0, $type->getUpdateFields()->numEntries());
+        $this->assertEquals(0, $type->getCreateFields()->numEntries());
+    }
 
-        T('MyType');
+    public function test_wrong_attribute_type()
+    {
+        $this->expectException(NotATypeOrCallbackException::class);
+        $this->expectExceptionMessage('Argument is not a known type: Hoho');
+
+        $this->typeBuilder()->type('Test.Type', function (FieldBag $fields) {
+            $fields->attribute('name', 'Hoho');
+        })->get();
+    }
+
+    public function test_type_with_fields()
+    {
+        $type = $this->typeBuilder()->type('Test.Type', function (FieldBag $fields) {
+            $fields->attribute('name', VarcharAttribute::class);
+        })->get();
+
+        $this->assertEquals(1, $type->getFields()->numEntries());
+        $this->assertEquals(1, $type->getUpdateFields()->numEntries());
+        $this->assertEquals(1, $type->getCreateFields()->numEntries());
     }
 }
