@@ -40,4 +40,9 @@ class ActionInput extends ActionResponse implements ToSchemaJsonInterface, Conta
 
         return $json;
     }
+
+    protected function getNameForException(): string
+    {
+        return 'input';
+    }
 }

@@ -3,6 +3,7 @@
 namespace Afeefa\ApiResources\Field;
 
 use Afeefa\ApiResources\Api\TypeRegistry;
+use Afeefa\ApiResources\Type\RelatedType;
 use Afeefa\ApiResources\Type\Type;
 use Closure;
 
@@ -19,6 +20,8 @@ use Closure;
  */
 class Relation extends Field
 {
+    protected RelatedType $relatedType;
+
     protected string $RelatedTypeClass;
 
     protected bool $isSingle = false;
@@ -67,6 +70,19 @@ class Relation extends Field
         return $this->isSingle;
     }
 
+    public function typeClassOrClassesOrMeta($TypeClassOrClassesOrMeta): Relation
+    {
+        $this->relatedType = $this->container->create(RelatedType::class)
+            ->relationName($this->name)
+            ->initFromArgument($TypeClassOrClassesOrMeta);
+        return $this;
+    }
+
+    public function getRelatedType(): RelatedType
+    {
+        return $this->relatedType;
+    }
+
     public function relatedTypeClass(string $RelatedTypeClass): Relation
     {
         $this->RelatedTypeClass = $RelatedTypeClass;
@@ -88,6 +104,7 @@ class Relation extends Field
     {
         /** @var Relation */
         $relation = parent::clone();
+        $relation->relatedType = $this->relatedType;
         $relation->relatedTypeClass($this->RelatedTypeClass);
         return $relation;
     }
@@ -96,9 +113,7 @@ class Relation extends Field
     {
         $json = parent::getSchemaJson($typeRegistry);
 
-        $typeRegistry->registerType($this->RelatedTypeClass);
-
-        $json['related_type'] = $this->RelatedTypeClass::type();
+        $json['related_type'] = $this->relatedType->toSchemaJson();
 
         return $json;
     }

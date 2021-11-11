@@ -2,14 +2,14 @@
 
 namespace Afeefa\ApiResources\Tests\Field;
 
+use Afeefa\ApiResources\Bag\BagEntry;
+use Afeefa\ApiResources\Exception\Exceptions\NotATypeException;
 use Afeefa\ApiResources\Exception\Exceptions\NotATypeOrCallbackException;
 use Afeefa\ApiResources\Field\FieldBag;
 use Afeefa\ApiResources\Field\Fields\HasOneRelation;
 use Afeefa\ApiResources\Field\Fields\VarcharAttribute;
 use Afeefa\ApiResources\Test\ApiResourcesTest;
 use function Afeefa\ApiResources\Test\T;
-
-use Error;
 
 class FieldBagTest extends ApiResourcesTest
 {
@@ -35,8 +35,8 @@ class FieldBagTest extends ApiResourcesTest
 
     public function test_wrong_relation_related_type()
     {
-        $this->expectException(Error::class);
-        $this->expectExceptionMessage('Class "Hoho" not found');
+        $this->expectException(NotATypeException::class);
+        $this->expectExceptionMessage('Value for relation name is not a type.');
 
         $fields = $this->container->create(FieldBag::class);
         $fields->relation('name', 'Hoho', HasOneRelation::class);
@@ -49,5 +49,13 @@ class FieldBagTest extends ApiResourcesTest
 
         $fields = $this->container->create(FieldBag::class);
         $fields->relation('name', T('Test.Type'), 'RelationClass');
+    }
+
+    public function test_set_disabled()
+    {
+        $fields = $this->container->create(FieldBag::class);
+        $fields->set('name', new BagEntry());
+
+        $this->assertEquals(0, $fields->numEntries());
     }
 }

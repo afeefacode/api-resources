@@ -45,7 +45,9 @@ class SchemaTypeTest extends ApiResourcesTest
                     ],
                     'related_type' => [
                         'type' => 'Afeefa.HasOneRelation',
-                        'related_type' => 'Test.Type'
+                        'related_type' => [
+                            'type' => 'Test.Type'
+                        ]
                     ]
                 ]
             ]

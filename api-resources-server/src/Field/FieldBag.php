@@ -5,7 +5,6 @@ namespace Afeefa\ApiResources\Field;
 use Afeefa\ApiResources\Api\TypeRegistry;
 use Afeefa\ApiResources\Bag\Bag;
 use Afeefa\ApiResources\Bag\BagEntryInterface;
-use Afeefa\ApiResources\DB\TypeClassMap;
 use Closure;
 
 /**
@@ -57,18 +56,15 @@ class FieldBag extends Bag
         return $this;
     }
 
-    public function relation(string $name, string $RelatedTypeClass, $classOrCallback): FieldBag
+    public function relation(string $name, string $TypeClassOrClassesOrMeta, $classOrCallback): FieldBag
     {
-        $this->container->create($classOrCallback, function (Relation $relation) use ($name, $RelatedTypeClass) {
+        $this->container->create($classOrCallback, function (Relation $relation) use ($name, $TypeClassOrClassesOrMeta) {
             $relation
                 ->name($name)
                 ->allowed(true)
-                ->relatedTypeClass($RelatedTypeClass);
+                ->typeClassOrClassesOrMeta($TypeClassOrClassesOrMeta)
+                ->relatedTypeClass($TypeClassOrClassesOrMeta);
             $this->setInternal($name, $relation);
-        });
-
-        $this->container->get(function (TypeClassMap $typeClassMap) use ($RelatedTypeClass) {
-            $typeClassMap->add($RelatedTypeClass::type(), $RelatedTypeClass);
         });
 
         return $this;
