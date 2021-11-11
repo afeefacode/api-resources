@@ -91,6 +91,11 @@ class Bag implements ToSchemaJsonInterface, ContainerAwareInterface
         return $this->entries;
     }
 
+    public function numEntries(): int
+    {
+        return count($this->entries);
+    }
+
     public function getSchemaJson(): array
     {
         return array_filter(array_map(function (BagEntryInterface $entry) {

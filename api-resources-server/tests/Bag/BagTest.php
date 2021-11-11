@@ -206,6 +206,22 @@ class BagTest extends TestCase
 
         $this->assertFalse($bag->has('one'));
     }
+
+    public function test_num_entries()
+    {
+        $bag = new Bag();
+
+        $entry = new TestBagEntry([
+            'value' => 'one'
+        ]);
+
+        $this->assertEquals(0, $bag->numEntries());
+
+        $bag->set('one', $entry);
+        $bag->set('two', $entry);
+
+        $this->assertEquals(2, $bag->numEntries());
+    }
 }
 
 class TestBagEntry extends BagEntry
