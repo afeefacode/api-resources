@@ -8,22 +8,15 @@ use Afeefa\ApiResources\Exception\Exceptions\MissingTypeException;
 use Afeefa\ApiResources\Field\FieldBag;
 use Afeefa\ApiResources\Field\Fields\HasOneRelation;
 use Afeefa\ApiResources\Field\Fields\VarcharAttribute;
+use Afeefa\ApiResources\Test\ApiResourcesTest;
+
 use function Afeefa\ApiResources\Test\createApiWithSingleResource;
 use function Afeefa\ApiResources\Test\createApiWithSingleType;
 use function Afeefa\ApiResources\Test\T;
-use Afeefa\ApiResources\Test\TypeBuilder;
-use Afeefa\ApiResources\Test\TypeRegistry;
 use Afeefa\ApiResources\Validator\Validators\VarcharValidator;
 
-use PHPUnit\Framework\TestCase;
-
-class SchemaTypeTest extends TestCase
+class SchemaTypeTest extends ApiResourcesTest
 {
-    protected function setUp(): void
-    {
-        TypeRegistry::reset();
-    }
-
     public function test_simple()
     {
         $api = createApiWithSingleType(
@@ -167,7 +160,7 @@ class SchemaTypeTest extends TestCase
 
     public function test_type_not_in_action()
     {
-        (new TypeBuilder())->type('Test.Type');
+        $this->typeBuilder()->type('Test.Type')->get();
 
         $api = createApiWithSingleResource();
 
@@ -178,7 +171,7 @@ class SchemaTypeTest extends TestCase
 
     public function test_type_in_action_input()
     {
-        (new TypeBuilder())->type('Test.Type');
+        $this->typeBuilder()->type('Test.Type')->get();
 
         $api = createApiWithSingleResource(
             actionsCallback: function (ActionBag $actions) {
@@ -195,7 +188,7 @@ class SchemaTypeTest extends TestCase
 
     public function test_type_in_action_response()
     {
-        (new TypeBuilder())->type('Test.Type');
+        $this->typeBuilder()->type('Test.Type')->get();
 
         $api = createApiWithSingleResource(
             actionsCallback: function (ActionBag $actions) {
@@ -212,7 +205,7 @@ class SchemaTypeTest extends TestCase
 
     public function test_type_in_relation()
     {
-        (new TypeBuilder())->type('Test.Type2');
+        $this->typeBuilder()->type('Test.Type2')->get();
 
         $api = createApiWithSingleType(
             'Test.Type',
@@ -232,7 +225,7 @@ class SchemaTypeTest extends TestCase
         $this->expectException(MissingTypeException::class);
         $this->expectExceptionMessageMatches('/^Missing type for class Afeefa\\\ApiResources\\\Test\\\TestType@anonymous/');
 
-        $type = (new TypeBuilder())->type()->get();
+        $type = $this->typeBuilder()->type()->get();
 
         $type::type();
     }
@@ -242,7 +235,7 @@ class SchemaTypeTest extends TestCase
         $this->expectException(MissingTypeException::class);
         $this->expectExceptionMessageMatches('/^Missing type for class Afeefa\\\ApiResources\\\Test\\\TestType@anonymous/');
 
-        $type = (new TypeBuilder())->type()->get();
+        $type = $this->typeBuilder()->type()->get();
 
         $api = createApiWithSingleResource(
             actionsCallback: function (ActionBag $actions) use ($type) {

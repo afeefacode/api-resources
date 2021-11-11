@@ -6,11 +6,29 @@ use Afeefa\ApiResources\Action\Action;
 use Afeefa\ApiResources\Action\ActionBag;
 use Afeefa\ApiResources\Api\Api;
 use Afeefa\ApiResources\Resource\ResourceBag;
+use Afeefa\ApiResources\Type\Type;
 use Closure;
 
-function T(string $type): string
+function T(string $type, bool $create = true): ?string
 {
-    return TypeRegistry::getOrCreate($type)::class;
+    // find container entry of Type::class with type() === type
+    $container = ApiResourcesTest::$staticContainer;
+    $entries = $container->entries();
+    foreach (array_keys($entries) as $Class) {
+        if (is_subclass_of($Class, Type::class)) {
+            if ($Class::type() === $type) {
+                return $Class;
+            }
+        }
+    }
+
+    if ($create) {
+        // no entry found, create one
+        $type = (new TypeBuilder($container))->type($type)->get();
+        return $type::class;
+    }
+
+    return null;
 }
 
 function createApiWithSingleType(
@@ -18,7 +36,8 @@ function createApiWithSingleType(
     ?Closure $fieldsCallback = null,
     ?Closure $actionsCallback = null
 ): Api {
-    (new TypeBuilder())->type($typeName, $fieldsCallback);
+    $container = ApiResourcesTest::$staticContainer;
+    (new TypeBuilder($container))->type($typeName, $fieldsCallback)->get();
 
     if (!$actionsCallback) {
         $actionsCallback = function (ActionBag $actions) use ($typeName) {
@@ -39,13 +58,12 @@ function createApiWithSingleResource(?Closure $actionsCallback = null): Api
         ->resource('Test.Resource', $actionsCallback)
         ->get();
 
-    return (new ApiBuilder())
+    return (new ApiBuilder(new TestContainer()))
         ->api(
             'Test.Api',
             function (ResourceBag $resources) use ($resource) {
                 $resources->add($resource::class);
             }
         )
-        ->useTestContainer()
         ->get();
 }

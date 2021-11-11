@@ -7,7 +7,7 @@ use Afeefa\ApiResources\Resource\Resource;
 use Closure;
 use Webmozart\PathUtil\Path;
 
-class ResourceBuilder
+class ResourceBuilder extends Builder
 {
     public Resource $resource;
 
@@ -40,7 +40,7 @@ class ResourceBuilder
 
     public function get(): Resource
     {
-        return $this->resource;
+        return $this->container->create($this->resource::class);
     }
 }
 

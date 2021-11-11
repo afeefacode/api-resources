@@ -7,7 +7,7 @@ use Afeefa\ApiResources\Type\Type;
 use Closure;
 use Webmozart\PathUtil\Path;
 
-class TypeBuilder
+class TypeBuilder extends Builder
 {
     public Type $type;
 
@@ -37,10 +37,6 @@ class TypeBuilder
         $type::$updateFieldsCallback = $updateFieldsCallback;
         $type::$createFieldsCallback = $createFieldsCallback;
 
-        if ($typeName) { // do not register in missing type test
-            TypeRegistry::register($type);
-        }
-
         $this->type = $type;
 
         return $this;
@@ -48,7 +44,7 @@ class TypeBuilder
 
     public function get(): Type
     {
-        return $this->type;
+        return $this->container->get($this->type::class); // create and register single instance
     }
 }
 

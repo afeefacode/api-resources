@@ -9,23 +9,16 @@ use Afeefa\ApiResources\Exception\Exceptions\MissingTypeException;
 use Afeefa\ApiResources\Field\FieldBag;
 use Afeefa\ApiResources\Field\Fields\VarcharAttribute;
 use Afeefa\ApiResources\Test\ApiBuilder;
+use Afeefa\ApiResources\Test\ApiResourcesTest;
+
 use function Afeefa\ApiResources\Test\createApiWithSingleResource;
 
 use function Afeefa\ApiResources\Test\T;
-use Afeefa\ApiResources\Test\TypeBuilder;
-use Afeefa\ApiResources\Test\TypeRegistry;
 use Afeefa\ApiResources\Validator\Validators\VarcharValidator;
 use Closure;
 
-use PHPUnit\Framework\TestCase;
-
-class SchemaApiTest extends TestCase
+class SchemaApiTest extends ApiResourcesTest
 {
-    protected function setUp(): void
-    {
-        TypeRegistry::reset();
-    }
-
     public function test_simple()
     {
         $api = $this->createApiWithType(
@@ -128,7 +121,7 @@ class SchemaApiTest extends TestCase
         ?Closure $fieldsCallback = null,
         ?Closure $actionsCallback = null
     ): Api {
-        (new TypeBuilder())->type($typeName, $fieldsCallback);
+        $this->typeBuilder()->type($typeName, $fieldsCallback)->get();
 
         if (!$actionsCallback) {
             $actionsCallback = function (ActionBag $actions) use ($typeName) {

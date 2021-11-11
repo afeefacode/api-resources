@@ -10,16 +10,15 @@ use Afeefa\ApiResources\Field\FieldBag;
 use Afeefa\ApiResources\Field\Fields\VarcharAttribute;
 use Afeefa\ApiResources\Filter\Filter;
 use Afeefa\ApiResources\Filter\FilterBag;
+use Afeefa\ApiResources\Test\ApiResourcesTest;
+
 use function Afeefa\ApiResources\Test\createApiWithSingleResource;
 use Afeefa\ApiResources\Test\FilterBuilder;
 use function Afeefa\ApiResources\Test\T;
 
-use Afeefa\ApiResources\Test\TypeBuilder;
-use Afeefa\ApiResources\Test\TypeRegistry;
 use Closure;
-use PHPUnit\Framework\TestCase;
 
-class SchemaFilterTest extends TestCase
+class SchemaFilterTest extends ApiResourcesTest
 {
     public function test_simple()
     {
@@ -84,12 +83,10 @@ class SchemaFilterTest extends TestCase
 
     public function test_options_request()
     {
-        TypeRegistry::reset();
-
         // auto save type with field 'name' into registry
-        (new TypeBuilder())->type('Test.Type', function (FieldBag $fields) {
+        $this->typeBuilder()->type('Test.Type', function (FieldBag $fields) {
             $fields->attribute('name', VarcharAttribute::class);
-        });
+        })->get();
 
         $api = $this->createApiWithFilter('check', function (Filter $filter) {
             $filter

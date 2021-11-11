@@ -3,9 +3,8 @@
 namespace Afeefa\ApiResources\Test;
 
 use Afeefa\ApiResources\Action\Action;
-use Afeefa\ApiResources\DI\Container;
 
-class ActionBuilder
+class ActionBuilder extends Builder
 {
     private ?string $name = null;
     private bool $response = false;
@@ -31,12 +30,7 @@ class ActionBuilder
 
     public function get(): Action
     {
-        return $this->getAction(new Action());
-    }
-
-    public function createInContainer(): Action
-    {
-        $action = (new Container())->create(Action::class);
+        $action = $this->container->create(Action::class);
         return $this->getAction($action);
     }
 

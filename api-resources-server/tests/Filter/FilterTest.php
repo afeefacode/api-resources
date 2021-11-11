@@ -129,7 +129,7 @@ class FilterTest extends TestCase
                     ->options(['test'])
                     ->default('my_default');
             }
-        )->createInContainer();
+        )->get();
 
         $this->assertEquals('hans', $filter->getName());
         $this->assertEquals(['test'], $filter->getOptions());
