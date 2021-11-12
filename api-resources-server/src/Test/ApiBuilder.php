@@ -4,6 +4,7 @@ namespace Afeefa\ApiResources\Test;
 
 use Afeefa\ApiResources\Api\Api;
 use Afeefa\ApiResources\Resource\ResourceBag;
+use Afeefa\ApiResources\Type\Type;
 use Closure;
 
 use Webmozart\PathUtil\Path;
@@ -58,7 +59,18 @@ class TestApi extends Api
                     ->get()::class;
                 $resources->add($resource);
             };
-            (static::$resourcesCallback)($addResource);
+
+            $addType = function (
+                string $typeName = null,
+                ?Closure $fieldsCallback = null,
+                ?Closure $updateFieldsCallback = null,
+                ?Closure $createFieldsCallback = null
+            ): Type {
+                return (new TypeBuilder($this->container))
+                    ->type($typeName, $fieldsCallback, $updateFieldsCallback, $createFieldsCallback)
+                    ->get();
+            };
+            (static::$resourcesCallback)($addResource, $addType);
         }
     }
 }

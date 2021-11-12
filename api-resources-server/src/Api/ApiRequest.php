@@ -30,9 +30,9 @@ class ApiRequest implements ContainerAwareInterface, ToSchemaJsonInterface, Json
 
     protected FieldsToSave $fieldsToSave;
 
-    public function fromInput(): ApiRequest
+    public function fromInput(?array $input = null): ApiRequest
     {
-        $input = json_decode(file_get_contents('php://input'), true);
+        $input ??= json_decode(file_get_contents('php://input'), true);
 
         $this->resourceType = $input['resource'] ?? '';
         if (!$this->resourceType) {

@@ -5,9 +5,13 @@ namespace Afeefa\ApiResources\Tests\Api\Schema;
 use Afeefa\ApiResources\Action\Action;
 use Afeefa\ApiResources\Api\ApiRequest;
 use Afeefa\ApiResources\DB\ActionResolver;
+use Afeefa\ApiResources\DB\ResolveContext;
+use Afeefa\ApiResources\Field\FieldBag;
+use Afeefa\ApiResources\Field\Fields\VarcharAttribute;
 use Afeefa\ApiResources\Model\Model;
 use Afeefa\ApiResources\Test\ApiResourcesTest;
 use function Afeefa\ApiResources\Test\T;
+
 use Closure;
 
 class SimpleRequestTest extends ApiResourcesTest
@@ -18,11 +22,11 @@ class SimpleRequestTest extends ApiResourcesTest
             $addResource('RES', function (Closure $addAction) {
                 $addAction('ACT', function (Action $action) {
                     $action
-                        ->input(T('TYPE'))
                         ->response(T('TYPE'))
                         ->resolve(function (ActionResolver $resolver) {
                             $resolver->load(function () {
                                 return Model::fromSingle('TYPE', [
+                                    'id' => '123',
                                     'name' => 'test'
                                 ]);
                             });
@@ -31,17 +35,112 @@ class SimpleRequestTest extends ApiResourcesTest
             });
         })->get();
 
+        // request via php interface
+
         $result = $api->request(function (ApiRequest $request) {
             $request
                 ->resourceType('RES')
-                ->actionName('ACT');
+                ->actionName('ACT')
+                ->fields([
+                    'name' => true
+                ]);
         });
 
-        $data = $result['data'];
+        $data = ($result['data'])->jsonSerialize();
 
-        $this->assertEquals('TYPE', $data->type);
-        $this->assertEquals('test', $data->name);
+        $expectedData = [
+            'type' => 'TYPE',
+            'id' => '123'
+        ];
 
-        // debug_dump($result['data']->jsonSerialize());
+        $this->assertEquals($expectedData, $data);
+
+        // request via input
+
+        $result = $api->request(function (ApiRequest $request) {
+            $request
+                ->fromInput([
+                    'resource' => 'RES',
+                    'action' => 'ACT',
+                    'fields' => [
+                        'name' => true
+                    ]
+                ]);
+        });
+
+        $data = ($result['data'])->jsonSerialize();
+
+        $expectedData = [
+            'type' => 'TYPE',
+            'id' => '123'
+        ];
+
+        $this->assertEquals($expectedData, $data);
+    }
+
+    public function test_request_with_attribute()
+    {
+        $api = $this->apiBuilder()->api('API', function (Closure $addResource, Closure $addType) {
+            $addType('TYPE', function (FieldBag $fields) {
+                $fields->attribute('name', VarcharAttribute::class);
+            });
+
+            $addResource('RES', function (Closure $addAction) {
+                $addAction('ACT', function (Action $action) {
+                    $action
+                        ->response(T('TYPE'))
+                        ->resolve(function (ActionResolver $resolver) {
+                            $resolver->load(function (ResolveContext $c) {
+                                return Model::fromSingle('TYPE', [
+                                    'id' => '123',
+                                    'name' => 'test'
+                                ]);
+                            });
+                        });
+                });
+            });
+        })->get();
+
+        // request via php interface
+
+        $result = $api->request(function (ApiRequest $request) {
+            $request
+                ->resourceType('RES')
+                ->actionName('ACT')
+                ->fields(['name' => true]);
+        });
+
+        $data = ($result['data'])->jsonSerialize();
+
+        $expectedData = [
+            'type' => 'TYPE',
+            'id' => '123',
+            'name' => 'test'
+        ];
+
+        $this->assertEquals($expectedData, $data);
+
+        // request via input
+
+        $result = $api->request(function (ApiRequest $request) {
+            $request
+                ->fromInput([
+                    'resource' => 'RES',
+                    'action' => 'ACT',
+                    'fields' => [
+                        'name' => true
+                    ]
+                ]);
+        });
+
+        $data = ($result['data'])->jsonSerialize();
+
+        $expectedData = [
+            'type' => 'TYPE',
+            'id' => '123',
+            'name' => 'test'
+        ];
+
+        $this->assertEquals($expectedData, $data);
     }
 }
