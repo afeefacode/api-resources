@@ -155,7 +155,7 @@ class ModelRelationResolver
     protected function getRelationCountsOfRelation(RelationResolver $r, ResolveContext $c): array
     {
         $requestedFieldNames = $c->getRequestedFields()->getFieldNames();
-        $relatedType = $r->getRelation()->getRelatedTypeInstance();
+        $relatedType = $r->getRelation()->getRelatedType()->getTypeInstance();
         $relationCounts = [];
         foreach ($requestedFieldNames as $fieldName) {
             if (preg_match('/^count_(.+)/', $fieldName, $matches)) {

@@ -9,6 +9,7 @@ use Afeefa\ApiResources\DB\TypeClassMap;
 use Afeefa\ApiResources\DI\ContainerAwareInterface;
 use Afeefa\ApiResources\DI\ContainerAwareTrait;
 use Afeefa\ApiResources\Exception\Exceptions\NotATypeException;
+use Afeefa\ApiResources\Type\Type;
 use Afeefa\ApiResources\Type\TypeMeta;
 use Closure;
 
@@ -88,6 +89,11 @@ class ActionResponse implements ToSchemaJsonInterface, ContainerAwareInterface
     public function getTypeClass(): ?string
     {
         return $this->TypeClass ?? null;
+    }
+
+    public function getTypeInstance(): Type
+    {
+        return $this->container->get($this->RelatedTypeClass);
     }
 
     public function typeClasses(array $TypeClasses): ActionResponse
