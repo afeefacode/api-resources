@@ -52,7 +52,13 @@ class TestApi extends Api
     protected function resources(ResourceBag $resources): void
     {
         if (static::$resourcesCallback) {
-            (static::$resourcesCallback)->call($this, $resources);
+            $addResource = function (string $type = null, ?Closure $actionsCallback = null) use ($resources): void {
+                $resource = (new ResourceBuilder($this->container))
+                    ->resource($type, $actionsCallback)
+                    ->get()::class;
+                $resources->add($resource);
+            };
+            (static::$resourcesCallback)($addResource);
         }
     }
 }

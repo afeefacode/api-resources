@@ -3,7 +3,6 @@
 namespace Afeefa\ApiResources\Tests\Api\Schema;
 
 use Afeefa\ApiResources\Action\Action;
-use Afeefa\ApiResources\Action\ActionBag;
 use Afeefa\ApiResources\Exception\Exceptions\MissingTypeException;
 use Afeefa\ApiResources\Field\FieldBag;
 use Afeefa\ApiResources\Field\Fields\HasOneRelation;
@@ -15,6 +14,7 @@ use function Afeefa\ApiResources\Test\createApiWithSingleType;
 use function Afeefa\ApiResources\Test\T;
 use Afeefa\ApiResources\Type\Type;
 use Afeefa\ApiResources\Validator\Validators\VarcharValidator;
+use Closure;
 
 class SchemaTypeTest extends ApiResourcesTest
 {
@@ -176,17 +176,15 @@ class SchemaTypeTest extends ApiResourcesTest
     {
         $this->typeBuilder()->type('Test.Type')->get();
 
-        $api = createApiWithSingleResource(
-            actionsCallback: function (ActionBag $actions) {
-                $actions->add('type', function (Action $action) {
-                    $action
-                        ->input(T('Test.Type'))
-                        ->response(T('Test.Type'))
-                        ->resolve(function () {
-                        });
-                });
-            }
-        );
+        $api = createApiWithSingleResource(function (Closure $addAction) {
+            $addAction('type', function (Action $action) {
+                $action
+                    ->input(T('Test.Type'))
+                    ->response(T('Test.Type'))
+                    ->resolve(function () {
+                    });
+            });
+        });
 
         $schema = $api->toSchemaJson();
 
@@ -197,16 +195,14 @@ class SchemaTypeTest extends ApiResourcesTest
     {
         $this->typeBuilder()->type('Test.Type')->get();
 
-        $api = createApiWithSingleResource(
-            actionsCallback: function (ActionBag $actions) {
-                $actions->add('type', function (Action $action) {
-                    $action
-                        ->response(T('Test.Type'))
-                        ->resolve(function () {
-                        });
-                });
-            }
-        );
+        $api = createApiWithSingleResource(function (Closure $addAction) {
+            $addAction('type', function (Action $action) {
+                $action
+                    ->response(T('Test.Type'))
+                    ->resolve(function () {
+                    });
+            });
+        });
 
         $schema = $api->toSchemaJson();
 
@@ -237,13 +233,11 @@ class SchemaTypeTest extends ApiResourcesTest
 
         $type = $this->typeBuilder()->type()->get();
 
-        $api = createApiWithSingleResource(
-            actionsCallback: function (ActionBag $actions) use ($type) {
-                $actions->add('type', function (Action $action) use ($type) {
-                    $action->response($type::class);
-                });
-            }
-        );
+        $api = createApiWithSingleResource(function (Closure $addAction) use ($type) {
+            $addAction('type', function (Action $action) use ($type) {
+                $action->response($type::class);
+            });
+        });
 
         $api->toSchemaJson();
     }

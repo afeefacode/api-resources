@@ -3,16 +3,13 @@
 namespace Afeefa\ApiResources\Tests\Field;
 
 use Afeefa\ApiResources\Action\Action;
-use Afeefa\ApiResources\Action\ActionBag;
 use Afeefa\ApiResources\Api\ApiRequest;
 use Afeefa\ApiResources\Exception\Exceptions\MissingTypeException;
-use Afeefa\ApiResources\Resource\ResourceBag;
 use Afeefa\ApiResources\Test\ApiResourcesTest;
-
 use function Afeefa\ApiResources\Test\createApiWithSingleType;
 use Afeefa\ApiResources\Test\FieldBuilder;
-
 use function Afeefa\ApiResources\Test\T;
+use Closure;
 use Error;
 
 class FieldTest extends ApiResourcesTest
@@ -118,32 +115,26 @@ class FieldTest extends ApiResourcesTest
 
     public function test_clone_options_request()
     {
-        $resourceBuilder = $this->resourceBuilder();
-
-        $this->apiBuilder()->api(
-            'API',
-            function (ResourceBag $resources) use ($resourceBuilder) {
-                $resources
-                    ->add($resourceBuilder->resource('RES', function (ActionBag $actions) {
-                        $actions->add('ACT', function (Action $action) {
-                            $action
-                                ->input(T('TYPE'))
-                                ->response(T('TYPE'))
-                                ->resolve(function () {
-                                });
+        $this->apiBuilder()->api('API', function (Closure $addResource) {
+            $addResource('RES', function (Closure $addAction) {
+                $addAction('ACT', function (Action $action) {
+                    $action
+                        ->input(T('TYPE'))
+                        ->response(T('TYPE'))
+                        ->resolve(function () {
                         });
-                    })->get()::class)
-                    ->add($resourceBuilder->resource('RES2', function (ActionBag $actions) {
-                        $actions->add('ACT2', function (Action $action) {
-                            $action
-                                ->input(T('TYPE'))
-                                ->response(T('TYPE'))
-                                ->resolve(function () {
-                                });
+                });
+            });
+            $addResource('RES2', function (Closure $addAction) {
+                $addAction('ACT2', function (Action $action) {
+                    $action
+                        ->input(T('TYPE'))
+                        ->response(T('TYPE'))
+                        ->resolve(function () {
                         });
-                    })->get()::class);
-            }
-        )->get();
+                });
+            });
+        })->get();
 
         $originalField = $this->fieldBuilder()->field('FIELD')->get()
             ->name('test_field')

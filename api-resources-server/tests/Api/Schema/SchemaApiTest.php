@@ -3,7 +3,6 @@
 namespace Afeefa\ApiResources\Tests\Api\Schema;
 
 use Afeefa\ApiResources\Action\Action;
-use Afeefa\ApiResources\Action\ActionBag;
 use Afeefa\ApiResources\Api\Api;
 use Afeefa\ApiResources\Exception\Exceptions\MissingTypeException;
 use Afeefa\ApiResources\Field\FieldBag;
@@ -119,13 +118,13 @@ class SchemaApiTest extends ApiResourcesTest
     private function createApiWithType(
         string $typeName,
         ?Closure $fieldsCallback = null,
-        ?Closure $actionsCallback = null
+        ?Closure $addActionCallback = null
     ): Api {
         $this->typeBuilder()->type($typeName, $fieldsCallback)->get();
 
-        if (!$actionsCallback) {
-            $actionsCallback = function (ActionBag $actions) use ($typeName) {
-                $actions->add('test_action', function (Action $action) use ($typeName) {
+        if (!$addActionCallback) {
+            $addActionCallback = function (Closure $addAction) use ($typeName) {
+                $addAction('test_action', function (Action $action) use ($typeName) {
                     $action
                         ->response(T($typeName))
                         ->resolve(function () {
@@ -134,6 +133,6 @@ class SchemaApiTest extends ApiResourcesTest
             };
         }
 
-        return createApiWithSingleResource($actionsCallback);
+        return createApiWithSingleResource($addActionCallback);
     }
 }

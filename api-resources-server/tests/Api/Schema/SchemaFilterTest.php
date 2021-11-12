@@ -3,7 +3,6 @@
 namespace Afeefa\ApiResources\Tests\Api\Schema;
 
 use Afeefa\ApiResources\Action\Action;
-use Afeefa\ApiResources\Action\ActionBag;
 use Afeefa\ApiResources\Api\ApiRequest;
 use Afeefa\ApiResources\Exception\Exceptions\MissingTypeException;
 use Afeefa\ApiResources\Field\FieldBag;
@@ -133,17 +132,16 @@ class SchemaFilterTest extends ApiResourcesTest
 
         $filter = (new FilterBuilder())->filter()->get();
 
-        $api = createApiWithSingleResource(function (ActionBag $actions) use ($filter) {
-            $actions
-                ->add('test_action', function (Action $action) use ($filter) {
-                    $action
-                        ->filters(function (FilterBag $filters) use ($filter) {
+        $api = createApiWithSingleResource(function (Closure $addAction) use ($filter) {
+            $addAction('test_action', function (Action $action) use ($filter) {
+                $action
+                    ->filters(function (FilterBag $filters) use ($filter) {
                             $filters->add('test_filter', $filter::class);
                         })
-                        ->response(T('Test.Type'))
-                        ->resolve(function () {
+                    ->response(T('Test.Type'))
+                    ->resolve(function () {
                         });
-                });
+            });
         });
 
         $api->toSchemaJson();
@@ -153,18 +151,17 @@ class SchemaFilterTest extends ApiResourcesTest
     {
         $filter = (new FilterBuilder())->filter('Test.Filter')->get();
 
-        return createApiWithSingleResource(function (ActionBag $actions) use ($name, $filter, $filterCallback) {
-            $actions
-                ->add('test_action', function (Action $action) use ($name, $filter, $filterCallback) {
-                    $action
-                        ->filters(function (FilterBag $filters) use ($name, $filter, $filterCallback) {
-                            $filters->add($name, $filter::class);
-                            $filterCallback($filters->get($name));
-                        })
-                        ->response(T('Test.Type'))
-                        ->resolve(function () {
-                        });
-                });
+        return createApiWithSingleResource(function (Closure $addAction) use ($name, $filter, $filterCallback) {
+            $addAction('test_action', function (Action $action) use ($name, $filter, $filterCallback) {
+                $action
+                    ->filters(function (FilterBag $filters) use ($name, $filter, $filterCallback) {
+                        $filters->add($name, $filter::class);
+                        $filterCallback($filters->get($name));
+                    })
+                    ->response(T('Test.Type'))
+                    ->resolve(function () {
+                    });
+            });
         });
     }
 }

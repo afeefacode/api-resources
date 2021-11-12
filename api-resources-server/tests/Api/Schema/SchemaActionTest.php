@@ -3,7 +3,6 @@
 namespace Afeefa\ApiResources\Tests\Api\Schema;
 
 use Afeefa\ApiResources\Action\Action;
-use Afeefa\ApiResources\Action\ActionBag;
 use Afeefa\ApiResources\Action\ActionParams;
 use Afeefa\ApiResources\Field\Fields\IdAttribute;
 use Afeefa\ApiResources\Filter\FilterBag;
@@ -15,26 +14,26 @@ use function Afeefa\ApiResources\Test\createApiWithSingleResource;
 use function Afeefa\ApiResources\Test\T;
 
 use Afeefa\ApiResources\Type\Type;
+use Closure;
 
 class SchemaActionTest extends ApiResourcesTest
 {
     public function test_simple()
     {
-        $api = createApiWithSingleResource(function (ActionBag $actions) {
-            $actions
-                ->add('test_action', function (Action $action) {
-                    $action
-                        ->params(function (ActionParams $params) {
-                            $params->attribute('id', IdAttribute::class);
-                        })
-                        ->input(T('Test.InputType'))
-                        ->filters(function (FilterBag $filters) {
-                            $filters->add('search', KeywordFilter::class);
-                        })
-                        ->response(T('Test.ResponseType'))
-                        ->resolve(function () {
-                        });
-                });
+        $api = createApiWithSingleResource(function (Closure $addAction) {
+            $addAction('test_action', function (Action $action) {
+                $action
+                    ->params(function (ActionParams $params) {
+                        $params->attribute('id', IdAttribute::class);
+                    })
+                    ->input(T('Test.InputType'))
+                    ->filters(function (FilterBag $filters) {
+                        $filters->add('search', KeywordFilter::class);
+                    })
+                    ->response(T('Test.ResponseType'))
+                    ->resolve(function () {
+                    });
+            });
         });
 
         $schema = $api->toSchemaJson();
@@ -67,14 +66,13 @@ class SchemaActionTest extends ApiResourcesTest
 
     public function test_list_response()
     {
-        $api = createApiWithSingleResource(function (ActionBag $actions) {
-            $actions
-                ->add('test_action', function (Action $action) {
-                    $action
-                        ->response(Type::list(T('Test.ResponseType')))
-                        ->resolve(function () {
+        $api = createApiWithSingleResource(function (Closure $addAction) {
+            $addAction('test_action', function (Action $action) {
+                $action
+                    ->response(Type::list(T('Test.ResponseType')))
+                    ->resolve(function () {
                         });
-                });
+            });
         });
 
         $schema = $api->toSchemaJson();

@@ -50,7 +50,7 @@ class TestFilter extends Filter
     protected function setup(): void
     {
         if (static::$setupCallback) {
-            (static::$setupCallback)->call($this);
+            (static::$setupCallback)($this);
         }
     }
 }

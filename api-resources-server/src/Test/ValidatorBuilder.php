@@ -61,7 +61,7 @@ class TestValidator extends Validator
     protected function rules(RuleBag $rules): void
     {
         if (isset(static::$rulesCallback)) {
-            (static::$rulesCallback)->call($this, $rules);
+            (static::$rulesCallback)($rules);
         }
     }
 }

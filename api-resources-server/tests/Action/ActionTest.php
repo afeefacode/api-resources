@@ -95,7 +95,7 @@ class ActionTest extends ApiResourcesTest
 
     public function test_input_mixed()
     {
-        $type = $this->typeBuilder()->type('Test.Type')->get();
+        $this->typeBuilder()->type('Test.Type')->get();
         $action = (new ActionBuilder())->get();
 
         $TypeClasses = [
@@ -337,8 +337,9 @@ class ActionTest extends ApiResourcesTest
         $this->expectExceptionMessage('Action my_action does not have a resolver.');
 
         $action = (new ActionBuilder())
-            ->action('my_action')
-            ->withResponse()
+            ->action('my_action', function (Action $action) {
+                $action->response(T('Test.Type'));
+            })
             ->get();
 
         $action->toSchemaJson();

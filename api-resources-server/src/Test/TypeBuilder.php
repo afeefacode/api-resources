@@ -57,21 +57,21 @@ class TestType extends Type
     protected function fields(FieldBag $fields): void
     {
         if (static::$fieldsCallback) {
-            (static::$fieldsCallback)->call($this, $fields);
+            (static::$fieldsCallback)($fields);
         }
     }
 
     protected function updateFields(FieldBag $fields): void
     {
         if (static::$updateFieldsCallback) {
-            (static::$updateFieldsCallback)->call($this, $fields);
+            (static::$updateFieldsCallback)($fields);
         }
     }
 
     protected function createFields(FieldBag $fields): void
     {
         if (static::$createFieldsCallback) {
-            (static::$createFieldsCallback)->call($this, $fields);
+            (static::$createFieldsCallback)($fields);
         }
     }
 }

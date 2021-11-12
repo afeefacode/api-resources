@@ -13,7 +13,7 @@ class ResourceBuilder extends Builder
 
     public function resource(
         ?string $type = null,
-        ?Closure $actionsCallback = null
+        ?Closure $addActionCallback = null
     ): ResourceBuilder {
         // creating unique anonymous class is difficult
         // https://stackoverflow.com/questions/40833199/static-properties-in-php7-anonymous-classes
@@ -31,7 +31,7 @@ class ResourceBuilder extends Builder
         /** @var TestResource */
         $resource = eval($code); // eval is not always evil
 
-        $resource::$actionsCallback = $actionsCallback;
+        $resource::$addActionCallback = $addActionCallback;
 
         $this->resource = $resource;
 
@@ -46,12 +46,15 @@ class ResourceBuilder extends Builder
 
 class TestResource extends Resource
 {
-    public static ?Closure $actionsCallback;
+    public static ?Closure $addActionCallback;
 
     protected function actions(ActionBag $actions): void
     {
-        if (static::$actionsCallback) {
-            (static::$actionsCallback)->call($this, $actions);
+        if (static::$addActionCallback) {
+            $addAction = function (string $name, Closure $actionCallback) use ($actions): void {
+                $actions->add($name, $actionCallback);
+            };
+            (static::$addActionCallback)($addAction);
         }
     }
 }

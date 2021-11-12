@@ -3,6 +3,7 @@
 namespace Afeefa\ApiResources\Tests\Filter;
 
 use Afeefa\ApiResources\Exception\Exceptions\MissingTypeException;
+use Afeefa\ApiResources\Filter\Filter;
 use Afeefa\ApiResources\Test\FilterBuilder;
 use Error;
 use PHPUnit\Framework\TestCase;
@@ -122,9 +123,7 @@ class FilterTest extends TestCase
     {
         $filter = (new FilterBuilder())->filter(
             'Test.Filter',
-            function () {
-                /** @var Filter */
-                $filter = $this;
+            function (Filter $filter) {
                 $filter
                     ->name('hans')
                     ->options(['test'])
