@@ -5,7 +5,6 @@ namespace Afeefa\ApiResources\Tests\Api\Schema;
 use Afeefa\ApiResources\Action\Action;
 use Afeefa\ApiResources\Api\ApiRequest;
 use Afeefa\ApiResources\DB\ActionResolver;
-use Afeefa\ApiResources\DB\ResolveContext;
 use Afeefa\ApiResources\Field\FieldBag;
 use Afeefa\ApiResources\Field\Fields\VarcharAttribute;
 use Afeefa\ApiResources\Model\Model;
@@ -90,7 +89,7 @@ class SimpleRequestTest extends ApiResourcesTest
                     $action
                         ->response(T('TYPE'))
                         ->resolve(function (ActionResolver $resolver) {
-                            $resolver->load(function (ResolveContext $c) {
+                            $resolver->load(function () {
                                 return Model::fromSingle('TYPE', [
                                     'id' => '123',
                                     'name' => 'test'
