@@ -235,7 +235,10 @@ class SchemaTypeTest extends ApiResourcesTest
 
         $api = createApiWithSingleResource(function (Closure $addAction) use ($type) {
             $addAction('type', function (Action $action) use ($type) {
-                $action->response($type::class);
+                $action
+                    ->response($type::class)
+                    ->resolve(function () {
+                    });
             });
         });
 

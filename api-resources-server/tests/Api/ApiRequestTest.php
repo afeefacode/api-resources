@@ -1,6 +1,6 @@
 <?php
 
-namespace Afeefa\ApiResources\Tests\Api\Schema;
+namespace Afeefa\ApiResources\Tests\Api;
 
 use Afeefa\ApiResources\Api\ApiRequest;
 use Afeefa\ApiResources\DI\Container;
