@@ -12,18 +12,21 @@ class RequestedFields implements ContainerAwareInterface, JsonSerializable, ToSc
 {
     use ContainerAwareTrait;
 
+    protected string $TypeClass;
     protected Type $type;
-
     protected array $fields;
 
     public function typeClass(string $TypeClass): RequestedFields
     {
-        $this->type = $this->container->get($TypeClass);
+        $this->TypeClass = $TypeClass;
         return $this;
     }
 
     public function getType(): Type
     {
+        if (!isset($this->type)) {
+            $this->type = $this->container->get($this->TypeClass);
+        }
         return $this->type;
     }
 
@@ -48,7 +51,7 @@ class RequestedFields implements ContainerAwareInterface, JsonSerializable, ToSc
      */
     public function getAttributes(): array
     {
-        $type = $this->type;
+        $type = $this->getType();
         $attributes = [];
         foreach ($this->getFieldNames() as $fieldName) {
             if ($type->hasAttribute($fieldName)) {
@@ -63,7 +66,7 @@ class RequestedFields implements ContainerAwareInterface, JsonSerializable, ToSc
      */
     public function getRelations(): array
     {
-        $type = $this->type;
+        $type = $this->getType();
         $relations = [];
         foreach ($this->getFieldNames() as $fieldName) {
             if ($type->hasRelation($fieldName)) {
@@ -114,7 +117,7 @@ class RequestedFields implements ContainerAwareInterface, JsonSerializable, ToSc
 
     protected function normalize(array $fields): array
     {
-        $type = $this->type;
+        $type = $this->getType();
         $normalizedFields = [];
 
         foreach ($fields as $fieldName => $nested) {

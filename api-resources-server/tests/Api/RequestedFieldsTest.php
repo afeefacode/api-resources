@@ -18,94 +18,67 @@ class RequestedFieldsTest extends ApiResourcesTest
     {
         $type = $this->createType(function (FieldBag $fields) {
             $fields->attribute('name', VarcharAttribute::class);
-            $fields->relation('test_relation', T('TEST'), HasOneRelation::class);
+            $fields->relation('some_relation', T('TEST'), HasOneRelation::class);
         });
 
         $requestedFields = $this->createRequestedFields($type, [
             'name' => true,
-            'test_relation' => [
+            'some_relation' => [
                 'name' => true
             ]
         ]);
 
-        $this->assertEquals(['name', 'test_relation'], $requestedFields->getFieldNames());
-        $this->assertEquals(['name', 'test_relation'], $requestedFields->getFieldNamesForType($type));
+        $this->assertEquals(['name', 'some_relation'], $requestedFields->getFieldNames());
+        $this->assertEquals(['name', 'some_relation'], $requestedFields->getFieldNamesForType($type));
         $this->assertTrue($requestedFields->hasField('name'));
-        $this->assertTrue($requestedFields->hasField('test_relation'));
+        $this->assertTrue($requestedFields->hasField('some_relation'));
         $this->assertFalse($requestedFields->hasField('nix'));
         $this->assertNull($requestedFields->getNestedField('nix'));
         $this->assertSame($type, $requestedFields->getType());
         $this->assertEquals(['name' => $type->getAttribute('name')], $requestedFields->getAttributes());
-        $this->assertEquals(['test_relation' => $type->getRelation('test_relation')], $requestedFields->getRelations());
-        $this->assertSame(['name' => true, 'test_relation' => ['name' => true]], $requestedFields->toSchemaJson());
+        $this->assertEquals(['some_relation' => $type->getRelation('some_relation')], $requestedFields->getRelations());
+        $this->assertSame(['name' => true, 'some_relation' => ['name' => true]], $requestedFields->toSchemaJson());
     }
 
     public function test_normalizes()
     {
         $type = $this->createType(function (FieldBag $fields) {
             $fields->attribute('name', VarcharAttribute::class);
-            $fields->relation('test_relation', T('TEST'), HasOneRelation::class);
-            $fields->relation('test_relation2', T('TEST'), HasOneRelation::class);
+            $fields->relation('some_relation', T('TEST'), HasOneRelation::class);
+            $fields->relation('relation2', T('TEST'), HasOneRelation::class);
         });
 
         $requestedFields = $this->createRequestedFields($type, [
             'name' => true, // attribute
-            'count_test_relation' => true, // count relation
-            'test_relation' => [ // relation
+            'count_some_relation' => true, // count relation
+            'some_relation' => [ // relation
                 'name' => true
             ],
-            'test_relation2' => true, // relation collapsed
+            'relation2' => true, // relation collapsed
             '@TEST' => [ // on type
                 'name' => true,
-                'count_test_relation' => true,
-                'test_relation' => [
+                'count_some_relation' => true,
+                'some_relation' => [
                     'name' => true
                 ],
-                'test_relation2' => true
+                'relation2' => true
             ]
         ]);
 
         $expectedFields = [
             'name' => true,
-            'count_test_relation' => true,
-            'test_relation' => [
+            'count_some_relation' => true,
+            'some_relation' => [
                 'name' => true
             ],
-            'test_relation2' => [],
+            'relation2' => [],
             '@TEST' => [
                 'name' => true,
-                'count_test_relation' => true,
-                'test_relation' => [
+                'count_some_relation' => true,
+                'some_relation' => [
                     'name' => true
                 ],
-                'test_relation2' => [],
-            ]
-        ];
-
-        $this->assertSame($expectedFields, $requestedFields->toSchemaJson());
-    }
-
-    public function test_normalizes_duplicated_fields()
-    {
-        $type = $this->createType(function (FieldBag $fields) {
-            $fields->attribute('name', VarcharAttribute::class);
-            $fields->attribute('name2', VarcharAttribute::class);
-            $fields->relation('test_relation', T('TEST'), HasOneRelation::class);
-            $fields->relation('test_relation2', T('TEST'), HasOneRelation::class);
-        });
-
-        $requestedFields = $this->createRequestedFields($type, [
-            'test_relation' => [
-                'name' => true
-            ],
-            'test_relation' => [
-                'name2' => true
-            ]
-        ]);
-
-        $expectedFields = [
-            'test_relation' => [
-                'name2' => true
+                'relation2' => [],
             ]
         ];
 
@@ -116,19 +89,110 @@ class RequestedFieldsTest extends ApiResourcesTest
     {
         $type = $this->createType(function (FieldBag $fields) {
             $fields->attribute('name', VarcharAttribute::class);
-            $fields->relation('test_relation', T('TEST'), HasOneRelation::class);
+            $fields->relation('some_relation', T('TEST'), HasOneRelation::class);
         });
 
         $requestedFields = $this->createRequestedFields($type, [
             'name' => null,
-            'test_relation' => null,
+            'some_relation' => null,
             '@TEST' => [
                 'name' => null,
-                'test_relation' => null
+                'some_relation' => null
             ]
         ]);
 
         $expectedFields = ['@TEST' => []];
+
+        $this->assertSame($expectedFields, $requestedFields->toSchemaJson());
+    }
+
+    public function test_normalizes_attributes()
+    {
+        $type = $this->createType(function (FieldBag $fields) {
+            $fields->attribute('name', VarcharAttribute::class);
+            $fields->attribute('name2', VarcharAttribute::class);
+            $fields->attribute('name3', VarcharAttribute::class);
+            $fields->attribute('name4', VarcharAttribute::class);
+        });
+
+        $requestedFields = $this->createRequestedFields($type, [
+            'name' => true,
+            'name2' => false,
+            'name3' => [],
+            'name4' => null
+        ]);
+
+        $expectedFields = [
+            'name' => true
+        ];
+
+        $this->assertSame($expectedFields, $requestedFields->toSchemaJson());
+    }
+
+    public function test_normalizes_relations()
+    {
+        $type = $this->createType(function (FieldBag $fields) {
+            $fields->attribute('name', VarcharAttribute::class);
+            $fields->relation('some_relation', T('TEST'), HasOneRelation::class);
+            $fields->relation('relation2', T('TEST'), HasOneRelation::class);
+            $fields->relation('relation3', T('TEST'), HasOneRelation::class);
+        });
+
+        $requestedFields = $this->createRequestedFields($type, [
+            'some_relation' => true,
+            'relation2' => [],
+            'relation3' => [
+                'name' => true
+            ]
+        ]);
+
+        $expectedFields = [
+            'some_relation' => [],
+            'relation2' => [],
+            'relation3' => [
+                'name' => true
+            ]
+        ];
+
+        $this->assertSame($expectedFields, $requestedFields->toSchemaJson());
+    }
+
+    public function test_normalizes_nested()
+    {
+        $type = $this->createType(function (FieldBag $fields) {
+            $fields->attribute('name', VarcharAttribute::class);
+            $fields->relation('some_relation', T('TEST'), HasOneRelation::class);
+        });
+
+        $requestedFields = $this->createRequestedFields($type, [
+            'some_relation' => [
+                'name' => true,
+                'some_relation' => [
+                    'name' => true,
+                    'some_relation' => [
+                        'name' => true,
+                        '@TEST' => [
+                            'name' => true
+                        ]
+                    ]
+                ]
+            ]
+        ]);
+
+        $expectedFields = [
+            'some_relation' => [
+                'name' => true,
+                'some_relation' => [
+                    'name' => true,
+                    'some_relation' => [
+                        'name' => true,
+                        '@TEST' => [
+                            'name' => true
+                        ]
+                    ]
+                ]
+            ]
+        ];
 
         $this->assertSame($expectedFields, $requestedFields->toSchemaJson());
     }
@@ -139,19 +203,19 @@ class RequestedFieldsTest extends ApiResourcesTest
 
         $requestedFields = $this->createRequestedFields($type, [
             'attribute_notexists' => true,
-            'count_relation_notexists' => true,
+            'count_some_relation_notexists' => true,
             'relation_notexists' => [
                 'attribute_notexists' => true,
                 'relation_notexists' => true,
             ],
             '@TEST' => [ // on existing type
                 'attribute_notexists' => true,
-                'count_relation_notexists' => true,
+                'count_some_relation_notexists' => true,
                 'relation_notexists' => true
             ],
             '@TEST_NOTEXISTS' => [
                 'attribute_notexists' => true,
-                'count_relation_notexists' => true,
+                'count_some_relation_notexists' => true,
                 'relation_notexists' => true
             ]
         ]);
@@ -161,9 +225,109 @@ class RequestedFieldsTest extends ApiResourcesTest
         $this->assertSame($expectedFields, $requestedFields->toSchemaJson());
     }
 
-    private function createType(?Closure $fieldsCallback = null): Type
+    public function test_get_nested()
     {
-        return $this->typeBuilder()->type('TEST', function (FieldBag $fields) use ($fieldsCallback) {
+        $type = $this->createType(function (FieldBag $fields) {
+            $fields->attribute('name', VarcharAttribute::class);
+            $fields->relation('some_relation', T('TEST'), HasOneRelation::class);
+        });
+
+        $requestedFields = $this->createRequestedFields($type, [
+            'some_relation' => [
+                'name' => true,
+                'some_relation' => [
+                    'name' => true
+                ]
+            ]
+        ]);
+
+        $nestedFields = $requestedFields->getNestedField('some_relation');
+
+        $expectedFields = [
+            'name' => true,
+            'some_relation' => [
+                'name' => true,
+            ]
+        ];
+
+        $this->assertSame($expectedFields, $nestedFields->toSchemaJson());
+
+        $nestedNestedFields = $nestedFields->getNestedField('some_relation');
+
+        $expectedFields = [
+            'name' => true
+        ];
+
+        $this->assertSame($expectedFields, $nestedNestedFields->toSchemaJson());
+    }
+
+    public function test_get_nested_wrong_fieldname()
+    {
+        $type = $this->createType(function (FieldBag $fields) {
+            $fields->attribute('name', VarcharAttribute::class);
+            $fields->relation('some_relation', T('TEST'), HasOneRelation::class);
+        });
+
+        $requestedFields = $this->createRequestedFields($type, [
+            'some_relation' => [
+                'name' => true,
+                'some_relation' => [
+                    'name' => true
+                ]
+            ]
+        ]);
+
+        $nestedFields = $requestedFields->getNestedField('this_is_wrong');
+
+        $this->assertNull($nestedFields);
+    }
+
+    public function test_mixed_type()
+    {
+        $type = $this->createType(function (FieldBag $fields) {
+            $fields->attribute('name', VarcharAttribute::class);
+            $fields->relation('some_relation', T('TEST'), HasOneRelation::class);
+        });
+
+        $type2 = $this->createType(function (FieldBag $fields) {
+            $fields->attribute('name2', VarcharAttribute::class);
+        }, 'TEST2');
+
+        $requestedFields = $this->createRequestedFields($type, [
+            'name' => true,
+            'some_relation' => [
+                'name' => true
+            ],
+            '@TEST2' => [
+                'name2' => true
+            ]
+        ]);
+
+        $expectedFields = [
+            'name' => true,
+            'some_relation' => [
+                'name' => true
+            ],
+            '@TEST2' => [
+                'name2' => true
+            ]
+        ];
+
+        $this->assertSame($expectedFields, $requestedFields->toSchemaJson());
+
+        $this->assertEquals(['name', 'some_relation', '@TEST2'], $requestedFields->getFieldNames());
+        $this->assertEquals(['name', 'some_relation'], $requestedFields->getFieldNamesForType($type));
+        $this->assertEquals(['name', 'some_relation', 'name2'], $requestedFields->getFieldNamesForType($type2));
+
+        $this->assertTrue($requestedFields->hasField('name'));
+        $this->assertTrue($requestedFields->hasField('some_relation'));
+        $this->assertTrue($requestedFields->getNestedField('@TEST2')->hasField('name2'));
+    }
+
+    private function createType(?Closure $fieldsCallback = null, ?string $typeName = null): Type
+    {
+        $typeName ??= 'TEST';
+        return $this->typeBuilder()->type($typeName, function (FieldBag $fields) use ($fieldsCallback) {
             if ($fieldsCallback) {
                 $fieldsCallback($fields);
             }
