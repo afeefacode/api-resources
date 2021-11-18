@@ -24,6 +24,11 @@ class Resource extends BagEntry
         return $this->actions->get($name);
     }
 
+    public function getActions(): ActionBag
+    {
+        return $this->actions;
+    }
+
     public function toSchemaJson(): array
     {
         return $this->actions->toSchemaJson();

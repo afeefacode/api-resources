@@ -27,6 +27,11 @@ class Api implements ContainerAwareInterface
         $this->resources($this->resources);
     }
 
+    public function getResources(): ResourceBag
+    {
+        return $this->resources;
+    }
+
     public function getResource(string $resourceType): Resource
     {
         return $this->resources->get($resourceType);
