@@ -2,7 +2,6 @@
 
 namespace Afeefa\ApiResources\Field;
 
-use Afeefa\ApiResources\Api\TypeRegistry;
 use Afeefa\ApiResources\Bag\Bag;
 use Afeefa\ApiResources\Bag\BagEntryInterface;
 use Closure;
@@ -127,9 +126,8 @@ class FieldBag extends Bag
         });
     }
 
-    public function getEntrySchemaJson(Field $field, TypeRegistry $typeRegistry): ?array
+    public function getEntrySchemaJson(Field $field): ?array
     {
-        $typeRegistry->registerField(get_class($field));
         if ($field->isAllowed()) {
             return $field->toSchemaJson();
         }

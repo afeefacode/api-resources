@@ -5,7 +5,6 @@ namespace Afeefa\ApiResources\Field;
 use Afeefa\ApiResources\Api\Api;
 use Afeefa\ApiResources\Api\ApiRequest;
 use Afeefa\ApiResources\Api\ToSchemaJsonTrait;
-use Afeefa\ApiResources\Api\TypeRegistry;
 use Afeefa\ApiResources\Bag\BagEntry;
 use Afeefa\ApiResources\DI\DependencyResolver;
 use Afeefa\ApiResources\Exception\Exceptions\InvalidConfigurationException;
@@ -121,6 +120,14 @@ class Field extends BagEntry
     public function getResolveParams(): array
     {
         return $this->resolveParams;
+    }
+
+    public function getValidatorClass(): ?string
+    {
+        if ($this->validator) {
+            return get_class($this->validator);
+        }
+        return null;
     }
 
     public function validate($validatorOrCallback): Field
@@ -259,7 +266,7 @@ class Field extends BagEntry
         });
     }
 
-    public function getSchemaJson(TypeRegistry $typeRegistry): array
+    public function toSchemaJson(): array
     {
         $json = [
             'type' => $this::type()
@@ -279,8 +286,6 @@ class Field extends BagEntry
         }
 
         if ($this->validator) {
-            $typeRegistry->registerValidator(get_class($this->validator));
-
             $json['validator'] = $this->validator->toSchemaJson();
             unset($json['validator']['rules']);
         }

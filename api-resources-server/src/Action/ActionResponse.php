@@ -4,8 +4,6 @@ namespace Afeefa\ApiResources\Action;
 
 use Afeefa\ApiResources\Api\ToSchemaJsonInterface;
 use Afeefa\ApiResources\Api\ToSchemaJsonTrait;
-use Afeefa\ApiResources\Api\TypeRegistry;
-use Afeefa\ApiResources\DB\TypeClassMap;
 use Afeefa\ApiResources\DI\ContainerAwareInterface;
 use Afeefa\ApiResources\DI\ContainerAwareTrait;
 use Afeefa\ApiResources\Exception\Exceptions\NotATypeException;
@@ -69,13 +67,6 @@ class ActionResponse implements ToSchemaJsonInterface, ContainerAwareInterface
             $callback($this);
         }
 
-        $TypeClasses = is_array($TypeClassOrClasses) ? $TypeClassOrClasses : [$TypeClassOrClasses];
-        $this->container->get(function (TypeClassMap $typeClassMap) use ($TypeClasses) {
-            foreach ($TypeClasses as $TypeClass) {
-                $typeClassMap->add($TypeClass::type(), $TypeClass);
-            }
-        });
-
         return $this;
     }
 
@@ -107,6 +98,14 @@ class ActionResponse implements ToSchemaJsonInterface, ContainerAwareInterface
         return $this->TypeClasses ?? [];
     }
 
+    public function getAllTypeClasses(): array
+    {
+        if (isset($this->TypeClass)) {
+            return [$this->TypeClass];
+        }
+        return $this->TypeClasses;
+    }
+
     public function list(): ActionResponse
     {
         $this->list = true;
@@ -118,18 +117,14 @@ class ActionResponse implements ToSchemaJsonInterface, ContainerAwareInterface
         return $this->list;
     }
 
-    public function getSchemaJson(TypeRegistry $typeRegistry): array
+    public function toSchemaJson(): array
     {
         $json = [];
 
         if (isset($this->TypeClass)) {
-            $typeRegistry->registerType($this->TypeClass);
             $json['type'] = $this->TypeClass::type();
-        }
-
-        if (isset($this->TypeClasses)) {
-            $json['types'] = array_map(function ($TypeClass) use ($typeRegistry) {
-                $typeRegistry->registerType($TypeClass);
+        } else {
+            $json['types'] = array_map(function ($TypeClass) {
                 return $TypeClass::type();
             }, $this->TypeClasses);
         }

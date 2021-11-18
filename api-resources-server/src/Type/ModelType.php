@@ -35,6 +35,25 @@ class ModelType extends Type
         return $this->createFields;
     }
 
+    public function getAllValidatorClasses(): array
+    {
+        $ValidatorClasses = parent::getAllValidatorClasses();
+
+        foreach ($this->updateFields->getEntries() as $field) {
+            if ($ValidatorClass = $field->getValidatorClass()) {
+                $ValidatorClasses[] = $ValidatorClass;
+            }
+        }
+
+        foreach ($this->createFields->getEntries() as $field) {
+            if ($ValidatorClass = $field->getValidatorClass()) {
+                $ValidatorClasses[] = $ValidatorClass;
+            }
+        }
+
+        return $ValidatorClasses;
+    }
+
     public function toSchemaJson(): array
     {
         $json = parent::toSchemaJson();

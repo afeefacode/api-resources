@@ -2,7 +2,6 @@
 
 namespace Afeefa\ApiResources\Field;
 
-use Afeefa\ApiResources\Api\TypeRegistry;
 use Afeefa\ApiResources\Type\RelatedType;
 use Closure;
 
@@ -88,9 +87,9 @@ class Relation extends Field
         return $relation;
     }
 
-    public function getSchemaJson(TypeRegistry $typeRegistry): array
+    public function toSchemaJson(): array
     {
-        $json = parent::getSchemaJson($typeRegistry);
+        $json = parent::toSchemaJson();
 
         $json['related_type'] = $this->relatedType->toSchemaJson();
 

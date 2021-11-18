@@ -147,12 +147,12 @@ class FieldsToSave implements ContainerAwareInterface, JsonSerializable
         return $normalizedFields;
     }
 
-    protected function getTypeClassByName(string $typeName = null): string
-    {
-        return $this->container->call(function (TypeClassMap $typeClassMap) use ($typeName) {
-            return $typeClassMap->get($typeName);
-        });
-    }
+    // protected function getTypeClassByName(string $typeName = null): string
+    // {
+    //     return $this->container->call(function (TypeClassMap $typeClassMap) use ($typeName) {
+    //         return $typeClassMap->get($typeName);
+    //     });
+    // }
 
     protected function createNestedFields(string $TypeClass, array $fields): FieldsToSave
     {

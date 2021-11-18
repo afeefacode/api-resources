@@ -8,7 +8,6 @@ use Afeefa\ApiResources\DI\ContainerAwareInterface;
 
 use Afeefa\ApiResources\DI\ContainerAwareTrait;
 use Afeefa\ApiResources\DI\DependencyResolver;
-
 use Closure;
 
 class Bag implements ToSchemaJsonInterface, ContainerAwareInterface
@@ -95,7 +94,7 @@ class Bag implements ToSchemaJsonInterface, ContainerAwareInterface
         return count($this->entries);
     }
 
-    public function getSchemaJson(): array
+    public function toSchemaJson(): array
     {
         return array_filter(array_map(function (BagEntryInterface $entry) {
             if (method_exists($this, 'getEntrySchemaJson')) {

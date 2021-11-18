@@ -4,6 +4,7 @@ namespace Afeefa\ApiResources\Api;
 
 use Afeefa\ApiResources\Action\Action;
 use Afeefa\ApiResources\DB\ActionResolver;
+use Afeefa\ApiResources\DB\TypeClassMap;
 use Afeefa\ApiResources\DI\ContainerAwareInterface;
 use Afeefa\ApiResources\DI\ContainerAwareTrait;
 use Afeefa\ApiResources\DI\DependencyResolver;
@@ -185,6 +186,11 @@ class ApiRequest implements ContainerAwareInterface, ToSchemaJsonInterface, Json
         }
 
         $action = $this->getAction();
+
+        // find and register all necessary types
+        $this->container->get(TypeClassMap::class)
+            ->createUsedTypesForAction($action);
+
         $resolveCallback = $action->getResolve();
 
         $actionResolver = null;

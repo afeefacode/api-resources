@@ -136,7 +136,9 @@ class RequestedFields implements ContainerAwareInterface, JsonSerializable, ToSc
                 }
                 if (is_array($nested)) {
                     $TypeClass = $this->getTypeClassByName($matches[1]);
-                    $normalizedFields[$fieldName] = $this->createNestedFields($TypeClass, $nested);
+                    if ($TypeClass) {
+                        $normalizedFields[$fieldName] = $this->createNestedFields($TypeClass, $nested);
+                    }
                 }
             }
         }
@@ -144,7 +146,7 @@ class RequestedFields implements ContainerAwareInterface, JsonSerializable, ToSc
         return $normalizedFields;
     }
 
-    protected function getTypeClassByName(string $typeName = null): string
+    protected function getTypeClassByName(string $typeName = null): ?string
     {
         return $this->container->call(function (TypeClassMap $typeClassMap) use ($typeName) {
             return $typeClassMap->get($typeName);

@@ -51,6 +51,32 @@ class Type implements ToSchemaJsonInterface, ContainerAwareInterface
         return $this->fields;
     }
 
+    public function getAllRelatedTypeClasses(): array
+    {
+        $TypeClasses = [];
+
+        foreach ($this->fields->getEntries() as $field) {
+            if ($field instanceof Relation) {
+                $TypeClasses = [...$TypeClasses, ...$field->getRelatedType()->getAllTypeClasses()];
+            }
+        }
+
+        return $TypeClasses;
+    }
+
+    public function getAllValidatorClasses(): array
+    {
+        $ValidatorClasses = [];
+
+        foreach ($this->fields->getEntries() as $field) {
+            if ($ValidatorClass = $field->getValidatorClass()) {
+                $ValidatorClasses[] = $ValidatorClass;
+            }
+        }
+
+        return $ValidatorClasses;
+    }
+
     public function getField(string $name): Field
     {
         return $this->fields->get($name);
