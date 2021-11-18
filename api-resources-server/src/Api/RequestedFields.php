@@ -88,14 +88,23 @@ class RequestedFields implements ContainerAwareInterface, JsonSerializable, ToSc
         return $fieldNames;
     }
 
-    public function getNestedField($fieldName): RequestedFields
+    public function getNestedField($fieldName): ?RequestedFields
     {
-        return $this->fields[$fieldName];
+        return $this->fields[$fieldName] ?? null;
     }
 
     public function toSchemaJson(): array
     {
-        return $this->fields;
+        $json = [];
+        foreach ($this->fields as $name => $field) {
+            if ($field === true) {
+                $json[$name] = true;
+            }
+            if ($field instanceof RequestedFields) {
+                $json[$name] = $field->toSchemaJson();
+            }
+        }
+        return $json;
     }
 
     public function jsonSerialize()
@@ -116,7 +125,7 @@ class RequestedFields implements ContainerAwareInterface, JsonSerializable, ToSc
                 }
             }
 
-            if ($type->hasAttribute($fieldName)) {
+            if ($type->hasAttribute($fieldName) && $nested === true) {
                 $normalizedFields[$fieldName] = true;
             }
 
