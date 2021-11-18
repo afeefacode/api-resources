@@ -2,6 +2,7 @@
 
 namespace Afeefa\ApiResources\Test;
 
+use Afeefa\ApiResources\DB\TypeClassMap;
 use Afeefa\ApiResources\Field\FieldBag;
 use Afeefa\ApiResources\Type\Type;
 use Closure;
@@ -42,9 +43,13 @@ class TypeBuilder extends Builder
         return $this;
     }
 
-    public function get(): Type
+    public function get(bool $register = false): Type
     {
-        return $this->container->get($this->type::class); // create and register single instance
+        $type = $this->container->get($this->type::class); // create and register single instance
+        if ($register) {
+            $this->container->get(TypeClassMap::class)->add($type::class);
+        }
+        return $type;
     }
 }
 
