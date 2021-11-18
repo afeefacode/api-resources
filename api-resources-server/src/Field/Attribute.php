@@ -17,7 +17,7 @@ class Attribute extends Field
 {
     protected array $dependingAttributes;
 
-    public function select($attributeOrAttributes): Attribute
+    public function depends($attributeOrAttributes): Attribute
     {
         $this->dependingAttributes = is_array($attributeOrAttributes) ? $attributeOrAttributes : [$attributeOrAttributes];
         return $this;
