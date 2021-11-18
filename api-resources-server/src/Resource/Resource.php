@@ -27,13 +27,6 @@ class Resource extends BagEntry
     public function toSchemaJson(): array
     {
         return $this->actions->toSchemaJson();
-
-        $json = [
-            // 'type' => $this::type(),
-            'actions' => $this->actions->toSchemaJson()
-        ];
-
-        return $json;
     }
 
     protected function actions(ActionBag $actions): void
