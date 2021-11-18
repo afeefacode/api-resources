@@ -251,7 +251,7 @@ class ApiRequest implements ContainerAwareInterface, ToSchemaJsonInterface, Json
             'params' => $this->params,
             'filters' => $this->filters,
             'fields' => $this->fields,
-            'fieldsToSave' => $this->fieldsToSave
+            'fieldsToSave' => $this->fieldsToSave ?? []
         ];
         return $json;
     }
