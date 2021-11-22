@@ -18,6 +18,7 @@ class ArticlesResolver
         $r
             ->load(function (ResolveContext $c) use ($r, $db) {
                 $request = $r->getRequest();
+                $action = $request->getAction();
                 $requestedFields = $request->getFields();
                 $filters = $request->getFilters();
                 $params = $request->getParams();
@@ -81,7 +82,7 @@ class ArticlesResolver
 
                 // pagination
 
-                $pageSizeFilter = $r->getAction()->getFilter('page_size');
+                $pageSizeFilter = $action->getFilter('page_size');
 
                 $page = $filters['page'] ?? 1;
                 $pageSize = $filters['page_size'] ?? $pageSizeFilter->getDefaultValue();
@@ -94,7 +95,7 @@ class ArticlesResolver
 
                 // order
 
-                $oderFilter = $r->getAction()->getFilter('order');
+                $oderFilter = $action->getFilter('order');
                 $order = $filters['order'] ?? $oderFilter->getDefaultValue() ?? [];
 
                 foreach ($order as $field => $direction) {

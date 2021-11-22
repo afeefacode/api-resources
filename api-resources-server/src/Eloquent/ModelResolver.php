@@ -66,7 +66,7 @@ class ModelResolver
         $r
             ->load(function (ResolveContext $c) use ($r) {
                 $request = $r->getRequest();
-                $action = $r->getAction();
+                $action = $request->getAction();
                 $params = $request->getParams();
                 $filters = $request->getFilters();
 

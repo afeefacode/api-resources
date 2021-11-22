@@ -28,7 +28,7 @@ class Model implements ModelInterface, JsonSerializable
             return $object;
         }
 
-        $model = new Model();
+        $model = new static();
         $model->type = $type;
         $model->setAttributes($object);
         return $model;

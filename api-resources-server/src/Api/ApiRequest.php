@@ -179,7 +179,7 @@ class ApiRequest implements ContainerAwareInterface, ToSchemaJsonInterface, Json
         return $this->fieldsToSave;
     }
 
-    public function dispatch()
+    public function dispatch(): array
     {
         if (!isset($this->fields)) {
             $this->fields([]);
@@ -193,6 +193,7 @@ class ApiRequest implements ContainerAwareInterface, ToSchemaJsonInterface, Json
 
         $resolveCallback = $action->getResolve();
 
+        /** @var ActionResolver */
         $actionResolver = null;
 
         $this->container->call(
@@ -213,11 +214,10 @@ class ApiRequest implements ContainerAwareInterface, ToSchemaJsonInterface, Json
         );
 
         if (!$actionResolver) {
-            throw new InvalidConfigurationException("Resolve callback for action {$this->actionName} on type {$this->resourceType} must receive an ActionResolver as argument.");
+            throw new InvalidConfigurationException("Resolve callback for action {$this->actionName} on resource {$this->resourceType} must receive an ActionResolver as argument.");
         }
 
         return $actionResolver
-            ->action($action)
             ->request($this)
             ->resolve();
     }

@@ -15,7 +15,7 @@ class TestResolver
                 $requestedFields = $request->getFields();
                 $filters = $request->getFilters();
 
-                $pageSizeFilter = $r->getAction()->getFilter('page_size');
+                $pageSizeFilter = $request->getAction()->getFilter('page_size');
                 $pageSize = $filters['page_size'] ?? $pageSizeFilter->getDefaultValue();
 
                 $fieldNames = $requestedFields->getFieldNames();

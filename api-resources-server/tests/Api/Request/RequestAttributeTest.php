@@ -6,6 +6,7 @@ use Afeefa\ApiResources\Action\Action;
 use Afeefa\ApiResources\Api\ApiRequest;
 use Afeefa\ApiResources\DB\ActionResolver;
 use Afeefa\ApiResources\DB\AttributeResolver;
+use Afeefa\ApiResources\DB\ResolveContext;
 use Afeefa\ApiResources\Field\FieldBag;
 use Afeefa\ApiResources\Field\Fields\VarcharAttribute;
 use Afeefa\ApiResources\Model\Model;
@@ -17,6 +18,15 @@ use Closure;
 
 class RequestAttributeTest extends ApiResourcesTest
 {
+    private TestWatcher $testWatcher;
+
+    protected function setUp(): void
+    {
+        parent::setup();
+
+        $this->testWatcher = new TestWatcher();
+    }
+
     public function test_request_with_attribute()
     {
         $api = $this->apiBuilder()->api('API', function (Closure $addResource, Closure $addType) {
@@ -24,16 +34,22 @@ class RequestAttributeTest extends ApiResourcesTest
                 $fields
                     ->attribute('name', VarcharAttribute::class)
 
+                    ->attribute('source', VarcharAttribute::class)
+
                     ->attribute('dependent', function (VarcharAttribute $attribute) {
-                        $attribute->depends('name');
+                        $attribute->resolve(function (AttributeResolver $r) {
+                            $r->select('source');
+                        });
                     })
 
                     ->attribute('resolved', function (VarcharAttribute $attribute) {
                         $attribute->resolve(function (AttributeResolver $r) {
+                            $this->testWatcher->attributeResolvers[] = $r;
+
                             $r->load(function (array $owners) {
                                 /** @var ModelInterface[] $owners */
                                 foreach ($owners as $owner) {
-                                    $owner->apiResourcesSetAttribute('dependent', 'test_dependency');
+                                    $owner->apiResourcesSetAttribute('resolved', 'test_dependency');
                                 }
                                 return [];
                             });
@@ -45,11 +61,22 @@ class RequestAttributeTest extends ApiResourcesTest
                 $addAction('ACT', function (Action $action) {
                     $action
                         ->response(T('TYPE'))
-                        ->resolve(function (ActionResolver $resolver) {
-                            $resolver->load(function () {
-                                return Model::fromSingle('TYPE', [
-                                    'name' => 'test'
-                                ]);
+                        ->resolve(function (ActionResolver $r) {
+                            $this->testWatcher->actionResolvers[] = $r;
+
+                            $r->load(function (ResolveContext $c) {
+                                $attributes = [];
+                                foreach ($c->getSelectFields() as $fieldName) {
+                                    $attributes[$fieldName] = $fieldName;
+                                }
+
+                                $model = Model::fromSingle('TYPE', $attributes);
+
+                                if ($c->getRequestedFields()->hasField('dependent')) {
+                                    $model->apiResourcesSetAttribute('dependent', 'source');
+                                }
+
+                                return $model;
                             });
                         });
                 });
@@ -69,15 +96,24 @@ class RequestAttributeTest extends ApiResourcesTest
                 ]);
         });
 
+        $model = $result['data'];
+
+        $this->assertEquals(Model::class, $model::class);
+
         $data = ($result['data'])->jsonSerialize();
 
         $expectedData = [
             'type' => 'TYPE',
-            'name' => 'test',
-            'dependent' => 'test_dependency'
+            'id' => 'id',
+            'name' => 'name',
+            'dependent' => 'source',
+            'resolved' => 'test_dependency'
         ];
 
         $this->assertEquals($expectedData, $data);
+
+        $this->assertCount(1, $this->testWatcher->attributeResolvers);
+        $this->assertCount(1, $this->testWatcher->actionResolvers);
     }
 }
 
@@ -86,3 +122,9 @@ class RequestAttributeTest extends ApiResourcesTest
 // id type are always sent
 // attribute with depedencies
 // attribute with custom resolver
+
+class TestWatcher
+{
+    public array $attributeResolvers = [];
+    public array $actionResolvers = [];
+}
