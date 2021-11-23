@@ -2,26 +2,26 @@
 
 namespace Backend\Resolvers;
 
-use Afeefa\ApiResources\DB\ActionResolver;
-use Afeefa\ApiResources\DB\GetRelationResolver;
-use Afeefa\ApiResources\DB\ResolveContext;
 use Afeefa\ApiResources\Exception\Exceptions\ApiException;
 use Afeefa\ApiResources\Model\Model;
 use Afeefa\ApiResources\Model\ModelInterface;
+use Afeefa\ApiResources\Resolver\MutationActionResolver;
+use Afeefa\ApiResources\Resolver\QueryActionResolver;
+use Afeefa\ApiResources\Resolver\QueryRelationResolver;
 use Backend\Types\AuthorType;
 use Medoo\Medoo;
 
 class AuthorsResolver
 {
-    public function get_authors(ActionResolver $r, Medoo $db)
+    public function get_authors(QueryActionResolver $r, Medoo $db)
     {
         $r
-            ->load(function (ResolveContext $c) use ($r, $db) {
+            ->load(function () use ($r, $db) {
                 $request = $r->getRequest();
                 $action = $request->getAction();
                 $requestedFields = $request->getFields();
                 $filters = $request->getFilters();
-                $selectFields = $c->getSelectFields();
+                $selectFields = $r->getSelectFields();
 
                 $usedFilters = [];
                 $where = [];
@@ -104,7 +104,7 @@ class AuthorsResolver
                     $where
                 );
 
-                $c->meta([
+                $r->meta([
                     'count_all' => $countAll,
                     'count_filter' => $countFilters,
                     'count_search' => $countSearch,
@@ -115,13 +115,13 @@ class AuthorsResolver
             });
     }
 
-    public function get_author(ActionResolver $r, Medoo $db)
+    public function get_author(QueryActionResolver $r, Medoo $db)
     {
         $r
-            ->load(function (ResolveContext $c) use ($r, $db) {
+            ->load(function () use ($r, $db) {
                 $request = $r->getRequest();
                 $requestedFields = $request->getFields();
-                $selectFields = $c->getSelectFields();
+                $selectFields = $r->getSelectFields();
 
                 $where = ['id' => $request->getParam('id')];
 
@@ -145,7 +145,7 @@ class AuthorsResolver
             });
     }
 
-    public function update_author(ActionResolver $r, Medoo $db)
+    public function update_author(MutationActionResolver $r, Medoo $db)
     {
         $r
             ->load(function () use ($r, $db) {
@@ -171,12 +171,12 @@ class AuthorsResolver
             });
     }
 
-    public function resolve_author_relation(GetRelationResolver $r, Medoo $db)
+    public function resolve_author_relation(QueryRelationResolver $r, Medoo $db)
     {
         $r
             ->ownerIdFields(['author_id'])
 
-            ->load(function (array $owners, ResolveContext $c) use ($db) {
+            ->load(function (array $owners) use ($r, $db) {
                 /** @var ModelInterface[] $owners */
                 $authorIds = array_unique(
                     array_map(function (ModelInterface $owner) {
@@ -186,7 +186,7 @@ class AuthorsResolver
 
                 $result = $db->select(
                     'authors',
-                    $c->getSelectFields(),
+                    $r->getSelectFields(),
                     [
                         'id' => $authorIds,
                         'ORDER' => 'id'

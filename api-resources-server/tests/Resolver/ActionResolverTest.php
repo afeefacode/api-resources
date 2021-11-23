@@ -1,16 +1,16 @@
 <?php
 
-namespace Afeefa\ApiResources\Tests\DB;
+namespace Afeefa\ApiResources\Tests\Resolver;
 
 use Afeefa\ApiResources\Action\Action;
 use Afeefa\ApiResources\Api\Api;
 use Afeefa\ApiResources\Api\ApiRequest;
-use Afeefa\ApiResources\DB\ActionResolver;
-use Afeefa\ApiResources\DB\ResolveContext;
 use Afeefa\ApiResources\Exception\Exceptions\InvalidConfigurationException;
+use Afeefa\ApiResources\Exception\Exceptions\MissingCallbackException;
 use Afeefa\ApiResources\Field\FieldBag;
 use Afeefa\ApiResources\Field\Fields\VarcharAttribute;
 use Afeefa\ApiResources\Model\Model;
+use Afeefa\ApiResources\Resolver\QueryActionResolver;
 use Afeefa\ApiResources\Test\ApiResourcesTest;
 use function Afeefa\ApiResources\Test\T;
 
@@ -35,7 +35,7 @@ class ActionResolverTest extends ApiResourcesTest
         $api = $this->createApiWithAction(function (Action $action) {
             $action
                 ->response(T('TYPE'))
-                ->resolve(function (ActionResolver $r) {
+                ->resolve(function (QueryActionResolver $r) {
                     $this->testWatcher->called();
 
                     $r->load(function () {
@@ -68,13 +68,13 @@ class ActionResolverTest extends ApiResourcesTest
 
     public function test_missing_load_callback()
     {
-        $this->expectException(InvalidConfigurationException::class);
+        $this->expectException(MissingCallbackException::class);
         $this->expectExceptionMessage('Action resolver for action ACT on resource RES must provide a load callback.');
 
         $api = $this->createApiWithAction(function (Action $action) {
             $action
                 ->response(T('TYPE'))
-                ->resolve(function (ActionResolver $r) {
+                ->resolve(function (QueryActionResolver $r) {
                 });
         });
 
@@ -89,7 +89,7 @@ class ActionResolverTest extends ApiResourcesTest
         $api = $this->createApiWithAction(function (Action $action) use ($null) {
             $action
                 ->response(T('TYPE'))
-                ->resolve(function (ActionResolver $r) use ($null) {
+                ->resolve(function (QueryActionResolver $r) use ($null) {
                     $r->load(function () use ($null) {
                         if ($null) {
                             return null;
@@ -116,7 +116,7 @@ class ActionResolverTest extends ApiResourcesTest
         $api = $this->createApiWithAction(function (Action $action) {
             $action
                 ->response(T('TYPE'))
-                ->resolve(function (ActionResolver $r) {
+                ->resolve(function (QueryActionResolver $r) {
                     $r->load(function () {
                         return TestModel::fromSingle('TYPE', []);
                     });
@@ -142,7 +142,7 @@ class ActionResolverTest extends ApiResourcesTest
         $api = $this->createApiWithAction(function (Action $action) {
             $action
                 ->response(Type::list(T('TYPE')))
-                ->resolve(function (ActionResolver $r) {
+                ->resolve(function (QueryActionResolver $r) {
                     $r->load(function () {
                         return TestModel::fromList('TYPE', [[], []]);
                     });
@@ -173,7 +173,7 @@ class ActionResolverTest extends ApiResourcesTest
         $api = $this->createApiWithAction(function (Action $action) {
             $action
                 ->response(Type::list(T('TYPE')))
-                ->resolve(function (ActionResolver $r) {
+                ->resolve(function (QueryActionResolver $r) {
                     $r->load(function () {
                         return Model::fromList('TYPE', []);
                     });
@@ -198,7 +198,7 @@ class ActionResolverTest extends ApiResourcesTest
         $api = $this->createApiWithAction(function (Action $action) use ($wrongModel) {
             $action
                 ->response(T('TYPE'))
-                ->resolve(function (ActionResolver $r) use ($wrongModel) {
+                ->resolve(function (QueryActionResolver $r) use ($wrongModel) {
                     $r->load(function () use ($wrongModel) {
                         return $wrongModel;
                     });
@@ -225,7 +225,7 @@ class ActionResolverTest extends ApiResourcesTest
         $api = $this->createApiWithAction(function (Action $action) {
             $action
                 ->response(Type::list(T('TYPE')))
-                ->resolve(function (ActionResolver $r) {
+                ->resolve(function (QueryActionResolver $r) {
                     $r->load(function () {
                         return new stdClass();
                     });
@@ -243,7 +243,7 @@ class ActionResolverTest extends ApiResourcesTest
         $api = $this->createApiWithAction(function (Action $action) {
             $action
                 ->response(Type::list(T('TYPE')))
-                ->resolve(function (ActionResolver $r) {
+                ->resolve(function (QueryActionResolver $r) {
                     $r->load(function () {
                         return null;
                     });
@@ -264,7 +264,7 @@ class ActionResolverTest extends ApiResourcesTest
         $api = $this->createApiWithAction(function (Action $action) use ($wrongModel) {
             $action
                 ->response(Type::list(T('TYPE')))
-                ->resolve(function (ActionResolver $r) use ($wrongModel) {
+                ->resolve(function (QueryActionResolver $r) use ($wrongModel) {
                     $r->load(function () use ($wrongModel) {
                         return [
                             Model::fromSingle('TEST', []),
@@ -301,7 +301,7 @@ class ActionResolverTest extends ApiResourcesTest
             function (Action $action) {
                 $action
                     ->response(T('TYPE'))
-                    ->resolve(function (ActionResolver $r) {
+                    ->resolve(function (QueryActionResolver $r) {
                         $r->load(function () use ($r) {
                             $this->testWatcher->requestedFields($r->getRequest()->getFields()->getFieldNames());
                         });
@@ -311,7 +311,7 @@ class ActionResolverTest extends ApiResourcesTest
 
         $this->request($api, $fields);
 
-        $this->assertEquals($expectedFields, $this->testWatcher->requestedFields);
+        $this->assertEquals([$expectedFields], $this->testWatcher->requestedFields);
     }
 
     /**
@@ -328,9 +328,9 @@ class ActionResolverTest extends ApiResourcesTest
             function (Action $action) {
                 $action
                     ->response(T('TYPE'))
-                    ->resolve(function (ActionResolver $r) {
-                        $r->load(function (ResolveContext $c) use ($r) {
-                            $this->testWatcher->selectFields($c->getSelectFields());
+                    ->resolve(function (QueryActionResolver $r) {
+                        $r->load(function () use ($r) {
+                            $this->testWatcher->selectFields($r->getSelectFields());
                         });
                     });
             }
@@ -340,7 +340,7 @@ class ActionResolverTest extends ApiResourcesTest
 
         $expectedFieldsWithId = ['id', ...$expectedFields];
 
-        $this->assertEquals($expectedFieldsWithId, $this->testWatcher->selectFields);
+        $this->assertEquals([$expectedFieldsWithId], $this->testWatcher->selectFields);
     }
 
     /**
@@ -357,7 +357,7 @@ class ActionResolverTest extends ApiResourcesTest
             function (Action $action) {
                 $action
                     ->response(T('TYPE'))
-                    ->resolve(function (ActionResolver $r) {
+                    ->resolve(function (QueryActionResolver $r) {
                         $r->load(function () use ($r) {
                             return TestModel::fromSingle('TYPE', []);
                         });
@@ -411,7 +411,7 @@ class ActionResolverTest extends ApiResourcesTest
         $api = $this->createApiWithAction(function (Action $action) {
             $action
                 ->response(T('TYPE'))
-                ->resolve(function (ActionResolver $r) {
+                ->resolve(function (QueryActionResolver $r) {
                     $r->load(function () use ($r) {
                         $this->testWatcher->request($r->getRequest());
                     });
@@ -510,9 +510,7 @@ class TestWatcher
     public int $countCalls = 0;
     public array $selectFields = [];
     public array $requestedFields = [];
-    public array $params = [];
-    public array $filters = [];
-    public $info;
+    public array $info = [];
     public ApiRequest $request;
 
     public function called()
@@ -520,9 +518,14 @@ class TestWatcher
         $this->countCalls++;
     }
 
+    public function info($info)
+    {
+        $this->info[] = $info;
+    }
+
     public function selectFields(array $selectFields)
     {
-        $this->selectFields = $selectFields;
+        $this->selectFields[] = $selectFields;
     }
 
     public function request(ApiRequest $request)
@@ -530,18 +533,8 @@ class TestWatcher
         $this->request = $request;
     }
 
-    public function filters(array $filters)
-    {
-        $this->filters = $filters;
-    }
-
-    public function params(array $params)
-    {
-        $this->params = $params;
-    }
-
     public function requestedFields(array $requestedFields)
     {
-        $this->requestedFields = $requestedFields;
+        $this->requestedFields[] = $requestedFields;
     }
 }

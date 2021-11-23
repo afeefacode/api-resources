@@ -6,6 +6,7 @@ use Afeefa\ApiResources\Type\RelatedType;
 use Closure;
 
 /**
+ * @method Relation owner($owner)
  * @method Relation name(string $name)
  * @method Relation validate(Closure $callback)
  * @method Relation validator(Validator $validator)

@@ -1,0 +1,355 @@
+<?php
+
+namespace Afeefa\ApiResources\Tests\Resolver;
+
+use Afeefa\ApiResources\Action\Action;
+use Afeefa\ApiResources\Api\Api;
+use Afeefa\ApiResources\Api\ApiRequest;
+use Afeefa\ApiResources\Field\FieldBag;
+use Afeefa\ApiResources\Field\Fields\HasManyRelation;
+use Afeefa\ApiResources\Field\Fields\HasOneRelation;
+use Afeefa\ApiResources\Field\Fields\VarcharAttribute;
+use Afeefa\ApiResources\Model\Model;
+use Afeefa\ApiResources\Resolver\QueryActionResolver;
+use Afeefa\ApiResources\Resolver\QueryRelationResolver;
+use Afeefa\ApiResources\Test\ApiResourcesTest;
+use function Afeefa\ApiResources\Test\T;
+
+use Afeefa\ApiResources\Type\Type;
+
+use Closure;
+
+class RelationResolverTest extends ApiResourcesTest
+{
+    private TestWatcher $testWatcher;
+
+    protected function setUp(): void
+    {
+        parent::setup();
+
+        $this->testWatcher = new TestWatcher();
+    }
+
+    public function test_nested_has_one_relation()
+    {
+        $api = $this->createApiWithTypeAndAction(
+            function (FieldBag $fields) {
+                $fields
+                    ->attribute('title', VarcharAttribute::class)
+                    ->relation('other', T('TYPE'), function (HasOneRelation $relation) {
+                        $relation->resolve(function (QueryRelationResolver $r) {
+                            $r->load(function (array $owners) use ($r) {
+                                $this->testWatcher->called();
+                                $this->testWatcher->selectFields($r->getSelectFields());
+                                $this->testWatcher->requestedFields($r->getRequestedFields()->getFieldNames());
+
+                                $relatedModels = [];
+                                foreach ($owners as $owner) {
+                                    $relatedModel = Model::fromSingle('TYPE', ['title' => 'title' . $this->testWatcher->countCalls]);
+                                    $owner->apiResourcesSetRelation('other', $relatedModel);
+                                    $relatedModels[] = $relatedModel;
+                                }
+                                return $relatedModels;
+                            });
+                        });
+                    });
+            }
+        );
+
+        $model = $this->requestSingle($api, [
+            'title' => true,
+            'other' => [
+                'title' => true,
+                'other' => [
+                    'title' => true,
+                    'other' => [
+                        'title' => true
+                    ]
+                ]
+            ]
+        ]);
+
+        $this->assertEquals(3, $this->testWatcher->countCalls);
+        $this->assertEquals([['id', 'title'], ['id', 'title'], ['id', 'title']], $this->testWatcher->selectFields);
+        $this->assertEquals([['title', 'other'], ['title', 'other'], ['title']], $this->testWatcher->requestedFields);
+
+        $expectedFields = [
+            'type' => 'TYPE',
+            'title' => 'title0',
+            'other' => [
+                'type' => 'TYPE',
+                'title' => 'title1',
+                'other' => [
+                    'type' => 'TYPE',
+                    'title' => 'title2',
+                    'other' => [
+                        'type' => 'TYPE',
+                        'title' => 'title3',
+                    ]
+                ]
+            ]
+        ];
+
+        $this->assertEquals($expectedFields, $model->jsonSerialize());
+    }
+
+    public function test_list_with_nested_has_one_relation()
+    {
+        $api = $this->createApiWithTypeAndAction(
+            function (FieldBag $fields) {
+                $fields
+                    ->attribute('title', VarcharAttribute::class)
+                    ->relation('other', T('TYPE'), function (HasOneRelation $relation) {
+                        $relation->resolve(function (QueryRelationResolver $r) {
+                            $r->load(function (array $owners) use ($r) {
+                                $this->testWatcher->called();
+                                $this->testWatcher->selectFields($r->getSelectFields());
+                                $this->testWatcher->requestedFields($r->getRequestedFields()->getFieldNames());
+
+                                $relatedModels = [];
+                                foreach ($owners as $owner) {
+                                    $relatedModel = Model::fromSingle('TYPE', ['title' => 'title' . $this->testWatcher->countCalls]);
+                                    $owner->apiResourcesSetRelation('other', $relatedModel);
+                                    $relatedModels[] = $relatedModel;
+                                }
+                                return $relatedModels;
+                            });
+                        });
+                    });
+            },
+            isList: true
+        );
+
+        $models = $this->requestList($api, [
+            'title' => true,
+            'other' => [
+                'title' => true,
+                'other' => [
+                    'title' => true,
+                    'other' => [
+                        'title' => true
+                    ]
+                ]
+            ]
+        ]);
+
+        $this->assertCount(5, $models);
+
+        $this->assertEquals(3, $this->testWatcher->countCalls);
+        $this->assertEquals([['id', 'title'], ['id', 'title'], ['id', 'title']], $this->testWatcher->selectFields);
+        $this->assertEquals([['title', 'other'], ['title', 'other'], ['title']], $this->testWatcher->requestedFields);
+
+        foreach ($models as $index => $model) {
+            $expectedFields = [
+                'type' => 'TYPE',
+                'title' => 'title' . $index,
+                'other' => [
+                    'type' => 'TYPE',
+                    'title' => 'title1',
+                    'other' => [
+                        'type' => 'TYPE',
+                        'title' => 'title2',
+                        'other' => [
+                            'type' => 'TYPE',
+                            'title' => 'title3',
+                        ]
+                    ]
+                ]
+            ];
+
+            $this->assertEquals($expectedFields, $model->jsonSerialize());
+        }
+    }
+
+    public function test_nested_has_many_relation()
+    {
+        $api = $this->createApiWithTypeAndAction(
+            function (FieldBag $fields) {
+                $fields
+                    ->attribute('title', VarcharAttribute::class)
+                    ->relation('others', Type::list(T('TYPE')), function (HasManyRelation $relation) {
+                        $relation->resolve(function (QueryRelationResolver $r) {
+                            $r->load(function (array $owners) use ($r) {
+                                $this->testWatcher->called();
+                                $this->testWatcher->selectFields($r->getSelectFields());
+                                $this->testWatcher->requestedFields($r->getRequestedFields()->getFieldNames());
+
+                                $relatedModels = [];
+                                foreach ($owners as $index => $owner) {
+                                    $otherModels = Model::fromList('TYPE', [
+                                        ['title' => 'title' . 3 * $index],
+                                        ['title' => 'title' . 3 * $index + 1],
+                                        ['title' => 'title' . 3 * $index + 2]
+                                    ]);
+                                    $owner->apiResourcesSetRelation('others', $otherModels);
+                                    $relatedModels = [...$relatedModels, ...$otherModels];
+                                }
+                                return $relatedModels;
+                            });
+                        });
+                    });
+            }
+        );
+
+        $model = $this->requestSingle($api, [
+            'title' => true,
+            'others' => [
+                'title' => true,
+                'others' => [
+                    'title' => true
+                ]
+            ]
+        ]);
+
+        $this->assertEquals(2, $this->testWatcher->countCalls);
+        $this->assertEquals([['id', 'title'], ['id', 'title']], $this->testWatcher->selectFields);
+        $this->assertEquals([['title', 'others'], ['title']], $this->testWatcher->requestedFields);
+
+        $expectedFields = [
+            'type' => 'TYPE', 'title' => 'title0', 'others' => [
+                ['type' => 'TYPE', 'title' => 'title0', 'others' => [
+                    ['type' => 'TYPE', 'title' => 'title0'],
+                    ['type' => 'TYPE', 'title' => 'title1'],
+                    ['type' => 'TYPE', 'title' => 'title2']
+                ]],
+                ['type' => 'TYPE', 'title' => 'title1', 'others' => [
+                    ['type' => 'TYPE', 'title' => 'title3'],
+                    ['type' => 'TYPE', 'title' => 'title4'],
+                    ['type' => 'TYPE', 'title' => 'title5']
+                ]],
+                ['type' => 'TYPE', 'title' => 'title2', 'others' => [
+                    ['type' => 'TYPE', 'title' => 'title6'],
+                    ['type' => 'TYPE', 'title' => 'title7'],
+                    ['type' => 'TYPE', 'title' => 'title8']
+                ]]
+            ]
+        ];
+
+        $this->assertEquals($expectedFields, $model->jsonSerialize());
+    }
+
+    public function test_list_with_nested_has_many_relation()
+    {
+        $api = $this->createApiWithTypeAndAction(
+            function (FieldBag $fields) {
+                $fields
+                    ->attribute('title', VarcharAttribute::class)
+                    ->relation('others', Type::list(T('TYPE')), function (HasManyRelation $relation) {
+                        $relation->resolve(function (QueryRelationResolver $r) {
+                            $r->load(function (array $owners) use ($r) {
+                                $this->testWatcher->called();
+                                $this->testWatcher->selectFields($r->getSelectFields());
+                                $this->testWatcher->requestedFields($r->getRequestedFields()->getFieldNames());
+
+                                $relatedModels = [];
+                                foreach ($owners as $index => $owner) {
+                                    $otherModels = Model::fromList('TYPE', [
+                                        ['title' => 'title' . 3 * $index],
+                                        ['title' => 'title' . 3 * $index + 1],
+                                        ['title' => 'title' . 3 * $index + 2]
+                                    ]);
+                                    $owner->apiResourcesSetRelation('others', $otherModels);
+                                    $relatedModels = [...$relatedModels, ...$otherModels];
+                                }
+                                return $relatedModels;
+                            });
+                        });
+                    });
+            },
+            isList: true
+        );
+
+        $models = $this->requestList($api, [
+            'title' => true,
+            'others' => [
+                'title' => true,
+                'others' => [
+                    'title' => true
+                ]
+            ]
+        ]);
+
+        $this->assertCount(5, $models);
+
+        $this->assertEquals(2, $this->testWatcher->countCalls);
+        $this->assertEquals([['id', 'title'], ['id', 'title']], $this->testWatcher->selectFields);
+        $this->assertEquals([['title', 'others'], ['title']], $this->testWatcher->requestedFields);
+
+        foreach ($models as $index => $model) {
+            $expectedFields = [
+                'type' => 'TYPE', 'title' => 'title' . $index, 'others' => [ // 0, 1, 2
+                    ['type' => 'TYPE', 'title' => 'title' . (3 * $index), 'others' => [ // 0, 3, 6
+                        ['type' => 'TYPE', 'title' => 'title' . (9 * $index)], // 0, 9, 18
+                        ['type' => 'TYPE', 'title' => 'title' . (9 * $index + 1)],
+                        ['type' => 'TYPE', 'title' => 'title' . (9 * $index + 2)]
+                    ]],
+                    ['type' => 'TYPE', 'title' => 'title' . (3 * $index + 1), 'others' => [
+                        ['type' => 'TYPE', 'title' => 'title' . (9 * $index + 3)],
+                        ['type' => 'TYPE', 'title' => 'title' . (9 * $index + 4)],
+                        ['type' => 'TYPE', 'title' => 'title' . (9 * $index + 5)]
+                    ]],
+                    ['type' => 'TYPE', 'title' => 'title' . (3 * $index + 2), 'others' => [ // 2, 5, 8
+                        ['type' => 'TYPE', 'title' => 'title' . (9 * $index + 6)], // 6, 15, 24
+                        ['type' => 'TYPE', 'title' => 'title' . (9 * $index + 7)],
+                        ['type' => 'TYPE', 'title' => 'title' . (9 * $index + 8)]
+                    ]]
+                ]
+            ];
+
+            $this->assertEquals($expectedFields, $model->jsonSerialize());
+        }
+    }
+
+    private function createApiWithTypeAndAction(Closure $fieldsCallback, ?Closure $actionCallback = null, bool $isList = false): Api
+    {
+        $actionCallback ??= function (Action $action) use ($isList) {
+            $response = $isList ? Type::list(T('TYPE')) : T('TYPE');
+            $action
+                ->response($response)
+                ->resolve(function (QueryActionResolver $r) use ($isList) {
+                    $r->load(function () use ($isList) {
+                        if ($isList) {
+                            return Model::fromList('TYPE', [
+                                ['title' => 'title0'], ['title' => 'title1'], ['title' => 'title2'], ['title' => 'title3'], ['title' => 'title4'] // 5 models
+                            ]);
+                        }
+                        return Model::fromSingle('TYPE', ['title' => 'title0']);
+                    });
+                });
+        };
+
+        return $this->apiBuilder()->api('API', function (Closure $addResource, Closure $addType) use ($fieldsCallback, $actionCallback) {
+            $addType('TYPE', $fieldsCallback);
+            $addResource('RES', function (Closure $addAction) use ($actionCallback) {
+                $addAction('ACT', $actionCallback);
+            });
+        })->get();
+    }
+
+    private function request(Api $api, ?array $fields = null)
+    {
+        $result = $api->request(function (ApiRequest $request) use ($fields) {
+            $request
+                ->resourceType('RES')
+                ->actionName('ACT');
+
+            if ($fields) {
+                $request->fields($fields);
+            }
+        });
+        return $result['data'];
+    }
+
+    private function requestSingle(Api $api, ?array $fields = null): Model
+    {
+        return $this->request($api, $fields);
+    }
+
+    /**
+     * @return Model[]
+     */
+    private function requestList(Api $api, ?array $fields = null): array
+    {
+        return $this->request($api, $fields);
+    }
+}

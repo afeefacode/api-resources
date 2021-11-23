@@ -4,13 +4,12 @@ namespace Afeefa\ApiResources\Tests\Api\Schema;
 
 use Afeefa\ApiResources\Action\Action;
 use Afeefa\ApiResources\Api\ApiRequest;
-use Afeefa\ApiResources\DB\ActionResolver;
-use Afeefa\ApiResources\DB\AttributeResolver;
-use Afeefa\ApiResources\DB\ResolveContext;
 use Afeefa\ApiResources\Field\FieldBag;
 use Afeefa\ApiResources\Field\Fields\VarcharAttribute;
 use Afeefa\ApiResources\Model\Model;
 use Afeefa\ApiResources\Model\ModelInterface;
+use Afeefa\ApiResources\Resolver\QueryActionResolver;
+use Afeefa\ApiResources\Resolver\QueryAttributeResolver;
 use Afeefa\ApiResources\Test\ApiResourcesTest;
 use function Afeefa\ApiResources\Test\T;
 
@@ -37,13 +36,13 @@ class RequestAttributeTest extends ApiResourcesTest
                     ->attribute('source', VarcharAttribute::class)
 
                     ->attribute('dependent', function (VarcharAttribute $attribute) {
-                        $attribute->resolve(function (AttributeResolver $r) {
+                        $attribute->resolve(function (QueryAttributeResolver $r) {
                             $r->select('source');
                         });
                     })
 
                     ->attribute('resolved', function (VarcharAttribute $attribute) {
-                        $attribute->resolve(function (AttributeResolver $r) {
+                        $attribute->resolve(function (QueryAttributeResolver $r) {
                             $this->testWatcher->attributeResolvers[] = $r;
 
                             $r->load(function (array $owners) {
@@ -61,18 +60,18 @@ class RequestAttributeTest extends ApiResourcesTest
                 $addAction('ACT', function (Action $action) {
                     $action
                         ->response(T('TYPE'))
-                        ->resolve(function (ActionResolver $r) {
+                        ->resolve(function (QueryActionResolver $r) {
                             $this->testWatcher->actionResolvers[] = $r;
 
-                            $r->load(function (ResolveContext $c) {
+                            $r->load(function () use ($r) {
                                 $attributes = [];
-                                foreach ($c->getSelectFields() as $fieldName) {
+                                foreach ($r->getSelectFields() as $fieldName) {
                                     $attributes[$fieldName] = $fieldName;
                                 }
 
                                 $model = Model::fromSingle('TYPE', $attributes);
 
-                                if ($c->getRequestedFields()->hasField('dependent')) {
+                                if ($r->getRequestedFields()->hasField('dependent')) {
                                     $model->apiResourcesSetAttribute('dependent', 'source');
                                 }
 

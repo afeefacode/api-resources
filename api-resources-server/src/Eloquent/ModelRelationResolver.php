@@ -2,11 +2,9 @@
 
 namespace Afeefa\ApiResources\Eloquent;
 
-use Afeefa\ApiResources\DB\GetRelationResolver;
 use Afeefa\ApiResources\DB\RelationRelatedData;
-use Afeefa\ApiResources\DB\RelationResolver;
-use Afeefa\ApiResources\DB\ResolveContext;
-use Afeefa\ApiResources\DB\SaveRelationResolver;
+use Afeefa\ApiResources\Resolver\BaseRelationResolver;
+use Afeefa\ApiResources\Resolver\QueryRelationResolver;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -14,7 +12,7 @@ use Illuminate\Database\Eloquent\Relations\HasOne;
 
 class ModelRelationResolver
 {
-    public function get_relation(GetRelationResolver $r)
+    public function get_relation(QueryRelationResolver $r)
     {
         $r
             ->ownerIdFields(function () use ($r) {
@@ -25,12 +23,12 @@ class ModelRelationResolver
                 }
             })
 
-            ->load(function (array $owners, ResolveContext $c) use ($r) {
+            ->load(function (array $owners) use ($r) {
                 $relationWrapper = $this->getEloquentRelation($r);
                 $eloquentRelation = $relationWrapper->relation();
 
                 // select field on the relation prior matching the related to its owner
-                $selectFields = $c->getSelectFields();
+                $selectFields = $r->getSelectFields();
                 if ($eloquentRelation instanceof HasMany) { // reference to the owner in the related table
                     $selectFields[] = $eloquentRelation->getForeignKeyName();
                 }
@@ -38,7 +36,7 @@ class ModelRelationResolver
                     $selectFields[] = $eloquentRelation->getForeignKeyName();
                 }
 
-                $relationCounts = $this->getRelationCountsOfRelation($r, $c);
+                $relationCounts = $this->getRelationCountsOfRelation($r);
 
                 $builder = new Builder($relationWrapper->owner);
                 $relatedModels = $builder->afeefaEagerLoadRelation($owners, $relationWrapper->name, $selectFields, $relationCounts);
@@ -47,7 +45,7 @@ class ModelRelationResolver
             });
     }
 
-    public function save_relation(SaveRelationResolver $r)
+    public function save_relation(MutationRelationResolver $r)
     {
         $r
             ->ownerIdFields(function () use ($r) {
@@ -152,9 +150,9 @@ class ModelRelationResolver
         $relatedModel->save();
     }
 
-    protected function getRelationCountsOfRelation(RelationResolver $r, ResolveContext $c): array
+    protected function getRelationCountsOfRelation(QueryRelationResolver $r): array
     {
-        $requestedFieldNames = $c->getRequestedFields()->getFieldNames();
+        $requestedFieldNames = $r->getRequestedFields()->getFieldNames();
         $relatedType = $r->getRelation()->getRelatedType()->getTypeInstance();
         $relationCounts = [];
         foreach ($requestedFieldNames as $fieldName) {
@@ -168,7 +166,7 @@ class ModelRelationResolver
         return $relationCounts;
     }
 
-    protected function getEloquentRelation(RelationResolver $r, Model $owner = null): EloquentRelationWrapper
+    protected function getEloquentRelation(BaseRelationResolver $r, Model $owner = null): EloquentRelationWrapper
     {
         $eloquentRelation = new EloquentRelationWrapper();
 
@@ -179,7 +177,7 @@ class ModelRelationResolver
 
         if (!$owner) {
             /** @var ModelType */
-            $ownerType = $r->getOwnerType();
+            $ownerType = $r->getRelation()->getOwner();
             $OwnerClass = $ownerType::$ModelClass;
             $owner = new $OwnerClass();
         }

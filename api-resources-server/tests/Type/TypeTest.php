@@ -40,6 +40,9 @@ class TypeTest extends ApiResourcesTest
         $this->assertEquals(1, $type->getFields()->numEntries());
         $this->assertEquals(1, $type->getUpdateFields()->numEntries());
         $this->assertEquals(1, $type->getCreateFields()->numEntries());
+
+        $field = $type->getField('name');
+        $this->assertEquals($type, $field->getOwner());
     }
 
     public function test_get_type_with_missing_type()

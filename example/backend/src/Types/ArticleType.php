@@ -2,7 +2,6 @@
 
 namespace Backend\Types;
 
-use Afeefa\ApiResources\DB\GetRelationResolver;
 use Afeefa\ApiResources\Field\FieldBag;
 use Afeefa\ApiResources\Field\Fields\DateAttribute;
 use Afeefa\ApiResources\Field\Fields\HasManyRelation;
@@ -11,6 +10,7 @@ use Afeefa\ApiResources\Field\Fields\LinkOneRelation;
 use Afeefa\ApiResources\Field\Fields\TextAttribute;
 use Afeefa\ApiResources\Field\Fields\VarcharAttribute;
 use Afeefa\ApiResources\Model\Model;
+use Afeefa\ApiResources\Resolver\QueryRelationResolver;
 use Afeefa\ApiResources\Type\ModelType;
 use Afeefa\ApiResources\Validator\Validators\LinkOneValidator;
 use Afeefa\ApiResources\Validator\Validators\VarcharValidator;
@@ -47,7 +47,7 @@ class ArticleType extends ModelType
         });
 
         $fields->relation('author2', AuthorType::class, function (LinkOneRelation $relation) {
-            $relation->resolve(function (GetRelationResolver $r) {
+            $relation->resolve(function (QueryRelationResolver $r) {
                 $r
                     ->load(function () {
                         return Model::fromList('test', [

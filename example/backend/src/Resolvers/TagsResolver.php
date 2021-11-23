@@ -2,23 +2,22 @@
 
 namespace Backend\Resolvers;
 
-use Afeefa\ApiResources\DB\ActionResolver;
-use Afeefa\ApiResources\DB\GetRelationResolver;
-use Afeefa\ApiResources\DB\ResolveContext;
 use Afeefa\ApiResources\Model\Model;
 use Afeefa\ApiResources\Model\ModelInterface;
+use Afeefa\ApiResources\Resolver\QueryActionResolver;
+use Afeefa\ApiResources\Resolver\QueryRelationResolver;
 use Backend\Types\TagType;
 use Medoo\Medoo;
 
 class TagsResolver
 {
-    public function get_tags(ActionResolver $r, Medoo $db)
+    public function get_tags(QueryActionResolver $r, Medoo $db)
     {
         $r
-            ->load(function (ResolveContext $c) use ($r, $db) {
+            ->load(function () use ($r, $db) {
                 $request = $r->getRequest();
                 $requestedFields = $request->getFields();
-                $selectFields = $c->getSelectFields();
+                $selectFields = $r->getSelectFields();
 
                 $count = $db->count('tags');
 
@@ -33,7 +32,7 @@ class TagsResolver
                     $selectFields
                 );
 
-                $c->meta([
+                $r->meta([
                     'count_all' => $count,
                     'count_filter' => $count,
                     'count_search' => $count
@@ -43,10 +42,10 @@ class TagsResolver
             });
     }
 
-    public function resolve_tag_users_relation(GetRelationResolver $r, Medoo $db)
+    public function resolve_tag_users_relation(QueryRelationResolver $r, Medoo $db)
     {
         $r
-            ->load(function (array $owners, ResolveContext $c) use ($db) {
+            ->load(function (array $owners) use ($db) {
                 $tagIds = array_unique(
                     array_map(function (ModelInterface $owner) {
                         return $owner->id;
@@ -75,7 +74,7 @@ class TagsResolver
                 foreach ($ownerIdsByType as $typeName => $ids) {
                     $table = $typeName === 'Example.Article' ? 'articles' : 'authors';
 
-                    $selectFields = $c->getSelectFields($typeName);
+                    $selectFields = $r->getSelectFields($typeName);
 
                     $result = $db->select(
                         $table,
@@ -103,12 +102,12 @@ class TagsResolver
             });
     }
 
-    public function resolve_tags_relation(GetRelationResolver $r, Medoo $db)
+    public function resolve_tags_relation(QueryRelationResolver $r, Medoo $db)
     {
         $r
-            ->load(function (array $owners, ResolveContext $c) use ($db) {
-                $requestedFields = $c->getRequestedFields();
-                $selectFields = $c->getSelectFields();
+            ->load(function (array $owners) use ($r, $db) {
+                $requestedFields = $r->getRequestedFields();
+                $selectFields = $r->getSelectFields();
 
                 $queryFields = ['tag_users.user_id', 'tag_users.user_type'];
 

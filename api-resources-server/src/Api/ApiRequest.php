@@ -3,13 +3,13 @@
 namespace Afeefa\ApiResources\Api;
 
 use Afeefa\ApiResources\Action\Action;
-use Afeefa\ApiResources\DB\ActionResolver;
 use Afeefa\ApiResources\DB\TypeClassMap;
 use Afeefa\ApiResources\DI\ContainerAwareInterface;
 use Afeefa\ApiResources\DI\ContainerAwareTrait;
 use Afeefa\ApiResources\DI\DependencyResolver;
 use Afeefa\ApiResources\Exception\Exceptions\ApiException;
 use Afeefa\ApiResources\Exception\Exceptions\InvalidConfigurationException;
+use Afeefa\ApiResources\Resolver\BaseActionResolver;
 use Afeefa\ApiResources\Resource\Resource;
 use JsonSerializable;
 
@@ -193,20 +193,20 @@ class ApiRequest implements ContainerAwareInterface, ToSchemaJsonInterface, Json
 
         $resolveCallback = $action->getResolve();
 
-        /** @var ActionResolver */
+        /** @var BaseActionResolver */
         $actionResolver = null;
 
         $this->container->call(
             $resolveCallback,
             function (DependencyResolver $r) {
-                if ($r->isOf(ActionResolver::class)) {
+                if ($r->isOf(BaseActionResolver::class)) {
                     $r->create();
                 }
             },
             function () use (&$actionResolver) {
                 $arguments = func_get_args();
                 foreach ($arguments as $argument) {
-                    if ($argument instanceof ActionResolver) {
+                    if ($argument instanceof BaseActionResolver) {
                         $actionResolver = $argument;
                     }
                 }

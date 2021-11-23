@@ -37,7 +37,9 @@ class Type implements ToSchemaJsonInterface, ContainerAwareInterface
 
     public function created(): void
     {
-        $this->fields = $this->container->create(FieldBag::class);
+        $this->fields = $this->container
+            ->create(FieldBag::class)
+            ->owner($this);
         $this->fields($this->fields);
     }
 

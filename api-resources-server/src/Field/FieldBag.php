@@ -12,7 +12,24 @@ use Closure;
  */
 class FieldBag extends Bag
 {
+    protected $owner;
+
     protected ?FieldBag $original = null;
+
+    public function owner($owner): FieldBag
+    {
+        $this->owner = $owner;
+        return $this;
+    }
+
+    public function getOwner()
+    {
+        if ($this->original) {
+            return $this->original->getOwner();
+        }
+
+        return $this->owner;
+    }
 
     public function original(FieldBag $fieldBag): FieldBag
     {
@@ -66,6 +83,7 @@ class FieldBag extends Bag
     {
         $this->container->create($classOrCallback, function (Attribute $attribute) use ($name) {
             $attribute
+                ->owner($this->getOwner())
                 ->name($name)
                 ->allowed(true);
             $this->setInternal($name, $attribute);
@@ -78,6 +96,7 @@ class FieldBag extends Bag
     {
         $this->container->create($classOrCallback, function (Relation $relation) use ($name, $TypeClassOrClassesOrMeta) {
             $relation
+                ->owner($this->getOwner())
                 ->name($name)
                 ->allowed(true)
                 ->typeClassOrClassesOrMeta($TypeClassOrClassesOrMeta);

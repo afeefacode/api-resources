@@ -4,10 +4,10 @@ namespace Afeefa\ApiResources\Tests\Api\Schema;
 
 use Afeefa\ApiResources\Action\Action;
 use Afeefa\ApiResources\Api\ApiRequest;
-use Afeefa\ApiResources\DB\ActionResolver;
 use Afeefa\ApiResources\Field\FieldBag;
 use Afeefa\ApiResources\Field\Fields\VarcharAttribute;
 use Afeefa\ApiResources\Model\Model;
+use Afeefa\ApiResources\Resolver\QueryActionResolver;
 use Afeefa\ApiResources\Test\ApiResourcesTest;
 use function Afeefa\ApiResources\Test\T;
 
@@ -22,7 +22,7 @@ class SimpleRequestTest extends ApiResourcesTest
                 $addAction('ACT', function (Action $action) {
                     $action
                         ->response(T('TYPE'))
-                        ->resolve(function (ActionResolver $resolver) {
+                        ->resolve(function (QueryActionResolver $resolver) {
                             $resolver->load(function () {
                                 return Model::fromSingle('TYPE', [
                                     'id' => '123',
@@ -88,7 +88,7 @@ class SimpleRequestTest extends ApiResourcesTest
                 $addAction('ACT', function (Action $action) {
                     $action
                         ->response(T('TYPE'))
-                        ->resolve(function (ActionResolver $resolver) {
+                        ->resolve(function (QueryActionResolver $resolver) {
                             $resolver->load(function () {
                                 return Model::fromSingle('TYPE', [
                                     'id' => '123',

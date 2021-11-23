@@ -77,6 +77,18 @@ class Model implements ModelInterface, JsonSerializable
                     continue;
                 }
 
+                if ($value instanceof JsonSerializable) {
+                    $value = $value->jsonSerialize();
+                }
+
+                if (is_array($value)) {
+                    foreach ($value as $index => $element) {
+                        if ($element instanceof JsonSerializable) {
+                            $value[$index] = $element->jsonSerialize();
+                        }
+                    }
+                }
+
                 $json[$name] = $value;
             }
         }

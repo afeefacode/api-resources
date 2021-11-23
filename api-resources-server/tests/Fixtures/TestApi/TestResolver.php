@@ -2,12 +2,12 @@
 
 namespace Afeefa\ApiResources\Tests\Fixtures\TestApi;
 
-use Afeefa\ApiResources\DB\ActionResolver;
 use Afeefa\ApiResources\Model\Model;
+use Afeefa\ApiResources\Resolver\QueryActionResolver;
 
 class TestResolver
 {
-    public function get_types(ActionResolver $r)
+    public function get_types(QueryActionResolver $r)
     {
         $r
             ->load(function () use ($r) {

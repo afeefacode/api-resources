@@ -2,21 +2,20 @@
 
 namespace Backend\Resolvers;
 
-use Afeefa\ApiResources\DB\GetRelationResolver;
-use Afeefa\ApiResources\DB\ResolveContext;
 use Afeefa\ApiResources\Model\Model;
 use Afeefa\ApiResources\Model\ModelInterface;
+use Afeefa\ApiResources\Resolver\QueryRelationResolver;
 use Backend\Types\CommentType;
 use Medoo\Medoo;
 
 class CommentsResolver
 {
-    public function resolve_comments_relation(GetRelationResolver $r, Medoo $db)
+    public function resolve_comments_relation(QueryRelationResolver $r, Medoo $db)
     {
         $r
-            ->load(function (array $owners, ResolveContext $c) use ($db) {
+            ->load(function (array $owners) use ($r, $db) {
                 /** @var ModelInterface[] $owners */
-                $selectFields = array_merge($c->getSelectFields(), ['owner_type', 'owner_id']);
+                $selectFields = array_merge($r->getSelectFields(), ['owner_type', 'owner_id']);
 
                 $ownerIdsByType = [];
                 foreach ($owners as $owner) {

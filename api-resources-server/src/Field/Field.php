@@ -18,6 +18,8 @@ class Field extends BagEntry
     use ToSchemaJsonTrait;
     use HasStaticTypeTrait;
 
+    protected $owner;
+
     protected string $name;
 
     protected ?Validator $validator = null;
@@ -42,8 +44,15 @@ class Field extends BagEntry
      */
     protected $resolveSaveCallback = null;
 
-    public function created(): void
+    public function owner($owner): Field
     {
+        $this->owner = $owner;
+        return $this;
+    }
+
+    public function getOwner()
+    {
+        return $this->owner;
     }
 
     public function name(string $name): Field

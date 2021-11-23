@@ -2,21 +2,21 @@
 
 namespace Backend\Resolvers;
 
-use Afeefa\ApiResources\DB\ActionResolver;
-use Afeefa\ApiResources\DB\GetRelationResolver;
-use Afeefa\ApiResources\DB\ResolveContext;
 use Afeefa\ApiResources\Exception\Exceptions\ApiException;
 use Afeefa\ApiResources\Model\Model;
 use Afeefa\ApiResources\Model\ModelInterface;
+use Afeefa\ApiResources\Resolver\MutationActionResolver;
+use Afeefa\ApiResources\Resolver\QueryActionResolver;
+use Afeefa\ApiResources\Resolver\QueryRelationResolver;
 use Backend\Types\ArticleType;
 use Medoo\Medoo;
 
 class ArticlesResolver
 {
-    public function get_articles(ActionResolver $r, Medoo $db)
+    public function get_articles(QueryActionResolver $r, Medoo $db)
     {
         $r
-            ->load(function (ResolveContext $c) use ($r, $db) {
+            ->load(function () use ($r, $db) {
                 $request = $r->getRequest();
                 $action = $request->getAction();
                 $requestedFields = $request->getFields();
@@ -25,7 +25,7 @@ class ArticlesResolver
 
                 $selectFields = array_map(function ($field) {
                     return 'articles.' . $field;
-                }, $c->getSelectFields());
+                }, $r->getSelectFields());
 
                 $usedFilters = [];
 
@@ -141,7 +141,7 @@ class ArticlesResolver
                     ]));
                 }
 
-                $c->meta([
+                $r->meta([
                     'count_all' => $countAll,
                     'count_filter' => $countFilters,
                     'count_search' => $countSearch,
@@ -152,13 +152,13 @@ class ArticlesResolver
             });
     }
 
-    public function get_article(ActionResolver $r, Medoo $db)
+    public function get_article(QueryActionResolver $r, Medoo $db)
     {
         $r
-            ->load(function (ResolveContext $c) use ($r, $db) {
+            ->load(function () use ($r, $db) {
                 $request = $r->getRequest();
                 $requestedFields = $request->getFields();
-                $selectFields = $c->getSelectFields();
+                $selectFields = $r->getSelectFields();
 
                 $where = ['id' => $request->getParam('id')];
 
@@ -189,7 +189,7 @@ class ArticlesResolver
             });
     }
 
-    public function update_article(ActionResolver $r, Medoo $db)
+    public function update_article(MutationActionResolver $r, Medoo $db)
     {
         $r
             ->load(function () use ($r, $db) {
@@ -215,7 +215,7 @@ class ArticlesResolver
             });
     }
 
-    public function create_article(ActionResolver $r, Medoo $db)
+    public function create_article(MutationActionResolver $r, Medoo $db)
     {
         $r
             ->load(function () use ($r, $db) {
@@ -241,12 +241,12 @@ class ArticlesResolver
             });
     }
 
-    public function resolve_articles_relation(GetRelationResolver $r, Medoo $db): void
+    public function resolve_articles_relation(QueryRelationResolver $r, Medoo $db): void
     {
         $r
-            ->load(function (array $owners, ResolveContext $c) use ($db) {
+            ->load(function (array $owners) use ($r, $db) {
                 /** @var ModelInterface[] $owners */
-                $selectFields = array_merge($c->getSelectFields(), ['author_id']);
+                $selectFields = array_merge($r->getSelectFields(), ['author_id']);
 
                 $authorIds = array_unique(
                     array_map(function (ModelInterface $owner) {
