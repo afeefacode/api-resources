@@ -10,15 +10,18 @@ class QueryAttributeResolver extends BaseAttributeResolver
 {
     protected array $selectFields = [];
 
+    protected ?Closure $selectCallback = null;
+
     protected ?Closure $loadCallback = null;
 
     protected ?Closure $mapCallback = null;
 
-    public function select($selectFields): QueryAttributeResolver
+    public function select($selectFields, ?Closure $selectCallback = null): QueryAttributeResolver
     {
         $this->selectFields = is_array($selectFields)
             ? $selectFields
             : [$selectFields];
+        $this->selectCallback = $selectCallback;
         return $this;
     }
 
@@ -49,6 +52,12 @@ class QueryAttributeResolver extends BaseAttributeResolver
 
         if (!$this->loadCallback) {
             if (count($this->selectFields)) {
+                if ($this->selectCallback) {
+                    foreach ($this->owners as $owner) {
+                        $value = ($this->selectCallback)($owner);
+                        $owner->apiResourcesSetAttribute($attributeName, $value);
+                    }
+                }
                 return; // only select fields are set up
             }
             throw new MissingCallbackException("{$resolverForAttribute} needs to implement a load() method.");
@@ -57,16 +66,13 @@ class QueryAttributeResolver extends BaseAttributeResolver
 
         // map results to owners
 
-        if (isset($this->mapCallback)) {
+        if ($this->mapCallback) {
             if (!is_array($objects)) {
                 throw new InvalidConfigurationException("{$resolverForAttribute} needs to return an array if map() is used.");
             }
 
-            $mapCallback = $this->mapCallback;
-            $attributeName = $this->field->getName();
-
             foreach ($this->owners as $owner) {
-                $value = $mapCallback($objects, $owner);
+                $value = ($this->mapCallback)($objects, $owner);
                 $owner->apiResourcesSetAttribute($attributeName, $value);
             }
         }

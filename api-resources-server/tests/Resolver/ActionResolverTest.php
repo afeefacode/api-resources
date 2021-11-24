@@ -497,8 +497,19 @@ class ActionResolverTest extends ApiResourcesTest
     }
 }
 
+/**
+ * @method static TestModel fromSingle
+ */
 class TestModel extends Model
 {
+    public array $selectFields = [];
+
+    public function selectFields(array $selectFields): TestModel
+    {
+        $this->selectFields = $selectFields;
+        return $this;
+    }
+
     public function getVisibleFields(): array
     {
         return $this->visibleFields;

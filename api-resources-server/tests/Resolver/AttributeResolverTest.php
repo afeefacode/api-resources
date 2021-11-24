@@ -502,6 +502,24 @@ class AttributeResolverTest extends ApiResourcesTest
         $this->requestSingle($api, ['title' => true]);
     }
 
+    public function test_no_load_callback_but_select_fields()
+    {
+        $api = $this->createApiWithTypeAndAction(
+            function (FieldBag $fields) {
+                $fields
+                    ->attribute('title', function (VarcharAttribute $attribute) {
+                        $attribute->resolve(function (QueryAttributeResolver $r) {
+                            $r->select('something');
+                        });
+                    });
+            }
+        );
+
+        $this->requestSingle($api, ['title' => true]);
+
+        $this->assertTrue(true);
+    }
+
     public function test_load_returns_no_array_if_map_used()
     {
         $this->expectException(InvalidConfigurationException::class);
@@ -525,6 +543,58 @@ class AttributeResolverTest extends ApiResourcesTest
         $this->requestSingle($api, ['title' => true]);
     }
 
+    public function test_select_fields()
+    {
+        $api = $this->createApiWithTypeAndAction(
+            function (FieldBag $fields) {
+                $fields
+                    ->attribute('title', function (VarcharAttribute $attribute) {
+                        $attribute->resolve(function (QueryAttributeResolver $r) {
+                            $r->select('something', function ($model) {
+                                $this->testWatcher->selectFields($model->selectFields);
+
+                                return 'calculatedTitle';
+                            });
+                        });
+                    });
+            }
+        );
+
+        $model = $this->requestSingle($api, ['title' => true]);
+
+        $this->assertEquals(['id', 'something'], $model->selectFields);
+        $this->assertEquals([['id', 'something']], $this->testWatcher->selectFields);
+
+        $expectedFields = [
+            'type' => 'TYPE',
+            'title' => 'calculatedTitle'
+        ];
+
+        $this->assertEquals($expectedFields, $model->jsonSerialize());
+    }
+
+    public function test_select_fields_without_callback()
+    {
+        $api = $this->createApiWithTypeAndAction(
+            function (FieldBag $fields) {
+                $fields
+                    ->attribute('title', function (VarcharAttribute $attribute) {
+                        $attribute->resolve(function (QueryAttributeResolver $r) {
+                            $r->select('something');
+                        });
+                    });
+            }
+        );
+
+        $model = $this->requestSingle($api, ['title' => true]);
+
+        $this->assertEquals(['id', 'something'], $model->selectFields);
+
+        $expectedFields = ['type' => 'TYPE'];
+
+        $this->assertEquals($expectedFields, $model->jsonSerialize());
+    }
+
     private function createApiWithTypeAndAction(Closure $fieldsCallback, ?Closure $actionCallback = null, bool $isList = false): Api
     {
         $actionCallback ??= function (Action $action) use ($isList) {
@@ -532,13 +602,18 @@ class AttributeResolverTest extends ApiResourcesTest
             $action
                 ->response($response)
                 ->resolve(function (QueryActionResolver $r) use ($isList) {
-                    $r->load(function () use ($isList) {
+                    $r->load(function () use ($isList, $r) {
+                        $m = function () use ($r) {
+                            return TestModel::fromSingle('TYPE', [])
+                                ->selectFields($r->getSelectFields());
+                        };
+
                         if ($isList) {
-                            return Model::fromList('TYPE', [
-                                [], [], [], [], [] // 5 models
-                            ]);
+                            return [
+                                $m(), $m(), $m(), $m(), $m() // 5 models
+                            ];
                         }
-                        return Model::fromSingle('TYPE', []);
+                        return $m();
                     });
                 });
         };

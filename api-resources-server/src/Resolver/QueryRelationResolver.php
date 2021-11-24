@@ -5,6 +5,7 @@ namespace Afeefa\ApiResources\Resolver;
 use Afeefa\ApiResources\Api\RequestedFields;
 use Afeefa\ApiResources\Exception\Exceptions\InvalidConfigurationException;
 use Afeefa\ApiResources\Exception\Exceptions\MissingCallbackException;
+use Afeefa\ApiResources\Model\ModelInterface;
 use Closure;
 
 /**
@@ -25,8 +26,6 @@ class QueryRelationResolver extends BaseRelationResolver
     protected ?Closure $loadCallback = null;
 
     protected ?Closure $mapCallback = null;
-
-    protected ?Closure $flattenCallback = null;
 
     public function requestedFields(RequestedFields $fields): QueryRelationResolver
     {
@@ -71,12 +70,6 @@ class QueryRelationResolver extends BaseRelationResolver
         return $this;
     }
 
-    public function flatten(Closure $callback): QueryRelationResolver
-    {
-        $this->flattenCallback = $callback;
-        return $this;
-    }
-
     protected function getResolveContext(): QueryResolveContext
     {
         if (!isset($this->resolveContext)) {
@@ -88,48 +81,61 @@ class QueryRelationResolver extends BaseRelationResolver
 
     public function resolve(): void
     {
+        // if error
+        $relationName = $this->field->getName();
+        $resolverForRelation = "Resolver for relation {$relationName}";
+
         $resolveContext = $this->getResolveContext();
 
         // query db
 
         $loadCallback = $this->loadCallback;
         if (!$loadCallback) {
-            throw new MissingCallbackException('resolve callback needs to implement a load() method.');
+            throw new MissingCallbackException("{$resolverForRelation} needs to implement a load() method.");
         }
-        $objects = $loadCallback($this->owners, $resolveContext);
+        $loadResult = $loadCallback($this->owners, $resolveContext);
 
-        if (!is_array($objects)) {
-            throw new InvalidConfigurationException('load() method of a relation resolver must return an array of ModelInterace objects.');
+        if (!is_array($loadResult)) {
+            throw new InvalidConfigurationException("{$resolverForRelation} needs to return an array from its load() method.");
         }
+
+        $models = [];
 
         // map results to owners
 
-        if (isset($this->mapCallback)) {
-            $mapCallback = $this->mapCallback;
-            $relationName = $this->field->getName();
+        // this is just a one-liner to detect if there are non-models in the given array
+        $isAllModels = fn ($array) => !count(array_filter($array, fn ($elm) => !$elm instanceof ModelInterface));
 
+        if (isset($this->mapCallback)) {
+            $relationName = $this->field->getName();
             foreach ($this->owners as $owner) {
-                $value = $mapCallback($objects, $owner);
+                $value = ($this->mapCallback)($loadResult, $owner);
                 $owner->apiResourcesSetRelation($relationName, $value);
+                $models[] = $value;
+            }
+
+            if ($this->field->getRelatedType()->isList()) {
+                $models = array_merge(...$models); // make flat
+                if (!$isAllModels($models)) {
+                    throw new InvalidConfigurationException("{$resolverForRelation} needs to return an array of ModelInterface objects from its map() method.");
+                }
+            } else {
+                if (!$isAllModels($models)) {
+                    throw new InvalidConfigurationException("{$resolverForRelation} needs to return a ModelInterface object or null from its map() method.");
+                }
+            }
+        } else {
+            $models = $loadResult;
+
+            if (!$isAllModels($models)) {
+                throw new InvalidConfigurationException("{$resolverForRelation} needs to return an array of ModelInterface objects from its load() method.");
             }
         }
 
         // no objects -> no relations to resolve
 
-        if (!count($objects)) {
+        if (!count($models)) {
             return;
-        }
-
-        // resolve attributes and sub relations
-
-        if (isset($this->flattenCallback)) {
-            $models = ($this->flattenCallback)($objects);
-        } else {
-            $models = array_values($objects);
-            // nested array
-            if (is_array($models[0] ?? null)) {
-                $models = array_merge(...$models);
-            }
         }
 
         $attributeResolvers = $resolveContext->getAttributeResolvers();
