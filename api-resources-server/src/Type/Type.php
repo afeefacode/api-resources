@@ -20,9 +20,9 @@ class Type implements ToSchemaJsonInterface, ContainerAwareInterface
 
     public static function list($TypeClassOrClasses): TypeMeta
     {
-        $meta = new TypeMeta();
-        $meta->typeClassOrClasses($TypeClassOrClasses);
-        return $meta->list();
+        return (new TypeMeta())
+            ->typeClassOrClasses($TypeClassOrClasses)
+            ->list();
     }
 
     public static function create(string $TypeClass): TypeMeta
