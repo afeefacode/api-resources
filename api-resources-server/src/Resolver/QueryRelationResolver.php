@@ -7,6 +7,7 @@ use Afeefa\ApiResources\Exception\Exceptions\InvalidConfigurationException;
 use Afeefa\ApiResources\Exception\Exceptions\MissingCallbackException;
 use Afeefa\ApiResources\Model\ModelInterface;
 use Closure;
+use Generator;
 
 /**
  * @method QueryRelationResolver ownerType(Type $ownerType)
@@ -70,15 +71,6 @@ class QueryRelationResolver extends BaseRelationResolver
         return $this;
     }
 
-    protected function getResolveContext(): QueryResolveContext
-    {
-        if (!isset($this->resolveContext)) {
-            $this->resolveContext = $this->container->create(QueryResolveContext::class)
-                ->requestedFields($this->requestedFields);
-        }
-        return $this->resolveContext;
-    }
-
     public function resolve(): void
     {
         // if error
@@ -94,6 +86,10 @@ class QueryRelationResolver extends BaseRelationResolver
             throw new MissingCallbackException("{$resolverForRelation} needs to implement a load() method.");
         }
         $loadResult = $loadCallback($this->owners, $resolveContext);
+
+        if ($loadResult instanceof Generator) {
+            $loadResult = iterator_to_array($loadResult, false);
+        }
 
         if (!is_array($loadResult)) {
             throw new InvalidConfigurationException("{$resolverForRelation} needs to return an array from its load() method.");
@@ -152,5 +148,14 @@ class QueryRelationResolver extends BaseRelationResolver
             }
             $relationResolver->resolve();
         }
+    }
+
+    protected function getResolveContext(): QueryResolveContext
+    {
+        if (!isset($this->resolveContext)) {
+            $this->resolveContext = $this->container->create(QueryResolveContext::class)
+                ->requestedFields($this->requestedFields);
+        }
+        return $this->resolveContext;
     }
 }

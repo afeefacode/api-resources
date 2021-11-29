@@ -31,7 +31,7 @@ class QueryActionResolver extends BaseActionResolver
 
     public function getRequestedFields(): RequestedFields
     {
-        return $this->request->getFields();
+        return $this->request->getRequestedFields();
     }
 
     public function getSelectFields(): array
@@ -39,20 +39,10 @@ class QueryActionResolver extends BaseActionResolver
         return $this->getResolveContext()->getSelectFields();
     }
 
-    protected function getResolveContext(): QueryResolveContext
-    {
-        if (!isset($this->resolveContext)) {
-            $this->resolveContext = $this->container->create(QueryResolveContext::class)
-                ->requestedFields($this->request->getFields());
-        }
-        return $this->resolveContext;
-    }
-
     public function resolve(): array
     {
         $action = $this->request->getAction();
         $resolveContext = $this->getResolveContext();
-        $requestedFields = $this->request->getFields();
 
         // if errors
 
@@ -80,13 +70,25 @@ class QueryActionResolver extends BaseActionResolver
                 if (!$model instanceof ModelInterface) {
                     throw new InvalidConfigurationException("{$mustReturn} an array of ModelInterface objects.");
                 }
+                $allowedTypeNames = $action->getResponse()->getAllTypeNames();
+                if (!in_array($model->apiResourcesGetType(), $allowedTypeNames)) {
+                    $allowedTypeNames = implode(',', $allowedTypeNames);
+                    throw new InvalidConfigurationException("{$mustReturn} an array of ModelInterface objects of type [{$allowedTypeNames}].");
+                }
             }
             $models = $modelOrModels;
             $hasResult = count($models) > 0;
             $isList = true;
         } else {
-            if ($modelOrModels !== null && !$modelOrModels instanceof ModelInterface) {
-                throw new InvalidConfigurationException("{$mustReturn} a ModelInterface object or null.");
+            if ($modelOrModels !== null) {
+                if (!$modelOrModels instanceof ModelInterface) {
+                    throw new InvalidConfigurationException("{$mustReturn} a ModelInterface object.");
+                }
+                $allowedTypeNames = $action->getResponse()->getAllTypeNames();
+                if (!in_array($modelOrModels->apiResourcesGetType(), $allowedTypeNames)) {
+                    $allowedTypeNames = implode(',', $allowedTypeNames);
+                    throw new InvalidConfigurationException("{$mustReturn} a ModelInterface object of type [{$allowedTypeNames}].");
+                }
             }
             $models = $modelOrModels ? [$modelOrModels] : [];
             $hasResult = !!$modelOrModels;
@@ -113,6 +115,7 @@ class QueryActionResolver extends BaseActionResolver
 
             // mark visible fields
 
+            $requestedFields = $this->request->getRequestedFields();
             $this->container->create(function (VisibleFields $visibleFields) use ($models, $requestedFields) {
                 $visibleFields
                     ->requestedFields($requestedFields)
@@ -126,5 +129,14 @@ class QueryActionResolver extends BaseActionResolver
             'input' => json_decode(file_get_contents('php://input'), true),
             'request' => $this->request
         ];
+    }
+
+    protected function getResolveContext(): QueryResolveContext
+    {
+        if (!isset($this->resolveContext)) {
+            $this->resolveContext = $this->container->create(QueryResolveContext::class)
+                ->requestedFields($this->request->getRequestedFields());
+        }
+        return $this->resolveContext;
     }
 }
