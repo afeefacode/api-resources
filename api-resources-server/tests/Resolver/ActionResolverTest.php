@@ -30,7 +30,7 @@ class ActionResolverTest extends ApiResourcesTest
         $this->testWatcher = new TestWatcher();
     }
 
-    public function test_called_once()
+    public function test_calls()
     {
         $api = $this->createApiWithAction(function (Action $action) {
             $action
@@ -39,6 +39,7 @@ class ActionResolverTest extends ApiResourcesTest
                     $this->testWatcher->called();
 
                     $r->load(function () {
+                        $this->testWatcher->called();
                         return Model::fromSingle('TYPE', []);
                     });
                 });
@@ -48,7 +49,7 @@ class ActionResolverTest extends ApiResourcesTest
 
         $this->request($api);
 
-        $this->assertEquals(1, $this->testWatcher->countCalls);
+        $this->assertEquals(2, $this->testWatcher->countCalls);
     }
 
     public function test_missing_action_resolver()
@@ -81,10 +82,36 @@ class ActionResolverTest extends ApiResourcesTest
         $this->request($api);
     }
 
+    public function test_returns_single()
+    {
+        $api = $this->createApiWithAction(function (Action $action) {
+            $action
+                ->response(T('TYPE'))
+                ->resolve(function (QueryActionResolver $r) {
+                    $r->load(function () {
+                        return TestModel::fromSingle('TYPE', []);
+                    });
+                });
+        });
+
+        $result = $this->request($api);
+
+        /** @var TestModel */
+        $model = $result['data'];
+
+        $this->assertInstanceOf(TestModel::class, $model);
+        $this->assertEquals('TYPE', $model->type);
+        $this->assertFalse(isset($model->id));
+        $this->assertEquals(['id', 'type'], $model->getVisibleFields());
+        $this->assertEquals([
+            'type' => 'TYPE'
+        ], $model->jsonSerialize());
+    }
+
     /**
      * @dataProvider nullDataProvider
      */
-    public function test_returns_null($null)
+    public function test_returns_single_null($null)
     {
         $api = $this->createApiWithAction(function (Action $action) use ($null) {
             $action
@@ -111,33 +138,7 @@ class ActionResolverTest extends ApiResourcesTest
         ];
     }
 
-    public function test_returns_model()
-    {
-        $api = $this->createApiWithAction(function (Action $action) {
-            $action
-                ->response(T('TYPE'))
-                ->resolve(function (QueryActionResolver $r) {
-                    $r->load(function () {
-                        return TestModel::fromSingle('TYPE', []);
-                    });
-                });
-        });
-
-        $result = $this->request($api);
-
-        /** @var TestModel */
-        $model = $result['data'];
-
-        $this->assertInstanceOf(TestModel::class, $model);
-        $this->assertEquals('TYPE', $model->type);
-        $this->assertFalse(isset($model->id));
-        $this->assertEquals(['id', 'type'], $model->getVisibleFields());
-        $this->assertEquals([
-            'type' => 'TYPE'
-        ], $model->jsonSerialize());
-    }
-
-    public function test_returns_model_wrong_type()
+    public function test_returns_single_wrong_type()
     {
         $this->expectException(InvalidConfigurationException::class);
         $this->expectExceptionMessage('Load callback of action resolver for action ACT on resource RES must return a ModelInterface object of type [TYPE].');
@@ -155,7 +156,33 @@ class ActionResolverTest extends ApiResourcesTest
         $this->request($api);
     }
 
-    public function test_returns_model_wrong_type_with_mixed()
+    public function test_returns_single_with_union()
+    {
+        $api = $this->createApiWithAction(function (Action $action) {
+            $action
+                ->response([T('TYPE'), T('TYPE2')])
+                ->resolve(function (QueryActionResolver $r) {
+                    $r->load(function () {
+                        return TestModel::fromSingle('TYPE2', []);
+                    });
+                });
+        });
+
+        $result = $this->request($api);
+
+        /** @var TestModel */
+        $model = $result['data'];
+
+        $this->assertInstanceOf(TestModel::class, $model);
+        $this->assertEquals('TYPE2', $model->type);
+        $this->assertFalse(isset($model->id));
+        $this->assertEquals(['id', 'type'], $model->getVisibleFields());
+        $this->assertEquals([
+            'type' => 'TYPE2'
+        ], $model->jsonSerialize());
+    }
+
+    public function test_returns_single_wrong_type_with_union()
     {
         $this->expectException(InvalidConfigurationException::class);
         $this->expectExceptionMessage('Load callback of action resolver for action ACT on resource RES must return a ModelInterface object of type [TYPE,TYPE2].');
@@ -176,7 +203,7 @@ class ActionResolverTest extends ApiResourcesTest
     /**
      * @dataProvider wrongModelDataProvider
      */
-    public function test_returns_no_model($wrongModel)
+    public function test_returns_single_wrong_model($wrongModel)
     {
         $this->expectException(InvalidConfigurationException::class);
         $this->expectExceptionMessage('Load callback of action resolver for action ACT on resource RES must return a ModelInterface object.');
@@ -203,7 +230,7 @@ class ActionResolverTest extends ApiResourcesTest
         ];
     }
 
-    public function test_returns_list_of_models()
+    public function test_returns_list()
     {
         $api = $this->createApiWithAction(function (Action $action) {
             $action
@@ -234,7 +261,38 @@ class ActionResolverTest extends ApiResourcesTest
         }
     }
 
-    public function test_returns_empty_list()
+    public function test_returns_list_with_union()
+    {
+        $api = $this->createApiWithAction(function (Action $action) {
+            $action
+                ->response(Type::list([T('TYPE'), T('TYPE2')]))
+                ->resolve(function (QueryActionResolver $r) {
+                    $r->load(function () {
+                        return TestModel::fromList('TYPE2', [[], []]);
+                    });
+                });
+        });
+
+        $result = $this->request($api);
+
+        /** @var TestModel[] */
+        $models = $result['data'];
+
+        $this->assertIsArray($models);
+        $this->assertCount(2, $models);
+
+        foreach ($models as $model) {
+            $this->assertInstanceOf(TestModel::class, $model);
+            $this->assertEquals('TYPE2', $model->type);
+            $this->assertFalse(isset($model->id));
+            $this->assertEquals(['id', 'type'], $model->getVisibleFields());
+            $this->assertEquals([
+                'type' => 'TYPE2'
+            ], $model->jsonSerialize());
+        }
+    }
+
+    public function test_returns_list_empty()
     {
         $api = $this->createApiWithAction(function (Action $action) {
             $action
@@ -253,17 +311,20 @@ class ActionResolverTest extends ApiResourcesTest
         $this->assertCount(0, $models);
     }
 
-    public function test_returns_no_list()
+    /**
+     * @dataProvider wrongListReturnDataProvider
+     */
+    public function test_returns_list_no_list($wrongList)
     {
         $this->expectException(InvalidConfigurationException::class);
         $this->expectExceptionMessage('Load callback of action resolver for action ACT on resource RES must return an array of ModelInterface objects.');
 
-        $api = $this->createApiWithAction(function (Action $action) {
+        $api = $this->createApiWithAction(function (Action $action) use ($wrongList) {
             $action
                 ->response(Type::list(T('TYPE')))
-                ->resolve(function (QueryActionResolver $r) {
-                    $r->load(function () {
-                        return new stdClass();
+                ->resolve(function (QueryActionResolver $r) use ($wrongList) {
+                    $r->load(function () use ($wrongList) {
+                        return $wrongList;
                     });
                 });
         });
@@ -271,26 +332,18 @@ class ActionResolverTest extends ApiResourcesTest
         $this->request($api);
     }
 
-    public function test_returns_no_list_but_null()
+    public function wrongListReturnDataProvider()
     {
-        $this->expectException(InvalidConfigurationException::class);
-        $this->expectExceptionMessage('Load callback of action resolver for action ACT on resource RES must return an array of ModelInterface objects.');
-
-        $api = $this->createApiWithAction(function (Action $action) {
-            $action
-                ->response(Type::list(T('TYPE')))
-                ->resolve(function (QueryActionResolver $r) {
-                    $r->load(function () {
-                        return null;
-                    });
-                });
-        });
-
-        $this->request($api);
+        return [
+            'null' => [null],
+            'string' => ['string'],
+            'array' => [['a']],
+            'object' => [new stdClass()]
+        ];
     }
 
     /**
-     * @dataProvider wrongListReturnDataProvider
+     * @dataProvider wrongListItemReturnDataProvider
      */
     public function test_returns_list_with_wrong_model($wrongModel)
     {
@@ -313,7 +366,7 @@ class ActionResolverTest extends ApiResourcesTest
         $this->request($api);
     }
 
-    public function wrongListReturnDataProvider()
+    public function wrongListItemReturnDataProvider()
     {
         return [
             'null' => [null],
