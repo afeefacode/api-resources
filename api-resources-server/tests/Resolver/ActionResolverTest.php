@@ -435,6 +435,35 @@ class ActionResolverTest extends ApiResourcesTest
     /**
      * @dataProvider requestFieldsDataProvider
      */
+    public function test_select_fields_union_missing_type($fields, $expectedFields)
+    {
+        $api = $this->createApiWithTypeAndAction(
+            function (FieldBag $fields) {
+                $fields
+                    ->attribute('name', VarcharAttribute::class)
+                    ->attribute('title', VarcharAttribute::class);
+            },
+            function (Action $action) {
+                $action
+                    ->response([T('TYPE'), T('TYPE2')])
+                    ->resolve(function (QueryActionResolver $r) {
+                        $r->load(function () use ($r) {
+                            $this->testWatcher->selectFields($r->getSelectFields());
+                        });
+                    });
+            }
+        );
+
+        $this->request($api, $fields);
+
+        $expectedFieldsWithId = ['id', ...$expectedFields];
+
+        $this->assertEquals([$expectedFieldsWithId], $this->testWatcher->selectFields);
+    }
+
+    /**
+     * @dataProvider requestFieldsDataProvider
+     */
     public function test_visible_fields($fields, $expectedFields)
     {
         $api = $this->createApiWithTypeAndAction(

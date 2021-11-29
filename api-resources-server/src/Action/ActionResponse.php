@@ -43,6 +43,11 @@ class ActionResponse implements ToSchemaJsonInterface, ContainerAwareInterface
         }
 
         // make array [Type] to string Type
+        if (is_array($TypeClassOrClasses)) {
+            $TypeClassOrClasses = array_values(array_unique($TypeClassOrClasses)); // array_values: remove empty keys
+        }
+
+        // make array [Type] to string Type
         if (is_array($TypeClassOrClasses) && count($TypeClassOrClasses) === 1) {
             $TypeClassOrClasses = $TypeClassOrClasses[0];
         }

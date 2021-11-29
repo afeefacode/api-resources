@@ -93,9 +93,8 @@ class ActionTest extends ApiResourcesTest
         $this->assertTrue($input->isList());
     }
 
-    public function test_input_mixed()
+    public function test_input_union()
     {
-        $this->typeBuilder()->type('Test.Type')->get();
         $action = (new ActionBuilder())->get();
 
         $TypeClasses = [
@@ -113,7 +112,46 @@ class ActionTest extends ApiResourcesTest
         $this->assertFalse($input->isList());
     }
 
-    public function test_input_mixed_list()
+    public function test_input_union_unique()
+    {
+        $action = (new ActionBuilder())->get();
+
+        $TypeClasses = [
+            T('Test.Type'),
+            T('Test.Type')
+        ];
+
+        $action->input($TypeClasses);
+
+        $input = $action->getInput();
+
+        $this->assertEquals(T('Test.Type'), $input->getTypeClass());
+        $this->assertEquals([], $input->getTypeClasses());
+        $this->assertFalse($input->isList());
+    }
+
+    public function test_input_union_unique2()
+    {
+        $action = (new ActionBuilder())->get();
+
+        $TypeClasses = [
+            T('Test.Type'),
+            T('Test.Type'),
+            T('Test.Type3')
+        ];
+
+        $action->input($TypeClasses);
+
+        $input = $action->getInput();
+
+        $ExpectedTypeClasses = [T('Test.Type'), T('Test.Type3')];
+
+        $this->assertNull($input->getTypeClass());
+        $this->assertEquals($ExpectedTypeClasses, $input->getTypeClasses());
+        $this->assertFalse($input->isList());
+    }
+
+    public function test_input_union_list()
     {
         $action = (new ActionBuilder())->get();
 
@@ -129,6 +167,45 @@ class ActionTest extends ApiResourcesTest
 
         $this->assertNull($input->getTypeClass());
         $this->assertEquals($TypeClasses, $input->getTypeClasses());
+        $this->assertTrue($input->isList());
+    }
+
+    public function test_input_union_list_unique()
+    {
+        $action = (new ActionBuilder())->get();
+
+        $TypeClasses = [
+            T('Test.Type'),
+            T('Test.Type')
+        ];
+
+        $action->input(Type::list($TypeClasses));
+
+        $input = $action->getInput();
+
+        $this->assertEquals(T('Test.Type'), $input->getTypeClass());
+        $this->assertEquals([], $input->getTypeClasses());
+        $this->assertTrue($input->isList());
+    }
+
+    public function test_input_union_list_unique2()
+    {
+        $action = (new ActionBuilder())->get();
+
+        $TypeClasses = [
+            T('Test.Type'),
+            T('Test.Type'),
+            T('Test.Type3')
+        ];
+
+        $action->input(Type::list($TypeClasses));
+
+        $input = $action->getInput();
+
+        $ExpectedTypeClasses = [T('Test.Type'), T('Test.Type3')];
+
+        $this->assertNull($input->getTypeClass());
+        $this->assertEquals($ExpectedTypeClasses, $input->getTypeClasses());
         $this->assertTrue($input->isList());
     }
 
@@ -150,7 +227,7 @@ class ActionTest extends ApiResourcesTest
         $action->input(Type::list('TEST'));
     }
 
-    public function test_input_invalid_type_mixed()
+    public function test_input_invalid_type_union()
     {
         $this->expectException(NotATypeException::class);
         $this->expectExceptionMessage('Value for input $TypeClassOrClasses is not a list of types.');
@@ -159,7 +236,7 @@ class ActionTest extends ApiResourcesTest
         $action->input(['TEST', 'TEST2']);
     }
 
-    public function test_input_invalid_type_mixed_list()
+    public function test_input_invalid_type_union_list()
     {
         $this->expectException(NotATypeException::class);
         $this->expectExceptionMessage('Value for input $TypeClassOrClasses is not a list of types.');
@@ -217,7 +294,7 @@ class ActionTest extends ApiResourcesTest
         $this->assertTrue($response->isList());
     }
 
-    public function test_response_mixed()
+    public function test_response_union()
     {
         $action = (new ActionBuilder())->get();
 
@@ -236,7 +313,7 @@ class ActionTest extends ApiResourcesTest
         $this->assertFalse($response->isList());
     }
 
-    public function test_response_mixed_list()
+    public function test_response_union_list()
     {
         $action = (new ActionBuilder())->get();
 
@@ -273,7 +350,7 @@ class ActionTest extends ApiResourcesTest
         $action->response(Type::list('TEST'));
     }
 
-    public function test_response_invalid_type_mixed()
+    public function test_response_invalid_type_union()
     {
         $this->expectException(NotATypeException::class);
         $this->expectExceptionMessage('Value for response $TypeClassOrClasses is not a list of types.');
@@ -282,7 +359,7 @@ class ActionTest extends ApiResourcesTest
         $action->response(['TEST', 'TEST2']);
     }
 
-    public function test_response_invalid_type_mixed_list()
+    public function test_response_invalid_type_union_list()
     {
         $this->expectException(NotATypeException::class);
         $this->expectExceptionMessage('Value for response $TypeClassOrClasses is not a list of types.');
