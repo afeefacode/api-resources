@@ -33,6 +33,176 @@ class RelationResolverTest extends ApiResourcesTest
         $this->testWatcher = new TestWatcher();
     }
 
+    public function test_simple()
+    {
+        $api = $this->createApiWithTypeAndAction(
+            function (FieldBag $fields) {
+                $fields
+                    ->attribute('title', VarcharAttribute::class)
+                    ->relation('other', T('TYPE'), function (HasOneRelation $relation) {
+                        $relation->resolve(function (QueryRelationResolver $r) {
+                            $r->load(function (array $owners) {
+                                $relatedModels = [];
+                                foreach ($owners as $owner) {
+                                    $this->testWatcher->called();
+                                    $relatedModel = Model::fromSingle('TYPE', ['title' => 'title' . $this->testWatcher->countCalls]);
+                                    $owner->apiResourcesSetRelation('other', $relatedModel);
+                                    $relatedModels[] = $relatedModel;
+                                }
+                                return $relatedModels;
+                            });
+                        });
+                    });
+            }
+        );
+
+        $model = $this->requestSingle($api, [
+            'title' => true,
+            'other' => [
+                'title' => true
+            ]
+        ]);
+
+        $expectedFields = [
+            'type' => 'TYPE',
+            'title' => 'title0',
+            'other' => [
+                'type' => 'TYPE',
+                'title' => 'title1'
+            ]
+        ];
+
+        $this->assertEquals($expectedFields, $model->jsonSerialize());
+    }
+
+    public function test_simple_yield()
+    {
+        $api = $this->createApiWithTypeAndAction(
+            function (FieldBag $fields) {
+                $fields
+                    ->attribute('title', VarcharAttribute::class)
+                    ->relation('other', T('TYPE'), function (HasOneRelation $relation) {
+                        $relation->resolve(function (QueryRelationResolver $r) {
+                            $r->load(function (array $owners) {
+                                foreach ($owners as $owner) {
+                                    $this->testWatcher->called();
+                                    $relatedModel = Model::fromSingle('TYPE', ['title' => 'title' . $this->testWatcher->countCalls]);
+                                    $owner->apiResourcesSetRelation('other', $relatedModel);
+                                    yield $relatedModel;
+                                }
+                            });
+                        });
+                    });
+            }
+        );
+
+        $model = $this->requestSingle($api, [
+            'title' => true,
+            'other' => [
+                'title' => true
+            ]
+        ]);
+
+        $expectedFields = [
+            'type' => 'TYPE',
+            'title' => 'title0',
+            'other' => [
+                'type' => 'TYPE',
+                'title' => 'title1'
+            ]
+        ];
+
+        $this->assertEquals($expectedFields, $model->jsonSerialize());
+    }
+
+    public function test_list_simple()
+    {
+        $api = $this->createApiWithTypeAndAction(
+            function (FieldBag $fields) {
+                $fields
+                    ->attribute('title', VarcharAttribute::class)
+                    ->relation('other', T('TYPE'), function (HasOneRelation $relation) {
+                        $relation->resolve(function (QueryRelationResolver $r) {
+                            $r->load(function (array $owners) {
+                                $this->testWatcher->called();
+                                $relatedModels = [];
+                                foreach ($owners as $owner) {
+                                    $relatedModel = Model::fromSingle('TYPE', ['title' => 'title' . $this->testWatcher->countCalls]);
+                                    $owner->apiResourcesSetRelation('other', $relatedModel);
+                                    $relatedModels[] = $relatedModel;
+                                }
+                                return $relatedModels;
+                            });
+                        });
+                    });
+            },
+            isList: true
+        );
+
+        $models = $this->requestList($api, [
+            'title' => true,
+            'other' => [
+                'title' => true
+            ]
+        ]);
+
+        foreach ($models as $index => $model) {
+            $expectedFields = [
+                'type' => 'TYPE',
+                'title' => 'title' . $index,
+                'other' => [
+                    'type' => 'TYPE',
+                    'title' => 'title1'
+                ]
+            ];
+
+            $this->assertEquals($expectedFields, $model->jsonSerialize());
+        }
+    }
+
+    public function test_list_simple_yield()
+    {
+        $api = $this->createApiWithTypeAndAction(
+            function (FieldBag $fields) {
+                $fields
+                    ->attribute('title', VarcharAttribute::class)
+                    ->relation('other', T('TYPE'), function (HasOneRelation $relation) {
+                        $relation->resolve(function (QueryRelationResolver $r) {
+                            $r->load(function (array $owners) {
+                                $this->testWatcher->called();
+                                foreach ($owners as $owner) {
+                                    $relatedModel = Model::fromSingle('TYPE', ['title' => 'title' . $this->testWatcher->countCalls]);
+                                    $owner->apiResourcesSetRelation('other', $relatedModel);
+                                    yield $relatedModel;
+                                }
+                            });
+                        });
+                    });
+            },
+            isList: true
+        );
+
+        $models = $this->requestList($api, [
+            'title' => true,
+            'other' => [
+                'title' => true
+            ]
+        ]);
+
+        foreach ($models as $index => $model) {
+            $expectedFields = [
+                'type' => 'TYPE',
+                'title' => 'title' . $index,
+                'other' => [
+                    'type' => 'TYPE',
+                    'title' => 'title1'
+                ]
+            ];
+
+            $this->assertEquals($expectedFields, $model->jsonSerialize());
+        }
+    }
+
     public function test_nested_has_one_relation()
     {
         $api = $this->createApiWithTypeAndAction(
@@ -46,13 +216,11 @@ class RelationResolverTest extends ApiResourcesTest
                                 $this->testWatcher->selectFields($r->getSelectFields());
                                 $this->testWatcher->requestedFields($r->getRequestedFields()->getFieldNames());
 
-                                $relatedModels = [];
                                 foreach ($owners as $owner) {
                                     $relatedModel = Model::fromSingle('TYPE', ['title' => 'title' . $this->testWatcher->countCalls]);
                                     $owner->apiResourcesSetRelation('other', $relatedModel);
-                                    $relatedModels[] = $relatedModel;
+                                    yield $relatedModel;
                                 }
-                                return $relatedModels;
                             });
                         });
                     });
@@ -177,7 +345,6 @@ class RelationResolverTest extends ApiResourcesTest
                                 $this->testWatcher->selectFields($r->getSelectFields());
                                 $this->testWatcher->requestedFields($r->getRequestedFields()->getFieldNames());
 
-                                $relatedModels = [];
                                 foreach ($owners as $index => $owner) {
                                     $otherModels = Model::fromList('TYPE', [
                                         ['title' => 'title' . 3 * $index],
@@ -185,9 +352,8 @@ class RelationResolverTest extends ApiResourcesTest
                                         ['title' => 'title' . 3 * $index + 2]
                                     ]);
                                     $owner->apiResourcesSetRelation('others', $otherModels);
-                                    $relatedModels = [...$relatedModels, ...$otherModels];
+                                    yield from $otherModels;
                                 }
-                                return $relatedModels;
                             });
                         });
                     });
@@ -244,7 +410,6 @@ class RelationResolverTest extends ApiResourcesTest
                                 $this->testWatcher->selectFields($r->getSelectFields());
                                 $this->testWatcher->requestedFields($r->getRequestedFields()->getFieldNames());
 
-                                $relatedModels = [];
                                 foreach ($owners as $index => $owner) {
                                     $otherModels = Model::fromList('TYPE', [
                                         ['title' => 'title' . 3 * $index],
@@ -252,9 +417,8 @@ class RelationResolverTest extends ApiResourcesTest
                                         ['title' => 'title' . 3 * $index + 2]
                                     ]);
                                     $owner->apiResourcesSetRelation('others', $otherModels);
-                                    $relatedModels = [...$relatedModels, ...$otherModels];
+                                    yield from $otherModels;
                                 }
-                                return $relatedModels;
                             });
                         });
                     });
@@ -585,10 +749,10 @@ class RelationResolverTest extends ApiResourcesTest
     public function loadNoArrayDataprovider()
     {
         return [
-            ['return null' => null],
-            ['return string' => 'string'],
-            ['return number' => 0],
-            ['return nothing' => 'nothing']
+            'return null' => [null],
+            'return string' => ['string'],
+            'return number' => [0],
+            'return nothing' => ['nothing']
         ];
     }
 
@@ -687,22 +851,111 @@ class RelationResolverTest extends ApiResourcesTest
     public function mapNoModelDataprovider()
     {
         return [
-            ['return null' => null],
-            ['return string' => 'string'],
-            ['return number' => 0],
-            ['return array' => []],
-            ['return array with models' => [Model::fromSingle('TYPE', [])]],
-            ['return array' => new stdClass()]
+            'return null' => [null],
+            'return string' => ['string'],
+            'return number' => [0],
+            'return array' => [[]],
+            'return array with models' => [[Model::fromSingle('TYPE', [])]],
+            'return array' => [new stdClass()]
         ];
     }
 
     public function loadNoArrayOfModelsDataprovider()
     {
         return [
-            ['return null' => [null]],
-            ['return string' => ['string']],
-            ['return number' => [0]],
-            ['return number' => [0, null, 'string']]
+            'return null' => [[null]],
+            'return string' => [['string']],
+            'return number' => [[0]],
+            'return number' => [[0, null, 'string']]
+        ];
+    }
+
+    /**
+     * @dataProvider requestFieldsDataProvider
+     */
+    public function test_requested_fields($fields, $expectedFields)
+    {
+        $api = $this->createApiWithTypeAndAction(
+            function (FieldBag $fields) {
+                $fields
+                    ->attribute('name', VarcharAttribute::class)
+                    ->attribute('title', VarcharAttribute::class)
+                    ->relation('other', T('TYPE'), function (HasOneRelation $relation) {
+                        $relation->resolve(function (QueryRelationResolver $r) {
+                            $r->load(function (array $owners) use ($r) {
+                                foreach ($owners as $owner) {
+                                    $attributes = [];
+                                    foreach ($r->getSelectFields() as $selectField) {
+                                        $attributes[$selectField] = $selectField;
+                                        unset($attributes['id']);
+                                    }
+
+                                    $relatedModel = Model::fromSingle('TYPE', $attributes);
+                                    $owner->apiResourcesSetRelation('other', $relatedModel);
+                                    yield $relatedModel;
+                                }
+                            });
+                        });
+                    });
+            }
+        );
+
+        $model = $this->requestSingle($api, [
+            'title' => true,
+            'other' => $fields
+        ]);
+
+        $expectedFields = [
+            'type' => 'TYPE',
+            'title' => 'title0',
+            'other' => array_merge([
+                'type' => 'TYPE'
+            ], array_combine($expectedFields, $expectedFields))
+        ];
+
+        if ($fields === null) {
+            unset($expectedFields['other']);
+        }
+
+        $this->assertEquals($expectedFields, $model->jsonSerialize());
+    }
+
+    public function requestFieldsDataProvider()
+    {
+        // [request fields, calculated fields]
+        return [
+            'name' => [['name' => true], ['name']],
+
+            'title' => [['title' => true], ['title']],
+
+            'name+title' => [[
+                'name' => true,
+                'title' => true
+            ], ['name', 'title']],
+
+            'name+title+unknown' => [[
+                'name' => true,
+                'title' => true,
+                'unknown' => true
+            ], ['name', 'title']],
+
+            'nothing' => [true, []],
+
+            'nothing' => [null, []],
+
+            'empty' => [[], []],
+
+            'unknown_relation' => [[
+                'relation' => [
+                    'field' => true
+                ]
+            ], []],
+
+            'name+unknown' => [[
+                'name' => true,
+                'relation' => [],
+                'unknown' => true
+            ], ['name']]
         ];
     }
 

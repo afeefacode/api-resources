@@ -12,7 +12,7 @@ class TestResolver
         $r
             ->load(function () use ($r) {
                 $request = $r->getRequest();
-                $requestedFields = $request->getFields();
+                $requestedFields = $request->getRequestedFields();
                 $filters = $request->getFilters();
 
                 $pageSizeFilter = $request->getAction()->getFilter('page_size');
