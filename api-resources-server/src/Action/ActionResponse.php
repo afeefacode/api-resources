@@ -31,7 +31,7 @@ class ActionResponse implements ToSchemaJsonInterface, ContainerAwareInterface
             $typeMeta = $TypeClassOrClassesOrMeta;
             $TypeClassOrClasses = $typeMeta->TypeClassOrClasses;
 
-            $this->list($typeMeta->list);
+            $this->list = $typeMeta->list;
 
             if ($this instanceof ActionInput) {
                 $this
@@ -110,12 +110,6 @@ class ActionResponse implements ToSchemaJsonInterface, ContainerAwareInterface
     {
         $typeClasses = $this->getAllTypeClasses();
         return array_map(fn ($Class) => $Class::type(), $typeClasses);
-    }
-
-    public function list(): ActionResponse
-    {
-        $this->list = true;
-        return $this;
     }
 
     public function isList(): bool
