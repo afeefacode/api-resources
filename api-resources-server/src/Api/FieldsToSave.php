@@ -2,7 +2,6 @@
 
 namespace Afeefa\ApiResources\Api;
 
-use Afeefa\ApiResources\DB\TypeClassMap;
 use Afeefa\ApiResources\DI\ContainerAwareInterface;
 use Afeefa\ApiResources\DI\ContainerAwareTrait;
 use Afeefa\ApiResources\Field\Relation;
@@ -146,13 +145,6 @@ class FieldsToSave implements ContainerAwareInterface, JsonSerializable
 
         return $normalizedFields;
     }
-
-    // protected function getTypeClassByName(string $typeName = null): string
-    // {
-    //     return $this->container->call(function (TypeClassMap $typeClassMap) use ($typeName) {
-    //         return $typeClassMap->get($typeName);
-    //     });
-    // }
 
     protected function createNestedFields(string $TypeClass, array $fields): FieldsToSave
     {
