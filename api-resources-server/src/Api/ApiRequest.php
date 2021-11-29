@@ -27,7 +27,7 @@ class ApiRequest implements ContainerAwareInterface, ToSchemaJsonInterface, Json
 
     protected array $params = [];
 
-    protected RequestedFields $fields;
+    protected RequestedFields $requestedFields;
 
     protected FieldsToSave $fieldsToSave;
 
@@ -140,19 +140,23 @@ class ApiRequest implements ContainerAwareInterface, ToSchemaJsonInterface, Json
 
     public function fields(array $fields): ApiRequest
     {
-        $this->fields = $this->container->create(function (RequestedFields $requestedFields) use ($fields) {
-            $TypeClass = $this->getAction()->getResponse()->getTypeClass();
+        $this->requestedFields = $this->container->create(function (RequestedFields $requestedFields) use ($fields) {
+            $response = $this->getAction()->getResponse();
             $requestedFields
-                ->typeClass($TypeClass)
+                ->response($response)
                 ->fields($fields);
         });
 
         return $this;
     }
 
-    public function getFields(): RequestedFields
+    public function getRequestedFields(): RequestedFields
     {
-        return $this->fields;
+        if (!isset($this->requestedFields)) {
+            $this->fields([]);
+        }
+
+        return $this->requestedFields;
     }
 
     public function fieldsToSave(array $fields): ApiRequest
@@ -176,15 +180,15 @@ class ApiRequest implements ContainerAwareInterface, ToSchemaJsonInterface, Json
 
     public function getFieldsToSave(): FieldsToSave
     {
+        if (!isset($this->fieldsToSave)) {
+            $this->fieldsToSave([]);
+        }
+
         return $this->fieldsToSave;
     }
 
     public function dispatch(): array
     {
-        if (!isset($this->fields)) {
-            $this->fields([]);
-        }
-
         $action = $this->getAction();
 
         // find and register all necessary types
@@ -228,7 +232,7 @@ class ApiRequest implements ContainerAwareInterface, ToSchemaJsonInterface, Json
             'api' => $this->api::type(),
             'resource' => $this->resourceType,
             'action' => $this->actionName,
-            'fields' => $this->fields->toSchemaJson()
+            'fields' => $this->requestedFields->toSchemaJson()
         ];
 
         if (count($this->params)) {
@@ -250,7 +254,7 @@ class ApiRequest implements ContainerAwareInterface, ToSchemaJsonInterface, Json
             'action' => $this->actionName,
             'params' => $this->params,
             'filters' => $this->filters,
-            'fields' => $this->fields,
+            'fields' => $this->requestedFields,
             'fieldsToSave' => $this->fieldsToSave ?? []
         ];
         return $json;
