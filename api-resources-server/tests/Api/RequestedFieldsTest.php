@@ -2,6 +2,7 @@
 
 namespace Afeefa\ApiResources\Tests\Api;
 
+use Afeefa\ApiResources\Action\ActionResponse;
 use Afeefa\ApiResources\Api\RequestedFields;
 use Afeefa\ApiResources\Field\FieldBag;
 use Afeefa\ApiResources\Field\Fields\HasOneRelation;
@@ -336,8 +337,10 @@ class RequestedFieldsTest extends ApiResourcesTest
 
     private function createRequestedFields(Type $type, array $fields): RequestedFields
     {
+        $response = $this->container->create(ActionResponse::class)
+            ->typeClass($type::class);
         return $this->container->create(RequestedFields::class)
-            ->typeClass($type::class)
+            ->response($response)
             ->fields($fields);
     }
 }

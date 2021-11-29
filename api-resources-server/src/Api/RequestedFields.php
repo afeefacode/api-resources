@@ -2,6 +2,7 @@
 
 namespace Afeefa\ApiResources\Api;
 
+use Afeefa\ApiResources\Action\ActionResponse;
 use Afeefa\ApiResources\DB\TypeClassMap;
 use Afeefa\ApiResources\DI\ContainerAwareInterface;
 use Afeefa\ApiResources\DI\ContainerAwareTrait;
@@ -15,17 +16,19 @@ class RequestedFields implements ContainerAwareInterface, JsonSerializable, ToSc
     protected string $TypeClass;
     protected Type $type;
     protected array $fields;
+    protected ActionResponse $response;
 
-    public function typeClass(string $TypeClass): RequestedFields
+    public function response(ActionResponse $response): RequestedFields
     {
-        $this->TypeClass = $TypeClass;
+        $this->response = $response;
         return $this;
     }
 
     public function getType(): Type
     {
         if (!isset($this->type)) {
-            $this->type = $this->container->get($this->TypeClass);
+            $TypeClass = $this->response->getAllTypeClasses()[0];
+            $this->type = $this->container->get($TypeClass);
         }
         return $this->type;
     }
@@ -137,8 +140,8 @@ class RequestedFields implements ContainerAwareInterface, JsonSerializable, ToSc
                     $nested = [];
                 }
                 if (is_array($nested)) {
-                    $TypeClass = $type->getRelation($fieldName)->getRelatedType()->getTypeClass();
-                    $normalizedFields[$fieldName] = $this->createNestedFields($TypeClass, $nested);
+                    $response = $type->getRelation($fieldName)->getRelatedType();
+                    $normalizedFields[$fieldName] = $this->createNestedFields($response, $nested);
                 }
             }
 
@@ -148,8 +151,11 @@ class RequestedFields implements ContainerAwareInterface, JsonSerializable, ToSc
                 }
                 if (is_array($nested)) {
                     $TypeClass = $this->getTypeClassByName($matches[1]);
+
                     if ($TypeClass) {
-                        $normalizedFields[$fieldName] = $this->createNestedFields($TypeClass, $nested);
+                        $response = $this->container->create(ActionResponse::class)
+                            ->typeClass($TypeClass);
+                        $normalizedFields[$fieldName] = $this->createNestedFields($response, $nested);
                     }
                 }
             }
@@ -165,11 +171,11 @@ class RequestedFields implements ContainerAwareInterface, JsonSerializable, ToSc
         });
     }
 
-    protected function createNestedFields(string $TypeClass, array $fields): RequestedFields
+    protected function createNestedFields(ActionResponse $response, array $fields): RequestedFields
     {
-        return $this->container->create(function (RequestedFields $requestedFields) use ($TypeClass, $fields) {
+        return $this->container->create(function (RequestedFields $requestedFields) use ($response, $fields) {
             $requestedFields
-                ->typeClass($TypeClass)
+                ->response($response)
                 ->fields($fields);
         });
     }
