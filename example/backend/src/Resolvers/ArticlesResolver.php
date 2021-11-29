@@ -19,7 +19,7 @@ class ArticlesResolver
             ->load(function () use ($r, $db) {
                 $request = $r->getRequest();
                 $action = $request->getAction();
-                $requestedFields = $request->getFields();
+                $requestedFields = $request->getRequestedFields();
                 $filters = $request->getFilters();
                 $params = $request->getParams();
 
@@ -157,7 +157,7 @@ class ArticlesResolver
         $r
             ->load(function () use ($r, $db) {
                 $request = $r->getRequest();
-                $requestedFields = $request->getFields();
+                $requestedFields = $request->getRequestedFields();
                 $selectFields = $r->getSelectFields();
 
                 $where = ['id' => $request->getParam('id')];

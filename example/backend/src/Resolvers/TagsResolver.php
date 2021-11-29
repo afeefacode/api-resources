@@ -16,7 +16,7 @@ class TagsResolver
         $r
             ->load(function () use ($r, $db) {
                 $request = $r->getRequest();
-                $requestedFields = $request->getFields();
+                $requestedFields = $request->getRequestedFields();
                 $selectFields = $r->getSelectFields();
 
                 $count = $db->count('tags');
