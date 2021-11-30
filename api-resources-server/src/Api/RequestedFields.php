@@ -129,6 +129,7 @@ class RequestedFields implements ContainerAwareInterface, JsonSerializable, ToSc
         $normalizedFields = [];
 
         foreach ($fields as $fieldName => $nested) {
+            // count_relation
             if (preg_match('/^count_(.+)/', $fieldName, $matches)) {
                 $countRelationName = $matches[1];
                 if ($type->hasRelation($countRelationName)) {
@@ -136,10 +137,12 @@ class RequestedFields implements ContainerAwareInterface, JsonSerializable, ToSc
                 }
             }
 
+            // attribute
             if ($type->hasAttribute($fieldName) && $nested === true) {
                 $normalizedFields[$fieldName] = true;
             }
 
+            // relation = true or [...]
             if ($type->hasRelation($fieldName)) {
                 if ($nested === true) {
                     $nested = [];
@@ -150,6 +153,7 @@ class RequestedFields implements ContainerAwareInterface, JsonSerializable, ToSc
                 }
             }
 
+            // on type fields
             if (preg_match('/^\@(.+)/', $fieldName, $matches)) {
                 if ($nested === true) {
                     $nested = [];
