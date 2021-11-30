@@ -283,7 +283,7 @@ class RequestedFieldsTest extends ApiResourcesTest
         $this->assertNull($nestedFields);
     }
 
-    public function test_mixed_type()
+    public function test_union_type()
     {
         $type = $this->createType(function (FieldBag $fields) {
             $fields->attribute('name', VarcharAttribute::class);
@@ -294,7 +294,7 @@ class RequestedFieldsTest extends ApiResourcesTest
             $fields->attribute('name2', VarcharAttribute::class);
         }, 'TEST2');
 
-        $requestedFields = $this->createRequestedFields($type, [
+        $requestedFields = $this->createRequestedFields([$type, $type2], [
             'name' => true,
             'some_relation' => [
                 'name' => true
@@ -325,6 +325,30 @@ class RequestedFieldsTest extends ApiResourcesTest
         $this->assertTrue($requestedFields->getNestedField('@TEST2')->hasField('name2'));
     }
 
+    public function test_union_type_not_exists()
+    {
+        $type = $this->createType(function (FieldBag $fields) {
+            $fields->attribute('name', VarcharAttribute::class);
+        });
+
+        $requestedFields = $this->createRequestedFields($type, [
+            'name' => true,
+            '@TEST2' => [
+                'name2' => true
+            ]
+        ]);
+
+        $expectedFields = ['name' => true];
+
+        $this->assertSame($expectedFields, $requestedFields->toSchemaJson());
+
+        $this->assertEquals(['name'], $requestedFields->getFieldNames());
+        $this->assertEquals(['name'], $requestedFields->getFieldNamesForType($type));
+
+        $this->assertTrue($requestedFields->hasField('name'));
+        $this->assertNull($requestedFields->getNestedField('@TEST2'));
+    }
+
     private function createType(?Closure $fieldsCallback = null, ?string $typeName = null): Type
     {
         $typeName ??= 'TEST';
@@ -335,10 +359,15 @@ class RequestedFieldsTest extends ApiResourcesTest
         })->get(true);
     }
 
-    private function createRequestedFields(Type $type, array $fields): RequestedFields
+    private function createRequestedFields(Type | array $typeOrTypes, array $fields): RequestedFields
     {
-        $response = $this->container->create(ActionResponse::class)
-            ->typeClass($type::class);
+        $response = $this->container->create(ActionResponse::class);
+        if (is_array($typeOrTypes)) {
+            $response->typeClasses(array_map(fn ($type) => $type::class, $typeOrTypes));
+        } else {
+            $response->typeClass($typeOrTypes::class);
+        }
+
         return $this->container->create(RequestedFields::class)
             ->response($response)
             ->fields($fields);
