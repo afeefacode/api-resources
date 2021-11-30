@@ -133,7 +133,7 @@ class QueryActionResolver extends BaseActionResolver
 
             // mark visible fields
 
-            $requestedFields = $this->request->getRequestedFields();
+            $requestedFields = $this->getRequestedFields();
             $this->container->create(function (VisibleFields $visibleFields) use ($models, $requestedFields) {
                 $visibleFields
                     ->requestedFields($requestedFields)
@@ -153,7 +153,7 @@ class QueryActionResolver extends BaseActionResolver
     {
         if (!isset($this->resolveContext)) {
             $this->resolveContext = $this->container->create(QueryResolveContext::class)
-                ->requestedFields($this->request->getRequestedFields());
+                ->requestedFields($this->getRequestedFields());
         }
         return $this->resolveContext;
     }
