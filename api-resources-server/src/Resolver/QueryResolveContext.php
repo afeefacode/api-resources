@@ -56,7 +56,7 @@ class QueryResolveContext implements ContainerAwareInterface
         return $this->relationResolvers;
     }
 
-    public function getSelectFields(string $typeName = null): array
+    public function getSelectFields(string $typeName): array
     {
         if (!isset($this->attributeResolvers)) {
             $this->createAttributeResolvers();
@@ -66,9 +66,8 @@ class QueryResolveContext implements ContainerAwareInterface
             $this->createRelationResolvers();
         }
 
+        $type = $this->getTypeByName($typeName);
         $requestedFields = $this->requestedFields;
-        $type = $typeName ? $this->getTypeByName($typeName) : $requestedFields->getType();
-
         return $this->calculateSelectFields($type, $requestedFields);
     }
 

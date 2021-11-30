@@ -39,9 +39,24 @@ class QueryRelationResolver extends BaseRelationResolver
         return $this->requestedFields;
     }
 
-    public function getSelectFields(): array
+    public function getSelectFields(?string $typeName = null): array
     {
-        return $this->getResolveContext()->getSelectFields();
+        $response = $this->requestedFields->getResponse();
+        $relationName = $this->field->getName();
+
+        if ($response->isUnion()) {
+            if (!$typeName) {
+                throw new InvalidConfigurationException("You need to pass a type name to getSelectFields() in the resolver of relation {$relationName} since the relation returns an union type");
+            }
+        } else {
+            $typeName ??= $this->requestedFields->getResponse()->getTypeClass()::type();
+        }
+
+        if (!$response->allowsType($typeName)) {
+            throw new InvalidConfigurationException("The type name passed to getSelectFields() in the resolver of relation {$relationName} is  not supported by the relation");
+        }
+
+        return $this->getResolveContext()->getSelectFields($typeName);
     }
 
     public function ownerIdFields($ownerIdFields): QueryRelationResolver

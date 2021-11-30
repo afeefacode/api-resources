@@ -34,9 +34,29 @@ class QueryActionResolver extends BaseActionResolver
         return $this->request->getRequestedFields();
     }
 
-    public function getSelectFields(): array
+    public function getSelectFields(?string $typeName = null): array
     {
-        return $this->getResolveContext()->getSelectFields();
+        $action = $this->request->getAction();
+        $response = $action->getResponse();
+
+        // if errors
+
+        $actionName = $action->getName();
+        $resourceType = $this->request->getResource()::type();
+
+        if ($response->isUnion()) {
+            if (!$typeName) {
+                throw new InvalidConfigurationException("You need to pass a type name to getSelectFields() in the resolver of action {$actionName} on resource {$resourceType} since the action returns an union type.");
+            }
+        } else {
+            $typeName ??= $this->request->getAction()->getResponse()->getTypeClass()::type();
+        }
+
+        if (!$response->allowsType($typeName)) {
+            throw new InvalidConfigurationException("The type name passed to getSelectFields() in the resolver of action {$actionName} on resource {$resourceType} is not supported by the action.");
+        }
+
+        return $this->getResolveContext()->getSelectFields($typeName);
     }
 
     public function resolve(): array
@@ -70,9 +90,8 @@ class QueryActionResolver extends BaseActionResolver
                 if (!$model instanceof ModelInterface) {
                     throw new InvalidConfigurationException("{$mustReturn} an array of ModelInterface objects.");
                 }
-                $allowedTypeNames = $action->getResponse()->getAllTypeNames();
-                if (!in_array($model->apiResourcesGetType(), $allowedTypeNames)) {
-                    $allowedTypeNames = implode(',', $allowedTypeNames);
+                if (!$action->getResponse()->allowsType($model->apiResourcesGetType())) {
+                    $allowedTypeNames = implode(',', $action->getResponse()->getAllTypeNames());
                     throw new InvalidConfigurationException("{$mustReturn} an array of ModelInterface objects of type [{$allowedTypeNames}].");
                 }
             }
@@ -84,9 +103,8 @@ class QueryActionResolver extends BaseActionResolver
                 if (!$modelOrModels instanceof ModelInterface) {
                     throw new InvalidConfigurationException("{$mustReturn} a ModelInterface object.");
                 }
-                $allowedTypeNames = $action->getResponse()->getAllTypeNames();
-                if (!in_array($modelOrModels->apiResourcesGetType(), $allowedTypeNames)) {
-                    $allowedTypeNames = implode(',', $allowedTypeNames);
+                if (!$action->getResponse()->allowsType($modelOrModels->apiResourcesGetType())) {
+                    $allowedTypeNames = implode(',', $action->getResponse()->getAllTypeNames());
                     throw new InvalidConfigurationException("{$mustReturn} a ModelInterface object of type [{$allowedTypeNames}].");
                 }
             }

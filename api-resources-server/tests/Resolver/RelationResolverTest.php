@@ -959,6 +959,59 @@ class RelationResolverTest extends ApiResourcesTest
         ];
     }
 
+    public function test_select_fields_union_missing_type()
+    {
+        $this->expectException(InvalidConfigurationException::class);
+        $this->expectExceptionMessage('You need to pass a type name to getSelectFields() in the resolver of relation other since the relation returns an union type');
+
+        $api = $this->createApiWithTypeAndAction(
+            function (FieldBag $fields) {
+                $fields
+                    ->relation('other', [T('TYPE'), T('TYPE2')], function (HasOneRelation $relation) {
+                        $relation->resolve(function (QueryRelationResolver $r) {
+                            $r->load(function () use ($r) {
+                                $r->getSelectFields();
+                            });
+                        });
+                    });
+            }
+        );
+
+        $this->request($api, ['other' => true]);
+    }
+
+    /**
+     * @dataProvider wrongTypeNameToSelectFieldsDataProvider
+     */
+    public function test_select_fields_wrong_type($single)
+    {
+        $this->expectException(InvalidConfigurationException::class);
+        $this->expectExceptionMessage('The type name passed to getSelectFields() in the resolver of relation other is  not supported by the relation');
+
+        $api = $this->createApiWithTypeAndAction(
+            function (FieldBag $fields) use ($single) {
+                $fields
+                    ->relation('other', $single ? T('TYPE') : [T('TYPE'), T('TYPE2')], function (HasOneRelation $relation) {
+                        $relation->resolve(function (QueryRelationResolver $r) {
+                            $r->load(function () use ($r) {
+                                $r->getSelectFields('TYPE3');
+                            });
+                        });
+                    });
+            }
+        );
+
+        $this->request($api, ['other' => true]);
+    }
+
+    public function wrongTypeNameToSelectFieldsDataProvider()
+    {
+        return [
+            'single' => [true],
+            'list' => [false]
+        ];
+    }
+
     private function createApiWithTypeAndAction(Closure $fieldsCallback, ?Closure $actionCallback = null, bool $isList = false): Api
     {
         $actionCallback ??= function (Action $action) use ($isList) {

@@ -432,17 +432,12 @@ class ActionResolverTest extends ApiResourcesTest
         $this->assertEquals([$expectedFieldsWithId], $this->testWatcher->selectFields);
     }
 
-    /**
-     * @dataProvider requestFieldsDataProvider
-     */
-    public function test_select_fields_union_missing_type($fields, $expectedFields)
+    public function test_select_fields_union_missing_type()
     {
-        $api = $this->createApiWithTypeAndAction(
-            function (FieldBag $fields) {
-                $fields
-                    ->attribute('name', VarcharAttribute::class)
-                    ->attribute('title', VarcharAttribute::class);
-            },
+        $this->expectException(InvalidConfigurationException::class);
+        $this->expectExceptionMessage('You need to pass a type name to getSelectFields() in the resolver of action ACT on resource RES since the action returns an union type.');
+
+        $api = $this->createApiWithAction(
             function (Action $action) {
                 $action
                     ->response([T('TYPE'), T('TYPE2')])
@@ -454,11 +449,38 @@ class ActionResolverTest extends ApiResourcesTest
             }
         );
 
-        $this->request($api, $fields);
+        $this->request($api);
+    }
 
-        $expectedFieldsWithId = ['id', ...$expectedFields];
+    /**
+     * @dataProvider wrongTypeNameToSelectFieldsDataProvider
+     */
+    public function test_select_fields_wrong_type($single)
+    {
+        $this->expectException(InvalidConfigurationException::class);
+        $this->expectExceptionMessage('The type name passed to getSelectFields() in the resolver of action ACT on resource RES is not supported by the action.');
 
-        $this->assertEquals([$expectedFieldsWithId], $this->testWatcher->selectFields);
+        $api = $this->createApiWithAction(
+            function (Action $action) use ($single) {
+                $action
+                    ->response($single ? T('TYPE') : [T('TYPE'), T('TYPE2')])
+                    ->resolve(function (QueryActionResolver $r) {
+                        $r->load(function () use ($r) {
+                            $this->testWatcher->selectFields($r->getSelectFields('TYPE3'));
+                        });
+                    });
+            }
+        );
+
+        $this->request($api);
+    }
+
+    public function wrongTypeNameToSelectFieldsDataProvider()
+    {
+        return [
+            'single' => [true],
+            'list' => [false]
+        ];
     }
 
     /**

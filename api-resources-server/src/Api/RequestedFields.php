@@ -24,6 +24,11 @@ class RequestedFields implements ContainerAwareInterface, JsonSerializable, ToSc
         return $this;
     }
 
+    public function getResponse(): ActionResponse
+    {
+        return $this->response;
+    }
+
     public function getType(): Type
     {
         if (!isset($this->type)) {

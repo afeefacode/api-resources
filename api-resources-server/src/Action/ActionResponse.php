@@ -117,9 +117,20 @@ class ActionResponse implements ToSchemaJsonInterface, ContainerAwareInterface
         return array_map(fn ($Class) => $Class::type(), $typeClasses);
     }
 
+    public function allowsType(string $typeName): bool
+    {
+        $allowedTypeNames = $this->getAllTypeNames();
+        return in_array($typeName, $allowedTypeNames);
+    }
+
     public function isList(): bool
     {
         return $this->list;
+    }
+
+    public function isUnion(): bool
+    {
+        return count($this->getTypeClasses()) > 1;
     }
 
     public function toSchemaJson(): array
