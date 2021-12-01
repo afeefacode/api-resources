@@ -45,7 +45,7 @@ class TagsResolver
     public function resolve_tag_users_relation(QueryRelationResolver $r, Medoo $db)
     {
         $r
-            ->load(function (array $owners) use ($db) {
+            ->load(function (array $owners) use ($r, $db) {
                 $tagIds = array_unique(
                     array_map(function (ModelInterface $owner) {
                         return $owner->id;
