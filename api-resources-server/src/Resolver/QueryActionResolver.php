@@ -49,7 +49,7 @@ class QueryActionResolver extends BaseActionResolver
                 throw new InvalidConfigurationException("You need to pass a type name to getSelectFields() in the resolver of action {$actionName} on resource {$resourceType} since the action returns an union type.");
             }
         } else {
-            $typeName ??= $this->request->getAction()->getResponse()->getTypeClass()::type();
+            $typeName ??= $response->getTypeClass()::type();
         }
 
         if (!$response->allowsType($typeName)) {
