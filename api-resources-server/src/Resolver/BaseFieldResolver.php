@@ -26,6 +26,12 @@ class BaseFieldResolver extends BaseResolver
         return $this;
     }
 
+    public function addOwners(array $owner): BaseFieldResolver
+    {
+        $this->owners = $owner;
+        return $this;
+    }
+
     /**
      * @return ModelInterface[]
      */

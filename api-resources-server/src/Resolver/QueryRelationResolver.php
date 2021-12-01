@@ -151,16 +151,12 @@ class QueryRelationResolver extends BaseRelationResolver
 
         $attributeResolvers = $resolveContext->getAttributeResolvers();
         foreach ($attributeResolvers as $attributeResolver) {
-            foreach ($models as $model) {
-                $attributeResolver->addOwner($model);
-            }
+            $attributeResolver->addOwners($models);
             $attributeResolver->resolve();
         }
 
         foreach ($resolveContext->getRelationResolvers() as $relationResolver) {
-            foreach ($models as $model) {
-                $relationResolver->addOwner($model);
-            }
+            $relationResolver->addOwners($models);
             $relationResolver->resolve();
         }
     }
