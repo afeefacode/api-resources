@@ -364,23 +364,23 @@ class QueryResolveContextTest extends ApiResourcesTest
     public function test_create_attribute_resolvers()
     {
         $type = $this->createType(function (FieldBag $fields) {
-            $fields->attribute('name', function (VarcharAttribute $attribute) {
-                $attribute->resolve(function (QueryAttributeResolver $r) {
-                    $this->testWatcher->called();
-                    $r->load(function () {
+            $fields
+                ->attribute('name', function (VarcharAttribute $attribute) {
+                    $attribute->resolve(function (QueryAttributeResolver $r) {
                         $this->testWatcher->called();
+                        $r->load(function () {
+                            $this->testWatcher->called();
+                        });
+                    });
+                })
+                ->attribute('title', function (VarcharAttribute $attribute) {
+                    $attribute->resolve(function (QueryAttributeResolver $r) {
+                        $this->testWatcher->called();
+                        $r->load(function () {
+                            $this->testWatcher->called();
+                        });
                     });
                 });
-            });
-
-            $fields->attribute('title', function (VarcharAttribute $attribute) {
-                $attribute->resolve(function (QueryAttributeResolver $r) {
-                    $this->testWatcher->called();
-                    $r->load(function () {
-                        $this->testWatcher->called();
-                    });
-                });
-            });
         });
 
         $resolveContext = $this->createResolveContext($type, [
@@ -509,6 +509,36 @@ class QueryResolveContextTest extends ApiResourcesTest
         $relationResolvers['another']->resolve();
 
         $this->assertEquals(6, $this->testWatcher->countCalls);
+    }
+
+    public function test_owner_id_fields()
+    {
+        $type = $this->createType(function (FieldBag $fields) {
+            $fields
+                ->relation('other', T('TYPE'), function (HasOneRelation $relation) {
+                    $relation->resolve(function (QueryRelationResolver $r) {
+                        $r->ownerIdFields(['owner_other_id']);
+                        $r->load(function () {
+                            yield Model::fromSingle('TYPE', []);
+                        });
+                    });
+                })
+                ->relation('another', T('TYPE'), function (HasOneRelation $relation) {
+                    $relation->resolve(function (QueryRelationResolver $r) {
+                        $r->ownerIdFields(fn () => ['owner_another_id']);
+                        $r->load(function () {
+                            yield Model::fromSingle('TYPE', []);
+                        });
+                    });
+                });
+        });
+
+        $resolveContext = $this->createResolveContext($type, [
+            'other' => true,
+            'another' => true
+        ]);
+
+        $this->assertEquals(['id', 'owner_other_id', 'owner_another_id'], $resolveContext->getSelectFields());
     }
 
     private function createType(?Closure $fieldsCallback = null, ?string $typeName = null): Type

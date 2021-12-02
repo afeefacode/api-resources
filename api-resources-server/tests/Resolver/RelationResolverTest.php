@@ -1057,6 +1057,43 @@ class RelationResolverTest extends ApiResourcesTest
         ];
     }
 
+    public function test_owner_id_fields()
+    {
+        $api = $this->createApiWithTypeAndAction(
+            function (FieldBag $fields) {
+                $fields
+                    ->attribute('title', VarcharAttribute::class)
+                    ->relation('other', T('TYPE'), function (HasOneRelation $relation) {
+                        $relation->resolve(function (QueryRelationResolver $r) {
+                            $r->ownerIdFields(['owner_other_id']);
+                        });
+                    })
+                    ->relation('another', T('TYPE'), function (HasOneRelation $relation) {
+                        $relation->resolve(function (QueryRelationResolver $r) {
+                            $r->ownerIdFields(fn () => ['anowner_other_id']);
+                        });
+                    });
+            },
+            function (Action $action) {
+                $action
+                    ->response(T('TYPE'))
+                    ->resolve(function (QueryActionResolver $r) {
+                        $r->load(function () use ($r) {
+                            $this->testWatcher->selectFields($r->getSelectFields());
+                        });
+                    });
+            }
+        );
+
+        $this->requestSingle($api, [
+            'title' => true,
+            'other' => true,
+            'another' => true
+        ]);
+
+        $this->assertEquals([['id', 'title', 'owner_other_id', 'anowner_other_id']], $this->testWatcher->selectFields);
+    }
+
     private function createApiWithTypeAndAction(Closure $fieldsCallback, ?Closure $actionCallback = null, bool $isList = false): Api
     {
         $actionCallback ??= function (Action $action) use ($isList) {
@@ -1101,7 +1138,7 @@ class RelationResolverTest extends ApiResourcesTest
         return $result['data'];
     }
 
-    private function requestSingle(Api $api, ?array $fields = null): Model
+    private function requestSingle(Api $api, ?array $fields = null): ?Model
     {
         return $this->request($api, $fields);
     }

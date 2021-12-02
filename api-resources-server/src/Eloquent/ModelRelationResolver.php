@@ -4,6 +4,7 @@ namespace Afeefa\ApiResources\Eloquent;
 
 use Afeefa\ApiResources\DB\RelationRelatedData;
 use Afeefa\ApiResources\Resolver\BaseRelationResolver;
+use Afeefa\ApiResources\Resolver\MutationRelationResolver;
 use Afeefa\ApiResources\Resolver\QueryRelationResolver;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
