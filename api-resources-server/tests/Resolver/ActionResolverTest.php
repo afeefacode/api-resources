@@ -392,7 +392,7 @@ class ActionResolverTest extends ApiResourcesTest
                     ->response(T('TYPE'))
                     ->resolve(function (QueryActionResolver $r) {
                         $r->load(function () use ($r) {
-                            $this->testWatcher->requestedFields($r->getRequest()->getRequestedFields()->getFieldNames());
+                            $this->testWatcher->requestedFields($r->getRequestedFieldNames());
                         });
                     });
             }
@@ -430,6 +430,49 @@ class ActionResolverTest extends ApiResourcesTest
         $expectedFieldsWithId = ['id', ...$expectedFields];
 
         $this->assertEquals([$expectedFieldsWithId], $this->testWatcher->selectFields);
+    }
+
+    public function test_requested_fields_union_missing_type()
+    {
+        $this->expectException(InvalidConfigurationException::class);
+        $this->expectExceptionMessage('You need to pass a type name to getRequestedFields() in the resolver of action ACT on resource RES since the action returns an union type.');
+
+        $api = $this->createApiWithAction(
+            function (Action $action) {
+                $action
+                    ->response([T('TYPE'), T('TYPE2')])
+                    ->resolve(function (QueryActionResolver $r) {
+                        $r->load(function () use ($r) {
+                            $this->testWatcher->requestedFields($r->getRequestedFields());
+                        });
+                    });
+            }
+        );
+
+        $this->request($api);
+    }
+
+    /**
+     * @dataProvider wrongTypeNameToSelectFieldsDataProvider
+     */
+    public function test_requested_fields_wrong_type($single)
+    {
+        $this->expectException(InvalidConfigurationException::class);
+        $this->expectExceptionMessage('The type name passed to getRequestedFields() in the resolver of action ACT on resource RES is not supported by the action.');
+
+        $api = $this->createApiWithAction(
+            function (Action $action) use ($single) {
+                $action
+                    ->response($single ? T('TYPE') : [T('TYPE'), T('TYPE2')])
+                    ->resolve(function (QueryActionResolver $r) {
+                        $r->load(function () use ($r) {
+                            $this->testWatcher->requestedFields($r->getRequestedFields('TYPE3'));
+                        });
+                    });
+            }
+        );
+
+        $this->request($api);
     }
 
     public function test_select_fields_union_missing_type()

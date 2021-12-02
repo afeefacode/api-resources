@@ -214,7 +214,7 @@ class RelationResolverTest extends ApiResourcesTest
                             $r->load(function (array $owners) use ($r) {
                                 $this->testWatcher->called();
                                 $this->testWatcher->selectFields($r->getSelectFields());
-                                $this->testWatcher->requestedFields($r->getRequestedFields()->getFieldNames());
+                                $this->testWatcher->requestedFields($r->getRequestedFieldNames());
 
                                 foreach ($owners as $owner) {
                                     $relatedModel = Model::fromSingle('TYPE', ['title' => 'title' . $this->testWatcher->countCalls]);
@@ -275,7 +275,7 @@ class RelationResolverTest extends ApiResourcesTest
                             $r->load(function (array $owners) use ($r) {
                                 $this->testWatcher->called();
                                 $this->testWatcher->selectFields($r->getSelectFields());
-                                $this->testWatcher->requestedFields($r->getRequestedFields()->getFieldNames());
+                                $this->testWatcher->requestedFields($r->getRequestedFieldNames());
 
                                 $relatedModels = [];
                                 foreach ($owners as $owner) {
@@ -343,7 +343,7 @@ class RelationResolverTest extends ApiResourcesTest
                             $r->load(function (array $owners) use ($r) {
                                 $this->testWatcher->called();
                                 $this->testWatcher->selectFields($r->getSelectFields());
-                                $this->testWatcher->requestedFields($r->getRequestedFields()->getFieldNames());
+                                $this->testWatcher->requestedFields($r->getRequestedFieldNames());
 
                                 foreach ($owners as $index => $owner) {
                                     $otherModels = Model::fromList('TYPE', [
@@ -408,7 +408,7 @@ class RelationResolverTest extends ApiResourcesTest
                             $r->load(function (array $owners) use ($r) {
                                 $this->testWatcher->called();
                                 $this->testWatcher->selectFields($r->getSelectFields());
-                                $this->testWatcher->requestedFields($r->getRequestedFields()->getFieldNames());
+                                $this->testWatcher->requestedFields($r->getRequestedFieldNames());
 
                                 foreach ($owners as $index => $owner) {
                                     $otherModels = Model::fromList('TYPE', [
@@ -504,7 +504,7 @@ class RelationResolverTest extends ApiResourcesTest
                                 $this->testWatcher->info('other');
                                 $this->testWatcher->info($r->getRelation()->getName());
                                 $this->testWatcher->selectFields($r->getSelectFields());
-                                $this->testWatcher->requestedFields($r->getRequestedFields()->getFieldNames());
+                                $this->testWatcher->requestedFields($r->getRequestedFieldNames());
 
                                 $models = [];
                                 foreach ($owners as $owner) {
@@ -523,7 +523,7 @@ class RelationResolverTest extends ApiResourcesTest
                                 $this->testWatcher->info('different');
                                 $this->testWatcher->info($r->getRelation()->getName());
                                 $this->testWatcher->selectFields($r->getSelectFields());
-                                $this->testWatcher->requestedFields($r->getRequestedFields()->getFieldNames());
+                                $this->testWatcher->requestedFields($r->getRequestedFieldNames());
 
                                 $models = [];
                                 foreach ($owners as $owner) {
@@ -959,6 +959,51 @@ class RelationResolverTest extends ApiResourcesTest
         ];
     }
 
+    public function test_requested_fields_union_missing_type()
+    {
+        $this->expectException(InvalidConfigurationException::class);
+        $this->expectExceptionMessage('You need to pass a type name to getRequestedFields() in the resolver of relation other since the relation returns an union type');
+
+        $api = $this->createApiWithTypeAndAction(
+            function (FieldBag $fields) {
+                $fields
+                    ->relation('other', [T('TYPE'), T('TYPE2')], function (HasOneRelation $relation) {
+                        $relation->resolve(function (QueryRelationResolver $r) {
+                            $r->load(function () use ($r) {
+                                $r->getRequestedFields();
+                            });
+                        });
+                    });
+            }
+        );
+
+        $this->request($api, ['other' => true]);
+    }
+
+    /**
+     * @dataProvider wrongTypeNameToSelectFieldsDataProvider
+     */
+    public function test_requested_fields_wrong_type($single)
+    {
+        $this->expectException(InvalidConfigurationException::class);
+        $this->expectExceptionMessage('The type name passed to getRequestedFields() in the resolver of relation other is not supported by the relation');
+
+        $api = $this->createApiWithTypeAndAction(
+            function (FieldBag $fields) use ($single) {
+                $fields
+                    ->relation('other', $single ? T('TYPE') : [T('TYPE'), T('TYPE2')], function (HasOneRelation $relation) {
+                        $relation->resolve(function (QueryRelationResolver $r) {
+                            $r->load(function () use ($r) {
+                                $r->getRequestedFields('TYPE3');
+                            });
+                        });
+                    });
+            }
+        );
+
+        $this->request($api, ['other' => true]);
+    }
+
     public function test_select_fields_union_missing_type()
     {
         $this->expectException(InvalidConfigurationException::class);
@@ -986,7 +1031,7 @@ class RelationResolverTest extends ApiResourcesTest
     public function test_select_fields_wrong_type($single)
     {
         $this->expectException(InvalidConfigurationException::class);
-        $this->expectExceptionMessage('The type name passed to getSelectFields() in the resolver of relation other is  not supported by the relation');
+        $this->expectExceptionMessage('The type name passed to getSelectFields() in the resolver of relation other is not supported by the relation');
 
         $api = $this->createApiWithTypeAndAction(
             function (FieldBag $fields) use ($single) {

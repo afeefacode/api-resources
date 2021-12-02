@@ -152,7 +152,7 @@ class ModelRelationResolver
 
     protected function getRelationCountsOfRelation(QueryRelationResolver $r): array
     {
-        $requestedFieldNames = $r->getRequestedFields()->getFieldNames();
+        $requestedFieldNames = $r->getRequestedFieldNames();
         $relatedType = $r->getRelation()->getRelatedType()->getTypeInstance();
         $relationCounts = [];
         foreach ($requestedFieldNames as $fieldName) {

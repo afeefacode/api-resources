@@ -2,8 +2,6 @@
 
 namespace Afeefa\ApiResources\Resolver;
 
-use Afeefa\ApiResources\Api\RequestedFields;
-use Afeefa\ApiResources\DB\TypeClassMap;
 use Afeefa\ApiResources\DI\ContainerAwareInterface;
 use Afeefa\ApiResources\DI\ContainerAwareTrait;
 use Afeefa\ApiResources\DI\DependencyResolver;
@@ -14,7 +12,8 @@ class QueryResolveContext implements ContainerAwareInterface
 {
     use ContainerAwareTrait;
 
-    protected RequestedFields $requestedFields;
+    protected array $fields;
+    protected Type $type;
 
     /**
      * @var QueryAttributeResolver[]
@@ -26,9 +25,15 @@ class QueryResolveContext implements ContainerAwareInterface
      */
     protected array $relationResolvers;
 
-    public function requestedFields(RequestedFields $requestedFields): QueryResolveContext
+    public function type(Type $type): QueryResolveContext
     {
-        $this->requestedFields = $requestedFields;
+        $this->type = $type;
+        return $this;
+    }
+
+    public function fields(array $fields): QueryResolveContext
+    {
+        $this->fields = $fields;
         return $this;
     }
 
@@ -56,7 +61,12 @@ class QueryResolveContext implements ContainerAwareInterface
         return $this->relationResolvers;
     }
 
-    public function getSelectFields(string $typeName): array
+    public function getRequestedFields(): array
+    {
+        return $this->calculateRequestedFields($this->fields);
+    }
+
+    public function getSelectFields(): array
     {
         if (!isset($this->attributeResolvers)) {
             $this->createAttributeResolvers();
@@ -66,18 +76,15 @@ class QueryResolveContext implements ContainerAwareInterface
             $this->createRelationResolvers();
         }
 
-        $type = $this->getTypeByName($typeName);
-        $requestedFields = $this->requestedFields;
-        return $this->calculateSelectFields($type, $requestedFields);
+        return $this->calculateSelectFields();
     }
 
     protected function createAttributeResolvers()
     {
-        $requestedFields = $this->requestedFields;
-        $type = $requestedFields->getType();
+        $type = $this->type;
 
         $attributeResolvers = [];
-        foreach ($requestedFields->getFieldNames() as $fieldName) {
+        foreach ($this->fields as $fieldName => $value) {
             if ($type->hasAttribute($fieldName)) {
                 $attribute = $type->getAttribute($fieldName);
                 if ($attribute->hasResolver()) {
@@ -117,11 +124,13 @@ class QueryResolveContext implements ContainerAwareInterface
 
     protected function createRelationResolvers()
     {
-        $requestedFields = $this->requestedFields;
-        $type = $requestedFields->getType();
+        $type = $this->type;
 
         $relationResolvers = [];
-        foreach ($requestedFields->getFieldNames() as $fieldName) {
+
+        $requestedFields = $this->getRequestedFields();
+
+        foreach ($requestedFields as $fieldName => $value) {
             if ($type->hasRelation($fieldName)) {
                 $relation = $type->getRelation($fieldName);
                 $resolveCallback = $relation->getResolve();
@@ -153,7 +162,7 @@ class QueryResolveContext implements ContainerAwareInterface
 
                     $relationResolver
                         ->relation($relation)
-                        ->requestedFields($requestedFields->getNestedField($fieldName));
+                        ->fields($value);
                     $relationResolvers[$fieldName] = $relationResolver;
                 } else {
                     throw new InvalidConfigurationException("Relation {$fieldName} on type {$type::type()} does not have a relation resolver.");
@@ -164,14 +173,18 @@ class QueryResolveContext implements ContainerAwareInterface
         $this->relationResolvers = $relationResolvers;
     }
 
-    protected function calculateSelectFields(Type $type, RequestedFields $requestedFields): array
+    protected function calculateSelectFields(): array
     {
+        $type = $this->type;
+
         $attributeResolvers = $this->attributeResolvers;
         $relationResolvers = $this->relationResolvers;
 
         $selectFields = ['id']; // TODO this might be a problem if using no 'id' tables
 
-        foreach ($requestedFields->getFieldNames() as $fieldName) {
+        $requestedFields = $this->getRequestedFields();
+
+        foreach ($requestedFields as $fieldName => $value) {
             // select attributes
             if ($type->hasAttribute($fieldName)) {
                 $attribute = $type->getAttribute($fieldName);
@@ -195,27 +208,58 @@ class QueryResolveContext implements ContainerAwareInterface
                     ...$relationResolver->getOwnerIdFields()
                 ];
             }
-
-            // select attributes or relation on type
-            if (preg_match('/^\@(.+)/', $fieldName, $matches)) {
-                $onTypeName = $matches[1];
-                if ($type::type() === $onTypeName) {
-                    $selectFields = [
-                        ...$selectFields,
-                        ...$this->calculateSelectFields($type, $requestedFields->getNestedField($fieldName))
-                    ];
-                }
-            }
         }
 
         return $selectFields;
     }
 
-    protected function getTypeByName(string $typeName): Type
+    protected function calculateRequestedFields(array $fields): array
     {
-        return $this->container->call(function (TypeClassMap $typeClassMap) use ($typeName) {
-            $TypeClass = $typeClassMap->get($typeName) ?? Type::class;
-            return $this->container->get($TypeClass);
-        });
+        $type = $this->type;
+
+        $requestedFields = [];
+
+        foreach ($fields as $fieldName => $nested) {
+            // count_relation
+            if (preg_match('/^count_(.+)/', $fieldName, $matches)) {
+                $countRelationName = $matches[1];
+                if ($type->hasRelation($countRelationName)) {
+                    $requestedFields[$fieldName] = true;
+                }
+            }
+
+            // attribute
+            if ($type->hasAttribute($fieldName) && $nested === true) {
+                $requestedFields[$fieldName] = true;
+            }
+
+            // relation = true or [...]
+            if ($type->hasRelation($fieldName)) {
+                if ($nested === true) {
+                    $nested = [];
+                }
+                if (is_array($nested)) {
+                    $requestedFields[$fieldName] = $nested;
+                }
+            }
+
+            // on type fields
+            if (preg_match('/^\@(.+)/', $fieldName, $matches)) {
+                $onTypeName = $matches[1];
+                if ($type::type() === $onTypeName) {
+                    if ($nested === true) {
+                        $nested = [];
+                    }
+                    if (is_array($nested)) {
+                        $requestedFields = array_merge(
+                            $requestedFields,
+                            $this->calculateRequestedFields($nested)
+                        );
+                    }
+                }
+            }
+        }
+
+        return $requestedFields;
     }
 }

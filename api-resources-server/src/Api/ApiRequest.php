@@ -27,7 +27,7 @@ class ApiRequest implements ContainerAwareInterface, ToSchemaJsonInterface, Json
 
     protected array $params = [];
 
-    protected RequestedFields $requestedFields;
+    protected array $fields = [];
 
     protected FieldsToSave $fieldsToSave;
 
@@ -51,7 +51,7 @@ class ApiRequest implements ContainerAwareInterface, ToSchemaJsonInterface, Json
         // todo validate filters
         $this->filters = $input['filters'] ?? [];
 
-        $this->fields($input['fields'] ?? []);
+        $this->fields = $input['fields'] ?? [];
 
         // todo validate data
         $this->fieldsToSave($input['data'] ?? []);
@@ -140,23 +140,13 @@ class ApiRequest implements ContainerAwareInterface, ToSchemaJsonInterface, Json
 
     public function fields(array $fields): ApiRequest
     {
-        $this->requestedFields = $this->container->create(function (RequestedFields $requestedFields) use ($fields) {
-            $response = $this->getAction()->getResponse();
-            $requestedFields
-                ->response($response)
-                ->fields($fields);
-        });
-
+        $this->fields = $fields;
         return $this;
     }
 
-    public function getRequestedFields(): RequestedFields
+    public function getFields(): array
     {
-        if (!isset($this->requestedFields)) {
-            $this->fields([]);
-        }
-
-        return $this->requestedFields;
+        return $this->fields;
     }
 
     public function fieldsToSave(array $fields): ApiRequest
@@ -232,7 +222,7 @@ class ApiRequest implements ContainerAwareInterface, ToSchemaJsonInterface, Json
             'api' => $this->api::type(),
             'resource' => $this->resourceType,
             'action' => $this->actionName,
-            'fields' => $this->requestedFields->toSchemaJson()
+            'fields' => $this->fields
         ];
 
         if (count($this->params)) {
@@ -254,7 +244,7 @@ class ApiRequest implements ContainerAwareInterface, ToSchemaJsonInterface, Json
             'action' => $this->actionName,
             'params' => $this->params,
             'filters' => $this->filters,
-            'fields' => $this->requestedFields,
+            'fields' => $this->fields,
             'fieldsToSave' => $this->fieldsToSave ?? []
         ];
         return $json;

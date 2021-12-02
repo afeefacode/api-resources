@@ -12,13 +12,12 @@ class TestResolver
         $r
             ->load(function () use ($r) {
                 $request = $r->getRequest();
-                $requestedFields = $request->getRequestedFields();
+                $fieldNames = $r->getRequestedFieldNames();
                 $filters = $request->getFilters();
 
                 $pageSizeFilter = $request->getAction()->getFilter('page_size');
                 $pageSize = $filters['page_size'] ?? $pageSizeFilter->getDefaultValue();
 
-                $fieldNames = $requestedFields->getFieldNames();
                 $objects = [];
                 foreach (range(1, $pageSize) as $id) {
                     $object = [

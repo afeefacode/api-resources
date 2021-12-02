@@ -71,7 +71,7 @@ class RequestAttributeTest extends ApiResourcesTest
 
                                 $model = Model::fromSingle('TYPE', $attributes);
 
-                                if ($r->getRequestedFields()->hasField('dependent')) {
+                                if (in_array('dependent', $r->getRequestedFieldNames())) {
                                     $model->apiResourcesSetAttribute('dependent', 'source');
                                 }
 
