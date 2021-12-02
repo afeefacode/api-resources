@@ -18,9 +18,4 @@ class BaseActionResolver extends BaseResolver
     {
         return $this->request;
     }
-
-    public function resolve(): array
-    {
-        return [];
-    }
 }

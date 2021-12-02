@@ -4,7 +4,6 @@ namespace Afeefa\ApiResources\Resolver;
 
 use Afeefa\ApiResources\Api\FieldsToSave;
 use Afeefa\ApiResources\Api\Operation;
-use Afeefa\ApiResources\DB\TypeClassMap;
 use Afeefa\ApiResources\DI\ContainerAwareInterface;
 use Afeefa\ApiResources\DI\ContainerAwareTrait;
 use Afeefa\ApiResources\DI\DependencyResolver;
@@ -136,14 +135,6 @@ class MutationResolveContext implements ContainerAwareInterface
         }
 
         return $saveFields;
-    }
-
-    protected function getTypeByName(string $typeName): Type
-    {
-        return $this->container->call(function (TypeClassMap $typeClassMap) use ($typeName) {
-            $TypeClass = $typeClassMap->get($typeName) ?? Type::class;
-            return $this->container->get($TypeClass);
-        });
     }
 
     protected function hasSaveAttribute(Type $type, string $operation, string $name): bool

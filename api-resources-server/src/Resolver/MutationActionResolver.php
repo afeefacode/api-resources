@@ -34,13 +34,13 @@ class MutationActionResolver extends BaseActionResolver
 
     public function getSaveFields(): array
     {
-        return $this->getResolveContext()->getSaveFields();
+        return $this->getResolveContext2()->getSaveFields();
     }
 
     public function resolve(): array
     {
         $action = $this->request->getAction();
-        $resolveContext = $this->getResolveContext();
+        $resolveContext = $this->getResolveContext2();
 
         // if errors
 
@@ -77,7 +77,7 @@ class MutationActionResolver extends BaseActionResolver
         ];
     }
 
-    protected function getResolveContext(): MutationResolveContext
+    protected function getResolveContext2(): MutationResolveContext
     {
         if (!isset($this->resolveContext)) {
             $this->resolveContext = $this->container->create(MutationResolveContext::class)

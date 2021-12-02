@@ -2,17 +2,13 @@
 
 namespace Afeefa\ApiResources\Resolver;
 
-use Afeefa\ApiResources\DB\TypeClassMap;
 use Afeefa\ApiResources\Exception\Exceptions\InvalidConfigurationException;
 use Afeefa\ApiResources\Exception\Exceptions\MissingCallbackException;
 use Afeefa\ApiResources\Model\ModelInterface;
-use Afeefa\ApiResources\Type\Type;
 use Closure;
 
 class QueryActionResolver extends BaseActionResolver
 {
-    protected array $resolveContexts = [];
-
     protected Closure $loadCallback;
 
     protected array $meta = [];
@@ -32,56 +28,35 @@ class QueryActionResolver extends BaseActionResolver
     public function getRequestedFields(?string $typeName = null): array
     {
         $action = $this->request->getAction();
-        $response = $action->getResponse();
-
-        // if errors
-
         $actionName = $action->getName();
         $resourceType = $this->request->getResource()::type();
 
-        if ($response->isUnion()) {
-            if (!$typeName) {
-                throw new InvalidConfigurationException("You need to pass a type name to getRequestedFields() in the resolver of action {$actionName} on resource {$resourceType} since the action returns an union type.");
-            }
-        } else {
-            $typeName ??= $response->getTypeClass()::type();
-        }
+        $typeName = $this->validateRequestedType(
+            $action->getResponse(),
+            $typeName,
+            "You need to pass a type name to getRequestedFields() in the resolver of action {$actionName} on resource {$resourceType} since the action returns an union type.",
+            "The type name passed to getRequestedFields() in the resolver of action {$actionName} on resource {$resourceType} is not supported by the action."
+        );
 
-        if (!$response->allowsType($typeName)) {
-            throw new InvalidConfigurationException("The type name passed to getRequestedFields() in the resolver of action {$actionName} on resource {$resourceType} is not supported by the action.");
-        }
-
-        return $this->getResolveContext($typeName)->getRequestedFields();
-    }
-
-    public function getRequestedFieldNames(?string $typeName = null): array
-    {
-        return array_keys($this->getRequestedFields($typeName));
+        return $this->getResolveContext($typeName, $this->request->getFields())
+            ->getRequestedFields();
     }
 
     public function getSelectFields(?string $typeName = null): array
     {
         $action = $this->request->getAction();
-        $response = $action->getResponse();
-
-        // if errors
-
         $actionName = $action->getName();
         $resourceType = $this->request->getResource()::type();
 
-        if ($response->isUnion()) {
-            if (!$typeName) {
-                throw new InvalidConfigurationException("You need to pass a type name to getSelectFields() in the resolver of action {$actionName} on resource {$resourceType} since the action returns an union type.");
-            }
-        } else {
-            $typeName ??= $response->getTypeClass()::type();
-        }
+        $typeName = $this->validateRequestedType(
+            $action->getResponse(),
+            $typeName,
+            "You need to pass a type name to getSelectFields() in the resolver of action {$actionName} on resource {$resourceType} since the action returns an union type.",
+            "The type name passed to getSelectFields() in the resolver of action {$actionName} on resource {$resourceType} is not supported by the action."
+        );
 
-        if (!$response->allowsType($typeName)) {
-            throw new InvalidConfigurationException("The type name passed to getSelectFields() in the resolver of action {$actionName} on resource {$resourceType} is not supported by the action.");
-        }
-
-        return $this->getResolveContext($typeName)->getSelectFields($typeName);
+        return $this->getResolveContext($typeName, $this->request->getFields())
+            ->getSelectFields($typeName);
     }
 
     public function resolve(): array
@@ -101,10 +76,9 @@ class QueryActionResolver extends BaseActionResolver
         }
 
         $modelOrModels = ($this->loadCallback)();
-        /** @var ModelInterface[] */
+
         $models = [];
-        $hasResult = false;
-        $isList = false;
+        $data = null;
 
         if ($action->getResponse()->isList()) {
             if (!is_array($modelOrModels)) {
@@ -120,8 +94,7 @@ class QueryActionResolver extends BaseActionResolver
                 }
             }
             $models = $modelOrModels;
-            $hasResult = count($models) > 0;
-            $isList = true;
+            $data = array_values($modelOrModels);
         } else {
             if ($modelOrModels !== null) {
                 if (!$modelOrModels instanceof ModelInterface) {
@@ -133,76 +106,16 @@ class QueryActionResolver extends BaseActionResolver
                 }
             }
             $models = $modelOrModels ? [$modelOrModels] : [];
-            $hasResult = !!$modelOrModels;
+            $data = $modelOrModels;
         }
 
-        if ($hasResult) {
-            $modelsByType = $this->getModelsByType($models);
-
-            foreach ($modelsByType as $typeName => $models) {
-                $resolveContext = $this->getResolveContext($typeName);
-
-                // resolve attributes
-
-                foreach ($resolveContext->getAttributeResolvers() as $attributeResolver) {
-                    $attributeResolver->addOwners($models);
-                    $attributeResolver->resolve();
-                }
-
-                // resolve relations
-
-                foreach ($resolveContext->getRelationResolvers() as $relationResolver) {
-                    $relationResolver->addOwners($models);
-                    $relationResolver->resolve();
-                }
-
-                // mark visible fields
-
-                $requestedFields = $this->getRequestedFields($typeName);
-                foreach ($models as $model) {
-                    $model->apiResourcesSetVisibleFields(['id', 'type', ...array_keys($requestedFields)]);
-                }
-            }
-        }
+        $this->resolveModels($models, $this->request->getFields());
 
         return [
-            'data' => $isList ? array_values($modelOrModels) : $modelOrModels,
+            'data' => $data,
             'meta' => $this->meta,
             'input' => json_decode(file_get_contents('php://input'), true),
             'request' => $this->request
         ];
-    }
-
-    /**
-     * @param ModelInterface[] $models
-     */
-    protected function getModelsByType(array $models): array
-    {
-        $modelsByType = [];
-        foreach ($models as $model) {
-            $type = $model->apiResourcesGetType();
-            $modelsByType[$type][] = $model;
-        }
-        return $modelsByType;
-    }
-
-    protected function getResolveContext(string $typeName): QueryResolveContext
-    {
-        if (!isset($this->resolveContexts[$typeName])) {
-            $this->resolveContexts[$typeName] = $this->container->create(function (QueryResolveContext $resolveContext) use ($typeName) {
-                $resolveContext
-                    ->type($this->getTypeByName($typeName))
-                    ->fields($this->request->getFields());
-            });
-        }
-        return $this->resolveContexts[$typeName];
-    }
-
-    protected function getTypeByName(string $typeName): Type
-    {
-        return $this->container->call(function (TypeClassMap $typeClassMap) use ($typeName) {
-            $TypeClass = $typeClassMap->get($typeName) ?? Type::class;
-            return $this->container->get($TypeClass);
-        });
     }
 }

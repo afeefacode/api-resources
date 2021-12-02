@@ -2,7 +2,6 @@
 
 namespace Afeefa\ApiResources\Resolver;
 
-use Afeefa\ApiResources\DB\TypeClassMap;
 use Afeefa\ApiResources\Exception\Exceptions\InvalidConfigurationException;
 use Afeefa\ApiResources\Exception\Exceptions\MissingCallbackException;
 use Afeefa\ApiResources\Model\ModelInterface;
@@ -17,8 +16,6 @@ use Generator;
 class QueryRelationResolver extends BaseRelationResolver
 {
     protected array $fields;
-
-    protected array $resolveContexts = [];
 
     /**
      * Closure or array
@@ -37,47 +34,32 @@ class QueryRelationResolver extends BaseRelationResolver
 
     public function getRequestedFields(?string $typeName = null): array
     {
-        $relatedType = $this->getRelation()->getRelatedType();
         $relationName = $this->field->getName();
 
-        if ($relatedType->isUnion()) {
-            if (!$typeName) {
-                throw new InvalidConfigurationException("You need to pass a type name to getRequestedFields() in the resolver of relation {$relationName} since the relation returns an union type");
-            }
-        } else {
-            $typeName ??= $relatedType->getTypeClass()::type();
-        }
+        $typeName = $this->validateRequestedType(
+            $this->getRelation()->getRelatedType(),
+            $typeName,
+            "You need to pass a type name to getRequestedFields() in the resolver of relation {$relationName} since the relation returns an union type",
+            "The type name passed to getRequestedFields() in the resolver of relation {$relationName} is not supported by the relation"
+        );
 
-        if (!$relatedType->allowsType($typeName)) {
-            throw new InvalidConfigurationException("The type name passed to getRequestedFields() in the resolver of relation {$relationName} is not supported by the relation");
-        }
-
-        return $this->getResolveContext($typeName)->getRequestedFields();
-    }
-
-    public function getRequestedFieldNames(?string $typeName = null): array
-    {
-        return array_keys($this->getRequestedFields($typeName));
+        return $this->getResolveContext($typeName, $this->fields)
+            ->getRequestedFields();
     }
 
     public function getSelectFields(?string $typeName = null): array
     {
-        $relatedType = $this->getRelation()->getRelatedType();
         $relationName = $this->field->getName();
 
-        if ($relatedType->isUnion()) {
-            if (!$typeName) {
-                throw new InvalidConfigurationException("You need to pass a type name to getSelectFields() in the resolver of relation {$relationName} since the relation returns an union type");
-            }
-        } else {
-            $typeName ??= $relatedType->getTypeClass()::type();
-        }
+        $typeName = $this->validateRequestedType(
+            $this->getRelation()->getRelatedType(),
+            $typeName,
+            "You need to pass a type name to getSelectFields() in the resolver of relation {$relationName} since the relation returns an union type",
+            "The type name passed to getSelectFields() in the resolver of relation {$relationName} is not supported by the relation"
+        );
 
-        if (!$relatedType->allowsType($typeName)) {
-            throw new InvalidConfigurationException("The type name passed to getSelectFields() in the resolver of relation {$relationName} is not supported by the relation");
-        }
-
-        return $this->getResolveContext($typeName)->getSelectFields($typeName);
+        return $this->getResolveContext($typeName, $this->fields)
+            ->getSelectFields($typeName);
     }
 
     public function ownerIdFields($ownerIdFields): QueryRelationResolver
@@ -133,7 +115,7 @@ class QueryRelationResolver extends BaseRelationResolver
 
         // map results to owners
 
-        // this is just a one-liner to detect if there are non-models in the given array
+        // this is just a nifty one-liner to detect if there are non-models in the given array
         $isAllModels = fn ($array) => !count(array_filter($array, fn ($elm) => !$elm instanceof ModelInterface));
 
         if (isset($this->mapCallback)) {
@@ -156,72 +138,11 @@ class QueryRelationResolver extends BaseRelationResolver
             }
         } else {
             $models = $loadResult;
-
             if (!$isAllModels($models)) {
                 throw new InvalidConfigurationException("{$resolverForRelation} needs to return an array of ModelInterface objects from its load() method.");
             }
         }
 
-        // no objects -> no relations to resolve
-
-        if (!count($models)) {
-            return;
-        }
-
-        $modelsByType = $this->getModelsByType($models);
-
-        foreach ($modelsByType as $typeName => $models) {
-            $resolveContext = $this->getResolveContext($typeName);
-
-            $attributeResolvers = $resolveContext->getAttributeResolvers();
-            foreach ($attributeResolvers as $attributeResolver) {
-                $attributeResolver->addOwners($models);
-                $attributeResolver->resolve();
-            }
-
-            foreach ($resolveContext->getRelationResolvers() as $relationResolver) {
-                $relationResolver->addOwners($models);
-                $relationResolver->resolve();
-            }
-
-            $requestedFields = $this->getRequestedFields($typeName);
-            foreach ($models as $model) {
-                $model->apiResourcesSetVisibleFields(['id', 'type', ...array_keys($requestedFields)]);
-            }
-        }
-    }
-
-    /**
-     * @param ModelInterface[] $models
-     */
-    protected function getModelsByType(array $models): array
-    {
-        $modelsByType = [];
-        foreach ($models as $model) {
-            $type = $model->apiResourcesGetType();
-            $modelsByType[$type][] = $model;
-        }
-        return $modelsByType;
-    }
-
-    protected function getResolveContext(string $typeName): QueryResolveContext
-    {
-        if (!isset($this->resolveContexts[$typeName])) {
-            $this->resolveContexts[$typeName] = $this->container->create(function (QueryResolveContext $resolveContext) use ($typeName) {
-                $resolveContext
-                    ->type($this->getTypeByName($typeName))
-                    ->fields($this->fields);
-            });
-        }
-
-        return $this->resolveContexts[$typeName];
-    }
-
-    protected function getTypeByName(string $typeName): Type
-    {
-        return $this->container->call(function (TypeClassMap $typeClassMap) use ($typeName) {
-            $TypeClass = $typeClassMap->get($typeName) ?? Type::class;
-            return $this->container->get($TypeClass);
-        });
+        $this->resolveModels($models, $this->fields);
     }
 }
