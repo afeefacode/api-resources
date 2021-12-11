@@ -5,8 +5,14 @@
       "name": "Api-Resources Server",
       "type": "php",
       "request": "launch",
+      "port": 9000
+    },
+    {
+      "name": "Api-Resources Example",
+      "type": "php",
+      "request": "launch",
       "port": 9000,
-      "spathMappings": {
+      "pathMappings": {
         "/api-resources": "${workspaceFolder}",
       }
     }
