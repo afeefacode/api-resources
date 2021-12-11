@@ -115,8 +115,8 @@ export class ListViewModel {
 
   public filterValueChanged (name: string): void {
     // reset page filter if any other filter changes
-    if (!(this._filters.get(name)!.filter instanceof PageFilter)) {
-      const pageFilter = this._filters.values().find(f => f.filter instanceof PageFilter)
+    if (this._filters.get(name)!.filter.type !== 'Afeefa.PageFilter') {
+      const pageFilter = this._filters.values().find(f => f.filter.type === 'Afeefa.PageFilter')
       if (pageFilter) {
         pageFilter.reset()
       }

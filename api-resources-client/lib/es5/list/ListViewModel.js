@@ -1,4 +1,3 @@
-import { PageFilter } from '../filter/filters/PageFilter';
 import { ListViewFilter } from './ListViewFilter';
 import { ListViewFilterBag } from './ListViewFilterBag';
 import { ListViewFilterChangeEvent } from './ListViewFilterChangeEvent';
@@ -81,8 +80,8 @@ export class ListViewModel {
     }
     filterValueChanged(name) {
         // reset page filter if any other filter changes
-        if (!(this._filters.get(name).filter instanceof PageFilter)) {
-            const pageFilter = this._filters.values().find(f => f.filter instanceof PageFilter);
+        if (this._filters.get(name).filter.type !== 'Afeefa.PageFilter') {
+            const pageFilter = this._filters.values().find(f => f.filter.type === 'Afeefa.PageFilter');
             if (pageFilter) {
                 pageFilter.reset();
             }
