@@ -310,7 +310,7 @@ class ModelResolver
 
     protected function getRelationCounts(QueryActionResolver $r): array
     {
-        $requestedFieldNames = $r->getRequestedFields()->getFieldNames();
+        $requestedFieldNames = $r->getRequestedFieldNames();
         $relationCounts = [];
         foreach ($requestedFieldNames as $fieldName) {
             if (preg_match('/^count_(.+)/', $fieldName, $matches)) {
