@@ -256,9 +256,13 @@ class ActionTest extends ApiResourcesTest
 
     public function test_missing_input()
     {
+        $this->expectException(InvalidConfigurationException::class);
+        $this->expectExceptionMessage('Mutation action test_action does not have an input type.');
+
         $action = (new ActionBuilder())->action('test_action')->get();
         $this->assertFalse($action->hasInput());
-        $this->assertNull($action->getInput());
+
+        $action->getInput();
     }
 
     public function test_response()

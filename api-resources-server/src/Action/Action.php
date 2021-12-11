@@ -70,6 +70,9 @@ class Action extends BagEntry
 
     public function getInput(): ?ActionInput
     {
+        if (!isset($this->input)) {
+            throw new InvalidConfigurationException("Mutation action {$this->name} does not have an input type.");
+        }
         return $this->input ?? null;
     }
 
@@ -116,7 +119,6 @@ class Action extends BagEntry
         if (!isset($this->response)) {
             throw new InvalidConfigurationException("Action {$this->name} does not have a response type.");
         }
-
         return $this->response;
     }
 
