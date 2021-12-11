@@ -21,8 +21,6 @@ class Relation extends Field
 {
     protected RelatedType $relatedType;
 
-    protected bool $isSingle = false;
-
     protected bool $isUpdate = false;
 
     protected bool $isAdd = false;
@@ -64,7 +62,12 @@ class Relation extends Field
 
     public function isSingle(): bool
     {
-        return $this->isSingle;
+        return !$this->isList();
+    }
+
+    public function isList(): bool
+    {
+        return $this->relatedType->isList();
     }
 
     public function typeClassOrClassesOrMeta($TypeClassOrClassesOrMeta): Relation
