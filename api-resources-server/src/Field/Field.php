@@ -189,9 +189,10 @@ class Field extends BagEntry
     /**
      * @param string|callable|Closure $classOrCallback
      */
-    public function resolve($classOrCallback): Field
+    public function resolve($classOrCallback, array $params = []): Field
     {
         $this->resolveCallback = $classOrCallback;
+        $this->resolveParams = $params;
         return $this;
     }
 
