@@ -18,6 +18,8 @@ class ActionResponse implements ToSchemaJsonInterface, ContainerAwareInterface
 
     protected bool $list = false;
 
+    protected bool $link = false;
+
     protected string $TypeClass;
 
     protected array $TypeClasses;
@@ -32,6 +34,7 @@ class ActionResponse implements ToSchemaJsonInterface, ContainerAwareInterface
             $TypeClassOrClasses = $typeMeta->TypeClassOrClasses;
 
             $this->list = $typeMeta->list;
+            $this->link = $typeMeta->link;
 
             if ($this instanceof ActionInput) {
                 $this
@@ -126,6 +129,11 @@ class ActionResponse implements ToSchemaJsonInterface, ContainerAwareInterface
     public function isList(): bool
     {
         return $this->list;
+    }
+
+    public function isLink(): bool
+    {
+        return $this->link;
     }
 
     public function isUnion(): bool
