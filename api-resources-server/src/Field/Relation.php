@@ -70,6 +70,11 @@ class Relation extends Field
         return $this->relatedType->isList();
     }
 
+    public function isLink(): bool
+    {
+        return $this->relatedType->isLink();
+    }
+
     public function typeClassOrClassesOrMeta($TypeClassOrClassesOrMeta): Relation
     {
         $this->relatedType = $this->container->create(RelatedType::class)
