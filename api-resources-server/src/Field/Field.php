@@ -273,6 +273,12 @@ class Field extends BagEntry
             if (isset($this->options)) {
                 $field->options = $this->options;
             }
+            if (isset($this->resolveCallback)) {
+                $field->resolveCallback = $this->resolveCallback;
+            }
+            if (isset($this->resolveSaveCallback)) {
+                $field->resolveSaveCallback = $this->resolveSaveCallback;
+            }
         });
     }
 
