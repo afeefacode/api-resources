@@ -22,7 +22,7 @@ use Afeefa\ApiResources\Type\Type;
 
 use Closure;
 
-class AttributeResolverTest extends ApiResourcesTest
+class QueryAttributeResolverTest extends ApiResourcesTest
 {
     private TestWatcher $testWatcher;
 

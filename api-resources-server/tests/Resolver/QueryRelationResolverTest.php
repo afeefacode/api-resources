@@ -22,7 +22,7 @@ use Afeefa\ApiResources\Type\Type;
 use Closure;
 use stdClass;
 
-class RelationResolverTest extends ApiResourcesTest
+class QueryRelationResolverTest extends ApiResourcesTest
 {
     private TestWatcher $testWatcher;
 
@@ -1094,6 +1094,59 @@ class RelationResolverTest extends ApiResourcesTest
         $this->assertEquals([['id', 'title', 'owner_other_id', 'anowner_other_id']], $this->testWatcher->selectFields);
     }
 
+    public function test_calls_requested_fields()
+    {
+        $api = $this->createApiWithTypeAndAction(
+            function (FieldBag $fields) {
+                $fields
+                    ->attribute('title', VarcharAttribute::class)
+                    ->relation('other', T('TYPE'), function (HasOneRelation $relation) {
+                        $relation->resolve(function (TestRelationResolver $r) {
+                            $r->load(function () use ($r) {
+                                $this->testWatcher->info($r->countCalculateCalls);
+
+                                $r->getRequestedFields();
+                                $r->fieldIsRequested('test');
+                                $r->fieldIsRequested('test2');
+                                $r->fieldIsRequested('test3');
+                                $r->getRequestedFieldNames();
+
+                                $this->testWatcher->info($r->countCalculateCalls);
+
+                                return [];
+                            });
+                        });
+                    });
+            }
+        );
+
+        $this->request($api, ['other' => true]);
+
+        $this->assertEquals([0, 1], $this->testWatcher->info);
+    }
+
+    public function test_resolve_params()
+    {
+        $api = $this->createApiWithTypeAndAction(
+            function (FieldBag $fields) {
+                $fields
+                    ->relation('other', T('TYPE'), function (HasOneRelation $relation) {
+                        $relation->resolve(function (TestRelationResolver $r) {
+                            $r->load(function () use ($r) {
+                                $this->testWatcher->info($r->getResolveParams());
+                                $this->testWatcher->info($r->getResolveParam('key'));
+                                return [];
+                            });
+                        }, ['key' => 'value']);
+                    });
+            }
+        );
+
+        $this->request($api, ['other' => true]);
+
+        $this->assertEquals([['key' => 'value'], 'value'], $this->testWatcher->info);
+    }
+
     private function createApiWithTypeAndAction(Closure $fieldsCallback, ?Closure $actionCallback = null, bool $isList = false): Api
     {
         $actionCallback ??= function (Action $action) use ($isList) {
@@ -1149,5 +1202,16 @@ class RelationResolverTest extends ApiResourcesTest
     private function requestList(Api $api, ?array $fields = null): array
     {
         return $this->request($api, $fields);
+    }
+}
+
+class TestRelationResolver extends QueryRelationResolver
+{
+    public int $countCalculateCalls = 0;
+
+    protected function calculateRequestedFields(?string $typeName = null): array
+    {
+        $this->countCalculateCalls++;
+        return parent::calculateRequestedFields($typeName);
     }
 }

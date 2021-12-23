@@ -19,7 +19,7 @@ use Afeefa\ApiResources\Type\Type;
 use Closure;
 use stdClass;
 
-class ActionResolverTest extends ApiResourcesTest
+class QueryActionResolverTest extends ApiResourcesTest
 {
     private TestWatcher $testWatcher;
 
@@ -50,6 +50,31 @@ class ActionResolverTest extends ApiResourcesTest
         $this->request($api);
 
         $this->assertEquals(2, $this->testWatcher->countCalls);
+    }
+
+    public function test_calls_requested_fields()
+    {
+        $api = $this->createApiWithAction(function (Action $action) {
+            $action
+                ->response(T('TYPE'))
+                ->resolve(function (TestActionResolver $r) {
+                    $r->load(function () use ($r) {
+                        $this->testWatcher->info($r->countCalculateCalls);
+
+                        $r->getRequestedFields();
+                        $r->fieldIsRequested('test');
+                        $r->fieldIsRequested('test2');
+                        $r->fieldIsRequested('test3');
+                        $r->getRequestedFieldNames();
+
+                        $this->testWatcher->info($r->countCalculateCalls);
+                    });
+                });
+        });
+
+        $this->request($api);
+
+        $this->assertEquals([0, 1], $this->testWatcher->info);
     }
 
     public function test_missing_action_resolver()
@@ -705,6 +730,7 @@ class TestWatcher
     public array $selectFields = [];
     public array $saveFields = [];
     public array $requestedFields = [];
+    public array $info2 = [];
     public array $info = [];
     public ApiRequest $request;
 
@@ -716,6 +742,11 @@ class TestWatcher
     public function info($info)
     {
         $this->info[] = $info;
+    }
+
+    public function info2($info)
+    {
+        $this->info2[] = $info;
     }
 
     public function selectFields(array $selectFields)
@@ -736,5 +767,16 @@ class TestWatcher
     public function requestedFields(array $requestedFields)
     {
         $this->requestedFields[] = $requestedFields;
+    }
+}
+
+class TestActionResolver extends QueryActionResolver
+{
+    public int $countCalculateCalls = 0;
+
+    protected function calculateRequestedFields(?string $typeName = null): array
+    {
+        $this->countCalculateCalls++;
+        return parent::calculateRequestedFields($typeName);
     }
 }
