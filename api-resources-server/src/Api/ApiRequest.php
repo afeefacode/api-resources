@@ -11,6 +11,7 @@ use Afeefa\ApiResources\Exception\Exceptions\ApiException;
 use Afeefa\ApiResources\Exception\Exceptions\InvalidConfigurationException;
 use Afeefa\ApiResources\Resolver\BaseActionResolver;
 use Afeefa\ApiResources\Resource\Resource;
+use Afeefa\ApiResources\Validator\ValidationFailedException;
 use JsonSerializable;
 
 class ApiRequest implements ContainerAwareInterface, ToSchemaJsonInterface, JsonSerializable
@@ -29,7 +30,7 @@ class ApiRequest implements ContainerAwareInterface, ToSchemaJsonInterface, Json
 
     protected array $fields = [];
 
-    protected FieldsToSave $fieldsToSave;
+    protected array $fieldsToSave = [];
 
     public function fromInput(?array $input = null): ApiRequest
     {
@@ -54,7 +55,9 @@ class ApiRequest implements ContainerAwareInterface, ToSchemaJsonInterface, Json
         $this->fields = $input['fields'] ?? [];
 
         // todo validate data
-        $this->fieldsToSave($input['data'] ?? []);
+        if (array_key_exists('data', $input)) {
+            $this->fieldsToSave($input['data']);
+        }
 
         return $this;
     }
@@ -149,31 +152,21 @@ class ApiRequest implements ContainerAwareInterface, ToSchemaJsonInterface, Json
         return $this->fields;
     }
 
-    public function fieldsToSave(array $fields): ApiRequest
+    public function fieldsToSave($fields): ApiRequest
     {
-        $this->fieldsToSave = $this->container->create(function (FieldsToSave $fieldsToSave) use ($fields) {
-            $TypeClass = $this->getAction()->getResponse()->getTypeClass();
-            $operation = $this->hasParam('id') ? Operation::UPDATE : Operation::CREATE;
+        // validate fields
+        $actionName = $this->getAction()->getName();
+        $resourceType = $this->getResource()::type();
+        if (!is_array($fields)) {
+            throw new ValidationFailedException("Data passed to the mutation action {$actionName} on resource {$resourceType} must be an array.");
+        }
 
-            $fieldsToSave
-                ->typeClass($TypeClass)
-                ->operation($operation)
-                ->fields($fields);
-
-            if ($operation === Operation::UPDATE) {
-                $fieldsToSave->id($this->getParam('id'));
-            }
-        });
-
+        $this->fieldsToSave = $fields;
         return $this;
     }
 
-    public function getFieldsToSave(): FieldsToSave
+    public function getFieldsToSave2(): array
     {
-        if (!isset($this->fieldsToSave)) {
-            $this->fieldsToSave([]);
-        }
-
         return $this->fieldsToSave;
     }
 
