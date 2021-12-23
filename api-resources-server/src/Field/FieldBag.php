@@ -92,7 +92,7 @@ class FieldBag extends Bag
         return $this;
     }
 
-    public function relation(string $name, $TypeClassOrClassesOrMeta, $classOrCallback): FieldBag
+    public function relation(string $name, $TypeClassOrClassesOrMeta, $classOrCallback = Relation::class): FieldBag
     {
         $this->container->create($classOrCallback, function (Relation $relation) use ($name, $TypeClassOrClassesOrMeta) {
             $relation
