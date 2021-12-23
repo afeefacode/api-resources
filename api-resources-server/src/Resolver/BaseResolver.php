@@ -16,14 +16,30 @@ class BaseResolver implements ContainerAwareInterface
 
     protected array $resolveContexts = [];
 
+    protected array $requestedFields = [];
+
     public function getRequestedFields(?string $typeName = null): array
     {
-        return [];
+        if (!isset($this->requestedFields[$typeName])) {
+            $this->requestedFields[$typeName] = $this->calculateRequestedFields($typeName);
+        }
+
+        return $this->requestedFields[$typeName];
     }
 
     public function getRequestedFieldNames(?string $typeName = null): array
     {
         return array_keys($this->getRequestedFields($typeName));
+    }
+
+    public function fieldIsRequested(string $fieldName, ?string $typeName = null): bool
+    {
+        return array_key_exists($fieldName, $this->getRequestedFields($typeName));
+    }
+
+    protected function calculateRequestedFields(?string $typeName = null): array
+    {
+        return [];
     }
 
     protected function getTypeByName(string $typeName): Type
@@ -100,9 +116,10 @@ class BaseResolver implements ContainerAwareInterface
 
             // mark visible fields
 
-            $requestedFields = $this->getRequestedFields($typeName);
+            $getRequestedFieldNames = $this->getRequestedFieldNames($typeName);
             foreach ($models as $model) {
-                $model->apiResourcesSetVisibleFields(['id', 'type', ...array_keys($requestedFields)]);
+                $visibleFields = ['id', 'type', ...$getRequestedFieldNames];
+                $model->apiResourcesSetVisibleFields($visibleFields);
             }
         }
     }

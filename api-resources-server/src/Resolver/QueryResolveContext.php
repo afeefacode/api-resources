@@ -12,18 +12,23 @@ class QueryResolveContext implements ContainerAwareInterface
 {
     use ContainerAwareTrait;
 
-    protected array $fields;
     protected Type $type;
+
+    protected array $fields = [];
+
+    protected ?array $requestedFields = null;
+
+    protected ?array $selectFields = null;
 
     /**
      * @var QueryAttributeResolver[]
      */
-    protected array $attributeResolvers;
+    protected ?array $attributeResolvers = null;
 
     /**
      * @var QueryRelationResolver[]
      */
-    protected array $relationResolvers;
+    protected ?array $relationResolvers = null;
 
     public function type(Type $type): QueryResolveContext
     {
@@ -42,10 +47,9 @@ class QueryResolveContext implements ContainerAwareInterface
      */
     public function getAttributeResolvers(): array
     {
-        if (!isset($this->attributeResolvers)) {
-            $this->createAttributeResolvers();
+        if (!$this->attributeResolvers) {
+            $this->attributeResolvers = $this->createAttributeResolvers();
         }
-
         return $this->attributeResolvers;
     }
 
@@ -54,32 +58,29 @@ class QueryResolveContext implements ContainerAwareInterface
      */
     public function getRelationResolvers(): array
     {
-        if (!isset($this->relationResolvers)) {
-            $this->createRelationResolvers();
+        if (!$this->relationResolvers) {
+            $this->relationResolvers = $this->createRelationResolvers();
         }
-
         return $this->relationResolvers;
     }
 
     public function getRequestedFields(): array
     {
-        return $this->calculateRequestedFields($this->fields);
+        if (!$this->requestedFields) {
+            $this->requestedFields = $this->calculateRequestedFields();
+        }
+        return $this->requestedFields;
     }
 
     public function getSelectFields(): array
     {
-        if (!isset($this->attributeResolvers)) {
-            $this->createAttributeResolvers();
+        if (!$this->selectFields) {
+            $this->selectFields = $this->calculateSelectFields();
         }
-
-        if (!isset($this->relationResolvers)) {
-            $this->createRelationResolvers();
-        }
-
-        return $this->calculateSelectFields();
+        return $this->selectFields;
     }
 
-    protected function createAttributeResolvers()
+    protected function createAttributeResolvers(): array
     {
         $type = $this->type;
 
@@ -119,10 +120,10 @@ class QueryResolveContext implements ContainerAwareInterface
             }
         }
 
-        $this->attributeResolvers = $attributeResolvers;
+        return $attributeResolvers;
     }
 
-    protected function createRelationResolvers()
+    protected function createRelationResolvers(): array
     {
         $type = $this->type;
 
@@ -170,15 +171,15 @@ class QueryResolveContext implements ContainerAwareInterface
             }
         }
 
-        $this->relationResolvers = $relationResolvers;
+        return $relationResolvers;
     }
 
     protected function calculateSelectFields(): array
     {
         $type = $this->type;
 
-        $attributeResolvers = $this->attributeResolvers;
-        $relationResolvers = $this->relationResolvers;
+        $attributeResolvers = $this->getAttributeResolvers();
+        $relationResolvers = $this->getRelationResolvers();
 
         $selectFields = ['id']; // TODO this might be a problem if using no 'id' tables
 
@@ -213,9 +214,10 @@ class QueryResolveContext implements ContainerAwareInterface
         return $selectFields;
     }
 
-    protected function calculateRequestedFields(array $fields): array
+    protected function calculateRequestedFields(?array $fields = null): array
     {
         $type = $this->type;
+        $fields ??= $this->fields;
 
         $requestedFields = [];
 

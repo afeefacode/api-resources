@@ -2,71 +2,98 @@
 
 namespace Afeefa\ApiResources\Resolver;
 
-use Afeefa\ApiResources\Api\FieldsToSave;
 use Afeefa\ApiResources\Api\Operation;
 use Afeefa\ApiResources\DI\ContainerAwareInterface;
 use Afeefa\ApiResources\DI\ContainerAwareTrait;
 use Afeefa\ApiResources\DI\DependencyResolver;
 use Afeefa\ApiResources\Exception\Exceptions\InvalidConfigurationException;
+use Afeefa\ApiResources\Field\Relation;
+use Afeefa\ApiResources\Model\ModelInterface;
 use Afeefa\ApiResources\Type\Type;
+use Afeefa\ApiResources\Validator\ValidationFailedException;
 
 class MutationResolveContext implements ContainerAwareInterface
 {
     use ContainerAwareTrait;
 
-    protected FieldsToSave $fieldsToSave;
+    protected Type $type;
+
+    protected ?ModelInterface $owner = null;
+
+    protected ?array $saveFields = null;
 
     /**
      * @var MutationRelationResolver[]
      */
-    protected array $relationResolvers;
+    protected ?array $relationResolvers = null;
 
-    public function fieldsToSave(FieldsToSave $fieldsToSave): MutationResolveContext
+    public function type(Type $type): MutationResolveContext
     {
-        $this->fieldsToSave = $fieldsToSave;
+        $this->type = $type;
+        return $this;
+    }
+
+    public function owner(?ModelInterface $owner = null): MutationResolveContext
+    {
+        $this->owner = $owner;
+        return $this;
+    }
+
+    public function getOperation(): string
+    {
+        return isset($this->fieldsToSave['id']) ? Operation::UPDATE : Operation::CREATE;
+    }
+
+    public function fieldsToSave(array $fields): MutationResolveContext
+    {
+        $this->fieldsToSave = $fields;
         return $this;
     }
 
     /**
      * @return MutationRelationResolver[]
      */
-    public function getSaveRelationResolvers(): array
+    public function getRelationResolvers(): array
     {
-        if (!isset($this->saveRelationResolvers)) {
-            $this->createSaveRelationResolvers();
+        if (!$this->relationResolvers) {
+            $this->relationResolvers = $this->createRelationResolvers();
         }
-
-        return $this->saveRelationResolvers;
+        return $this->relationResolvers;
     }
 
-    public function getSaveFields(): array
+    public function getSaveFields(array $additionalFields = []): array
     {
-        if (!isset($this->saveRelationResolvers)) {
-            $this->createSaveRelationResolvers();
-        }
-
-        return $this->calculateSaveFields($this->fieldsToSave);
+        $saveFields = $this->calculateSaveFields();
+        return array_merge($saveFields, $additionalFields);
     }
 
-    /**
-     * @return MutationRelationResolver[]
-     */
-    protected function createSaveRelationResolvers()
+    protected function createRelationResolvers(): array
     {
+        $type = $this->type;
         $fieldsToSave = $this->fieldsToSave;
-        $type = $fieldsToSave->getType();
-        $operation = $fieldsToSave->getOperation();
+        $operation = $this->getOperation();
 
-        $saveRelationResolvers = [];
-        foreach ($fieldsToSave->getFieldNames() as $fieldName) {
+        $relationResolvers = [];
+        foreach ($fieldsToSave as $fieldName => $value) {
             if ($this->hasSaveRelation($type, $operation, $fieldName)) {
                 $relation = $this->getSaveRelation($type, $operation, $fieldName);
+
+                if ($relation->isList()) {
+                    if (!is_array($value)) {
+                        throw new ValidationFailedException("Value passed to the many relation {$fieldName} must be an array.");
+                    }
+                } else {
+                    if (!is_array($value) && $value !== null) {
+                        throw new ValidationFailedException("Value passed to the singular relation {$fieldName} must be null or an array.");
+                    }
+                }
+
                 $resolveCallback = $relation->getSaveResolve();
 
-                /** @var MutationRelationResolver */
-                $saveRelationResolver = null;
-
                 if ($resolveCallback) {
+                    /** @var MutationRelationResolver */
+                    $mutationRelationResolver = null;
+
                     $this->container->call(
                         $resolveCallback,
                         function (DependencyResolver $r) {
@@ -74,62 +101,52 @@ class MutationResolveContext implements ContainerAwareInterface
                                 $r->create();
                             }
                         },
-                        function () use (&$saveRelationResolver) {
+                        function () use (&$mutationRelationResolver) {
                             $arguments = func_get_args();
                             foreach ($arguments as $argument) {
                                 if ($argument instanceof MutationRelationResolver) {
-                                    $saveRelationResolver = $argument;
+                                    $mutationRelationResolver = $argument;
                                 }
                             }
                         }
                     );
 
-                    if (!$saveRelationResolver) {
+                    if (!$mutationRelationResolver) {
                         throw new InvalidConfigurationException("Resolve callback for save relation {$fieldName} on type {$type::type()} must receive a MutationRelationResolver as argument.");
                     }
 
-                    $saveRelationResolver->ownerType($type);
-                    $saveRelationResolver->relation($relation);
-                    $saveRelationResolver->fieldsToSave($fieldsToSave->getNestedField($fieldName));
-                    $saveRelationResolvers[$fieldName] = $saveRelationResolver;
+                    $mutationRelationResolver
+                        ->relation($relation)
+                        ->fieldsToSave($value);
+
+                    if ($this->owner) {
+                        $mutationRelationResolver->addOwner($this->owner);
+                    }
+
+                    $relationResolvers[$fieldName] = $mutationRelationResolver;
                 } else {
-                    throw new InvalidConfigurationException("Relation {$fieldName} on type {$type::type()} does not have a save relation resolver.");
+                    throw new InvalidConfigurationException("Relation {$fieldName} on type {$type::type()} does not have a relation resolver.");
                 }
             }
         }
 
-        $this->saveRelationResolvers = $saveRelationResolvers;
+        return $relationResolvers;
     }
 
-    protected function calculateSaveFields(FieldsToSave $fieldsToSave): array
+    protected function calculateSaveFields(): array
     {
-        $type = $fieldsToSave->getType();
-        $saveRelationResolvers = $this->saveRelationResolvers;
+        $type = $this->type;
+        $fieldsToSave = $this->fieldsToSave;
+        $operation = $this->getOperation();
 
         $saveFields = [];
 
-        foreach ($fieldsToSave->getFields() as $fieldName => $value) {
+        foreach ($fieldsToSave as $fieldName => $value) {
             // value is a scalar
-            if ($this->hasSaveAttribute($type, $fieldsToSave->getOperation(), $fieldName)) {
+            if ($this->hasSaveAttribute($type, $operation, $fieldName)) {
                 $attribute = $type->getAttribute($fieldName);
-                if (!$attribute->hasResolver()) { // let resolvers provide value
+                if (!$attribute->hasSaveResolver()) { // let resolvers provide value
                     $saveFields[$fieldName] = $value;
-                }
-            }
-
-            // value is a FieldsToSave or null
-            if ($this->hasSaveRelation($type, $fieldsToSave->getOperation(), $fieldName)) {
-                $relation = $this->getSaveRelation($type, $fieldsToSave->getOperation(), $fieldName);
-
-                $saveRelationResolver = $saveRelationResolvers[$fieldName];
-                $ownerIdFields = $saveRelationResolver->getOwnerIdFields();
-                foreach ($ownerIdFields as $ownerIdField) {
-                    if ($relation->isSingle() && !$value) {
-                        $saveFields[$ownerIdField] = null;
-                    } else {
-                        // TODO set type field as id field if necessary
-                        $saveFields[$ownerIdField] = $value->getId();
-                    }
                 }
             }
         }

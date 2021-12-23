@@ -18,8 +18,4 @@ class BaseAttributeResolver extends BaseFieldResolver
     {
         return $this->field;
     }
-
-    public function resolve()
-    {
-    }
 }

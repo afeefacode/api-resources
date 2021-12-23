@@ -18,4 +18,14 @@ class BaseRelationResolver extends BaseFieldResolver
     {
         return $this->field;
     }
+
+    public function getResolveParams(): array
+    {
+        return $this->field->getResolveParams();
+    }
+
+    public function getResolveParam(string $name)
+    {
+        return $this->field->getResolveParam($name);
+    }
 }

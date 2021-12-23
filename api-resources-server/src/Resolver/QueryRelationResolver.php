@@ -5,13 +5,12 @@ namespace Afeefa\ApiResources\Resolver;
 use Afeefa\ApiResources\Exception\Exceptions\InvalidConfigurationException;
 use Afeefa\ApiResources\Exception\Exceptions\MissingCallbackException;
 use Afeefa\ApiResources\Model\ModelInterface;
-use Afeefa\ApiResources\Type\Type;
 use Closure;
 use Generator;
 
 /**
- * @method QueryRelationResolver ownerType(Type $ownerType)
  * @method QueryRelationResolver relation(Relation $relation)
+ * @method QueryRelationResolver ownerIdFields($ownerIdFields)
  */
 class QueryRelationResolver extends BaseRelationResolver
 {
@@ -32,19 +31,19 @@ class QueryRelationResolver extends BaseRelationResolver
         return $this;
     }
 
-    public function getRequestedFields(?string $typeName = null): array
+    public function ownerIdFields($ownerIdFields): BaseRelationResolver
     {
-        $relationName = $this->field->getName();
+        $this->ownerIdFields = $ownerIdFields;
+        return $this;
+    }
 
-        $typeName = $this->validateRequestedType(
-            $this->getRelation()->getRelatedType(),
-            $typeName,
-            "You need to pass a type name to getRequestedFields() in the resolver of relation {$relationName} since the relation returns an union type",
-            "The type name passed to getRequestedFields() in the resolver of relation {$relationName} is not supported by the relation"
-        );
+    public function getOwnerIdFields(): array
+    {
+        if ($this->ownerIdFields instanceof Closure) {
+            return ($this->ownerIdFields)() ?? [];
+        }
 
-        return $this->getResolveContext($typeName, $this->fields)
-            ->getRequestedFields();
+        return $this->ownerIdFields ?? [];
     }
 
     public function getSelectFields(?string $typeName = null): array
@@ -60,21 +59,6 @@ class QueryRelationResolver extends BaseRelationResolver
 
         return $this->getResolveContext($typeName, $this->fields)
             ->getSelectFields($typeName);
-    }
-
-    public function ownerIdFields($ownerIdFields): QueryRelationResolver
-    {
-        $this->ownerIdFields = $ownerIdFields;
-        return $this;
-    }
-
-    public function getOwnerIdFields(): array
-    {
-        if ($this->ownerIdFields instanceof Closure) {
-            return ($this->ownerIdFields)() ?? [];
-        }
-
-        return $this->ownerIdFields ?? [];
     }
 
     public function load(Closure $callback): QueryRelationResolver
@@ -144,5 +128,20 @@ class QueryRelationResolver extends BaseRelationResolver
         }
 
         $this->resolveModels($models, $this->fields);
+    }
+
+    protected function calculateRequestedFields(?string $typeName = null): array
+    {
+        $relationName = $this->field->getName();
+
+        $typeName = $this->validateRequestedType(
+            $this->getRelation()->getRelatedType(),
+            $typeName,
+            "You need to pass a type name to getRequestedFields() in the resolver of relation {$relationName} since the relation returns an union type",
+            "The type name passed to getRequestedFields() in the resolver of relation {$relationName} is not supported by the relation"
+        );
+
+        return $this->getResolveContext($typeName, $this->fields)
+            ->getRequestedFields();
     }
 }

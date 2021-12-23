@@ -9,7 +9,7 @@ use Closure;
 
 class QueryActionResolver extends BaseActionResolver
 {
-    protected Closure $loadCallback;
+    protected ?Closure $loadCallback = null;
 
     protected array $meta = [];
 
@@ -23,23 +23,6 @@ class QueryActionResolver extends BaseActionResolver
     {
         $this->meta = $meta;
         return $this;
-    }
-
-    public function getRequestedFields(?string $typeName = null): array
-    {
-        $action = $this->request->getAction();
-        $actionName = $action->getName();
-        $resourceType = $this->request->getResource()::type();
-
-        $typeName = $this->validateRequestedType(
-            $action->getResponse(),
-            $typeName,
-            "You need to pass a type name to getRequestedFields() in the resolver of action {$actionName} on resource {$resourceType} since the action returns an union type.",
-            "The type name passed to getRequestedFields() in the resolver of action {$actionName} on resource {$resourceType} is not supported by the action."
-        );
-
-        return $this->getResolveContext($typeName, $this->request->getFields())
-            ->getRequestedFields();
     }
 
     public function getSelectFields(?string $typeName = null): array
@@ -71,7 +54,7 @@ class QueryActionResolver extends BaseActionResolver
 
         // query db
 
-        if (!isset($this->loadCallback)) {
+        if (!$this->loadCallback) {
             throw new MissingCallbackException("Action resolver for action {$actionName} on resource {$resourceType} must provide a load callback.");
         }
 
@@ -117,5 +100,22 @@ class QueryActionResolver extends BaseActionResolver
             'input' => json_decode(file_get_contents('php://input'), true),
             'request' => $this->request
         ];
+    }
+
+    protected function calculateRequestedFields(?string $typeName = null): array
+    {
+        $action = $this->request->getAction();
+        $actionName = $action->getName();
+        $resourceType = $this->request->getResource()::type();
+
+        $typeName = $this->validateRequestedType(
+            $action->getResponse(),
+            $typeName,
+            "You need to pass a type name to getRequestedFields() in the resolver of action {$actionName} on resource {$resourceType} since the action returns an union type.",
+            "The type name passed to getRequestedFields() in the resolver of action {$actionName} on resource {$resourceType} is not supported by the action."
+        );
+
+        return $this->getResolveContext($typeName, $this->request->getFields())
+            ->getRequestedFields();
     }
 }
