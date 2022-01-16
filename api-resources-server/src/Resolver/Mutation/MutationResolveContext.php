@@ -1,6 +1,6 @@
 <?php
 
-namespace Afeefa\ApiResources\Resolver;
+namespace Afeefa\ApiResources\Resolver\Mutation;
 
 use Afeefa\ApiResources\Api\Operation;
 use Afeefa\ApiResources\DI\ContainerAwareInterface;
@@ -20,7 +20,7 @@ class MutationResolveContext implements ContainerAwareInterface
 
     protected ?ModelInterface $owner = null;
 
-    protected ?array $saveFields = null;
+    protected ?array $fieldsToSave = null;
 
     /**
      * @var MutationRelationResolver[]
@@ -44,7 +44,7 @@ class MutationResolveContext implements ContainerAwareInterface
         return isset($this->fieldsToSave['id']) ? Operation::UPDATE : Operation::CREATE;
     }
 
-    public function fieldsToSave(array $fields): MutationResolveContext
+    public function fieldsToSave(?array $fields): MutationResolveContext
     {
         $this->fieldsToSave = $fields;
         return $this;
@@ -141,12 +141,14 @@ class MutationResolveContext implements ContainerAwareInterface
 
         $saveFields = [];
 
-        foreach ($fieldsToSave as $fieldName => $value) {
-            // value is a scalar
-            if ($this->hasSaveAttribute($type, $operation, $fieldName)) {
-                $attribute = $type->getAttribute($fieldName);
-                if (!$attribute->hasSaveResolver()) { // let resolvers provide value
-                    $saveFields[$fieldName] = $value;
+        if (is_array($fieldsToSave)) {
+            foreach ($fieldsToSave as $fieldName => $value) {
+                // value is a scalar
+                if ($this->hasSaveAttribute($type, $operation, $fieldName)) {
+                    $attribute = $type->getAttribute($fieldName);
+                    if (!$attribute->hasSaveResolver()) { // let resolvers provide value
+                        $saveFields[$fieldName] = $value;
+                    }
                 }
             }
         }

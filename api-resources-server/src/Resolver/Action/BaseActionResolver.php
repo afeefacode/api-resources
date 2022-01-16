@@ -1,8 +1,9 @@
 <?php
 
-namespace Afeefa\ApiResources\Resolver;
+namespace Afeefa\ApiResources\Resolver\Action;
 
 use Afeefa\ApiResources\Api\ApiRequest;
+use Afeefa\ApiResources\Resolver\Base\BaseResolver;
 
 class BaseActionResolver extends BaseResolver
 {

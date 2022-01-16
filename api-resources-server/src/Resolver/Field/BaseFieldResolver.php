@@ -1,9 +1,9 @@
 <?php
 
-namespace Afeefa\ApiResources\Resolver;
+namespace Afeefa\ApiResources\Resolver\Field;
 
-use Afeefa\ApiResources\Field\Field;
 use Afeefa\ApiResources\Model\ModelInterface;
+use Afeefa\ApiResources\Resolver\Base\BaseResolver;
 
 class BaseFieldResolver extends BaseResolver
 {
@@ -11,14 +11,6 @@ class BaseFieldResolver extends BaseResolver
      * @var ModelInterface[]
      */
     protected array $owners = [];
-
-    protected Field $field;
-
-    public function field(Field $field): BaseFieldResolver
-    {
-        $this->field = $field;
-        return $this;
-    }
 
     public function addOwner(ModelInterface $owner): BaseFieldResolver
     {

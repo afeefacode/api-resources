@@ -5,19 +5,14 @@ namespace Afeefa\ApiResources\Resolver;
 use Afeefa\ApiResources\Exception\Exceptions\InvalidConfigurationException;
 use Afeefa\ApiResources\Exception\Exceptions\MissingCallbackException;
 use Afeefa\ApiResources\Model\ModelInterface;
-use Closure;
+use Afeefa\ApiResources\Resolver\Action\BaseActionResolver;
+use Afeefa\ApiResources\Resolver\Query\QueryResolverTrait;
 
 class QueryActionResolver extends BaseActionResolver
 {
-    protected ?Closure $loadCallback = null;
+    use QueryResolverTrait;
 
     protected array $meta = [];
-
-    public function load(Closure $callback): QueryActionResolver
-    {
-        $this->loadCallback = $callback;
-        return $this;
-    }
 
     public function meta(array $meta): QueryActionResolver
     {

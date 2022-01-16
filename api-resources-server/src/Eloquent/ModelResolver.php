@@ -7,7 +7,7 @@ use Afeefa\ApiResources\Filter\Filters\KeywordFilter;
 use Afeefa\ApiResources\Filter\Filters\OrderFilter;
 use Afeefa\ApiResources\Filter\Filters\PageFilter;
 use Afeefa\ApiResources\Filter\Filters\PageSizeFilter;
-use Afeefa\ApiResources\Resolver\MutationActionResolver;
+use Afeefa\ApiResources\Resolver\Mutation\MutationActionResolver;
 use Afeefa\ApiResources\Resolver\QueryActionResolver;
 use Closure;
 use Illuminate\Database\Query\Builder as EloquentBuilder;

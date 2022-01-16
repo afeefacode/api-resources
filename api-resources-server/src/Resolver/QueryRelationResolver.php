@@ -5,6 +5,9 @@ namespace Afeefa\ApiResources\Resolver;
 use Afeefa\ApiResources\Exception\Exceptions\InvalidConfigurationException;
 use Afeefa\ApiResources\Exception\Exceptions\MissingCallbackException;
 use Afeefa\ApiResources\Model\ModelInterface;
+use Afeefa\ApiResources\Resolver\Field\BaseFieldResolver;
+use Afeefa\ApiResources\Resolver\Field\RelationResolverTrait;
+use Afeefa\ApiResources\Resolver\Query\QueryResolverTrait;
 use Closure;
 use Generator;
 
@@ -12,16 +15,17 @@ use Generator;
  * @method QueryRelationResolver relation(Relation $relation)
  * @method QueryRelationResolver ownerIdFields($ownerIdFields)
  */
-class QueryRelationResolver extends BaseRelationResolver
+class QueryRelationResolver extends BaseFieldResolver
 {
+    use QueryResolverTrait;
+    use RelationResolverTrait;
+
     protected array $fields;
 
     /**
      * Closure or array
      */
     protected $ownerIdFields;
-
-    protected ?Closure $loadCallback = null;
 
     protected ?Closure $mapCallback = null;
 
@@ -31,7 +35,7 @@ class QueryRelationResolver extends BaseRelationResolver
         return $this;
     }
 
-    public function ownerIdFields($ownerIdFields): BaseRelationResolver
+    public function ownerIdFields($ownerIdFields): QueryRelationResolver
     {
         $this->ownerIdFields = $ownerIdFields;
         return $this;
@@ -48,7 +52,7 @@ class QueryRelationResolver extends BaseRelationResolver
 
     public function getSelectFields(?string $typeName = null): array
     {
-        $relationName = $this->field->getName();
+        $relationName = $this->relation->getName();
 
         $typeName = $this->validateRequestedType(
             $this->getRelation()->getRelatedType(),
@@ -61,12 +65,6 @@ class QueryRelationResolver extends BaseRelationResolver
             ->getSelectFields($typeName);
     }
 
-    public function load(Closure $callback): QueryRelationResolver
-    {
-        $this->loadCallback = $callback;
-        return $this;
-    }
-
     public function map(Closure $callback): QueryRelationResolver
     {
         $this->mapCallback = $callback;
@@ -76,7 +74,7 @@ class QueryRelationResolver extends BaseRelationResolver
     public function resolve(): void
     {
         // if error
-        $relationName = $this->field->getName();
+        $relationName = $this->relation->getName();
         $resolverForRelation = "Resolver for relation {$relationName}";
 
         // query db
@@ -103,14 +101,14 @@ class QueryRelationResolver extends BaseRelationResolver
         $isAllModels = fn ($array) => !count(array_filter($array, fn ($elm) => !$elm instanceof ModelInterface));
 
         if (isset($this->mapCallback)) {
-            $relationName = $this->field->getName();
+            $relationName = $this->relation->getName();
             foreach ($this->owners as $owner) {
                 $value = ($this->mapCallback)($loadResult, $owner);
                 $owner->apiResourcesSetRelation($relationName, $value);
                 $models[] = $value;
             }
 
-            if ($this->field->getRelatedType()->isList()) {
+            if ($this->relation->getRelatedType()->isList()) {
                 $models = array_merge(...$models); // make flat
                 if (!$isAllModels($models)) {
                     throw new InvalidConfigurationException("{$resolverForRelation} needs to return an array of ModelInterface objects from its map() method.");
@@ -132,7 +130,7 @@ class QueryRelationResolver extends BaseRelationResolver
 
     protected function calculateRequestedFields(?string $typeName = null): array
     {
-        $relationName = $this->field->getName();
+        $relationName = $this->relation->getName();
 
         $typeName = $this->validateRequestedType(
             $this->getRelation()->getRelatedType(),

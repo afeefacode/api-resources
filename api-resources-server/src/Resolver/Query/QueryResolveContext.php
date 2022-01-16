@@ -1,11 +1,13 @@
 <?php
 
-namespace Afeefa\ApiResources\Resolver;
+namespace Afeefa\ApiResources\Resolver\Query;
 
 use Afeefa\ApiResources\DI\ContainerAwareInterface;
 use Afeefa\ApiResources\DI\ContainerAwareTrait;
 use Afeefa\ApiResources\DI\DependencyResolver;
 use Afeefa\ApiResources\Exception\Exceptions\InvalidConfigurationException;
+use Afeefa\ApiResources\Resolver\QueryAttributeResolver;
+use Afeefa\ApiResources\Resolver\QueryRelationResolver;
 use Afeefa\ApiResources\Type\Type;
 
 class QueryResolveContext implements ContainerAwareInterface
@@ -111,7 +113,7 @@ class QueryResolveContext implements ContainerAwareInterface
                     );
 
                     if (!$attributeResolver) {
-                        throw new InvalidConfigurationException("Resolve callback for attribute {$fieldName} on type {$type::type()} must receive a AttributeResolver as argument.");
+                        throw new InvalidConfigurationException("Resolve callback for attribute {$fieldName} on type {$type::type()} must receive a QueryAttributeResolver as argument.");
                     }
 
                     $attributeResolver->attribute($attribute);
@@ -158,7 +160,7 @@ class QueryResolveContext implements ContainerAwareInterface
                     );
 
                     if (!$relationResolver) {
-                        throw new InvalidConfigurationException("Resolve callback for relation {$fieldName} on type {$type::type()} must receive a RelationResolver as argument.");
+                        throw new InvalidConfigurationException("Resolve callback for relation {$fieldName} on type {$type::type()} must receive a QueryRelationResolver as argument.");
                     }
 
                     $relationResolver

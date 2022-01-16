@@ -9,7 +9,7 @@ use Afeefa\ApiResources\DI\ContainerAwareTrait;
 use Afeefa\ApiResources\DI\DependencyResolver;
 use Afeefa\ApiResources\Exception\Exceptions\ApiException;
 use Afeefa\ApiResources\Exception\Exceptions\InvalidConfigurationException;
-use Afeefa\ApiResources\Resolver\BaseActionResolver;
+use Afeefa\ApiResources\Resolver\Action\BaseActionResolver;
 use Afeefa\ApiResources\Resource\Resource;
 use Afeefa\ApiResources\Validator\ValidationFailedException;
 use JsonSerializable;

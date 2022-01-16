@@ -1,22 +1,22 @@
 <?php
 
-namespace Afeefa\ApiResources\Resolver;
+namespace Afeefa\ApiResources\Resolver\Query;
 
 use Afeefa\ApiResources\Action\ActionResponse;
-use Afeefa\ApiResources\DB\TypeClassMap;
-use Afeefa\ApiResources\DI\ContainerAwareInterface;
-use Afeefa\ApiResources\DI\ContainerAwareTrait;
 use Afeefa\ApiResources\Exception\Exceptions\InvalidConfigurationException;
-use Afeefa\ApiResources\Model\ModelInterface;
-use Afeefa\ApiResources\Type\Type;
+use Closure;
 
-class BaseResolver implements ContainerAwareInterface
+trait QueryResolverTrait
 {
-    use ContainerAwareTrait;
-
-    protected array $resolveContexts = [];
-
     protected array $requestedFields = [];
+
+    protected ?Closure $loadCallback = null;
+
+    public function load(Closure $callback): self
+    {
+        $this->loadCallback = $callback;
+        return $this;
+    }
 
     public function getRequestedFields(?string $typeName = null): array
     {
@@ -40,27 +40,6 @@ class BaseResolver implements ContainerAwareInterface
     protected function calculateRequestedFields(?string $typeName = null): array
     {
         return [];
-    }
-
-    protected function getTypeByName(string $typeName): Type
-    {
-        return $this->container->call(function (TypeClassMap $typeClassMap) use ($typeName) {
-            $TypeClass = $typeClassMap->get($typeName) ?? Type::class;
-            return $this->container->get($TypeClass);
-        });
-    }
-
-    /**
-     * @param ModelInterface[] $models
-     */
-    protected function sortModelsByType(array $models): array
-    {
-        $modelsByType = [];
-        foreach ($models as $model) {
-            $type = $model->apiResourcesGetType();
-            $modelsByType[$type][] = $model;
-        }
-        return $modelsByType;
     }
 
     protected function getResolveContext(string $typeName, array $fields): QueryResolveContext

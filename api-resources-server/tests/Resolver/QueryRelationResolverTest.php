@@ -687,7 +687,7 @@ class QueryRelationResolverTest extends ApiResourcesTest
     public function test_no_attribute_resolver_argument()
     {
         $this->expectException(InvalidConfigurationException::class);
-        $this->expectExceptionMessage('Resolve callback for relation others on type TYPE must receive a RelationResolver as argument.');
+        $this->expectExceptionMessage('Resolve callback for relation others on type TYPE must receive a QueryRelationResolver as argument.');
 
         $api = $this->createApiWithTypeAndAction(
             function (FieldBag $fields) {

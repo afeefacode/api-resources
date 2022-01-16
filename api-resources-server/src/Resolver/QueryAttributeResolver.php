@@ -4,15 +4,19 @@ namespace Afeefa\ApiResources\Resolver;
 
 use Afeefa\ApiResources\Exception\Exceptions\InvalidConfigurationException;
 use Afeefa\ApiResources\Exception\Exceptions\MissingCallbackException;
+use Afeefa\ApiResources\Resolver\Field\AttributeResolverTrait;
+use Afeefa\ApiResources\Resolver\Field\BaseFieldResolver;
+use Afeefa\ApiResources\Resolver\Query\QueryResolverTrait;
 use Closure;
 
-class QueryAttributeResolver extends BaseAttributeResolver
+class QueryAttributeResolver extends BaseFieldResolver
 {
+    use QueryResolverTrait;
+    use AttributeResolverTrait;
+
     protected array $selectFields = [];
 
     protected ?Closure $selectCallback = null;
-
-    protected ?Closure $loadCallback = null;
 
     protected ?Closure $mapCallback = null;
 
@@ -30,12 +34,6 @@ class QueryAttributeResolver extends BaseAttributeResolver
         return $this->selectFields;
     }
 
-    public function load(Closure $callback): QueryAttributeResolver
-    {
-        $this->loadCallback = $callback;
-        return $this;
-    }
-
     public function map(Closure $callback): QueryAttributeResolver
     {
         $this->mapCallback = $callback;
@@ -45,7 +43,7 @@ class QueryAttributeResolver extends BaseAttributeResolver
     public function resolve()
     {
         // if error
-        $attributeName = $this->field->getName();
+        $attributeName = $this->attribute->getName();
         $resolverForAttribute = "Resolver for attribute {$attributeName}";
 
         // query db

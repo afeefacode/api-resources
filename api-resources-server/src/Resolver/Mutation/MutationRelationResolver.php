@@ -1,10 +1,12 @@
 <?php
 
-namespace Afeefa\ApiResources\Resolver;
+namespace Afeefa\ApiResources\Resolver\Mutation;
 
 use Afeefa\ApiResources\Exception\Exceptions\InvalidConfigurationException;
 use Afeefa\ApiResources\Exception\Exceptions\MissingCallbackException;
 use Afeefa\ApiResources\Model\ModelInterface;
+use Afeefa\ApiResources\Resolver\Field\BaseFieldResolver;
+use Afeefa\ApiResources\Resolver\Field\RelationResolverTrait;
 use Closure;
 
 /**
@@ -12,8 +14,11 @@ use Closure;
  * @method MutationRelationResolver addOwner($owner)
  * @method MutationRelationResolver relation(Relation $relation)
  */
-class MutationRelationResolver extends BaseRelationResolver
+class MutationRelationResolver extends BaseFieldResolver
 {
+    use MutationResolverTrait;
+    use RelationResolverTrait;
+
     /**
      * array or null
      */
@@ -21,7 +26,7 @@ class MutationRelationResolver extends BaseRelationResolver
 
     protected MutationResolveContext $resolveContext;
 
-    protected ?Closure $resolveBeforeOwnerCallback = null;
+    protected ?Closure $saveRelatedToOwnerCallback = null;
 
     protected ?Closure $resolveAfterOwnerCallback = null;
 
@@ -39,16 +44,22 @@ class MutationRelationResolver extends BaseRelationResolver
 
     protected ?Closure $unlinkCallback = null;
 
+    protected ?string $operation = null;
+
+    protected ?string $resolvedId = null;
+
+    protected ?string $resolvedType = null;
+
     /**
      * fieldsToSave can be null
      */
-    public function fieldsToSave(?array $fieldsToSave): MutationRelationResolver
+    public function fieldsToSave(?array $fieldsToSave): self
     {
         $this->fieldsToSave = $fieldsToSave;
         return $this;
     }
 
-    public function ownerSaveFields(array $ownerSaveFields): MutationRelationResolver
+    public function ownerSaveFields(array $ownerSaveFields): self
     {
         $this->ownerSaveFields = $ownerSaveFields;
         return $this;
@@ -59,71 +70,81 @@ class MutationRelationResolver extends BaseRelationResolver
         return $this->getResolveContext2()->getSaveFields($this->ownerSaveFields);
     }
 
-    public function resolveBeforeOwner(Closure $callback): MutationRelationResolver
+    public function saveRelatedToOwner(Closure $callback): self
     {
-        $this->resolveBeforeOwnerCallback = $callback;
+        $this->saveRelatedToOwnerCallback = $callback;
         return $this;
     }
 
-    public function resolveAfterOwner(Closure $callback): MutationRelationResolver
+    public function shouldSaveRelatedToOwner(): bool
+    {
+        return !!$this->saveRelatedToOwnerCallback;
+    }
+
+    public function getSaveRelatedToOwnerFields(): array
+    {
+        return ($this->saveRelatedToOwnerCallback)($this->resolvedId, $this->resolvedType);
+    }
+
+    public function saveOwnerToRelated(Closure $callback): self
     {
         $this->resolveAfterOwnerCallback = $callback;
         return $this;
     }
 
-    public function shouldBeResolvedBeforeOwner(): ?array
+    public function shouldSaveOwnerToRelated(): bool
     {
-        if ($this->resolveBeforeOwnerCallback) {
-            return ($this->resolveBeforeOwnerCallback)();
-        }
-        return null;
+        return !!$this->resolveAfterOwnerCallback;
     }
 
-    public function shouldBeResolvedAfterOwner(): ?array
+    public function getSaveOwnerToRelatedFields(?string $id, ?string $typeName): array
     {
-        if ($this->resolveAfterOwnerCallback) {
-            return ($this->resolveAfterOwnerCallback)();
-        }
-        return null;
+        return ($this->resolveAfterOwnerCallback)($id, $typeName);
     }
 
-    public function get(Closure $callback): MutationRelationResolver
+    public function operation(string $operation): self
+    {
+        $this->operation = $operation;
+        return $this;
+    }
+
+    public function get(Closure $callback): self
     {
         $this->getCallback = $callback;
         return $this;
     }
 
-    public function update(Closure $callback): MutationRelationResolver
+    public function update(Closure $callback): self
     {
         $this->updateCallback = $callback;
         return $this;
     }
 
-    public function add(Closure $callback): MutationRelationResolver
+    public function add(Closure $callback): self
     {
         $this->addCallback = $callback;
         return $this;
     }
 
-    public function delete(Closure $callback): MutationRelationResolver
+    public function delete(Closure $callback): self
     {
         $this->deleteCallback = $callback;
         return $this;
     }
 
-    public function link(Closure $callback): MutationRelationResolver
+    public function link(Closure $callback): self
     {
         $this->linkCallback = $callback;
         return $this;
     }
 
-    public function unlink(Closure $callback): MutationRelationResolver
+    public function unlink(Closure $callback): self
     {
         $this->unlinkCallback = $callback;
         return $this;
     }
 
-    public function resolve(): ?ModelInterface
+    public function resolve(): void
     {
         $relation = $this->getRelation();
         $relationName = $this->getRelation()->getName();
@@ -167,7 +188,7 @@ class MutationRelationResolver extends BaseRelationResolver
             $typeName = $relation->getRelatedType()->getAllTypeNames()[0];
 
             /** @var ModelInterface */
-            $existingModel = ($this->getCallback)($owner);
+            $existingModel = ($this->getCallback)($owner);  // todo validate existance for link one relation + unlink
 
             if ($relation->isLink()) { // link one
                 if ($data !== null) {
@@ -178,6 +199,10 @@ class MutationRelationResolver extends BaseRelationResolver
 
                         if (!$existingModel || $existingModel->apiResourcesGetId() !== $data['id']) {
                             $related = ($this->linkCallback)($owner, $data['id'], $typeName);
+                        }
+
+                        if (!$related) {
+                            $related = $existingModel;
                         }
                     }
                 } else {
@@ -198,7 +223,12 @@ class MutationRelationResolver extends BaseRelationResolver
                     }
                 }
             }
-        } else {
+
+            if ($related) {
+                $this->resolvedId = $related->apiResourcesGetId();
+                $this->resolvedType = $related->apiResourcesGetType();
+            }
+        } else { // has or link many
             $data = $this->fieldsToSave;
 
             $typeName = $relation->getRelatedType()->getAllTypeNames()[0];
@@ -250,8 +280,6 @@ class MutationRelationResolver extends BaseRelationResolver
                 }
             }
         }
-
-        return $related;
     }
 
     protected function getResolveContext2(): MutationResolveContext

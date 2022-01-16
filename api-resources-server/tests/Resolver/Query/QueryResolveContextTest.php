@@ -1,16 +1,18 @@
 <?php
 
-namespace Afeefa\ApiResources\Tests\Resolver;
+namespace Afeefa\ApiResources\Tests\Resolver\Query;
 
 use Afeefa\ApiResources\Field\FieldBag;
 use Afeefa\ApiResources\Field\Fields\HasOneRelation;
 use Afeefa\ApiResources\Field\Fields\VarcharAttribute;
 use Afeefa\ApiResources\Model\Model;
+use Afeefa\ApiResources\Resolver\Query\QueryResolveContext;
 use Afeefa\ApiResources\Resolver\QueryAttributeResolver;
 use Afeefa\ApiResources\Resolver\QueryRelationResolver;
-use Afeefa\ApiResources\Resolver\QueryResolveContext;
 use Afeefa\ApiResources\Test\ApiResourcesTest;
 use function Afeefa\ApiResources\Test\T;
+
+use Afeefa\ApiResources\Tests\Resolver\TestWatcher;
 use Afeefa\ApiResources\Type\Type;
 
 use Closure;

@@ -469,7 +469,7 @@ class QueryAttributeResolverTest extends ApiResourcesTest
     public function test_no_attribute_resolver_argument()
     {
         $this->expectException(InvalidConfigurationException::class);
-        $this->expectExceptionMessage('Resolve callback for attribute title on type TYPE must receive a AttributeResolver as argument.');
+        $this->expectExceptionMessage('Resolve callback for attribute title on type TYPE must receive a QueryAttributeResolver as argument.');
 
         $api = $this->createApiWithTypeAndAction(
             function (FieldBag $fields) {

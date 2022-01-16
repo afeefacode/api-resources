@@ -7,7 +7,7 @@ use Afeefa\ApiResources\Api\Api;
 use Afeefa\ApiResources\Api\ApiRequest;
 use Afeefa\ApiResources\DI\Container;
 use Afeefa\ApiResources\Model\Model;
-use Afeefa\ApiResources\Resolver\MutationActionResolver;
+use Afeefa\ApiResources\Resolver\Mutation\MutationActionResolver;
 use Afeefa\ApiResources\Test\ApiResourcesTest;
 use function Afeefa\ApiResources\Test\T;
 use Afeefa\ApiResources\Tests\Fixtures\TestApi\TestApi;
