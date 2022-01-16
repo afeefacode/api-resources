@@ -7,6 +7,7 @@ use Afeefa\ApiResources\Field\Fields\HasManyRelation;
 use Afeefa\ApiResources\Field\Fields\LinkManyRelation;
 use Afeefa\ApiResources\Field\Fields\VarcharAttribute;
 use Afeefa\ApiResources\Type\ModelType;
+use Afeefa\ApiResources\Type\Type;
 use Afeefa\ApiResources\Validator\Validators\VarcharValidator;
 use Backend\Resolvers\ArticlesResolver;
 use Backend\Resolvers\TagsResolver;
@@ -35,7 +36,7 @@ class AuthorType extends ModelType
             $relation->resolve([ArticlesResolver::class, 'resolve_articles_relation']);
         });
 
-        $fields->relation('tags', TagType::class, function (LinkManyRelation $relation) {
+        $fields->relation('tags', Type::list(TagType::class), function (LinkManyRelation $relation) {
             $relation->resolve([TagsResolver::class, 'resolve_tags_relation']);
         });
     }

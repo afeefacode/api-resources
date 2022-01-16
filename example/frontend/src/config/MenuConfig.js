@@ -11,7 +11,8 @@ export class MenuConfig {
           name: 'articles.list'
         },
         icon: mdiFileDocumentOutline,
-        iconColor: 'yellow darken-3'
+        iconColor: 'yellow darken-3',
+        badge: this.getBadge('articles')
       },
 
       {
@@ -20,7 +21,8 @@ export class MenuConfig {
           name: 'authors.list'
         },
         icon: mdiAccount,
-        iconColor: 'yellow darken-3'
+        iconColor: 'yellow darken-3',
+        badge: this.getBadge('authors')
       }
     ]
   }
@@ -29,7 +31,7 @@ export class MenuConfig {
     return {
       component: ModelCount,
       props: {
-        action: apiResources.getAction({resource: 'ASYLBERATUNG.AppResource', action: 'get_counts'}),
+        action: apiResources.getAction({resource: 'Example.AppResource', action: 'get_counts'}),
         field: 'count_' + field
       }
     }

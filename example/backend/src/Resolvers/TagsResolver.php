@@ -15,13 +15,12 @@ class TagsResolver
     {
         $r
             ->load(function () use ($r, $db) {
-                $request = $r->getRequest();
-                $requestedFields = $request->getRequestedFields();
+                $requestedFieldNames = $r->getRequestedFieldNames();
                 $selectFields = $r->getSelectFields();
 
                 $count = $db->count('tags');
 
-                if ($requestedFields->hasField('count_users')) {
+                if (in_array('count_users', $requestedFieldNames)) {
                     if (!isset($selectFields['count_users'])) {
                         $selectFields['count_users'] = $this->selectCountUsers();
                     }
@@ -106,7 +105,7 @@ class TagsResolver
     {
         $r
             ->load(function (array $owners) use ($r, $db) {
-                $requestedFields = $r->getRequestedFields();
+                $requestedFieldNames = $r->getRequestedFieldNames();
                 $selectFields = $r->getSelectFields();
 
                 $queryFields = ['tag_users.user_id', 'tag_users.user_type'];
@@ -119,7 +118,7 @@ class TagsResolver
                     $queryFields[] = "tags.{$selectField}({$alias})";
                 }
 
-                if ($requestedFields->hasField('count_users')) {
+                if (in_array('count_users', $requestedFieldNames)) {
                     $alias = 'tag_users_count_users';
                     $fieldMap['count_users'] = $alias;
                     $queryFields[$alias] = $this->selectCountUsers();

@@ -1,6 +1,6 @@
 <template>
   <app-splash
-    title="Lade Beratungsdatenbank ..."
+    title="Lade Blog ..."
     color="#82b81c"
   >
     <img src="/frontend/logo.svg">

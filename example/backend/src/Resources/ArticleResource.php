@@ -121,11 +121,18 @@ class ArticleResource extends Resource
         //         ->response(ArticleType::class);
         // });
 
-        // $actions->add('delete_article', function (Action $action) {
-        //     $action->params(function (ActionParams $params) {
-        //         $params->attribute('id', IdAttribute::class);
-        //     });
-        // });
+        $actions->add('delete_article', function (Action $action) {
+            $action
+                ->params(function (ActionParams $params) {
+                    $params->attribute('id', IdAttribute::class);
+                })
+
+                ->input(ArticleType::class)
+
+                ->response(ArticleType::class)
+
+                ->resolve([ArticlesResolver::class, 'delete_article']);
+        });
 
         // $actions->add('delete_articles', function (Action $action) {
         // });

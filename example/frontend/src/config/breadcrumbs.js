@@ -8,7 +8,7 @@ export function breadcrumbs ({BREADCRUMB, BREADCRUMBSET}) {
         list: 'Autoren',
         detail: 'Autor'
       },
-      getTitle: getBreadcrumbTitleFunction('Author', 'authorId', 'get_author', {first_name: true, last_name: true})
+      getTitle: getBreadcrumbTitleFunction('Author', 'authorId', 'get_author', {name: true})
     }),
 
     BREADCRUMBSET({

@@ -2,6 +2,7 @@
 
 namespace Backend\Types;
 
+use Afeefa\ApiResources\Api\ApiRequest;
 use Afeefa\ApiResources\Field\FieldBag;
 use Afeefa\ApiResources\Field\Fields\DateAttribute;
 use Afeefa\ApiResources\Field\Fields\HasManyRelation;
@@ -9,14 +10,17 @@ use Afeefa\ApiResources\Field\Fields\LinkManyRelation;
 use Afeefa\ApiResources\Field\Fields\LinkOneRelation;
 use Afeefa\ApiResources\Field\Fields\TextAttribute;
 use Afeefa\ApiResources\Field\Fields\VarcharAttribute;
+use Afeefa\ApiResources\Field\Relation;
 use Afeefa\ApiResources\Model\Model;
 use Afeefa\ApiResources\Resolver\QueryRelationResolver;
 use Afeefa\ApiResources\Type\ModelType;
+use Afeefa\ApiResources\Type\Type;
 use Afeefa\ApiResources\Validator\Validators\LinkOneValidator;
 use Afeefa\ApiResources\Validator\Validators\VarcharValidator;
 use Backend\Resolvers\AuthorsResolver;
 use Backend\Resolvers\CommentsResolver;
 use Backend\Resolvers\TagsResolver;
+use Backend\Resources\AuthorResource;
 
 class ArticleType extends ModelType
 {
@@ -74,11 +78,11 @@ class ArticleType extends ModelType
         //     });
         // });
 
-        $fields->relation('comments', CommentType::class, function (HasManyRelation $relation) {
+        $fields->relation('comments', Type::list(CommentType::class), function (HasManyRelation $relation) {
             $relation->resolve([CommentsResolver::class, 'resolve_comments_relation']);
         });
 
-        $fields->relation('tags', TagType::class, function (LinkManyRelation $relation) {
+        $fields->relation('tags', Type::list(TagType::class), function (LinkManyRelation $relation) {
             $relation->resolve([TagsResolver::class, 'resolve_tags_relation']);
         });
     }
@@ -100,6 +104,22 @@ class ArticleType extends ModelType
                     ->max(200);
             });
 
+        $fields->relation('author', Type::link(AuthorType::class), function (LinkOneRelation $r) {
+            $r
+                ->required()
+                ->validate(function (LinkOneValidator $v) {
+                    $v->filled();
+                })
+                ->resolveSave([AuthorsResolver::class, 'resolve_save_author_relation'])
+                ->optionsRequest(function (ApiRequest $request) {
+                    $request
+                        ->resourceType(AuthorResource::type())
+                        ->actionName('get_authors')
+                        ->fields(['name' => true, 'count_articles' => true])
+                        ->filters(['page_size' => 100]);
+                });
+        });
+
         $fields->allow([
             'title',
             'summary',
@@ -112,18 +132,9 @@ class ArticleType extends ModelType
 
     protected function createFields(FieldBag $fields): void
     {
-        $fields->get('title')
-            ->required()
-            ->validate(function (VarcharValidator $v) {
-                $v->min(2);
-                $v->max(50);
-            });
+        $fields->get('title')->required();
 
-        $fields->get('author')
-            ->required()
-            ->validate(function (LinkOneValidator $v) {
-                $v->filled();
-            });
+        $fields->get('author')->required();
 
         $fields->allow([
             'title',

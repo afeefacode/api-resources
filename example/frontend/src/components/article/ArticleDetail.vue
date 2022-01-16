@@ -1,7 +1,7 @@
 <template>
   <detail-page
     v-bind="$attrs"
-    :has="{edit: false}"
+    :has="{edit: true}"
     @model="article = $event"
   >
     <template #model="{model: article}">
@@ -46,11 +46,13 @@ import { Component, Vue } from 'vue-property-decorator'
 export default class ArticleDetail extends Vue {
   article = null
 
-  static getDetailConfig () {
+  static get detailRouteConfig () {
     return {
       ModelClass: Article,
 
       action: Article.getAction('get_article'),
+
+      removeAction: Article.getAction('delete_article'),
 
       fields: {
         title: true,

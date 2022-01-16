@@ -2,10 +2,11 @@
 
 namespace Backend\Resolvers;
 
+use Afeefa\ApiResources\Api\ApiRequest;
 use Afeefa\ApiResources\Exception\Exceptions\ApiException;
 use Afeefa\ApiResources\Model\Model;
 use Afeefa\ApiResources\Model\ModelInterface;
-use Afeefa\ApiResources\Resolver\MutationActionResolver;
+use Afeefa\ApiResources\Resolver\Mutation\MutationActionResolver;
 use Afeefa\ApiResources\Resolver\QueryActionResolver;
 use Afeefa\ApiResources\Resolver\QueryRelationResolver;
 use Backend\Types\ArticleType;
@@ -19,7 +20,7 @@ class ArticlesResolver
             ->load(function () use ($r, $db) {
                 $request = $r->getRequest();
                 $action = $request->getAction();
-                $requestedFields = $request->getRequestedFields();
+                $requestedFieldNames = $r->getRequestedFieldNames();
                 $filters = $request->getFilters();
                 $params = $request->getParams();
 
@@ -120,7 +121,7 @@ class ArticlesResolver
 
                 // count comments
 
-                if ($requestedFields->hasField('count_comments')) {
+                if (in_array('count_comments', $requestedFieldNames)) {
                     if (!isset($selectFields['count_comments'])) {
                         $selectFields['count_comments'] = $this->selectCountComments();
                     }
@@ -136,7 +137,7 @@ class ArticlesResolver
 
                 if ($objects === false) {
                     throw new ApiException(([
-                        'error' => $db->error(),
+                        'error' => $db->error,
                         'query' => $db->log()
                     ]));
                 }
@@ -157,14 +158,14 @@ class ArticlesResolver
         $r
             ->load(function () use ($r, $db) {
                 $request = $r->getRequest();
-                $requestedFields = $request->getRequestedFields();
+                $requestedFieldNames = $r->getRequestedFieldNames();
                 $selectFields = $r->getSelectFields();
 
                 $where = ['id' => $request->getParam('id')];
 
                 // count comments
 
-                if ($requestedFields->hasField('count_comments')) {
+                if (in_array('count_comments', $requestedFieldNames)) {
                     if (!isset($selectFields['count_comments'])) {
                         $selectFields['count_comments'] = $this->selectCountComments();
                     }
@@ -180,7 +181,7 @@ class ArticlesResolver
 
                 if ($object === false) {
                     throw new ApiException(([
-                        'error' => $db->error(),
+                        'error' => $db->error,
                         'query' => $db->log()
                     ]));
                 }
@@ -192,10 +193,19 @@ class ArticlesResolver
     public function update_article(MutationActionResolver $r, Medoo $db)
     {
         $r
-            ->load(function () use ($r, $db) {
+            ->get(function (string $id) use ($db) {
+                $object = $db->get(
+                    'articles',
+                    '*',
+                    ['id' => $id]
+                );
+                return Model::fromSingle(ArticleType::type(), $object);
+            })
+
+            ->save(function () use ($r, $db) {
                 $request = $r->getRequest();
 
-                $data = $request->getData();
+                $data = $r->getSaveFields();
                 $where = ['id' => $request->getParam('id')];
 
                 $stmt = $db->update(
@@ -204,33 +214,34 @@ class ArticlesResolver
                     $where
                 );
 
-                if ($stmt->errorCode() !== '00000') {
+                if ($stmt === null) {
                     throw new ApiException(([
-                        'error' => $db->error(),
+                        'error' => $db->error,
                         'query' => $db->log()
                     ]));
                 }
 
-                return [];
+                return Model::fromSingle('TEST', []);
+            })
+            ->forward(function (ApiRequest $apiRequest) {
+                $apiRequest->actionName('get_article');
             });
     }
 
     public function create_article(MutationActionResolver $r, Medoo $db)
     {
         $r
-            ->load(function () use ($r, $db) {
-                $request = $r->getRequest();
-
-                $data = $request->getData();
+            ->save(function () use ($r, $db) {
+                $data = $r->getSaveFields();
 
                 $stmt = $db->insert(
                     'articles',
                     $data
                 );
 
-                if ($stmt->errorCode() !== '00000') {
+                if (!$stmt) {
                     throw new ApiException(([
-                        'error' => $db->error(),
+                        'error' => $db->error,
                         'query' => $db->log()
                     ]));
                 }
@@ -238,6 +249,35 @@ class ArticlesResolver
                 return Model::fromSingle(ArticleType::type(), [
                     'id' => $db->id()
                 ]);
+            })
+
+            ->forward(function (ApiRequest $apiRequest, Model $model) {
+                $apiRequest
+                    ->param('id', $model->id)
+                    ->actionName('get_article');
+            });
+    }
+
+    public function delete_article(MutationActionResolver $r, Medoo $db)
+    {
+        $r
+            ->save(function () use ($r, $db) {
+                $request = $r->getRequest();
+                $where = ['id' => $request->getParam('id')];
+
+                $stmt = $db->delete(
+                    'articles',
+                    $where
+                );
+
+                if (!$stmt) {
+                    throw new ApiException(([
+                        'error' => $db->error,
+                        'query' => $db->log()
+                    ]));
+                }
+
+                return Model::fromSingle(ArticleType::type(), []);
             });
     }
 

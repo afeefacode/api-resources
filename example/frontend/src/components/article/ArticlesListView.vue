@@ -94,9 +94,6 @@ export function getListViewConfig (authorId) {
     .params({
       author_id: authorId
     })
-    .filters({
-      author_id: '2'
-    })
     .fields({
       title: true,
       date: true,

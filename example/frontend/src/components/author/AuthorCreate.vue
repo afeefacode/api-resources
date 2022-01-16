@@ -1,10 +1,31 @@
 <template>
-  <edit-form v-bind="$attrs">
+  <create-page v-bind="$attrs">
     <template #fields>
       <form-field-text
         name="name"
         label="Name"
       />
     </template>
-  </edit-form>
+  </create-page>
 </template>
+
+
+<script>
+import { Author } from '@/models'
+import { Component, Vue } from 'vue-property-decorator'
+
+@Component
+export default class AuthorCreate extends Vue {
+  static get createRouteConfig () {
+    return {
+      ModelClass: Author,
+
+      createAction: Author.getAction('create_author'),
+
+      fields: {
+        name: true
+      }
+    }
+  }
+}
+</script>

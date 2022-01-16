@@ -1,26 +1,32 @@
 <template>
-  <div>
-    <detail-meta>
-      Autor #{{ author.id }}
-      |
-      {{ author.count_articles }} Artikel
-    </detail-meta>
+  <detail-page
+    v-bind="$attrs"
+    :has="{edit: true}"
+    @model="author = $event"
+  >
+    <template #model="{model: author}">
+      <detail-meta>
+        Autor #{{ author.id }}
+        |
+        {{ author.count_articles }} Artikel
+      </detail-meta>
 
-    <detail-title>
-      {{ author.name }}
-    </detail-title>
+      <detail-title>
+        {{ author.name }}
+      </detail-title>
 
-    <tag-list :model="author" />
+      <tag-list :model="author" />
 
-    <h2>Artikel</h2>
+      <h2>Artikel</h2>
 
-    <articles-list-view
-      :author_id="$route.params.authorId"
-      :filterHistoryKey="model.id + '.articles'"
-      :filterSource="filterSource"
-      :has="{author: false}"
-    />
-  </div>
+      <articles-list-view
+        :author_id="$route.params.authorId"
+        :filterHistoryKey="author.id + '.articles'"
+        :filterSource="filterSource"
+        :has="{author: false}"
+      />
+    </template>
+  </detail-page>
 </template>
 
 
@@ -31,17 +37,22 @@ import { FilterSourceType } from '@a-vue/components/list/FilterSourceType'
 import { Author } from '@/models'
 
 @Component({
-  props: ['model'],
   components: {
     ArticlesListView
   }
 })
 export default class AuthorDetail extends Vue {
+  author = null
+
   filterSource = FilterSourceType.OBJECT
 
-  static getDetailConfig () {
+  static get detailRouteConfig () {
     return {
+      ModelClass: Author,
+
       action: Author.getAction('get_author'),
+
+      removeAction: Author.getAction('delete_author'),
 
       fields: {
         name: true,
@@ -52,10 +63,6 @@ export default class AuthorDetail extends Vue {
         count_articles: true
       }
     }
-  }
-
-  get author () {
-    return this.model
   }
 }
 </script>

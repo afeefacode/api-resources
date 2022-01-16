@@ -1,5 +1,6 @@
 <?php
-declare (strict_types = 1);
+
+declare(strict_types=1);
 
 use Phinx\Migration\AbstractMigration;
 
@@ -14,7 +15,7 @@ final class CreateArticles extends AbstractMigration
             ->addColumn('summary', 'string', ['limit' => 400, 'null' => true])
             ->addColumn('content', 'text', ['null' => true])
 
-            ->addColumn('date', 'datetime', ['null' => true])
+            ->addColumn('date', 'datetime')
 
             ->addForeignKey('author_id', 'authors', 'id', ['delete' => 'CASCADE', 'update' => 'NO_ACTION'])
 
