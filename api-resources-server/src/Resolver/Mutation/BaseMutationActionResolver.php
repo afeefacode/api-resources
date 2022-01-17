@@ -19,15 +19,14 @@ class BaseMutationActionResolver extends BaseActionResolver
         return $this;
     }
 
-    public function getSaveFields(): array
-    {
-        return $this->getResolveContext2()->getSaveFields($this->relatedSaveFields);
-    }
-
     public function resolve(): array
     {
-        return [
-        ];
+        return [];
+    }
+
+    protected function getSaveFields(): array
+    {
+        return $this->getResolveContext2()->getSaveFields($this->relatedSaveFields);
     }
 
     protected function getResolveContext2(): MutationResolveContext

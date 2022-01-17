@@ -85,7 +85,7 @@ class MutationActionSimpleResolverTest extends ApiResourcesTest
                             ->save(function (array $saveFields) {
                                 $this->testWatcher->info('save');
                                 $this->testWatcher->saveFields($saveFields);
-                                return TestModel::fromSingle('TYPE', []);
+                                return Model::fromSingle('TYPE', []);
                             });
                     });
             }
@@ -140,7 +140,7 @@ class MutationActionSimpleResolverTest extends ApiResourcesTest
                         $r
                             ->save(function (array $saveFields) {
                                 $this->testWatcher->saveFields($saveFields);
-                                return TestModel::fromSingle('TYPE', []);
+                                return Model::fromSingle('TYPE', []);
                             });
                     });
             }
@@ -242,7 +242,7 @@ class MutationActionSimpleResolverTest extends ApiResourcesTest
                             ->save(function (array $saveFields) {
                                 $this->testWatcher->info('owner');
                                 $this->testWatcher->saveFields($saveFields);
-                                return TestModel::fromSingle('TYPE', ['id' => '3']);
+                                return Model::fromSingle('TYPE', ['id' => '3']);
                             });
                     });
             }
