@@ -3,6 +3,7 @@
 namespace Afeefa\ApiResources\Resolver;
 
 use Afeefa\ApiResources\Api\Operation;
+use Afeefa\ApiResources\Exception\Exceptions\InvalidConfigurationException;
 use Afeefa\ApiResources\Exception\Exceptions\MissingCallbackException;
 use Afeefa\ApiResources\Model\ModelInterface;
 use Afeefa\ApiResources\Resolver\Mutation\MutationRelationResolver;
@@ -15,6 +16,7 @@ class MutationRelationHasOneResolver extends MutationRelationResolver
         $relationName = $this->getRelation()->getName();
 
         $needsToImplement = "Resolver for relation {$relationName} needs to implement";
+        $mustReturn = "callback of resolver for relation {$relationName} must return";
 
         if (!$this->getCallback) {
             throw new MissingCallbackException("{$needsToImplement} a get() method.");
@@ -46,11 +48,14 @@ class MutationRelationHasOneResolver extends MutationRelationResolver
 
             if ($this->operation === Operation::UPDATE) { // update owner -> handle related
                 /** @var ModelInterface */
-                $related = $this->handleSaveRelated($owner, $typeName);
+                $related = $this->handleSaveRelated($owner, $typeName, $mustReturn);
             } else { // create owner -> create related
                 if (is_array($this->fieldsToSave)) {
                     /** @var ModelInterface */
                     $related = ($this->addBeforeOwnerCallback)($typeName, $this->getSaveFields());
+                    if ($related !== null && !$related instanceof ModelInterface) {
+                        throw new InvalidConfigurationException("AddBeforeOwner {$mustReturn} a ModelInterface object.");
+                    }
                 }
             }
 
@@ -61,14 +66,17 @@ class MutationRelationHasOneResolver extends MutationRelationResolver
 
         // B.a_id or C.a_id,b_id
 
-        $this->handleSaveRelated($owner, $typeName);
+        $this->handleSaveRelated($owner, $typeName, $mustReturn);
     }
 
-    protected function handleSaveRelated(ModelInterface $owner, string $typeName): ?ModelInterface
+    protected function handleSaveRelated(ModelInterface $owner, string $typeName, string $mustReturn): ?ModelInterface
     {
         if ($this->operation === Operation::UPDATE) {
             /** @var ModelInterface */
             $existingModel = ($this->getCallback)($owner);
+            if ($existingModel !== null && !$existingModel instanceof ModelInterface) {
+                throw new InvalidConfigurationException("Get {$mustReturn} a ModelInterface object or null.");
+            }
 
             if ($existingModel) {
                 if ($this->fieldsToSave === null) { // delete related
@@ -76,17 +84,26 @@ class MutationRelationHasOneResolver extends MutationRelationResolver
                     return null;
                 }
                 // update related
-                return ($this->updateCallback)($owner, $existingModel, $this->getSaveFields());
+                ($this->updateCallback)($owner, $existingModel, $this->getSaveFields());
+                return $existingModel;
             }
 
             if (is_array($this->fieldsToSave)) {
                 // add related
-                return ($this->addCallback)($owner, $typeName, $this->getSaveFields());
+                $addedModel = ($this->addCallback)($owner, $typeName, $this->getSaveFields());
+                if (!$addedModel instanceof ModelInterface) {
+                    throw new InvalidConfigurationException("Add {$mustReturn} a ModelInterface object.");
+                }
+                return $addedModel;
             }
         } else {
             if (is_array($this->fieldsToSave)) {
                 // add related
-                return ($this->addCallback)($owner, $typeName, $this->getSaveFields());
+                $addedModel = ($this->addCallback)($owner, $typeName, $this->getSaveFields());
+                if (!$addedModel instanceof ModelInterface) {
+                    throw new InvalidConfigurationException("Add {$mustReturn} a ModelInterface object.");
+                }
+                return $addedModel;
             }
         }
 

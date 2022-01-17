@@ -2,6 +2,7 @@
 
 namespace Afeefa\ApiResources\Tests\Resolver;
 
+use Afeefa\ApiResources\Exception\Exceptions\InvalidConfigurationException;
 use Afeefa\ApiResources\Exception\Exceptions\MissingCallbackException;
 use Afeefa\ApiResources\Field\FieldBag;
 use Afeefa\ApiResources\Field\Fields\VarcharAttribute;
@@ -14,6 +15,7 @@ use Afeefa\ApiResources\Test\MutationRelationTest;
 use function Afeefa\ApiResources\Test\T;
 
 use Afeefa\ApiResources\Type\Type;
+use stdClass;
 
 class MutationRelationHasManyResolverTest extends MutationRelationTest
 {
@@ -32,7 +34,7 @@ class MutationRelationHasManyResolverTest extends MutationRelationTest
                     ->relation('other', Type::list(T('TYPE')), function (Relation $relation) use ($missingCallback) {
                         $relation->resolveSave(function (MutationRelationHasManyResolver $r) use ($missingCallback) {
                             if ($missingCallback !== 'get') {
-                                $r->get(fn () => null);
+                                $r->get(fn () => []);
                             }
                             if ($missingCallback !== 'add') {
                                 $r->add(fn () => null);
@@ -109,6 +111,8 @@ class MutationRelationHasManyResolverTest extends MutationRelationTest
                                     ]);
 
                                     $this->testWatcher->saveFields($saveFields);
+
+                                    return Model::fromSingle('TYPE');
                                 })
                                 ->update(function () {
                                     $this->testWatcher->info('update');
@@ -196,6 +200,8 @@ class MutationRelationHasManyResolverTest extends MutationRelationTest
                                     ]);
 
                                     $this->testWatcher->saveFields($saveFields);
+
+                                    return Model::fromSingle('TYPE');
                                 })
                                 ->update(function (ModelInterface $owner, ModelInterface $modelToUpdate, array $saveFields) use ($r) {
                                     $this->testWatcher->info('update');
@@ -340,6 +346,100 @@ class MutationRelationHasManyResolverTest extends MutationRelationTest
                     ['name' => 'name9']
                 ]
             ]
+        ];
+    }
+
+    /**
+     * @dataProvider getDoesNotReturnModelsDataProvider
+     */
+    public function test_get_does_not_return_array_of_models($return)
+    {
+        $this->expectException(InvalidConfigurationException::class);
+        $this->expectExceptionMessage('Get callback of resolver for relation other must return an array of ModelInterface objects.');
+
+        $api = $this->createApiWithType(
+            function (FieldBag $fields) use ($return) {
+                $fields
+                    ->relation('other', T('TYPE'), function (Relation $relation) use ($return) {
+                        $relation->resolveSave(function (MutationRelationHasManyResolver $r) use ($return) {
+                            $r
+                                ->get(function () use ($return) {
+                                    if ($return !== 'NOTHING') {
+                                        return $return;
+                                    }
+                                })
+                                ->add(fn () => TestModel::fromSingle('TYPE'))
+                                ->update(fn () => null)
+                                ->delete(fn () => null);
+                        });
+                    });
+            }
+        );
+
+        $this->request($api, data: ['other' => []], params: ['id' => '111333']);
+
+        $this->assertTrue(true);
+    }
+
+    public function getDoesNotReturnModelsDataProvider()
+    {
+        return [
+            'null' => [null],
+            'array_of_null' => [[null, null]],
+            'string' => ['string'],
+            'array_of_strings' => [['string', 'string']],
+            'object' => [new stdClass()],
+            'array_of_objects' => [[new stdClass(), new stdClass()]],
+            'nothing' => ['NOTHING']
+        ];
+    }
+
+    /**
+     * @dataProvider addDoesNotReturnModelDataProvider
+     */
+    public function test_add_does_not_return_model_or_null($updateOwner, $return)
+    {
+        $this->expectException(InvalidConfigurationException::class);
+        $this->expectExceptionMessage('Add callback of resolver for relation other must return a ModelInterface object.');
+
+        $api = $this->createApiWithType(
+            function (FieldBag $fields) use ($return) {
+                $fields
+                    ->relation('other', T('TYPE'), function (Relation $relation) use ($return) {
+                        $relation->resolveSave(function (MutationRelationHasManyResolver $r) use ($return) {
+                            $r
+                                ->get(fn () => [])
+                                ->add(function () use ($return) {
+                                    if ($return !== 'NOTHING') {
+                                        return $return;
+                                    }
+                                })
+                                ->update(fn () => null)
+                                ->delete(fn () => null);
+                        });
+                    });
+            }
+        );
+
+        $params = $updateOwner ? ['id' => '123'] : [];
+        $this->request($api, data: ['other' => [[]]], params: $params);
+
+        $this->assertTrue(true);
+    }
+
+    public function addDoesNotReturnModelDataProvider()
+    {
+        return [
+            'create_null' => [false, null],
+            'create_array' => [false, []],
+            'create_string' => [false, 'string'],
+            'create_object' => [false, new stdClass()],
+            'create_nothing' => [false, 'NOTHING'],
+            'update_null' => [true, null],
+            'update_array' => [true, []],
+            'update_string' => [true, 'string'],
+            'update_object' => [true, new stdClass()],
+            'update_nothing' => [true, 'NOTHING']
         ];
     }
 }

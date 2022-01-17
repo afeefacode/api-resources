@@ -3,6 +3,7 @@
 namespace Afeefa\ApiResources\Resolver;
 
 use Afeefa\ApiResources\Api\Operation;
+use Afeefa\ApiResources\Exception\Exceptions\InvalidConfigurationException;
 use Afeefa\ApiResources\Exception\Exceptions\MissingCallbackException;
 use Afeefa\ApiResources\Model\ModelInterface;
 use Afeefa\ApiResources\Resolver\Mutation\MutationRelationResolver;
@@ -13,6 +14,8 @@ class MutationRelationLinkOneResolver extends MutationRelationResolver
     {
         $relation = $this->getRelation();
         $relationName = $this->getRelation()->getName();
+
+        $mustReturn = "callback of resolver for relation {$relationName} must return";
 
         if (!$this->saveRelatedToOwnerCallback) {
             $needsToImplement = "Resolver for relation {$relationName} needs to implement";
@@ -48,6 +51,9 @@ class MutationRelationLinkOneResolver extends MutationRelationResolver
         if ($this->operation === Operation::UPDATE) {
             /** @var ModelInterface */
             $existingModel = ($this->getCallback)($owner);
+            if ($existingModel !== null && !$existingModel instanceof ModelInterface) {
+                throw new InvalidConfigurationException("Get {$mustReturn} a ModelInterface object or null.");
+            }
 
             // unlink if existing is not longer valid
             if ($existingModel

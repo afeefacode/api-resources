@@ -90,7 +90,7 @@ class MutationActionModelResolver extends BaseMutationActionResolver
         if ($id) {
             $existingModel = ($this->getCallback)($id, $typeName);
             if ($existingModel !== null && !$existingModel instanceof ModelInterface) {
-                throw new InvalidConfigurationException("Update {$mustReturn} a ModelInterface object.");
+                throw new InvalidConfigurationException("Get {$mustReturn} a ModelInterface object or null.");
             }
         }
 

@@ -2,6 +2,7 @@
 
 namespace Afeefa\ApiResources\Tests\Resolver;
 
+use Afeefa\ApiResources\Exception\Exceptions\InvalidConfigurationException;
 use Afeefa\ApiResources\Exception\Exceptions\MissingCallbackException;
 use Afeefa\ApiResources\Field\FieldBag;
 use Afeefa\ApiResources\Field\Fields\VarcharAttribute;
@@ -10,8 +11,9 @@ use Afeefa\ApiResources\Model\Model;
 use Afeefa\ApiResources\Model\ModelInterface;
 use Afeefa\ApiResources\Resolver\MutationRelationHasOneResolver;
 use Afeefa\ApiResources\Test\MutationRelationTest;
-
 use function Afeefa\ApiResources\Test\T;
+
+use stdClass;
 
 class MutationRelationHasOneResolverTest extends MutationRelationTest
 {
@@ -68,7 +70,7 @@ class MutationRelationHasOneResolverTest extends MutationRelationTest
                         $relation->resolveSave(function (MutationRelationHasOneResolver $r) {
                             $r
                                 ->get(fn () => [])
-                                ->add(fn () => null)
+                                ->add(fn () => TestModel::fromSingle('TYPE'))
                                 ->update(fn () => null)
                                 ->delete(fn () => null);
                         });
@@ -174,6 +176,8 @@ class MutationRelationHasOneResolverTest extends MutationRelationTest
                                     ]);
 
                                     $this->testWatcher->saveFields($saveFields);
+
+                                    return TestModel::fromSingle('TYPE');
                                 })
                                 ->update(function (ModelInterface $owner, ModelInterface $modelToUpdate, array $saveFields) use ($r) {
                                     $this->testWatcher->info('update');
@@ -361,6 +365,8 @@ class MutationRelationHasOneResolverTest extends MutationRelationTest
                                     ]);
 
                                     $this->testWatcher->saveFields($saveFields);
+
+                                    return TestModel::fromSingle('TYPE');
                                 })
                                 ->update(function () { // never called
                                     $this->testWatcher->info('update');
@@ -776,6 +782,151 @@ class MutationRelationHasOneResolverTest extends MutationRelationTest
                 ],
                 [['name' => 'name1']]
             ]
+        ];
+    }
+
+    /**
+     * @dataProvider getDoesNotReturnModelDataProvider
+     */
+    public function test_get_does_not_return_model_or_null($return)
+    {
+        if (in_array($return, [null, 'NOTHING'], true)) {
+            $this->assertTrue(true);
+        } else {
+            $this->expectException(InvalidConfigurationException::class);
+            $this->expectExceptionMessage('Get callback of resolver for relation other must return a ModelInterface object or null.');
+        }
+
+        $api = $this->createApiWithType(
+            function (FieldBag $fields) use ($return) {
+                $fields
+                    ->relation('other', T('TYPE'), function (Relation $relation) use ($return) {
+                        $relation->resolveSave(function (MutationRelationHasOneResolver $r) use ($return) {
+                            $r
+                                ->get(function () use ($return) {
+                                    if ($return !== 'NOTHING') {
+                                        return $return;
+                                    }
+                                })
+                                ->add(fn () => TestModel::fromSingle('TYPE'))
+                                ->update(fn () => null)
+                                ->delete(fn () => null);
+                        });
+                    });
+            }
+        );
+
+        $this->request($api, data: ['other' => []], params: ['id' => '111333']);
+
+        $this->assertTrue(true);
+    }
+
+    public function getDoesNotReturnModelDataProvider()
+    {
+        return [
+            'null' => [null],
+            'array' => [[]],
+            'string' => ['string'],
+            'object' => [new stdClass()],
+            'nothing' => ['NOTHING']
+        ];
+    }
+
+    /**
+     * @dataProvider addBeforeOwnerDoesNotReturnModelDataProvider
+     */
+    public function test_add_before_owner_does_not_return_model_or_null($return)
+    {
+        if (in_array($return, [null, 'NOTHING'], true)) {
+            $this->assertTrue(true);
+        } else {
+            $this->expectException(InvalidConfigurationException::class);
+            $this->expectExceptionMessage('AddBeforeOwner callback of resolver for relation other must return a ModelInterface object.');
+        }
+
+        $api = $this->createApiWithType(
+            function (FieldBag $fields) use ($return) {
+                $fields
+                    ->relation('other', T('TYPE'), function (Relation $relation) use ($return) {
+                        $relation->resolveSave(function (MutationRelationHasOneResolver $r) use ($return) {
+                            $r
+                                ->saveRelatedToOwner(fn () => [])
+                                ->get(fn () => null)
+                                ->addBeforeOwner(function () use ($return) {
+                                    if ($return !== 'NOTHING') {
+                                        return $return;
+                                    }
+                                })
+                                ->add(fn () => null)
+                                ->update(fn () => null)
+                                ->delete(fn () => null);
+                        });
+                    });
+            }
+        );
+
+        $this->request($api, data: ['other' => []]);
+
+        $this->assertTrue(true);
+    }
+
+    public function addBeforeOwnerDoesNotReturnModelDataProvider()
+    {
+        return [
+            'null' => [null],
+            'array' => [[]],
+            'string' => ['string'],
+            'object' => [new stdClass()],
+            'nothing' => ['NOTHING']
+        ];
+    }
+
+    /**
+     * @dataProvider addDoesNotReturnModelDataProvider
+     */
+    public function test_add_does_not_return_model_or_null($updateOwner, $return)
+    {
+        $this->expectException(InvalidConfigurationException::class);
+        $this->expectExceptionMessage('Add callback of resolver for relation other must return a ModelInterface object.');
+
+        $api = $this->createApiWithType(
+            function (FieldBag $fields) use ($return) {
+                $fields
+                    ->relation('other', T('TYPE'), function (Relation $relation) use ($return) {
+                        $relation->resolveSave(function (MutationRelationHasOneResolver $r) use ($return) {
+                            $r
+                                ->get(fn () => null)
+                                ->add(function () use ($return) {
+                                    if ($return !== 'NOTHING') {
+                                        return $return;
+                                    }
+                                })
+                                ->update(fn () => null)
+                                ->delete(fn () => null);
+                        });
+                    });
+            }
+        );
+
+        $params = $updateOwner ? ['id' => '123'] : [];
+        $this->request($api, data: ['other' => []], params: $params);
+
+        $this->assertTrue(true);
+    }
+
+    public function addDoesNotReturnModelDataProvider()
+    {
+        return [
+            'create_null' => [false, null],
+            'create_array' => [false, []],
+            'create_string' => [false, 'string'],
+            'create_object' => [false, new stdClass()],
+            'create_nothing' => [false, 'NOTHING'],
+            'update_null' => [true, null],
+            'update_array' => [true, []],
+            'update_string' => [true, 'string'],
+            'update_object' => [true, new stdClass()],
+            'update_nothing' => [true, 'NOTHING']
         ];
     }
 }
