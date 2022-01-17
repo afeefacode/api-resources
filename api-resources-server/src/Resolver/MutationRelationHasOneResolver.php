@@ -5,24 +5,10 @@ namespace Afeefa\ApiResources\Resolver;
 use Afeefa\ApiResources\Api\Operation;
 use Afeefa\ApiResources\Exception\Exceptions\MissingCallbackException;
 use Afeefa\ApiResources\Model\ModelInterface;
-use Afeefa\ApiResources\Resolver\Mutation\MutationRelationHasResolverTrait;
-use Afeefa\ApiResources\Resolver\Mutation\MutationRelationOneResolverTrait;
 use Afeefa\ApiResources\Resolver\Mutation\MutationRelationResolver;
-use Closure;
 
 class MutationRelationHasOneResolver extends MutationRelationResolver
 {
-    use MutationRelationOneResolverTrait;
-    use MutationRelationHasResolverTrait;
-
-    protected ?Closure $addBeforeOwnerCallback = null;
-
-    public function addBeforeOwner(Closure $callback): self
-    {
-        $this->addBeforeOwnerCallback = $callback;
-        return $this;
-    }
-
     public function resolve(): void
     {
         $relation = $this->getRelation();

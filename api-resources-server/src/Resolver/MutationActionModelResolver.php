@@ -7,13 +7,10 @@ use Afeefa\ApiResources\Exception\Exceptions\InvalidConfigurationException;
 use Afeefa\ApiResources\Exception\Exceptions\MissingCallbackException;
 use Afeefa\ApiResources\Model\ModelInterface;
 use Afeefa\ApiResources\Resolver\Mutation\BaseMutationActionResolver;
-use Afeefa\ApiResources\Resolver\Mutation\MutationRelationHasResolverTrait;
 use Closure;
 
 class MutationActionModelResolver extends BaseMutationActionResolver
 {
-    use MutationRelationHasResolverTrait;
-
     protected ?Closure $getCallback = null;
 
     protected ?Closure $addCallback = null;

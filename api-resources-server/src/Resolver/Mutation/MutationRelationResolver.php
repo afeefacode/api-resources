@@ -36,6 +36,8 @@ class MutationRelationResolver extends BaseFieldResolver
 
     protected ?Closure $updateCallback = null;
 
+    protected ?Closure $addBeforeOwnerCallback = null;
+
     protected ?Closure $addCallback = null;
 
     protected ?Closure $deleteCallback = null;
@@ -117,6 +119,12 @@ class MutationRelationResolver extends BaseFieldResolver
     public function update(Closure $callback): self
     {
         $this->updateCallback = $callback;
+        return $this;
+    }
+
+    public function addBeforeOwner(Closure $callback): self
+    {
+        $this->addBeforeOwnerCallback = $callback;
         return $this;
     }
 

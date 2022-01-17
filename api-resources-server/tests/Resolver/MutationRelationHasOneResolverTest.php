@@ -582,6 +582,9 @@ class MutationRelationHasOneResolverTest extends MutationRelationTest
                                     }
                                     return null;
                                 })
+                                ->addBeforeOwner(function () {
+                                    $this->testWatcher->info('add_before_owner');
+                                })
                                 ->add(function (ModelInterface $owner, string $typeName, array $saveFields) use ($r) {
                                     $this->testWatcher->info('add');
 

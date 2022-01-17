@@ -5,15 +5,10 @@ namespace Afeefa\ApiResources\Resolver;
 use Afeefa\ApiResources\Api\Operation;
 use Afeefa\ApiResources\Exception\Exceptions\MissingCallbackException;
 use Afeefa\ApiResources\Model\ModelInterface;
-use Afeefa\ApiResources\Resolver\Mutation\MutationRelationLinkResolverTrait;
-use Afeefa\ApiResources\Resolver\Mutation\MutationRelationOneResolverTrait;
 use Afeefa\ApiResources\Resolver\Mutation\MutationRelationResolver;
 
 class MutationRelationLinkOneResolver extends MutationRelationResolver
 {
-    use MutationRelationOneResolverTrait;
-    use MutationRelationLinkResolverTrait;
-
     public function resolve(): void
     {
         $relation = $this->getRelation();
