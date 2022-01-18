@@ -256,7 +256,7 @@ class MutationActionModelResolverTest extends ApiResourcesTest
     /**
      * @dataProvider createSaveRelationsDataProvider
      */
-    public function test_create_save_fields_relations($fields, $expectedFields, $expectedOrder)
+    public function test_create_save_fields_relations($fields, $expectedFields, $expectedInfo)
     {
         $api = $this->createApiWithTypeAndAction(
             function (FieldBag $fields) {
@@ -351,7 +351,7 @@ class MutationActionModelResolverTest extends ApiResourcesTest
 
         $this->assertEquals($expectedFields, $this->testWatcher->saveFields);
 
-        $this->assertEquals($expectedOrder, $this->testWatcher->info);
+        $this->assertEquals($expectedInfo, $this->testWatcher->info);
     }
 
     public function createSaveRelationsDataProvider()
@@ -437,7 +437,7 @@ class MutationActionModelResolverTest extends ApiResourcesTest
     /**
      * @dataProvider updateSaveRelationsDataProvider
      */
-    public function test_update_save_fields_relations($fields, $expectedFields, $expectedOrder)
+    public function test_update_save_fields_relations($fields, $expectedFields, $expectedInfo)
     {
         $api = $this->createApiWithTypeAndAction(
             function (FieldBag $fields) {
@@ -543,9 +543,8 @@ class MutationActionModelResolverTest extends ApiResourcesTest
             params: ['id' => '3']
         );
 
+        $this->assertEquals($expectedInfo, $this->testWatcher->info);
         $this->assertEquals($expectedFields, $this->testWatcher->saveFields);
-
-        $this->assertEquals($expectedOrder, $this->testWatcher->info);
     }
 
     public function updateSaveRelationsDataProvider()
