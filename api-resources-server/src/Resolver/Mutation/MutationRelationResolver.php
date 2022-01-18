@@ -93,9 +93,9 @@ class MutationRelationResolver extends BaseFieldResolver
         return ($this->resolveAfterOwnerCallback)($id, $typeName);
     }
 
-    public function ownerOperation(string $operation): self
+    public function ownerOperation(string $ownerOperation): self
     {
-        $this->ownerOperation = $operation;
+        $this->ownerOperation = $ownerOperation;
         return $this;
     }
 

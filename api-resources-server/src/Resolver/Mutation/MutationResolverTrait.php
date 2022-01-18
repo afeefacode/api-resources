@@ -16,7 +16,7 @@ trait MutationResolverTrait
         return $this;
     }
 
-    protected function resolveModel(string $operation, string $typeName, array $fieldsToSave, Closure $resolveCallback): ModelInterface
+    protected function resolveModel(string $ownerOperation, string $typeName, array $fieldsToSave, Closure $resolveCallback): ModelInterface
     {
         $resolveContext = $this->createResolveContext($typeName, $fieldsToSave);
 
@@ -66,7 +66,7 @@ trait MutationResolverTrait
             }
 
             $relationResolver
-                ->ownerOperation($operation)
+                ->ownerOperation($ownerOperation)
                 ->addOwner($related)
                 ->ownerSaveFields($ownerSaveFields)
                 ->resolve();
