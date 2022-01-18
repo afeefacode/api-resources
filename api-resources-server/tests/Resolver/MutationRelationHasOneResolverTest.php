@@ -588,9 +588,6 @@ class MutationRelationHasOneResolverTest extends MutationRelationTest
                                     }
                                     return null;
                                 })
-                                ->addBeforeOwner(function () {
-                                    $this->testWatcher->info('add_before_owner');
-                                })
                                 ->add(function (ModelInterface $owner, string $typeName, array $saveFields) use ($r) {
                                     $this->testWatcher->info('add');
 
@@ -635,6 +632,7 @@ class MutationRelationHasOneResolverTest extends MutationRelationTest
                                 // never called
                                 ->addBeforeOwner(function (string $typeName, array $saveFields) use ($r) {
                                     $this->testWatcher->info('add_before_owner');
+                                    return Model::fromSingle($typeName, ['id' => '999']);
                                 });
                         });
                     });
@@ -837,12 +835,8 @@ class MutationRelationHasOneResolverTest extends MutationRelationTest
      */
     public function test_add_before_owner_does_not_return_model_or_null($return)
     {
-        if (in_array($return, [null, 'NOTHING'], true)) {
-            $this->assertTrue(true);
-        } else {
-            $this->expectException(InvalidConfigurationException::class);
-            $this->expectExceptionMessage('AddBeforeOwner callback of resolver for relation other must return a ModelInterface object.');
-        }
+        $this->expectException(InvalidConfigurationException::class);
+        $this->expectExceptionMessage('AddBeforeOwner callback of resolver for relation other must return a ModelInterface object.');
 
         $api = $this->createApiWithType(
             function (FieldBag $fields) use ($return) {

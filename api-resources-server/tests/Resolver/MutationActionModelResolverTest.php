@@ -474,6 +474,7 @@ class MutationActionModelResolverTest extends ApiResourcesTest
                                 })
                                 ->addBeforeOwner(function () {
                                     $this->testWatcher->info('relation_before_add_before_owner');
+                                    return Model::fromSingle('TYPE', ['id' => '10']);
                                 })
                                 ->get(function () {
                                     $this->testWatcher->info('relation_before_get');

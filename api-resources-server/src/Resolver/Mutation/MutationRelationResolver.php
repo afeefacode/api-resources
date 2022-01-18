@@ -27,8 +27,6 @@ class MutationRelationResolver extends BaseFieldResolver
 
     protected ?Closure $resolveAfterOwnerCallback = null;
 
-    protected array $ownerSaveFields = [];
-
     protected ?Closure $getCallback = null;
 
     protected ?Closure $updateCallback = null;
@@ -55,12 +53,6 @@ class MutationRelationResolver extends BaseFieldResolver
     public function fieldsToSave(?array $fieldsToSave): self
     {
         $this->fieldsToSave = $fieldsToSave;
-        return $this;
-    }
-
-    public function ownerSaveFields(array $ownerSaveFields): self
-    {
-        $this->ownerSaveFields = $ownerSaveFields;
         return $this;
     }
 

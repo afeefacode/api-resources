@@ -104,57 +104,77 @@ class MutationActionModelResolver extends BaseMutationActionResolver
         if ($existingModel && $this->request->getFieldsToSave2() === null) {
             ($this->deleteCallback)($existingModel);
         } else {
-            // resolve relation before owner (save related to owner, linkOne or hasOne)
-
-            foreach ($resolveContext->getRelationResolvers() as $relationResolver) {
-                if ($relationResolver->shouldSaveRelatedToOwner()) {
-                    $relationResolver->operation($operation);
-
+            if (false) {
+                $model = $this->resolveModel($operation, $typeName, $this->request->getFieldsToSave2(), function ($saveFields) use ($existingModel, $mustReturn) {
                     if ($existingModel) {
-                        $relationResolver->addOwner($existingModel);
+                        ($this->updateCallback)($existingModel, $saveFields);
+                        $model = $existingModel;
+                    } else {
+                        $model = ($this->addCallback)($saveFields);
+                        if (!$model instanceof ModelInterface) {
+                            throw new InvalidConfigurationException("Add {$mustReturn} a ModelInterface object.");
+                        }
+                    }
+                    return $model;
+                });
+            } else {
+
+            // // resolve relation before owner (save related to owner, linkOne or hasOne)
+
+                $relatedSaveFields = [];
+
+                foreach ($resolveContext->getRelationResolvers() as $relationResolver) {
+                    if ($relationResolver->shouldSaveRelatedToOwner()) {
+                        $relationResolver->operation($operation);
+
+                        if ($existingModel) {
+                            $relationResolver->addOwner($existingModel);
+                        }
+
+                        $relationResolver->resolve(); // model to save in the owner
+
+                        $relatedSaveFields = $relationResolver->getSaveRelatedToOwnerFields();
+                    }
+                }
+
+                // save model
+
+                $saveFields = array_merge($this->getSaveFields(), $this->ownerSaveFields, $relatedSaveFields);
+
+                if ($existingModel) {
+                    ($this->updateCallback)($existingModel, $saveFields);
+                    $model = $existingModel;
+                } else {
+                    $model = ($this->addCallback)($saveFields);
+                    if (!$model instanceof ModelInterface) {
+                        throw new InvalidConfigurationException("Add {$mustReturn} a ModelInterface object.");
+                    }
+                }
+
+                // save relations after owner
+
+                foreach ($resolveContext->getRelationResolvers() as $relationResolver) {
+                    if ($relationResolver->shouldSaveRelatedToOwner()) {
+                        continue; // already resolved
                     }
 
-                    $relationResolver->resolve(); // model to save in the owner
+                    $ownerSaveFields = [];
 
-                    $this->relatedSaveFields = $relationResolver->getSaveRelatedToOwnerFields();
+                    // save owner field to related
+
+                    if ($relationResolver->shouldSaveOwnerToRelated()) {
+                        $ownerSaveFields = $relationResolver->getSaveOwnerToRelatedFields(
+                            $model->apiResourcesGetId(),
+                            $model->apiResourcesGetType()
+                        );
+                    }
+
+                    $relationResolver
+                        ->operation($operation)
+                        ->addOwner($model)
+                        ->ownerSaveFields($ownerSaveFields)
+                        ->resolve();
                 }
-            }
-
-            // save model
-
-            if ($existingModel) {
-                ($this->updateCallback)($existingModel, $this->getSaveFields());
-                $model = $existingModel;
-            } else {
-                $model = ($this->addCallback)($this->getSaveFields());
-                if (!$model instanceof ModelInterface) {
-                    throw new InvalidConfigurationException("Add {$mustReturn} a ModelInterface object.");
-                }
-            }
-
-            // save relations after owner
-
-            foreach ($resolveContext->getRelationResolvers() as $relationResolver) {
-                if ($relationResolver->shouldSaveRelatedToOwner()) {
-                    continue; // already resolved
-                }
-
-                $ownerSaveFields = [];
-
-                // save owner field to related
-
-                if ($relationResolver->shouldSaveOwnerToRelated()) {
-                    $ownerSaveFields = $relationResolver->getSaveOwnerToRelatedFields(
-                        $model->apiResourcesGetId(),
-                        $model->apiResourcesGetType()
-                    );
-                }
-
-                $relationResolver
-                    ->operation($operation)
-                    ->addOwner($model)
-                    ->ownerSaveFields($ownerSaveFields)
-                    ->resolve();
             }
 
             // forward if present
