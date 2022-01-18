@@ -41,7 +41,7 @@ class MutationRelationResolver extends BaseFieldResolver
 
     protected ?Closure $unlinkCallback = null;
 
-    protected ?string $operation = null;
+    protected ?string $ownerOperation = null;
 
     protected ?string $resolvedId = null;
 
@@ -93,9 +93,9 @@ class MutationRelationResolver extends BaseFieldResolver
         return ($this->resolveAfterOwnerCallback)($id, $typeName);
     }
 
-    public function operation(string $operation): self
+    public function ownerOperation(string $operation): self
     {
-        $this->operation = $operation;
+        $this->ownerOperation = $operation;
         return $this;
     }
 

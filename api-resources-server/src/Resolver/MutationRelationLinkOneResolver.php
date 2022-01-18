@@ -48,7 +48,7 @@ class MutationRelationLinkOneResolver extends MutationRelationResolver
 
         $owner = $this->owners[0] ?? null;
 
-        if ($this->operation === Operation::UPDATE) {
+        if ($this->ownerOperation === Operation::UPDATE) {
             /** @var ModelInterface */
             $existingModel = ($this->getCallback)($owner);
             if ($existingModel !== null && !$existingModel instanceof ModelInterface) {

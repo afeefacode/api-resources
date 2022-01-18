@@ -30,7 +30,7 @@ trait MutationResolverTrait
 
         foreach ($relationResolvers as $relationResolver) {
             if ($relationResolver->shouldSaveRelatedToOwner()) {
-                $relationResolver->operation(Operation::CREATE); // only create
+                $relationResolver->ownerOperation(Operation::CREATE); // only create
 
                 // if ($owner) {
                 //     $relationResolver->addOwner($owner);
@@ -66,7 +66,7 @@ trait MutationResolverTrait
             }
 
             $relationResolver
-                ->operation($operation)
+                ->ownerOperation($operation)
                 ->addOwner($related)
                 ->ownerSaveFields($ownerSaveFields)
                 ->resolve();

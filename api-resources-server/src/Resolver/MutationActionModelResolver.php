@@ -125,7 +125,7 @@ class MutationActionModelResolver extends BaseMutationActionResolver
 
                 foreach ($resolveContext->getRelationResolvers() as $relationResolver) {
                     if ($relationResolver->shouldSaveRelatedToOwner()) {
-                        $relationResolver->operation($operation);
+                        $relationResolver->ownerOperation($operation);
 
                         if ($existingModel) {
                             $relationResolver->addOwner($existingModel);
@@ -170,7 +170,7 @@ class MutationActionModelResolver extends BaseMutationActionResolver
                     }
 
                     $relationResolver
-                        ->operation($operation)
+                        ->ownerOperation($operation)
                         ->addOwner($model)
                         ->ownerSaveFields($ownerSaveFields)
                         ->resolve();

@@ -48,7 +48,7 @@ class MutationRelationHasManyResolver extends MutationRelationResolver
             }
         }
 
-        if ($this->operation === Operation::UPDATE) {
+        if ($this->ownerOperation === Operation::UPDATE) {
             $existingModels = ($this->getCallback)($owner);
             if (!is_array($existingModels)) {
                 throw new InvalidConfigurationException("Get {$mustReturn} an array of ModelInterface objects.");
