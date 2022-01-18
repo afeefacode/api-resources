@@ -927,7 +927,7 @@ class MutationRelationHasOneResolverTest extends MutationRelationTest
     /**
      * @dataProvider addRecursiveDataProvider
      */
-    public function test_add_resursive($update)
+    public function test_add_recursive($update)
     {
         $api = $this->createApiWithType(
             function (FieldBag $fields) {
@@ -1001,7 +1001,7 @@ class MutationRelationHasOneResolverTest extends MutationRelationTest
         ];
     }
 
-    public function test_update_resursive()
+    public function test_update_recursive()
     {
         $api = $this->createApiWithType(
             function (FieldBag $fields) {
@@ -1072,7 +1072,7 @@ class MutationRelationHasOneResolverTest extends MutationRelationTest
         $this->assertEquals($expectedSaveFields, $this->testWatcher->saveFields);
     }
 
-    public function test_add_before_owner_resursive()
+    public function test_add_before_owner_recursive()
     {
         $api = $this->createApiWithType(
             function (FieldBag $fields) {
@@ -1142,7 +1142,7 @@ class MutationRelationHasOneResolverTest extends MutationRelationTest
         $this->assertEquals($expectedSaveFields, $this->testWatcher->saveFields);
     }
 
-    public function test_add_before_owner_resursive_update_owner()
+    public function test_add_before_owner_recursive_update_owner()
     {
         $api = $this->createApiWithType(
             function (FieldBag $fields) {

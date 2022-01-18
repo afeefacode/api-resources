@@ -446,7 +446,7 @@ class MutationRelationHasManyResolverTest extends MutationRelationTest
     /**
      * @dataProvider addRecursiveDataProvider
      */
-    public function test_add_resursive($update)
+    public function test_add_recursive($update)
     {
         $api = $this->createApiWithType(
             function (FieldBag $fields) {
@@ -524,5 +524,101 @@ class MutationRelationHasManyResolverTest extends MutationRelationTest
             'update_owner' => [true],
             'add_owner' => [false],
         ];
+    }
+
+    public function test_update_recursive()
+    {
+        $api = $this->createApiWithType(
+            function (FieldBag $fields) {
+                $fields
+                    ->attribute('name', VarcharAttribute::class)
+                    ->relation('others', Type::list(T('TYPE')), function (Relation $relation) {
+                        $relation->resolveSave(function (MutationRelationHasManyResolver $r) {
+                            $r
+                                ->get(function (ModelInterface $owner) {
+                                    if ($owner->apiResourcesGetId() === 'parent') {
+                                        return Model::fromList('TYPE', [['id' => 'id_child1']]);
+                                    }
+                                    if ($owner->apiResourcesGetId() === 'id_child1') {
+                                        return Model::fromList('TYPE', [['id' => 'id_child2']]);
+                                    }
+                                    return [];
+                                })
+                                ->add(function (ModelInterface $owner, string $typeName, array $saveFields) use ($r) {
+                                    $this->testWatcher->info('add_' . $saveFields['name']);
+
+                                    $this->testWatcher->info2([
+                                        $owner->apiResourcesGetId(),
+                                        $owner->apiResourcesGetType(),
+                                        $typeName,
+                                        $r->getRelation()->getName()
+                                    ]);
+
+                                    $this->testWatcher->saveFields($saveFields);
+
+                                    return Model::fromSingle('TYPE', ['id' => 'id_' . $saveFields['name']]);
+                                })
+                                ->update(function (ModelInterface $owner, ModelInterface $modelToUpdate, array $saveFields) use ($r) {
+                                    $this->testWatcher->info('update_' . $saveFields['name']);
+
+                                    $this->testWatcher->info2([
+                                        $owner->apiResourcesGetId(),
+                                        $owner->apiResourcesGetType(),
+                                        $modelToUpdate->apiResourcesGetId(),
+                                        $modelToUpdate->apiResourcesGetType(),
+                                        $r->getRelation()->getName()
+                                    ]);
+
+                                    $this->testWatcher->saveFields($saveFields);
+                                })
+                                ->delete(function (ModelInterface $owner, ModelInterface $modelToDelete) {
+                                    $this->testWatcher->info('delete_' . $modelToDelete->id);
+                                });
+                        });
+                    });
+            }
+        );
+
+        $data = [
+            'name' => 'parent',
+            'others' => [
+                [
+                    'id' => 'id_child1',
+                    'name' => 'child1',
+                    'others' => [
+                        [
+                            'id' => 'id_child2',
+                            'name' => 'child2',
+                            'others' => [
+                                ['name' => 'child3'],
+                                ['name' => 'child4']
+                            ]
+                        ]
+                    ]
+                ]
+            ]
+        ];
+
+        $expectedInfo = ['update_child1', 'update_child2', 'add_child3', 'add_child4'];
+
+        $expectedInfo2 = [
+            ['parent', 'TYPE', 'id_child1', 'TYPE', 'others'],
+            ['id_child1', 'TYPE', 'id_child2', 'TYPE', 'others'],
+            ['id_child2', 'TYPE', 'TYPE', 'others'],
+            ['id_child2', 'TYPE', 'TYPE', 'others']
+        ];
+
+        $expectedSaveFields = [
+            ['name' => 'child1'],
+            ['name' => 'child2'],
+            ['name' => 'child3'],
+            ['name' => 'child4']
+        ];
+
+        $this->request($api, data: $data, params: ['id' => 'parent']);
+
+        $this->assertEquals($expectedInfo, $this->testWatcher->info);
+        $this->assertEquals($expectedInfo2, $this->testWatcher->info2);
+        $this->assertEquals($expectedSaveFields, $this->testWatcher->saveFields);
     }
 }
