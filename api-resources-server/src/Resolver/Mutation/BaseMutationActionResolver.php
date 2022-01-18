@@ -25,22 +25,4 @@ class BaseMutationActionResolver extends BaseActionResolver
     {
         return [];
     }
-
-    protected function getSaveFields(): array
-    {
-        return $this->getResolveContext2()->getSaveFields();
-    }
-
-    protected function getResolveContext2(): MutationResolveContext
-    {
-        if (!isset($this->resolveContext)) {
-            $action = $this->request->getAction();
-            $typeName = $action->getInput()->getTypeClass()::type();
-
-            $this->resolveContext = $this->container->create(MutationResolveContext::class)
-                ->type($this->getTypeByName($typeName))
-                ->fieldsToSave($this->request->getFieldsToSave2());
-        }
-        return $this->resolveContext;
-    }
 }

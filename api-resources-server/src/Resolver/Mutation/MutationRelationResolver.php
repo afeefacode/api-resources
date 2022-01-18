@@ -56,11 +56,6 @@ class MutationRelationResolver extends BaseFieldResolver
         return $this;
     }
 
-    public function getSaveFields(): array
-    {
-        return $this->getResolveContext2()->getSaveFields($this->ownerSaveFields);
-    }
-
     public function saveRelatedToOwner(Closure $callback): self
     {
         $this->saveRelatedToOwnerCallback = $callback;
@@ -143,19 +138,5 @@ class MutationRelationResolver extends BaseFieldResolver
 
     public function resolve(): void
     {
-    }
-
-    protected function getResolveContext2(): MutationResolveContext
-    {
-        if (!isset($this->resolveContext)) {
-            $owner = $this->owners[0] ?? null;
-            $typeName = $this->getRelation()->getRelatedType()->getTypeClass()::type();
-
-            $this->resolveContext = $this->container->create(MutationResolveContext::class)
-                ->owner($owner)
-                ->type($this->getTypeByName($typeName))
-                ->fieldsToSave($this->fieldsToSave);
-        }
-        return $this->resolveContext;
     }
 }

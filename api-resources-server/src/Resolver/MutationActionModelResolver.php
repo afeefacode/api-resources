@@ -46,7 +46,6 @@ class MutationActionModelResolver extends BaseMutationActionResolver
     public function resolve(): array
     {
         $action = $this->request->getAction();
-        $resolveContext = $this->getResolveContext2();
 
         // if errors
 
@@ -104,12 +103,12 @@ class MutationActionModelResolver extends BaseMutationActionResolver
                 $existingModel ? Operation::UPDATE : Operation::CREATE,
                 $typeName,
                 $this->request->getFieldsToSave2(),
-                function ($saveFields) use ($existingModel, $mustReturn) {
+                function ($saveFields) use ($existingModel, $typeName, $mustReturn) {
                     if ($existingModel) {
                         ($this->updateCallback)($existingModel, $saveFields);
                         $model = $existingModel;
                     } else {
-                        $model = ($this->addCallback)($saveFields);
+                        $model = ($this->addCallback)($typeName, $saveFields);
                         if (!$model instanceof ModelInterface) {
                             throw new InvalidConfigurationException("Add {$mustReturn} a ModelInterface object.");
                         }

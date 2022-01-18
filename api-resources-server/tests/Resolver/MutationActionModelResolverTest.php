@@ -127,7 +127,7 @@ class MutationActionModelResolverTest extends ApiResourcesTest
                                     return Model::fromSingle('TYPE');
                                 }
                             })
-                            ->add(function (array $saveFields) use ($r) {
+                            ->add(function (string $typeName, array $saveFields) use ($r) {
                                 $this->testWatcher->info('add');
                                 $this->testWatcher->saveFields($saveFields);
                                 return Model::fromSingle('TYPE');
@@ -190,7 +190,7 @@ class MutationActionModelResolverTest extends ApiResourcesTest
                         $r
                             ->get(fn () => null)
                             ->update(fn () => null)
-                            ->add(function (array $saveFields) use ($r) {
+                            ->add(function (string $typeName, array $saveFields) use ($r) {
                                 $this->testWatcher->saveFields($saveFields);
                                 return Model::fromSingle('TYPE');
                             })
@@ -269,7 +269,7 @@ class MutationActionModelResolverTest extends ApiResourcesTest
                                 ->get(function () {
                                     $this->testWatcher->info('relation_get');
                                 })
-                                ->add(function ($owner, $type, $saveFields) {
+                                ->add(function ($owner, $typeName, $saveFields) {
                                     $this->testWatcher->info('relation_add');
                                     $this->testWatcher->saveFields($saveFields);
                                     return Model::fromSingle('TYPE');
@@ -334,7 +334,7 @@ class MutationActionModelResolverTest extends ApiResourcesTest
                         $r
                             ->get(fn () => null)
                             ->update(fn () => null)
-                            ->add(function (array $saveFields) use ($r) {
+                            ->add(function (string $typeName, array $saveFields) use ($r) {
                                 $this->testWatcher->saveFields($saveFields);
                                 $this->testWatcher->info('owner');
                                 return Model::fromSingle('TYPE', ['id' => '3']);
