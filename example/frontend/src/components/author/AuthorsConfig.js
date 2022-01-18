@@ -43,7 +43,7 @@ export class AuthorsConfig extends RouteConfig {
   edit = {
     Component: AuthorForm,
 
-    action: this.api.getAction('Example.AuthorResource', 'update_author'),
+    action: this.api.getAction('Example.AuthorResource', 'save_author'),
 
     fields: {
       name: true

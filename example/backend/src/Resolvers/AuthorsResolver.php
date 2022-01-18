@@ -6,6 +6,7 @@ use Afeefa\ApiResources\Api\ApiRequest;
 use Afeefa\ApiResources\Exception\Exceptions\ApiException;
 use Afeefa\ApiResources\Model\Model;
 use Afeefa\ApiResources\Model\ModelInterface;
+use Afeefa\ApiResources\Resolver\MutationActionModelResolver;
 use Afeefa\ApiResources\Resolver\MutationActionSimpleResolver;
 use Afeefa\ApiResources\Resolver\MutationRelationLinkOneResolver;
 use Afeefa\ApiResources\Resolver\QueryActionResolver;
@@ -144,6 +145,46 @@ class AuthorsResolver
                 );
 
                 return Model::fromSingle(AuthorType::type(), $object);
+            });
+    }
+
+    public function save_author(MutationActionModelResolver $r, Medoo $db)
+    {
+        $r
+            ->get(function (string $id) use ($db) {
+                $object = $db->get(
+                    'authors',
+                    '*',
+                    ['id' => $id]
+                );
+                return Model::fromSingle(AuthorType::type(), $object);
+            })
+
+            ->add(function (string $typeName, array $saveFields) use ($db) {
+                $db->insert(
+                    'authors',
+                    $saveFields
+                );
+                return Model::fromSingle(AuthorType::type(), ['id' => $db->id()]);
+            })
+
+            ->update(function (Model $author, array $saveFields) use ($db) {
+                $db->update(
+                    'authors',
+                    $saveFields,
+                    ['id' => $author->id]
+                );
+            })
+
+            ->delete(function (Model $author) use ($db) {
+                $db->delete(
+                    'authors',
+                    ['id' => $author->id]
+                );
+            })
+
+            ->forward(function (ApiRequest $apiRequest) {
+                $apiRequest->actionName('get_author');
             });
     }
 

@@ -22,7 +22,7 @@ export default class AuthorEdit extends Vue {
 
       getAction: Author.getAction('get_author'),
 
-      updateAction: Author.getAction('update_author'),
+      updateAction: Author.getAction('save_author'),
 
       fields: {
         name: true

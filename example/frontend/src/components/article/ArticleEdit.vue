@@ -37,7 +37,7 @@ export default class ArticleEdit extends Vue {
 
       getAction: Article.getAction('get_article'),
 
-      updateAction: Article.getAction('update_article'),
+      updateAction: Article.getAction('save_article'),
 
       fields: {
         title: true,

@@ -87,16 +87,16 @@ class ArticleResource extends Resource
                 ->resolve([ArticlesResolver::class, 'get_article']);
         });
 
-        $actions->add('create_article', function (Action $action) {
-            $action
-                ->input(ArticleType::class)
+        // $actions->add('create_article', function (Action $action) {
+        //     $action
+        //         ->input(ArticleType::class)
 
-                ->response(ArticleType::class)
+        //         ->response(ArticleType::class)
 
-                ->resolve([ArticlesResolver::class, 'create_article']);
-        });
+        //         ->resolve([ArticlesResolver::class, 'create_article']);
+        // });
 
-        $actions->add('update_article', function (Action $action) {
+        $actions->add('save_article', function (Action $action) {
             $action
                 ->params(function (ActionParams $params) {
                     $params->attribute('id', IdAttribute::class);
@@ -106,7 +106,7 @@ class ArticleResource extends Resource
 
                 ->response(ArticleType::class)
 
-                ->resolve([ArticlesResolver::class, 'update_article']);
+                ->resolve([ArticlesResolver::class, 'save_article']);
         });
 
         // $actions->add('update_articles', function (Action $action) {
@@ -121,18 +121,18 @@ class ArticleResource extends Resource
         //         ->response(ArticleType::class);
         // });
 
-        $actions->add('delete_article', function (Action $action) {
-            $action
-                ->params(function (ActionParams $params) {
-                    $params->attribute('id', IdAttribute::class);
-                })
+        // $actions->add('delete_article', function (Action $action) {
+        //     $action
+        //         ->params(function (ActionParams $params) {
+        //             $params->attribute('id', IdAttribute::class);
+        //         })
 
-                ->input(ArticleType::class)
+        //         ->input(ArticleType::class)
 
-                ->response(ArticleType::class)
+        //         ->response(ArticleType::class)
 
-                ->resolve([ArticlesResolver::class, 'delete_article']);
-        });
+        //         ->resolve([ArticlesResolver::class, 'delete_article']);
+        // });
 
         // $actions->add('delete_articles', function (Action $action) {
         // });

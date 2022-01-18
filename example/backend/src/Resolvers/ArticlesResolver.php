@@ -6,7 +6,7 @@ use Afeefa\ApiResources\Api\ApiRequest;
 use Afeefa\ApiResources\Exception\Exceptions\ApiException;
 use Afeefa\ApiResources\Model\Model;
 use Afeefa\ApiResources\Model\ModelInterface;
-use Afeefa\ApiResources\Resolver\Mutation\MutationActionResolver;
+use Afeefa\ApiResources\Resolver\MutationActionModelResolver;
 use Afeefa\ApiResources\Resolver\QueryActionResolver;
 use Afeefa\ApiResources\Resolver\QueryRelationResolver;
 use Backend\Types\ArticleType;
@@ -190,7 +190,7 @@ class ArticlesResolver
             });
     }
 
-    public function update_article(MutationActionResolver $r, Medoo $db)
+    public function save_article(MutationActionModelResolver $r, Medoo $db)
     {
         $r
             ->get(function (string $id) use ($db) {
@@ -202,82 +202,31 @@ class ArticlesResolver
                 return Model::fromSingle(ArticleType::type(), $object);
             })
 
-            ->save(function () use ($r, $db) {
-                $request = $r->getRequest();
-
-                $data = $r->getSaveFields();
-                $where = ['id' => $request->getParam('id')];
-
-                $stmt = $db->update(
+            ->add(function (string $typeName, array $saveFields) use ($db) {
+                $db->insert(
                     'articles',
-                    $data,
-                    $where
+                    $saveFields
                 );
-
-                if ($stmt === null) {
-                    throw new ApiException(([
-                        'error' => $db->error,
-                        'query' => $db->log()
-                    ]));
-                }
-
-                return Model::fromSingle('TEST', []);
+                return Model::fromSingle(ArticleType::type(), ['id' => $db->id()]);
             })
+
+            ->update(function (Model $article, array $saveFields) use ($db) {
+                $db->update(
+                    'articles',
+                    $saveFields,
+                    ['id' => $article->id]
+                );
+            })
+
+            ->delete(function (Model $article) use ($db) {
+                $db->delete(
+                    'articles',
+                    ['id' => $article->id]
+                );
+            })
+
             ->forward(function (ApiRequest $apiRequest) {
                 $apiRequest->actionName('get_article');
-            });
-    }
-
-    public function create_article(MutationActionResolver $r, Medoo $db)
-    {
-        $r
-            ->save(function () use ($r, $db) {
-                $data = $r->getSaveFields();
-
-                $stmt = $db->insert(
-                    'articles',
-                    $data
-                );
-
-                if (!$stmt) {
-                    throw new ApiException(([
-                        'error' => $db->error,
-                        'query' => $db->log()
-                    ]));
-                }
-
-                return Model::fromSingle(ArticleType::type(), [
-                    'id' => $db->id()
-                ]);
-            })
-
-            ->forward(function (ApiRequest $apiRequest, Model $model) {
-                $apiRequest
-                    ->param('id', $model->id)
-                    ->actionName('get_article');
-            });
-    }
-
-    public function delete_article(MutationActionResolver $r, Medoo $db)
-    {
-        $r
-            ->save(function () use ($r, $db) {
-                $request = $r->getRequest();
-                $where = ['id' => $request->getParam('id')];
-
-                $stmt = $db->delete(
-                    'articles',
-                    $where
-                );
-
-                if (!$stmt) {
-                    throw new ApiException(([
-                        'error' => $db->error,
-                        'query' => $db->log()
-                    ]));
-                }
-
-                return Model::fromSingle(ArticleType::type(), []);
             });
     }
 
