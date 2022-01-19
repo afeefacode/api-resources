@@ -3,8 +3,6 @@
 namespace Afeefa\ApiResources\Tests\Resolver;
 
 use Afeefa\ApiResources\Action\Action;
-use Afeefa\ApiResources\Api\Api;
-use Afeefa\ApiResources\Api\ApiRequest;
 use Afeefa\ApiResources\Exception\Exceptions\InvalidConfigurationException;
 use Afeefa\ApiResources\Exception\Exceptions\MissingCallbackException;
 use Afeefa\ApiResources\Field\FieldBag;
@@ -13,23 +11,14 @@ use Afeefa\ApiResources\Field\Relation;
 use Afeefa\ApiResources\Model\Model;
 use Afeefa\ApiResources\Resolver\MutationActionSimpleResolver;
 use Afeefa\ApiResources\Resolver\MutationRelationHasOneResolver;
-use Afeefa\ApiResources\Test\ApiResourcesTest;
+use Afeefa\ApiResources\Test\MutationRelationTest;
+
 use function Afeefa\ApiResources\Test\T;
 
-use Closure;
 use stdClass;
 
-class MutationActionSimpleResolverTest extends ApiResourcesTest
+class MutationActionSimpleResolverTest extends MutationRelationTest
 {
-    private TestWatcher $testWatcher;
-
-    protected function setUp(): void
-    {
-        parent::setup();
-
-        $this->testWatcher = new TestWatcher();
-    }
-
     public function test_missing_save_callback()
     {
         $this->expectException(MissingCallbackException::class);
@@ -314,38 +303,5 @@ class MutationActionSimpleResolverTest extends ApiResourcesTest
             'object' => [new stdClass()],
             'nothing' => ['NOTHING']
         ];
-    }
-
-    private function createApiWithTypeAndAction(Closure $fieldsCallback, Closure $actionCallback): Api
-    {
-        return $this->apiBuilder()->api('API', function (Closure $addResource, Closure $addType) use ($fieldsCallback, $actionCallback) {
-            $addType('TYPE', $fieldsCallback);
-            $addResource('RES', function (Closure $addAction) use ($actionCallback) {
-                $addAction('ACT', $actionCallback);
-            });
-        })->get();
-    }
-
-    private function createApiWithAction(Closure $actionCallback): Api
-    {
-        return $this->apiBuilder()->api('API', function (Closure $addResource) use ($actionCallback) {
-            $addResource('RES', function (Closure $addAction) use ($actionCallback) {
-                $addAction('ACT', $actionCallback);
-            });
-        })->get();
-    }
-
-    private function request(Api $api, $data = 'unset', $params = []): array
-    {
-        return $api->request(function (ApiRequest $request) use ($params, $data) {
-            $request
-                ->resourceType('RES')
-                ->actionName('ACT')
-                ->params($params);
-
-            if ($data !== 'unset') {
-                $request->fieldsToSave($data);
-            }
-        });
     }
 }
