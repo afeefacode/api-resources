@@ -9,5 +9,12 @@ class MutationModelResolverTest extends MutationRelationTest
     public function test_create()
     {
         $this->assertTrue(true);
+
+        $api = $this->createApiWithTypeAndAction(
+            function () {
+            },
+            function () {
+            }
+        );
     }
 }

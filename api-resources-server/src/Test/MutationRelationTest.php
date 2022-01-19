@@ -68,7 +68,7 @@ class MutationRelationTest extends ApiResourcesTest
         })->get();
     }
 
-    protected function request(Api $api, ?array $data = null, $params = []): array
+    protected function request(Api $api, $data = 'unset', $params = []): array
     {
         return $api->request(function (ApiRequest $request) use ($data, $params) {
             $request
@@ -76,7 +76,7 @@ class MutationRelationTest extends ApiResourcesTest
                 ->actionName('ACT')
                 ->params($params);
 
-            if ($data !== null) {
+            if ($data !== 'unset') {
                 $request->fieldsToSave($data);
             }
         });

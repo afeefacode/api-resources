@@ -3,8 +3,6 @@
 namespace Afeefa\ApiResources\Tests\Resolver;
 
 use Afeefa\ApiResources\Action\Action;
-use Afeefa\ApiResources\Api\Api;
-use Afeefa\ApiResources\Api\ApiRequest;
 use Afeefa\ApiResources\Exception\Exceptions\InvalidConfigurationException;
 use Afeefa\ApiResources\Exception\Exceptions\MissingCallbackException;
 use Afeefa\ApiResources\Field\FieldBag;
@@ -14,23 +12,14 @@ use Afeefa\ApiResources\Model\Model;
 use Afeefa\ApiResources\Model\ModelInterface;
 use Afeefa\ApiResources\Resolver\MutationActionModelResolver;
 use Afeefa\ApiResources\Resolver\MutationRelationHasOneResolver;
-use Afeefa\ApiResources\Test\ApiResourcesTest;
+use Afeefa\ApiResources\Test\MutationRelationTest;
+
 use function Afeefa\ApiResources\Test\T;
 
-use Closure;
 use stdClass;
 
-class MutationActionModelResolverTest extends ApiResourcesTest
+class MutationActionModelResolverTest extends MutationRelationTest
 {
-    private TestWatcher $testWatcher;
-
-    protected function setUp(): void
-    {
-        parent::setup();
-
-        $this->testWatcher = new TestWatcher();
-    }
-
     private $should_update = false;
 
     /**
@@ -42,8 +31,7 @@ class MutationActionModelResolverTest extends ApiResourcesTest
         $n = in_array($missingCallback, ['add', 'update']) ? 'n' : '';
         $this->expectExceptionMessage("Resolver for action ACT on resource RES needs to implement a{$n} {$missingCallback}() method.");
 
-        $api = $this->createApiWithTypeAndAction(
-            fn () => null,
+        $api = $this->createApiWithAction(
             function (Action $action) use ($missingCallback) {
                 $action
                     ->input(T('TYPE'))
@@ -80,8 +68,7 @@ class MutationActionModelResolverTest extends ApiResourcesTest
 
     public function test_with_all_callbacks()
     {
-        $api = $this->createApiWithTypeAndAction(
-            fn () => null,
+        $api = $this->createApiWithAction(
             function (Action $action) {
                 $action
                     ->input(T('TYPE'))
@@ -763,7 +750,7 @@ class MutationActionModelResolverTest extends ApiResourcesTest
 
     public function deleteDataProvider()
     {
-        // [data fields, save fields]
+        // $fields, $expectedInfo, $expectedInfo2
         return [
             'with_id' => [
                 null,
@@ -771,38 +758,5 @@ class MutationActionModelResolverTest extends ApiResourcesTest
                 [['123', 'TYPE']]
             ]
         ];
-    }
-
-    private function createApiWithTypeAndAction(Closure $fieldsCallback, Closure $actionCallback): Api
-    {
-        return $this->apiBuilder()->api('API', function (Closure $addResource, Closure $addType) use ($fieldsCallback, $actionCallback) {
-            $addType('TYPE', $fieldsCallback);
-            $addResource('RES', function (Closure $addAction) use ($actionCallback) {
-                $addAction('ACT', $actionCallback);
-            });
-        })->get();
-    }
-
-    private function createApiWithAction(Closure $actionCallback): Api
-    {
-        return $this->apiBuilder()->api('API', function (Closure $addResource) use ($actionCallback) {
-            $addResource('RES', function (Closure $addAction) use ($actionCallback) {
-                $addAction('ACT', $actionCallback);
-            });
-        })->get();
-    }
-
-    private function request(Api $api, $data = 'unset', $params = []): array
-    {
-        return $api->request(function (ApiRequest $request) use ($params, $data) {
-            $request
-                ->resourceType('RES')
-                ->actionName('ACT')
-                ->params($params);
-
-            if ($data !== 'unset') {
-                $request->fieldsToSave($data);
-            }
-        });
     }
 }
