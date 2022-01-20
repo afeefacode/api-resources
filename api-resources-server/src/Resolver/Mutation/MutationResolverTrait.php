@@ -33,7 +33,7 @@ trait MutationResolverTrait
                     $relationResolver->addOwner($owner);
                 }
                 $relationResolver->resolve();
-                $relatedSaveFields = $relationResolver->getSaveRelatedToOwnerFields();
+                $relatedSaveFields = array_merge($relatedSaveFields, $relationResolver->getSaveRelatedToOwnerFields());
             }
         }
 
