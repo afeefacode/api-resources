@@ -25,7 +25,7 @@ class MutationRelationResolver extends BaseFieldResolver
 
     protected ?Closure $saveRelatedToOwnerCallback = null;
 
-    protected ?Closure $resolveAfterOwnerCallback = null;
+    protected ?Closure $saveOwnerToRelatedCallback = null;
 
     protected ?Closure $getCallback = null;
 
@@ -74,18 +74,18 @@ class MutationRelationResolver extends BaseFieldResolver
 
     public function saveOwnerToRelated(Closure $callback): self
     {
-        $this->resolveAfterOwnerCallback = $callback;
+        $this->saveOwnerToRelatedCallback = $callback;
         return $this;
     }
 
     public function shouldSaveOwnerToRelated(): bool
     {
-        return !!$this->resolveAfterOwnerCallback;
+        return !!$this->saveOwnerToRelatedCallback;
     }
 
     public function getSaveOwnerToRelatedFields(?string $id, ?string $typeName): array
     {
-        return ($this->resolveAfterOwnerCallback)($id, $typeName);
+        return ($this->saveOwnerToRelatedCallback)($id, $typeName);
     }
 
     public function ownerOperation(string $ownerOperation): self
