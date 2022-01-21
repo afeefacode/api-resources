@@ -52,7 +52,7 @@ export default class ArticleDetail extends Vue {
 
       action: Article.getAction('get_article'),
 
-      removeAction: Article.getAction('delete_article'),
+      removeAction: Article.getAction('save_article'),
 
       fields: {
         title: true,

@@ -20,7 +20,7 @@ export default class AuthorCreate extends Vue {
     return {
       ModelClass: Author,
 
-      createAction: Author.getAction('create_author'),
+      createAction: Author.getAction('save_author'),
 
       fields: {
         name: true

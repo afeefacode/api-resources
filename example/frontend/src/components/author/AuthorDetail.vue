@@ -52,7 +52,7 @@ export default class AuthorDetail extends Vue {
 
       action: Author.getAction('get_author'),
 
-      removeAction: Author.getAction('delete_author'),
+      removeAction: Author.getAction('save_author'),
 
       fields: {
         name: true,

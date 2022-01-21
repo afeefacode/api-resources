@@ -179,14 +179,7 @@ class ArticlesResolver
                     $where
                 );
 
-                if ($object === false) {
-                    throw new ApiException(([
-                        'error' => $db->error,
-                        'query' => $db->log()
-                    ]));
-                }
-
-                return Model::fromSingle(ArticleType::type(), $object);
+                return $object ? Model::fromSingle(ArticleType::type(), $object) : null;
             });
     }
 
@@ -203,6 +196,8 @@ class ArticlesResolver
             })
 
             ->add(function (string $typeName, array $saveFields) use ($db) {
+                $saveFields['date'] = date('Y-m-d H:i:s');
+
                 $db->insert(
                     'articles',
                     $saveFields
@@ -225,7 +220,8 @@ class ArticlesResolver
                 );
             })
 
-            ->forward(function (ApiRequest $apiRequest) {
+            ->forward(function (ApiRequest $apiRequest, Model $article) {
+                $apiRequest->param('id', $article->id);
                 $apiRequest->actionName('get_article');
             });
     }

@@ -84,27 +84,5 @@ class AuthorResource extends Resource
 
                 ->resolve([AuthorsResolver::class, 'save_author']);
         });
-
-        // $actions->add('create_author', function (Action $action) {
-        //     $action
-        //         ->input(AuthorType::class)
-
-        //         ->response(AuthorType::class)
-
-        //         ->resolve([AuthorsResolver::class, 'create_author']);
-        // });
-
-        // $actions->add('delete_author', function (Action $action) {
-        //     $action
-        //         ->params(function (ActionParams $params) {
-        //             $params->attribute('id', IdAttribute::class);
-        //         })
-
-        //         ->input(AuthorType::class)
-
-        //         ->response(AuthorType::class)
-
-        //         ->resolve([AuthorsResolver::class, 'delete_author']);
-        // });
     }
 }

@@ -25,7 +25,7 @@ export default class ArticleCreate extends Vue {
     return {
       ModelClass: Article,
 
-      createAction: Article.getAction('create_article')
+      createAction: Article.getAction('save_article')
     }
   }
 }

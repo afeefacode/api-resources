@@ -55,7 +55,7 @@ export class AuthorsConfig extends RouteConfig {
 
     Component: AuthorForm,
 
-    action: this.api.getAction('Example.AuthorResource', 'create_author'),
+    action: this.api.getAction('Example.AuthorResource', 'save_author'),
 
     fields: {
       name: true

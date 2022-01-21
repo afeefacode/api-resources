@@ -3,11 +3,9 @@
 namespace Backend\Resolvers;
 
 use Afeefa\ApiResources\Api\ApiRequest;
-use Afeefa\ApiResources\Exception\Exceptions\ApiException;
 use Afeefa\ApiResources\Model\Model;
 use Afeefa\ApiResources\Model\ModelInterface;
 use Afeefa\ApiResources\Resolver\MutationActionModelResolver;
-use Afeefa\ApiResources\Resolver\MutationActionSimpleResolver;
 use Afeefa\ApiResources\Resolver\MutationRelationLinkOneResolver;
 use Afeefa\ApiResources\Resolver\QueryActionResolver;
 use Afeefa\ApiResources\Resolver\QueryRelationResolver;
@@ -144,7 +142,7 @@ class AuthorsResolver
                     $where
                 );
 
-                return Model::fromSingle(AuthorType::type(), $object);
+                return $object ? Model::fromSingle(AuthorType::type(), $object) : null;
             });
     }
 
@@ -183,104 +181,9 @@ class AuthorsResolver
                 );
             })
 
-            ->forward(function (ApiRequest $apiRequest) {
+            ->forward(function (ApiRequest $apiRequest, Model $author) {
+                $apiRequest->param('id', $author->id);
                 $apiRequest->actionName('get_author');
-            });
-    }
-
-    public function update_author(MutationActionSimpleResolver $r, Medoo $db)
-    {
-        $r
-            ->get(function (string $id) use ($db) {
-                $object = $db->get(
-                    'authors',
-                    '*',
-                    ['id' => $id]
-                );
-                return Model::fromSingle(AuthorType::type(), $object);
-            })
-
-            ->save(function () use ($r, $db) {
-                $request = $r->getRequest();
-
-                $data = $r->getSaveFields();
-                $where = ['id' => $request->getParam('id')];
-
-                $result = $db->update(
-                    'authors',
-                    $data,
-                    $where
-                );
-
-                if ($result === false) {
-                    throw new ApiException(([
-                        'error' => $db->error,
-                        'query' => $db->log()
-                    ]));
-                }
-
-                return Model::fromSingle('TEST', []);
-            })
-
-            ->forward(function (ApiRequest $apiRequest) {
-                $apiRequest->actionName('get_author');
-            });
-    }
-
-    public function create_author(MutationActionSimpleResolver $r, Medoo $db)
-    {
-        $r
-            ->isCreate(function (array $saveFields) use ($r, $db) {
-                return true;
-            })
-
-            ->save(function () use ($r, $db) {
-                $data = $r->getSaveFields();
-
-                $stmt = $db->insert(
-                    'authors',
-                    $data
-                );
-
-                if ($stmt->errorCode() !== '00000') {
-                    throw new ApiException(([
-                        'error' => $db->error,
-                        'query' => $db->log()
-                    ]));
-                }
-
-                return Model::fromSingle(AuthorType::type(), [
-                    'id' => $db->id()
-                ]);
-            })
-
-            ->forward(function (ApiRequest $apiRequest, Model $model) {
-                $apiRequest
-                    ->param('id', $model->id)
-                    ->actionName('get_author');
-            });
-    }
-
-    public function delete_author(MutationActionSimpleResolver $r, Medoo $db)
-    {
-        $r
-            ->save(function () use ($r, $db) {
-                $request = $r->getRequest();
-                $where = ['id' => $request->getParam('id')];
-
-                $stmt = $db->delete(
-                    'authors',
-                    $where
-                );
-
-                if (!$stmt) {
-                    throw new ApiException(([
-                        'error' => $db->error,
-                        'query' => $db->log()
-                    ]));
-                }
-
-                return Model::fromSingle(AuthorType::type(), []);
             });
     }
 
