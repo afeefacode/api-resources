@@ -43,23 +43,18 @@ class AuthorType extends ModelType
 
     protected function updateFields(FieldBag $fields): void
     {
-        $fields->get('name')
-            ->validate(function (VarcharValidator $v) {
+        $fields->attribute('name', function (VarcharAttribute $attribute) {
+            $attribute->validate(function (VarcharValidator $v) {
                 $v
                     ->filled()
                     ->min(5)
                     ->max(101);
             });
-
-        $fields->allow([
-            'name'
-        ]);
+        });
     }
 
-    protected function createFields(FieldBag $fields): void
+    protected function createFields(FieldBag $createFields, FieldBag $updateFields): void
     {
-        $fields->allow([
-            'name'
-        ]);
+        $createFields->from($updateFields, 'name');
     }
 }

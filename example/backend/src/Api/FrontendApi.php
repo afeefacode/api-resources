@@ -31,10 +31,6 @@ class FrontendApi extends Api
     {
         $types->get(function (AuthorType $authorType) {
             $authorType->fields(function (FieldBag $fields) {
-                $fields->allow([
-                    'title',
-                    'name'
-                ])
             });
         });
     }
