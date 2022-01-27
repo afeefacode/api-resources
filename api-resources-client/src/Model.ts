@@ -95,10 +95,10 @@ export class Model {
     }
 
     const type: Type = apiResources.getType(this.type) as Type
-    for (const name of Object.keys(type.getUpdateFields())) {
+    for (const [name, field] of Object.entries(type.getUpdateFields())) {
       if (!fields || fields[name]) {
         // TODO clone relations too
-        model[name] = this[name]
+        model[name] = this[name] || field.default()
       }
     }
 
