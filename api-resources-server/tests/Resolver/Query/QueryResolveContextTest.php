@@ -3,7 +3,7 @@
 namespace Afeefa\ApiResources\Tests\Resolver\Query;
 
 use Afeefa\ApiResources\Field\FieldBag;
-use Afeefa\ApiResources\Field\Fields\VarcharAttribute;
+use Afeefa\ApiResources\Field\Fields\StringAttribute;
 use Afeefa\ApiResources\Field\Relation;
 use Afeefa\ApiResources\Model\Model;
 use Afeefa\ApiResources\Resolver\Query\QueryResolveContext;
@@ -31,7 +31,7 @@ class QueryResolveContextTest extends ApiResourcesTest
     public function test_simple()
     {
         $type = $this->createType(function (FieldBag $fields) {
-            $fields->attribute('name', VarcharAttribute::class);
+            $fields->attribute('name', StringAttribute::class);
             $fields->relation('some_relation', T('TEST'), $this->createRelationResolver());
         });
 
@@ -56,7 +56,7 @@ class QueryResolveContextTest extends ApiResourcesTest
     public function test_normalizes()
     {
         $type = $this->createType(function (FieldBag $fields) {
-            $fields->attribute('name', VarcharAttribute::class);
+            $fields->attribute('name', StringAttribute::class);
             $fields->relation('some_relation', T('TEST'), $this->createRelationResolver());
             $fields->relation('relation2', T('TEST'), $this->createRelationResolver());
         });
@@ -92,13 +92,13 @@ class QueryResolveContextTest extends ApiResourcesTest
     public function test_normalizes2()
     {
         $type = $this->createType(function (FieldBag $fields) {
-            $fields->attribute('name', VarcharAttribute::class);
+            $fields->attribute('name', StringAttribute::class);
             $fields->relation('some_relation', T('TEST2'), $this->createRelationResolver());
             $fields->relation('other_relation', T('TEST2'), $this->createRelationResolver());
         });
 
         $type2 = $this->createType(function (FieldBag $fields) {
-            $fields->attribute('name', VarcharAttribute::class);
+            $fields->attribute('name', StringAttribute::class);
             $fields->relation('some_relation2', T('TEST'), $this->createRelationResolver());
             $fields->relation('other_relation', T('TEST'), $this->createRelationResolver());
         }, 'TEST2');
@@ -152,14 +152,14 @@ class QueryResolveContextTest extends ApiResourcesTest
     public function test_normalizes3()
     {
         $type = $this->createType(function (FieldBag $fields) {
-            $fields->attribute('name', VarcharAttribute::class);
-            $fields->attribute('name3', VarcharAttribute::class);
+            $fields->attribute('name', StringAttribute::class);
+            $fields->attribute('name3', StringAttribute::class);
             $fields->relation('some_relation', T('TEST'), $this->createRelationResolver());
         });
 
         $type2 = $this->createType(function (FieldBag $fields) {
-            $fields->attribute('name', VarcharAttribute::class);
-            $fields->attribute('name2', VarcharAttribute::class);
+            $fields->attribute('name', StringAttribute::class);
+            $fields->attribute('name2', StringAttribute::class);
         }, 'TEST2');
 
         $fields = [
@@ -200,7 +200,7 @@ class QueryResolveContextTest extends ApiResourcesTest
     public function test_normalizes_null()
     {
         $type = $this->createType(function (FieldBag $fields) {
-            $fields->attribute('name', VarcharAttribute::class);
+            $fields->attribute('name', StringAttribute::class);
             $fields->relation('some_relation', T('TEST'));
         });
 
@@ -220,10 +220,10 @@ class QueryResolveContextTest extends ApiResourcesTest
     public function test_normalizes_attributes()
     {
         $type = $this->createType(function (FieldBag $fields) {
-            $fields->attribute('name', VarcharAttribute::class);
-            $fields->attribute('name2', VarcharAttribute::class);
-            $fields->attribute('name3', VarcharAttribute::class);
-            $fields->attribute('name4', VarcharAttribute::class);
+            $fields->attribute('name', StringAttribute::class);
+            $fields->attribute('name2', StringAttribute::class);
+            $fields->attribute('name3', StringAttribute::class);
+            $fields->attribute('name4', StringAttribute::class);
         });
 
         $resolveContext = $this->createResolveContext($type, [
@@ -244,7 +244,7 @@ class QueryResolveContextTest extends ApiResourcesTest
     public function test_normalizes_relations()
     {
         $type = $this->createType(function (FieldBag $fields) {
-            $fields->attribute('name', VarcharAttribute::class);
+            $fields->attribute('name', StringAttribute::class);
             $fields->relation('some_relation', T('TEST'), $this->createRelationResolver());
             $fields->relation('relation2', T('TEST'), $this->createRelationResolver());
             $fields->relation('relation3', T('TEST'), $this->createRelationResolver());
@@ -273,7 +273,7 @@ class QueryResolveContextTest extends ApiResourcesTest
     public function test_normalizes_nested()
     {
         $type = $this->createType(function (FieldBag $fields) {
-            $fields->attribute('name', VarcharAttribute::class);
+            $fields->attribute('name', StringAttribute::class);
             $fields->relation('some_relation', T('TEST'), $this->createRelationResolver());
         });
 
@@ -341,7 +341,7 @@ class QueryResolveContextTest extends ApiResourcesTest
     public function test_get_nested()
     {
         $type = $this->createType(function (FieldBag $fields) {
-            $fields->attribute('name', VarcharAttribute::class);
+            $fields->attribute('name', StringAttribute::class);
             $fields->relation('some_relation', T('TEST'), $this->createRelationResolver());
         });
 
@@ -367,7 +367,7 @@ class QueryResolveContextTest extends ApiResourcesTest
     {
         $type = $this->createType(function (FieldBag $fields) {
             $fields
-                ->attribute('name', function (VarcharAttribute $attribute) {
+                ->attribute('name', function (StringAttribute $attribute) {
                     $attribute->resolve(function (QueryAttributeResolver $r) {
                         $this->testWatcher->called();
                         $r->load(function () {
@@ -375,7 +375,7 @@ class QueryResolveContextTest extends ApiResourcesTest
                         });
                     });
                 })
-                ->attribute('title', function (VarcharAttribute $attribute) {
+                ->attribute('title', function (StringAttribute $attribute) {
                     $attribute->resolve(function (QueryAttributeResolver $r) {
                         $this->testWatcher->called();
                         $r->load(function () {

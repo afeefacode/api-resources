@@ -3,7 +3,7 @@
 namespace Backend\Types;
 
 use Afeefa\ApiResources\Field\FieldBag;
-use Afeefa\ApiResources\Field\Fields\VarcharAttribute;
+use Afeefa\ApiResources\Field\Fields\StringAttribute;
 use Afeefa\ApiResources\Field\Relation;
 use Afeefa\ApiResources\Type\Type;
 use Backend\Resolvers\TagsResolver;
@@ -15,7 +15,7 @@ class TagType extends Type
     protected function fields(FieldBag $fields): void
     {
         $fields
-            ->attribute('name', VarcharAttribute::class)
+            ->attribute('name', StringAttribute::class)
 
             ->relation('users', [AuthorType::class, ArticleType::class], function (Relation $relation) {
                 $relation->resolve([TagsResolver::class, 'resolve_tag_users_relation']);

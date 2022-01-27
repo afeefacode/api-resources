@@ -7,7 +7,7 @@ use Afeefa\ApiResources\Api\Api;
 use Afeefa\ApiResources\Exception\Exceptions\InvalidConfigurationException;
 use Afeefa\ApiResources\Exception\Exceptions\MissingCallbackException;
 use Afeefa\ApiResources\Field\FieldBag;
-use Afeefa\ApiResources\Field\Fields\VarcharAttribute;
+use Afeefa\ApiResources\Field\Fields\StringAttribute;
 use Afeefa\ApiResources\Field\Relation;
 use Afeefa\ApiResources\Model\Model;
 use Afeefa\ApiResources\Resolver\QueryActionResolver;
@@ -28,7 +28,7 @@ class QueryRelationResolverTest extends QueryTest
         $api = $this->createApiWithTypeAndAction(
             function (FieldBag $fields) {
                 $fields
-                    ->attribute('title', VarcharAttribute::class)
+                    ->attribute('title', StringAttribute::class)
                     ->relation('other', T('TYPE'), function (Relation $relation) {
                         $relation->resolve(function (QueryRelationResolver $r) {
                             $r->load(function (array $owners) {
@@ -70,7 +70,7 @@ class QueryRelationResolverTest extends QueryTest
         $api = $this->createApiWithTypeAndAction(
             function (FieldBag $fields) {
                 $fields
-                    ->attribute('title', VarcharAttribute::class)
+                    ->attribute('title', StringAttribute::class)
                     ->relation('other', T('TYPE'), function (Relation $relation) {
                         $relation->resolve(function (QueryRelationResolver $r) {
                             $r->load(function (array $owners) {
@@ -110,7 +110,7 @@ class QueryRelationResolverTest extends QueryTest
         $api = $this->createApiWithTypeAndAction(
             function (FieldBag $fields) {
                 $fields
-                    ->attribute('title', VarcharAttribute::class)
+                    ->attribute('title', StringAttribute::class)
                     ->relation('other', T('TYPE'), function (Relation $relation) {
                         $relation->resolve(function (QueryRelationResolver $r) {
                             $r->load(function (array $owners) {
@@ -155,7 +155,7 @@ class QueryRelationResolverTest extends QueryTest
         $api = $this->createApiWithTypeAndAction(
             function (FieldBag $fields) {
                 $fields
-                    ->attribute('title', VarcharAttribute::class)
+                    ->attribute('title', StringAttribute::class)
                     ->relation('other', T('TYPE'), function (Relation $relation) {
                         $relation->resolve(function (QueryRelationResolver $r) {
                             $r->load(function (array $owners) {
@@ -198,7 +198,7 @@ class QueryRelationResolverTest extends QueryTest
         $api = $this->createApiWithTypeAndAction(
             function (FieldBag $fields) {
                 $fields
-                    ->attribute('title', VarcharAttribute::class)
+                    ->attribute('title', StringAttribute::class)
                     ->relation('other', T('TYPE'), function (Relation $relation) {
                         $relation->resolve(function (QueryRelationResolver $r) {
                             $r->load(function (array $owners) use ($r) {
@@ -259,7 +259,7 @@ class QueryRelationResolverTest extends QueryTest
         $api = $this->createApiWithTypeAndAction(
             function (FieldBag $fields) {
                 $fields
-                    ->attribute('title', VarcharAttribute::class)
+                    ->attribute('title', StringAttribute::class)
                     ->relation('other', T('TYPE'), function (Relation $relation) {
                         $relation->resolve(function (QueryRelationResolver $r) {
                             $r->load(function (array $owners) use ($r) {
@@ -327,7 +327,7 @@ class QueryRelationResolverTest extends QueryTest
         $api = $this->createApiWithTypeAndAction(
             function (FieldBag $fields) {
                 $fields
-                    ->attribute('title', VarcharAttribute::class)
+                    ->attribute('title', StringAttribute::class)
                     ->relation('others', Type::list(T('TYPE')), function (Relation $relation) {
                         $relation->resolve(function (QueryRelationResolver $r) {
                             $r->load(function (array $owners) use ($r) {
@@ -392,7 +392,7 @@ class QueryRelationResolverTest extends QueryTest
         $api = $this->createApiWithTypeAndAction(
             function (FieldBag $fields) {
                 $fields
-                    ->attribute('title', VarcharAttribute::class)
+                    ->attribute('title', StringAttribute::class)
                     ->relation('others', Type::list(T('TYPE')), function (Relation $relation) {
                         $relation->resolve(function (QueryRelationResolver $r) {
                             $r->load(function (array $owners) use ($r) {
@@ -486,7 +486,7 @@ class QueryRelationResolverTest extends QueryTest
         $api = $this->createApiWithTypeAndAction(
             function (FieldBag $fields) {
                 $fields
-                    ->attribute('title', VarcharAttribute::class)
+                    ->attribute('title', StringAttribute::class)
                     ->relation('other', T('TYPE'), function (Relation $relation) {
                         $relation->resolve(function (QueryRelationResolver $r) {
                             $r->load(function (array $owners) use ($r) {
@@ -609,7 +609,7 @@ class QueryRelationResolverTest extends QueryTest
         $api = $this->createApiWithTypeAndAction(
             function (FieldBag $fields) {
                 $fields
-                    ->attribute('title', VarcharAttribute::class)
+                    ->attribute('title', StringAttribute::class)
                     ->relation('others', Type::list(T('TYPE')), function (Relation $relation) {
                         $relation->resolve(function (QueryRelationResolver $r) {
                             $r
@@ -868,8 +868,8 @@ class QueryRelationResolverTest extends QueryTest
         $api = $this->createApiWithTypeAndAction(
             function (FieldBag $fields) {
                 $fields
-                    ->attribute('name', VarcharAttribute::class)
-                    ->attribute('title', VarcharAttribute::class)
+                    ->attribute('name', StringAttribute::class)
+                    ->attribute('title', StringAttribute::class)
                     ->relation('other', T('TYPE'), function (Relation $relation) {
                         $relation->resolve(function (QueryRelationResolver $r) {
                             $r->load(function (array $owners) use ($r) {
@@ -1052,7 +1052,7 @@ class QueryRelationResolverTest extends QueryTest
         $api = $this->createApiWithTypeAndAction(
             function (FieldBag $fields) {
                 $fields
-                    ->attribute('title', VarcharAttribute::class)
+                    ->attribute('title', StringAttribute::class)
                     ->relation('other', T('TYPE'), function (Relation $relation) {
                         $relation->resolve(function (QueryRelationResolver $r) {
                             $r->ownerIdFields(['owner_other_id']);
@@ -1089,7 +1089,7 @@ class QueryRelationResolverTest extends QueryTest
         $api = $this->createApiWithTypeAndAction(
             function (FieldBag $fields) {
                 $fields
-                    ->attribute('title', VarcharAttribute::class)
+                    ->attribute('title', StringAttribute::class)
                     ->relation('other', T('TYPE'), function (Relation $relation) {
                         $relation->resolve(function (TestRelationResolver $r) {
                             $r->load(function () use ($r) {

@@ -1,7 +1,7 @@
 import { Attribute } from '../Attribute';
 import { FieldValue } from '../Field';
-export declare class TextAttribute extends Attribute {
+export declare class StringAttribute extends Attribute {
     static type: string;
     default(): FieldValue;
 }
-//# sourceMappingURL=TextAttribute.d.ts.map
+//# sourceMappingURL=StringAttribute.d.ts.map

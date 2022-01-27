@@ -5,9 +5,9 @@ import { EnumAttribute } from './EnumAttribute';
 import { IdAttribute } from './IdAttribute';
 import { IntAttribute } from './IntAttribute';
 import { NumberAttribute } from './NumberAttribute';
-import { VarcharAttribute } from './VarcharAttribute';
+import { StringAttribute } from './StringAttribute';
 export const fields = [
-    new VarcharAttribute(),
+    new StringAttribute(),
     new BooleanAttribute(),
     new IdAttribute(),
     new DateAttribute(),

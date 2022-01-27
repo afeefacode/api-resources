@@ -1,8 +1,8 @@
 import { LinkOneValidator } from './LinkOneValidator';
 import { SelectValidator } from './SelectValidator';
-import { VarcharValidator } from './VarcharValidator';
+import { StringValidator } from './StringValidator';
 export declare const validators: {
-    'Afeefa.VarcharValidator': VarcharValidator;
+    'Afeefa.StringValidator': StringValidator;
     'Afeefa.LinkOneValidator': LinkOneValidator;
     'Afeefa.SelectValidator': SelectValidator;
 };

@@ -6,7 +6,7 @@ use Afeefa\ApiResources\Action\Action;
 use Afeefa\ApiResources\Exception\Exceptions\InvalidConfigurationException;
 use Afeefa\ApiResources\Exception\Exceptions\MissingCallbackException;
 use Afeefa\ApiResources\Field\FieldBag;
-use Afeefa\ApiResources\Field\Fields\VarcharAttribute;
+use Afeefa\ApiResources\Field\Fields\StringAttribute;
 use Afeefa\ApiResources\Field\Relation;
 use Afeefa\ApiResources\Model\Model;
 use Afeefa\ApiResources\Model\ModelInterface;
@@ -100,7 +100,7 @@ class MutationActionModelResolverTest extends MutationRelationTest
         $api = $this->createApiWithUpdateTypeAndAction(
             function (FieldBag $fields) {
                 $fields
-                    ->attribute('name', VarcharAttribute::class);
+                    ->attribute('name', StringAttribute::class);
             },
             function (Action $action) {
                 $action
@@ -166,8 +166,8 @@ class MutationActionModelResolverTest extends MutationRelationTest
         $api = $this->createApiWithUpdateTypeAndAction(
             function (FieldBag $fields) {
                 $fields
-                    ->attribute('name', VarcharAttribute::class)
-                    ->attribute('title', VarcharAttribute::class);
+                    ->attribute('name', StringAttribute::class)
+                    ->attribute('title', StringAttribute::class);
             },
             function (Action $action) {
                 $action
@@ -248,8 +248,8 @@ class MutationActionModelResolverTest extends MutationRelationTest
         $api = $this->createApiWithUpdateTypeAndAction(
             function (FieldBag $fields) {
                 $fields
-                    ->attribute('name', VarcharAttribute::class)
-                    ->attribute('title', VarcharAttribute::class)
+                    ->attribute('name', StringAttribute::class)
+                    ->attribute('title', StringAttribute::class)
                     ->relation('relation', T('TYPE'), function (Relation $relation) {
                         $relation->resolveSave(function (MutationRelationHasOneResolver $r) {
                             $r
@@ -429,8 +429,8 @@ class MutationActionModelResolverTest extends MutationRelationTest
         $api = $this->createApiWithUpdateTypeAndAction(
             function (FieldBag $fields) {
                 $fields
-                    ->attribute('name', VarcharAttribute::class)
-                    ->attribute('title', VarcharAttribute::class)
+                    ->attribute('name', StringAttribute::class)
+                    ->attribute('title', StringAttribute::class)
                     ->relation('relation', T('TYPE'), function (Relation $relation) {
                         $relation->resolveSave(function (MutationRelationHasOneResolver $r) {
                             $r
@@ -708,7 +708,7 @@ class MutationActionModelResolverTest extends MutationRelationTest
         $api = $this->createApiWithUpdateTypeAndAction(
             function (FieldBag $fields) {
                 $fields
-                    ->attribute('name', VarcharAttribute::class);
+                    ->attribute('name', StringAttribute::class);
             },
             function (Action $action) {
                 $action

@@ -7,11 +7,11 @@ use Afeefa\ApiResources\Bag\NotABagEntryException;
 use Afeefa\ApiResources\Exception\Exceptions\NotATypeException;
 use Afeefa\ApiResources\Exception\Exceptions\NotATypeOrCallbackException;
 use Afeefa\ApiResources\Field\FieldBag;
-use Afeefa\ApiResources\Field\Fields\VarcharAttribute;
+use Afeefa\ApiResources\Field\Fields\StringAttribute;
 use Afeefa\ApiResources\Test\ApiResourcesTest;
 use function Afeefa\ApiResources\Test\T;
 
-use Afeefa\ApiResources\Validator\Validators\VarcharValidator;
+use Afeefa\ApiResources\Validator\Validators\StringValidator;
 
 class FieldBagTest extends ApiResourcesTest
 {
@@ -21,7 +21,7 @@ class FieldBagTest extends ApiResourcesTest
 
         $this->assertEquals(0, $fields->numEntries());
 
-        $fields->attribute('name', VarcharAttribute::class);
+        $fields->attribute('name', StringAttribute::class);
 
         $this->assertEquals(1, $fields->numEntries());
     }
@@ -81,7 +81,7 @@ class FieldBagTest extends ApiResourcesTest
         $this->assertFalse($fields->has('name'));
         $this->assertFalse($fields->has('name', true));
 
-        $fields->attribute('name', VarcharAttribute::class);
+        $fields->attribute('name', StringAttribute::class);
 
         $this->assertTrue($fields->has('name'));
         $this->assertTrue($fields->has('name', true));
@@ -90,7 +90,7 @@ class FieldBagTest extends ApiResourcesTest
     public function test_from()
     {
         $fields = $this->container->create(FieldBag::class);
-        $fields->attribute('name', VarcharAttribute::class);
+        $fields->attribute('name', StringAttribute::class);
 
         $fields2 = $this->container->create(FieldBag::class);
         $fields2->from($fields, 'name');
@@ -103,10 +103,10 @@ class FieldBagTest extends ApiResourcesTest
     {
         /** @var FieldBag */
         $fields = $this->container->create(FieldBag::class);
-        $fields->attribute('name', function (VarcharAttribute $attribute) {
+        $fields->attribute('name', function (StringAttribute $attribute) {
             $attribute
                 ->required()
-                ->validate(function (VarcharValidator $v) {
+                ->validate(function (StringValidator $v) {
                     $v->min(10);
                 })
                 ->options([1])
@@ -130,7 +130,7 @@ class FieldBagTest extends ApiResourcesTest
 
         $this->assertSame($field->getValidator()->getParams(), $field2->getValidator()->getParams());
 
-        /** @var VarcharValidator */
+        /** @var StringValidator */
         $validator = $field2->getValidator();
         $validator->max(5);
         $this->assertNotSame($field->getValidator()->getParams(), $field2->getValidator()->getParams());

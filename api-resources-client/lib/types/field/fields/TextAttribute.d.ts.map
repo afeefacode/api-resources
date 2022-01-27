@@ -1,1 +1,0 @@
-{"version":3,"file":"TextAttribute.d.ts","sourceRoot":"","sources":["../../../../src/field/fields/TextAttribute.ts"],"names":[],"mappings":"AAAA,OAAO,EAAE,SAAS,EAAE,MAAM,cAAc,CAAA;AACxC,OAAO,EAAE,UAAU,EAAE,MAAM,UAAU,CAAA;AAErC,qBAAa,aAAc,SAAQ,SAAS;IAC1C,OAAc,IAAI,EAAE,MAAM,CAAyB;IAE5C,OAAO,IAAK,UAAU;CAG9B"}

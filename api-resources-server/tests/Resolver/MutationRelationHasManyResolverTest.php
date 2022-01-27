@@ -5,7 +5,7 @@ namespace Afeefa\ApiResources\Tests\Resolver;
 use Afeefa\ApiResources\Exception\Exceptions\InvalidConfigurationException;
 use Afeefa\ApiResources\Exception\Exceptions\MissingCallbackException;
 use Afeefa\ApiResources\Field\FieldBag;
-use Afeefa\ApiResources\Field\Fields\VarcharAttribute;
+use Afeefa\ApiResources\Field\Fields\StringAttribute;
 use Afeefa\ApiResources\Field\Relation;
 use Afeefa\ApiResources\Model\Model;
 use Afeefa\ApiResources\Model\ModelInterface;
@@ -93,7 +93,7 @@ class MutationRelationHasManyResolverTest extends MutationRelationTest
         $api = $this->createApiWithUpdateType(
             function (FieldBag $fields) {
                 $fields
-                    ->attribute('name', VarcharAttribute::class)
+                    ->attribute('name', StringAttribute::class)
                     ->relation('others', Type::list(T('TYPE')), function (Relation $relation) {
                         $relation->resolveSave(function (MutationRelationHasManyResolver $r) {
                             $r
@@ -178,7 +178,7 @@ class MutationRelationHasManyResolverTest extends MutationRelationTest
         $api = $this->createApiWithUpdateType(
             function (FieldBag $fields) {
                 $fields
-                    ->attribute('name', VarcharAttribute::class)
+                    ->attribute('name', StringAttribute::class)
                     ->relation('others', Type::list(T('TYPE')), function (Relation $relation) {
                         $relation->resolveSave(function (MutationRelationHasManyResolver $r) {
                             $r
@@ -451,7 +451,7 @@ class MutationRelationHasManyResolverTest extends MutationRelationTest
         $api = $this->createApiWithUpdateType(
             function (FieldBag $fields) {
                 $fields
-                    ->attribute('name', VarcharAttribute::class)
+                    ->attribute('name', StringAttribute::class)
                     ->relation('others', Type::list(T('TYPE')), function (Relation $relation) {
                         $relation->resolveSave(function (MutationRelationHasManyResolver $r) {
                             $r
@@ -531,7 +531,7 @@ class MutationRelationHasManyResolverTest extends MutationRelationTest
         $api = $this->createApiWithUpdateType(
             function (FieldBag $fields) {
                 $fields
-                    ->attribute('name', VarcharAttribute::class)
+                    ->attribute('name', StringAttribute::class)
                     ->relation('others', Type::list(T('TYPE')), function (Relation $relation) {
                         $relation->resolveSave(function (MutationRelationHasManyResolver $r) {
                             $r

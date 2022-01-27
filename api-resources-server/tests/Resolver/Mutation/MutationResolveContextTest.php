@@ -3,7 +3,7 @@
 namespace Afeefa\ApiResources\Tests\Resolver\Mutation;
 
 use Afeefa\ApiResources\Field\FieldBag;
-use Afeefa\ApiResources\Field\Fields\VarcharAttribute;
+use Afeefa\ApiResources\Field\Fields\StringAttribute;
 use Afeefa\ApiResources\Field\Relation;
 use Afeefa\ApiResources\Resolver\Mutation\MutationRelationResolver;
 use Afeefa\ApiResources\Resolver\Mutation\MutationResolveContext;
@@ -29,7 +29,7 @@ class MutationResolveContextTest extends ApiResourcesTest
     public function test_simple()
     {
         $type = $this->createType(function (FieldBag $fields) {
-            $fields->attribute('name', VarcharAttribute::class);
+            $fields->attribute('name', StringAttribute::class);
             $fields->relation('some_relation', T('TEST'), $this->createRelationResolver());
         });
 
@@ -112,7 +112,7 @@ class MutationResolveContextTest extends ApiResourcesTest
     public function test_create_only_one_relation_resolver_for_each_relation()
     {
         $type = $this->createType(function (FieldBag $fields) {
-            $fields->attribute('name', VarcharAttribute::class);
+            $fields->attribute('name', StringAttribute::class);
             $fields->relation('some_relation', Type::list(T('TEST')), $this->createRelationResolver(function (MutationRelationResolver $r) {
                 $this->testWatcher->called();
             }));
@@ -136,7 +136,7 @@ class MutationResolveContextTest extends ApiResourcesTest
     public function test_save_fields()
     {
         $type = $this->createType(function (FieldBag $fields) {
-            $fields->attribute('name', VarcharAttribute::class);
+            $fields->attribute('name', StringAttribute::class);
         });
 
         $resolveContext = $this->createResolveContext($type, [
@@ -175,7 +175,7 @@ class MutationResolveContextTest extends ApiResourcesTest
         $this->expectExceptionMessage('Value passed to the singular relation some_relation must be null or an array.');
 
         $type = $this->createType(function (FieldBag $fields) {
-            $fields->attribute('name', VarcharAttribute::class);
+            $fields->attribute('name', StringAttribute::class);
             $fields->relation('some_relation', T('TEST'), $this->createRelationResolver(function (MutationRelationResolver $r) {
             }));
         });
@@ -204,7 +204,7 @@ class MutationResolveContextTest extends ApiResourcesTest
         $this->expectExceptionMessage('Value passed to the many relation some_relation must be an array.');
 
         $type = $this->createType(function (FieldBag $fields) {
-            $fields->attribute('name', VarcharAttribute::class);
+            $fields->attribute('name', StringAttribute::class);
             $fields->relation('some_relation', Type::list(T('TEST')), $this->createRelationResolver(function (MutationRelationResolver $r) {
             }));
         });

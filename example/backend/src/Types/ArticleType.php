@@ -6,11 +6,11 @@ use Afeefa\ApiResources\Api\ApiRequest;
 use Afeefa\ApiResources\Field\Attribute;
 use Afeefa\ApiResources\Field\FieldBag;
 use Afeefa\ApiResources\Field\Fields\DateAttribute;
-use Afeefa\ApiResources\Field\Fields\VarcharAttribute;
+use Afeefa\ApiResources\Field\Fields\StringAttribute;
 use Afeefa\ApiResources\Field\Relation;
 use Afeefa\ApiResources\Type\Type;
 use Afeefa\ApiResources\Validator\Validators\LinkOneValidator;
-use Afeefa\ApiResources\Validator\Validators\VarcharValidator;
+use Afeefa\ApiResources\Validator\Validators\StringValidator;
 use Backend\Resolvers\AuthorsResolver;
 use Backend\Resolvers\CommentsResolver;
 use Backend\Resolvers\TagsResolver;
@@ -32,11 +32,11 @@ class ArticleType extends Type
 
     protected function fields(FieldBag $fields): void
     {
-        $fields->attribute('title', VarcharAttribute::class)
+        $fields->attribute('title', StringAttribute::class)
 
-            ->attribute('summary', VarcharAttribute::class)
+            ->attribute('summary', StringAttribute::class)
 
-            ->attribute('content', VarcharAttribute::class)
+            ->attribute('content', StringAttribute::class)
 
             ->attribute('date', DateAttribute::class)
 
@@ -56,9 +56,9 @@ class ArticleType extends Type
     protected function updateFields(FieldBag $updateFields): void
     {
         $updateFields
-            ->attribute('title', function (VarcharAttribute $attribute) {
+            ->attribute('title', function (StringAttribute $attribute) {
                 $attribute
-                    ->validate(function (VarcharValidator $v) {
+                    ->validate(function (StringValidator $v) {
                         $v
                             ->filled()
                             ->min(5)
@@ -66,16 +66,16 @@ class ArticleType extends Type
                     });
             })
 
-            ->attribute('summary', function (VarcharAttribute $attribute) {
+            ->attribute('summary', function (StringAttribute $attribute) {
                 $attribute
-                    ->validate(function (VarcharValidator $v) {
+                    ->validate(function (StringValidator $v) {
                         $v
                             ->min(3)
                             ->max(200);
                     });
             })
 
-            ->attribute('content', VarcharAttribute::class)
+            ->attribute('content', StringAttribute::class)
 
             ->attribute('date', DateAttribute::class)
 

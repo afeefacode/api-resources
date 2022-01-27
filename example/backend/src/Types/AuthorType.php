@@ -3,10 +3,10 @@
 namespace Backend\Types;
 
 use Afeefa\ApiResources\Field\FieldBag;
-use Afeefa\ApiResources\Field\Fields\VarcharAttribute;
+use Afeefa\ApiResources\Field\Fields\StringAttribute;
 use Afeefa\ApiResources\Field\Relation;
 use Afeefa\ApiResources\Type\Type;
-use Afeefa\ApiResources\Validator\Validators\VarcharValidator;
+use Afeefa\ApiResources\Validator\Validators\StringValidator;
 use Backend\Resolvers\ArticlesResolver;
 use Backend\Resolvers\TagsResolver;
 
@@ -27,9 +27,9 @@ class AuthorType extends Type
     protected function fields(FieldBag $fields): void
     {
         $fields
-            ->attribute('name', VarcharAttribute::class)
+            ->attribute('name', StringAttribute::class)
 
-            ->attribute('email', VarcharAttribute::class)
+            ->attribute('email', StringAttribute::class)
 
             ->relation('articles', ArticleType::class, function (Relation $relation) {
                 $relation->resolve([ArticlesResolver::class, 'resolve_articles_relation']);
@@ -42,8 +42,8 @@ class AuthorType extends Type
 
     protected function updateFields(FieldBag $updateFields): void
     {
-        $updateFields->attribute('name', function (VarcharAttribute $attribute) {
-            $attribute->validate(function (VarcharValidator $v) {
+        $updateFields->attribute('name', function (StringAttribute $attribute) {
+            $attribute->validate(function (StringValidator $v) {
                 $v
                     ->filled()
                     ->min(5)

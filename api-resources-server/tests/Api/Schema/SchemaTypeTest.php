@@ -5,14 +5,14 @@ namespace Afeefa\ApiResources\Tests\Api\Schema;
 use Afeefa\ApiResources\Action\Action;
 use Afeefa\ApiResources\Exception\Exceptions\MissingTypeException;
 use Afeefa\ApiResources\Field\FieldBag;
-use Afeefa\ApiResources\Field\Fields\VarcharAttribute;
+use Afeefa\ApiResources\Field\Fields\StringAttribute;
 use Afeefa\ApiResources\Test\ApiResourcesTest;
 use function Afeefa\ApiResources\Test\createApiWithSingleResource;
 
 use function Afeefa\ApiResources\Test\createApiWithSingleType;
 use function Afeefa\ApiResources\Test\T;
 use Afeefa\ApiResources\Type\Type;
-use Afeefa\ApiResources\Validator\Validators\VarcharValidator;
+use Afeefa\ApiResources\Validator\Validators\StringValidator;
 use Closure;
 
 class SchemaTypeTest extends ApiResourcesTest
@@ -23,8 +23,8 @@ class SchemaTypeTest extends ApiResourcesTest
             'Test.Type',
             function (FieldBag $fields) {
                 $fields
-                    ->attribute('title', VarcharAttribute::class)
-                    ->attribute('name', VarcharAttribute::class)
+                    ->attribute('title', StringAttribute::class)
+                    ->attribute('name', StringAttribute::class)
                     ->relation('related_type', T('Test.Type'));
             }
         );
@@ -38,10 +38,10 @@ class SchemaTypeTest extends ApiResourcesTest
                 'translations' => [],
                 'fields' => [
                     'title' => [
-                        'type' => 'Afeefa.VarcharAttribute'
+                        'type' => 'Afeefa.StringAttribute'
                     ],
                     'name' => [
-                        'type' => 'Afeefa.VarcharAttribute'
+                        'type' => 'Afeefa.StringAttribute'
                     ],
                     'related_type' => [
                         'type' => 'Afeefa.Relation',
@@ -66,8 +66,8 @@ class SchemaTypeTest extends ApiResourcesTest
             'Test.Type',
             function (FieldBag $fields) {
                 $fields
-                    ->attribute('title', function (VarcharAttribute $attribute) {
-                        $attribute->validate(function (VarcharValidator $v) {
+                    ->attribute('title', function (StringAttribute $attribute) {
+                        $attribute->validate(function (StringValidator $v) {
                             $v->min(10);
                         });
                     });
@@ -83,9 +83,9 @@ class SchemaTypeTest extends ApiResourcesTest
                 'translations' => [],
                 'fields' => [
                     'title' => [
-                        'type' => 'Afeefa.VarcharAttribute',
+                        'type' => 'Afeefa.StringAttribute',
                         'validator' => [
-                            'type' => 'Afeefa.VarcharValidator',
+                            'type' => 'Afeefa.StringValidator',
                             'params' => [
                                 'min' => 10
                             ]
@@ -99,8 +99,8 @@ class SchemaTypeTest extends ApiResourcesTest
 
         $this->assertEquals($expectedTypesSchema, $schema['types']);
 
-        $this->assertEquals(['Afeefa.VarcharValidator'], array_keys($schema['validators']));
-        $this->assertEquals(['rules'], array_keys($schema['validators']['Afeefa.VarcharValidator']));
+        $this->assertEquals(['Afeefa.StringValidator'], array_keys($schema['validators']));
+        $this->assertEquals(['rules'], array_keys($schema['validators']['Afeefa.StringValidator']));
     }
 
     public function test_required()
@@ -109,7 +109,7 @@ class SchemaTypeTest extends ApiResourcesTest
             'Test.Type',
             function (FieldBag $fields) {
                 $fields
-                    ->attribute('title', function (VarcharAttribute $attribute) {
+                    ->attribute('title', function (StringAttribute $attribute) {
                         $attribute->required();
                     });
             }
@@ -124,7 +124,7 @@ class SchemaTypeTest extends ApiResourcesTest
                 'translations' => [],
                 'fields' => [
                     'title' => [
-                        'type' => 'Afeefa.VarcharAttribute',
+                        'type' => 'Afeefa.StringAttribute',
                         'required' => true
                     ]
                 ],
@@ -142,17 +142,17 @@ class SchemaTypeTest extends ApiResourcesTest
             'Test.Type',
             function (FieldBag $fields) {
                 $fields
-                    ->attribute('title', VarcharAttribute::class);
+                    ->attribute('title', StringAttribute::class);
             },
             function (FieldBag $fields) {
                 $fields
-                    ->attribute('title_update', VarcharAttribute::class)
-                    ->attribute('title_update_create', VarcharAttribute::class);
+                    ->attribute('title_update', StringAttribute::class)
+                    ->attribute('title_update_create', StringAttribute::class);
             },
             function (FieldBag $fields, FieldBag $updateFields) {
                 $fields
                     ->from($updateFields, 'title_update_create')
-                    ->attribute('title_create', VarcharAttribute::class);
+                    ->attribute('title_create', StringAttribute::class);
             }
         );
 
@@ -165,23 +165,23 @@ class SchemaTypeTest extends ApiResourcesTest
                 'translations' => [],
                 'fields' => [
                     'title' => [
-                        'type' => 'Afeefa.VarcharAttribute'
+                        'type' => 'Afeefa.StringAttribute'
                     ]
                 ],
                 'update_fields' => [
                     'title_update' => [
-                        'type' => 'Afeefa.VarcharAttribute'
+                        'type' => 'Afeefa.StringAttribute'
                     ],
                     'title_update_create' => [
-                        'type' => 'Afeefa.VarcharAttribute'
+                        'type' => 'Afeefa.StringAttribute'
                     ]
                 ],
                 'create_fields' => [
                     'title_update_create' => [
-                        'type' => 'Afeefa.VarcharAttribute'
+                        'type' => 'Afeefa.StringAttribute'
                     ],
                     'title_create' => [
-                        'type' => 'Afeefa.VarcharAttribute'
+                        'type' => 'Afeefa.StringAttribute'
                     ]
                 ]
             ]

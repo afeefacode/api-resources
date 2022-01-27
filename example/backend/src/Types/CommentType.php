@@ -4,7 +4,7 @@ namespace Backend\Types;
 
 use Afeefa\ApiResources\Field\FieldBag;
 use Afeefa\ApiResources\Field\Fields\DateAttribute;
-use Afeefa\ApiResources\Field\Fields\VarcharAttribute;
+use Afeefa\ApiResources\Field\Fields\StringAttribute;
 use Afeefa\ApiResources\Type\Type;
 
 class CommentType extends Type
@@ -14,9 +14,9 @@ class CommentType extends Type
     protected function fields(FieldBag $fields): void
     {
         $fields
-            ->attribute('author_name', VarcharAttribute::class)
+            ->attribute('author_name', StringAttribute::class)
 
-            ->attribute('content', VarcharAttribute::class)
+            ->attribute('content', StringAttribute::class)
 
             ->attribute('date', DateAttribute::class)
 

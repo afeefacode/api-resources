@@ -1,5 +1,5 @@
 import { Validator } from '../Validator';
-export class VarcharValidator extends Validator {
+export class StringValidator extends Validator {
     createRuleValidator(fieldLabel, ruleName, rule, params) {
         if (ruleName === 'filled') {
             return value => {

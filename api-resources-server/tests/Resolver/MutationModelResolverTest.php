@@ -7,7 +7,7 @@ use Afeefa\ApiResources\Api\Api;
 use Afeefa\ApiResources\DB\TypeClassMap;
 use Afeefa\ApiResources\Field\Attribute;
 use Afeefa\ApiResources\Field\FieldBag;
-use Afeefa\ApiResources\Field\Fields\VarcharAttribute;
+use Afeefa\ApiResources\Field\Fields\StringAttribute;
 use Afeefa\ApiResources\Field\Relation;
 use Afeefa\ApiResources\Model\Model as BaseModel;
 use Afeefa\ApiResources\Model\ModelInterface;
@@ -678,10 +678,10 @@ class MutationModelResolverTest extends MutationRelationTest
         return $this->createApiWithUpdateTypeAndAction(
             function (FieldBag $fields) {
                 $fields
-                    ->attribute('title', VarcharAttribute::class)
-                    ->attribute('has_one_before_id', VarcharAttribute::class)
-                    ->attribute('link_one_before_id', VarcharAttribute::class)
-                    ->attribute('owner_id', VarcharAttribute::class)
+                    ->attribute('title', StringAttribute::class)
+                    ->attribute('has_one_before_id', StringAttribute::class)
+                    ->attribute('link_one_before_id', StringAttribute::class)
+                    ->attribute('owner_id', StringAttribute::class)
                     ->relation('has_one', T('TYPE'), function (Relation $relation) {
                         $relation->resolveSave(function (MutationRelationHasOneResolver $r) {
                             $r
