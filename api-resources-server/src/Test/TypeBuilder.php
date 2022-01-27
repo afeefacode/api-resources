@@ -2,9 +2,9 @@
 
 namespace Afeefa\ApiResources\Test;
 
-use Afeefa\ApiResources\DB\TypeClassMap;
 use Afeefa\ApiResources\Field\FieldBag;
 use Afeefa\ApiResources\Type\Type;
+use Afeefa\ApiResources\Type\TypeClassMap;
 use Closure;
 use Webmozart\PathUtil\Path;
 

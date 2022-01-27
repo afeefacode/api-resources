@@ -4,7 +4,6 @@ namespace Afeefa\ApiResources\Tests\Resolver;
 
 use Afeefa\ApiResources\Action\Action;
 use Afeefa\ApiResources\Api\Api;
-use Afeefa\ApiResources\DB\TypeClassMap;
 use Afeefa\ApiResources\Field\Attribute;
 use Afeefa\ApiResources\Field\FieldBag;
 use Afeefa\ApiResources\Field\Fields\StringAttribute;
@@ -18,8 +17,9 @@ use Afeefa\ApiResources\Resolver\MutationRelationLinkManyResolver;
 use Afeefa\ApiResources\Resolver\MutationRelationLinkOneResolver;
 use Afeefa\ApiResources\Test\MutationRelationTest;
 use function Afeefa\ApiResources\Test\T;
-
 use Afeefa\ApiResources\Type\Type;
+
+use Afeefa\ApiResources\Type\TypeClassMap;
 
 class MutationModelResolverTest extends MutationRelationTest
 {

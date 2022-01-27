@@ -1,8 +1,8 @@
 <?php
 
 use Afeefa\ApiResources\Api\ApiRequest;
-use Afeefa\ApiResources\DB\TypeClassMap;
 use Afeefa\ApiResources\DI\Container;
+use Afeefa\ApiResources\Type\TypeClassMap;
 use Backend\Api\BackendApi;
 use Backend\Resources\ArticleResource;
 use Backend\Resources\AuthorResource;
