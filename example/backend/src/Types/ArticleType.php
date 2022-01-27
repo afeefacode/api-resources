@@ -81,8 +81,8 @@ class ArticleType extends Type
 
             ->attribute('date', DateAttribute::class)
 
-            ->relation('author', Type::link(AuthorType::class), function (Relation $r) {
-                $r
+            ->relation('author', Type::link(AuthorType::class), function (Relation $relation) {
+                $relation
                     ->required()
                     ->validate(function (LinkOneValidator $v) {
                         $v->filled();
