@@ -3,11 +3,10 @@
 namespace Backend\Types;
 
 use Afeefa\ApiResources\Api\ApiRequest;
+use Afeefa\ApiResources\Field\Attribute;
 use Afeefa\ApiResources\Field\FieldBag;
 use Afeefa\ApiResources\Field\Fields\DateAttribute;
-use Afeefa\ApiResources\Field\Fields\HasManyRelation;
 use Afeefa\ApiResources\Field\Fields\LinkManyRelation;
-use Afeefa\ApiResources\Field\Fields\LinkOneRelation;
 use Afeefa\ApiResources\Field\Fields\TextAttribute;
 use Afeefa\ApiResources\Field\Fields\VarcharAttribute;
 use Afeefa\ApiResources\Field\Relation;
@@ -43,15 +42,15 @@ class ArticleType extends Type
 
             ->attribute('date', DateAttribute::class)
 
-            ->relation('author', AuthorType::class, function (LinkOneRelation $relation) {
+            ->relation('author', AuthorType::class, function (Relation $relation) {
                 $relation->resolve([AuthorsResolver::class, 'resolve_author_relation']);
             })
 
-            ->relation('comments', Type::list(CommentType::class), function (HasManyRelation $relation) {
+            ->relation('comments', Type::list(CommentType::class), function (Relation $relation) {
                 $relation->resolve([CommentsResolver::class, 'resolve_comments_relation']);
             })
 
-            ->relation('tags', Type::list(TagType::class), function (LinkManyRelation $relation) {
+            ->relation('tags', Type::list(TagType::class), function (Relation $relation) {
                 $relation->resolve([TagsResolver::class, 'resolve_tags_relation']);
             });
     }
@@ -82,7 +81,7 @@ class ArticleType extends Type
 
             ->attribute('date', DateAttribute::class)
 
-            ->relation('author', Type::link(AuthorType::class), function (LinkOneRelation $r) {
+            ->relation('author', Type::link(AuthorType::class), function (Relation $r) {
                 $r
                     ->required()
                     ->validate(function (LinkOneValidator $v) {
@@ -98,7 +97,7 @@ class ArticleType extends Type
                     });
             })
 
-            ->relation('tags', Type::link(Type::list(TagType::class)), function (LinkManyRelation $relation) {
+            ->relation('tags', Type::list(Type::link(TagType::class)), function (LinkManyRelation $relation) {
             });
     }
 
@@ -109,7 +108,7 @@ class ArticleType extends Type
                 $relation->required();
             })
 
-            ->from($updateFields, 'title', function (VarcharAttribute $attribute) {
+            ->from($updateFields, 'title', function (Attribute $attribute) {
                 $attribute->required();
             });
     }
