@@ -675,7 +675,7 @@ class MutationModelResolverTest extends MutationRelationTest
 
     private function getApi(): Api
     {
-        return $this->createApiWithTypeAndAction(
+        return $this->createApiWithUpdateTypeAndAction(
             function (FieldBag $fields) {
                 $fields
                     ->attribute('title', VarcharAttribute::class)
@@ -871,7 +871,7 @@ class Model extends BaseModel
 
         $attributes = [];
 
-        $fields = $type->getFields()->getEntries();
+        $fields = $type->getUpdateFields()->getEntries();
         foreach ($fields as $name => $field) {
             if ($field instanceof Attribute) {
                 if (isset($this->$name)) {
@@ -886,7 +886,7 @@ class Model extends BaseModel
                     $attributes[$name] = $this->$name;
                 }
             } else {
-                $relation = $type->getRelation($name);
+                $relation = $type->getUpdateRelation($name);
                 if (isset($this->$name)) {
                     if ($relation->getRelatedType()->isList()) {
                         $attributes[$name] = [];

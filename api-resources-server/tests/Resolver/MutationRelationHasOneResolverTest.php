@@ -26,7 +26,7 @@ class MutationRelationHasOneResolverTest extends MutationRelationTest
         $n = in_array($missingCallback, ['add', 'update']) ? 'n' : '';
         $this->expectExceptionMessage("Resolver for relation other needs to implement a{$n} {$missingCallback}() method.");
 
-        $api = $this->createApiWithType(
+        $api = $this->createApiWithUpdateType(
             function (FieldBag $fields) use ($missingCallback) {
                 $fields
                     ->relation('other', T('TYPE'), function (Relation $relation) use ($missingCallback) {
@@ -63,7 +63,7 @@ class MutationRelationHasOneResolverTest extends MutationRelationTest
 
     public function test_with_all_callbacks()
     {
-        $api = $this->createApiWithType(
+        $api = $this->createApiWithUpdateType(
             function (FieldBag $fields) {
                 $fields
                     ->relation('other', T('TYPE'), function (Relation $relation) {
@@ -92,7 +92,7 @@ class MutationRelationHasOneResolverTest extends MutationRelationTest
         $n = in_array($missingCallback, ['add', 'addBeforeOwner', 'update']) ? 'n' : '';
         $this->expectExceptionMessage("Resolver for relation other needs to implement a{$n} {$missingCallback}() method.");
 
-        $api = $this->createApiWithType(
+        $api = $this->createApiWithUpdateType(
             function (FieldBag $fields) use ($missingCallback) {
                 $fields
                     ->relation('other', T('TYPE'), function (Relation $relation) use ($missingCallback) {
@@ -144,7 +144,7 @@ class MutationRelationHasOneResolverTest extends MutationRelationTest
     {
         $this->update_owner_existingData = $existingData;
 
-        $api = $this->createApiWithType(
+        $api = $this->createApiWithUpdateType(
             function (FieldBag $fields) {
                 $fields
                     ->attribute('name', VarcharAttribute::class)
@@ -344,7 +344,7 @@ class MutationRelationHasOneResolverTest extends MutationRelationTest
      */
     public function test_create_owner($data, $expectedInfo, $expectedInfo2, $expectedSaveFields)
     {
-        $api = $this->createApiWithType(
+        $api = $this->createApiWithUpdateType(
             function (FieldBag $fields) {
                 $fields
                     ->attribute('name', VarcharAttribute::class)
@@ -432,7 +432,7 @@ class MutationRelationHasOneResolverTest extends MutationRelationTest
      */
     public function test_save_to_owner_create_owner($data, $expectedInfo, $expectedInfo2, $expectedSaveFields)
     {
-        $api = $this->createApiWithType(
+        $api = $this->createApiWithUpdateType(
             function (FieldBag $fields) {
                 $fields
                     ->attribute('name', VarcharAttribute::class)
@@ -553,7 +553,7 @@ class MutationRelationHasOneResolverTest extends MutationRelationTest
     {
         $this->save_to_owner_update_existingData = $existingData;
 
-        $api = $this->createApiWithType(
+        $api = $this->createApiWithUpdateType(
             function (FieldBag $fields) {
                 $fields
                     ->attribute('name', VarcharAttribute::class)
@@ -795,7 +795,7 @@ class MutationRelationHasOneResolverTest extends MutationRelationTest
             $this->expectExceptionMessage('Get callback of resolver for relation other must return a ModelInterface object or null.');
         }
 
-        $api = $this->createApiWithType(
+        $api = $this->createApiWithUpdateType(
             function (FieldBag $fields) use ($return) {
                 $fields
                     ->relation('other', T('TYPE'), function (Relation $relation) use ($return) {
@@ -838,7 +838,7 @@ class MutationRelationHasOneResolverTest extends MutationRelationTest
         $this->expectException(InvalidConfigurationException::class);
         $this->expectExceptionMessage('AddBeforeOwner callback of resolver for relation other must return a ModelInterface object.');
 
-        $api = $this->createApiWithType(
+        $api = $this->createApiWithUpdateType(
             function (FieldBag $fields) use ($return) {
                 $fields
                     ->relation('other', T('TYPE'), function (Relation $relation) use ($return) {
@@ -883,7 +883,7 @@ class MutationRelationHasOneResolverTest extends MutationRelationTest
         $this->expectException(InvalidConfigurationException::class);
         $this->expectExceptionMessage('Add callback of resolver for relation other must return a ModelInterface object.');
 
-        $api = $this->createApiWithType(
+        $api = $this->createApiWithUpdateType(
             function (FieldBag $fields) use ($return) {
                 $fields
                     ->relation('other', T('TYPE'), function (Relation $relation) use ($return) {
@@ -929,7 +929,7 @@ class MutationRelationHasOneResolverTest extends MutationRelationTest
      */
     public function test_add_recursive($update)
     {
-        $api = $this->createApiWithType(
+        $api = $this->createApiWithUpdateType(
             function (FieldBag $fields) {
                 $fields
                     ->attribute('name', VarcharAttribute::class)
@@ -1003,7 +1003,7 @@ class MutationRelationHasOneResolverTest extends MutationRelationTest
 
     public function test_update_recursive()
     {
-        $api = $this->createApiWithType(
+        $api = $this->createApiWithUpdateType(
             function (FieldBag $fields) {
                 $fields
                     ->attribute('name', VarcharAttribute::class)
@@ -1074,7 +1074,7 @@ class MutationRelationHasOneResolverTest extends MutationRelationTest
 
     public function test_add_before_owner_recursive()
     {
-        $api = $this->createApiWithType(
+        $api = $this->createApiWithUpdateType(
             function (FieldBag $fields) {
                 $fields
                     ->attribute('name', VarcharAttribute::class)
@@ -1144,7 +1144,7 @@ class MutationRelationHasOneResolverTest extends MutationRelationTest
 
     public function test_add_before_owner_recursive_update_owner()
     {
-        $api = $this->createApiWithType(
+        $api = $this->createApiWithUpdateType(
             function (FieldBag $fields) {
                 $fields
                     ->attribute('name', VarcharAttribute::class)

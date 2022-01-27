@@ -97,7 +97,7 @@ class MutationActionModelResolverTest extends MutationRelationTest
             $this->should_update = true;
         }
 
-        $api = $this->createApiWithTypeAndAction(
+        $api = $this->createApiWithUpdateTypeAndAction(
             function (FieldBag $fields) {
                 $fields
                     ->attribute('name', VarcharAttribute::class);
@@ -163,7 +163,7 @@ class MutationActionModelResolverTest extends MutationRelationTest
      */
     public function test_save_fields($fields, $expectedFields)
     {
-        $api = $this->createApiWithTypeAndAction(
+        $api = $this->createApiWithUpdateTypeAndAction(
             function (FieldBag $fields) {
                 $fields
                     ->attribute('name', VarcharAttribute::class)
@@ -245,7 +245,7 @@ class MutationActionModelResolverTest extends MutationRelationTest
      */
     public function test_create_save_fields_relations($fields, $expectedFields, $expectedInfo)
     {
-        $api = $this->createApiWithTypeAndAction(
+        $api = $this->createApiWithUpdateTypeAndAction(
             function (FieldBag $fields) {
                 $fields
                     ->attribute('name', VarcharAttribute::class)
@@ -426,7 +426,7 @@ class MutationActionModelResolverTest extends MutationRelationTest
      */
     public function test_update_save_fields_relations($fields, $expectedFields, $expectedInfo)
     {
-        $api = $this->createApiWithTypeAndAction(
+        $api = $this->createApiWithUpdateTypeAndAction(
             function (FieldBag $fields) {
                 $fields
                     ->attribute('name', VarcharAttribute::class)
@@ -705,7 +705,7 @@ class MutationActionModelResolverTest extends MutationRelationTest
      */
     public function test_delete($fields, $expectedInfo, $expectedInfo2)
     {
-        $api = $this->createApiWithTypeAndAction(
+        $api = $this->createApiWithUpdateTypeAndAction(
             function (FieldBag $fields) {
                 $fields
                     ->attribute('name', VarcharAttribute::class);

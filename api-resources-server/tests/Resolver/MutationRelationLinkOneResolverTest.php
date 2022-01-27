@@ -28,7 +28,7 @@ class MutationRelationLinkOneResolverTest extends MutationRelationTest
         $n = $missingCallback === 'unlink' ? 'n' : '';
         $this->expectExceptionMessage("Resolver for relation other needs to implement a{$n} {$missingCallback}() method.");
 
-        $api = $this->createApiWithType(
+        $api = $this->createApiWithUpdateType(
             function (FieldBag $fields) use ($missingCallback) {
                 $fields
                     ->relation('other', Type::link(T('TYPE')), function (Relation $relation) use ($missingCallback) {
@@ -61,7 +61,7 @@ class MutationRelationLinkOneResolverTest extends MutationRelationTest
 
     public function test_with_all_callbacks()
     {
-        $api = $this->createApiWithType(
+        $api = $this->createApiWithUpdateType(
             function (FieldBag $fields) {
                 $fields
                     ->relation('other', Type::link(T('TYPE')), function (Relation $relation) {
@@ -82,7 +82,7 @@ class MutationRelationLinkOneResolverTest extends MutationRelationTest
 
     public function test_save_to_owner_missing_callbacks()
     {
-        $api = $this->createApiWithType(
+        $api = $this->createApiWithUpdateType(
             function (FieldBag $fields) {
                 $fields
                     ->relation('other', Type::link(T('TYPE')), function (Relation $relation) {
@@ -107,7 +107,7 @@ class MutationRelationLinkOneResolverTest extends MutationRelationTest
     {
         $this->link_existingData = $existingData;
 
-        $api = $this->createApiWithType(
+        $api = $this->createApiWithUpdateType(
             function (FieldBag $fields) {
                 $fields
                     ->attribute('name', VarcharAttribute::class)
@@ -268,7 +268,7 @@ class MutationRelationLinkOneResolverTest extends MutationRelationTest
      */
     public function test_create_owner($data, $expectedInfo, $expectedInfo2)
     {
-        $api = $this->createApiWithType(
+        $api = $this->createApiWithUpdateType(
             function (FieldBag $fields) {
                 $fields
                     ->attribute('name', VarcharAttribute::class)
@@ -345,7 +345,7 @@ class MutationRelationLinkOneResolverTest extends MutationRelationTest
      */
     public function test_save_to_owner($data, $expectedInfo, $expectedInfo2)
     {
-        $api = $this->createApiWithType(
+        $api = $this->createApiWithUpdateType(
             function (FieldBag $fields) {
                 $fields
                     ->relation('other', Type::link(T('TYPE')), function (Relation $relation) {
@@ -423,7 +423,7 @@ class MutationRelationLinkOneResolverTest extends MutationRelationTest
             $this->expectExceptionMessage('Get callback of resolver for relation other must return a ModelInterface object or null.');
         }
 
-        $api = $this->createApiWithType(
+        $api = $this->createApiWithUpdateType(
             function (FieldBag $fields) use ($return) {
                 $fields
                     ->relation('other', T('TYPE'), function (Relation $relation) use ($return) {

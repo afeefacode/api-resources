@@ -73,10 +73,10 @@ class TestType extends Type
         }
     }
 
-    protected function createFields(FieldBag $fields): void
+    protected function createFields(FieldBag $fields, FieldBag $updateFields): void
     {
         if (static::$createFieldsCallback) {
-            (static::$createFieldsCallback)($fields);
+            (static::$createFieldsCallback)($fields, $updateFields);
         }
     }
 }

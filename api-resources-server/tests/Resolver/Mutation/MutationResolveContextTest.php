@@ -228,11 +228,7 @@ class MutationResolveContextTest extends ApiResourcesTest
     private function createType(?Closure $fieldsCallback = null, ?string $typeName = null): Type
     {
         $typeName ??= 'TEST';
-        return $this->typeBuilder()->type($typeName, function (FieldBag $fields) use ($fieldsCallback) {
-            if ($fieldsCallback) {
-                $fieldsCallback($fields);
-            }
-        })->get(true);
+        return $this->typeBuilder()->type($typeName, null, $fieldsCallback, $fieldsCallback)->get(true);
     }
 
     private function createRelationResolver(?Closure $callback = null): Closure

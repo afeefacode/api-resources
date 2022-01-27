@@ -50,7 +50,9 @@ class SchemaTypeTest extends ApiResourcesTest
                             'type' => 'Test.Type'
                         ]
                     ]
-                ]
+                ],
+                'update_fields' => [],
+                'create_fields' => []
             ]
         ];
 
@@ -90,7 +92,9 @@ class SchemaTypeTest extends ApiResourcesTest
                             ]
                         ]
                     ]
-                ]
+                ],
+                'update_fields' => [],
+                'create_fields' => []
             ]
         ];
 
@@ -124,22 +128,32 @@ class SchemaTypeTest extends ApiResourcesTest
                         'type' => 'Afeefa.VarcharAttribute',
                         'required' => true
                     ]
-                ]
+                ],
+                'update_fields' => [],
+                'create_fields' => []
             ]
         ];
 
         $this->assertEquals($expectedTypesSchema, $schema['types']);
     }
 
-    public function test_allowed_fields()
+    public function test_update_fields()
     {
         $api = createApiWithSingleType(
             'Test.Type',
             function (FieldBag $fields) {
                 $fields
-                    ->attribute('title', VarcharAttribute::class)
-                    ->attribute('title_allowed', VarcharAttribute::class);
-                $fields->allow(['title_allowed']);
+                    ->attribute('title', VarcharAttribute::class);
+            },
+            function (FieldBag $fields) {
+                $fields
+                    ->attribute('title_update', VarcharAttribute::class)
+                    ->attribute('title_update_create', VarcharAttribute::class);
+            },
+            function (FieldBag $fields, FieldBag $updateFields) {
+                $fields
+                    ->from($updateFields, 'title_update_create')
+                    ->attribute('title_create', VarcharAttribute::class);
             }
         );
 
@@ -151,7 +165,23 @@ class SchemaTypeTest extends ApiResourcesTest
             'Test.Type' => [
                 'translations' => [],
                 'fields' => [
-                    'title_allowed' => [
+                    'title' => [
+                        'type' => 'Afeefa.VarcharAttribute'
+                    ]
+                ],
+                'update_fields' => [
+                    'title_update' => [
+                        'type' => 'Afeefa.VarcharAttribute'
+                    ],
+                    'title_update_create' => [
+                        'type' => 'Afeefa.VarcharAttribute'
+                    ]
+                ],
+                'create_fields' => [
+                    'title_update_create' => [
+                        'type' => 'Afeefa.VarcharAttribute'
+                    ],
+                    'title_create' => [
                         'type' => 'Afeefa.VarcharAttribute'
                     ]
                 ]
@@ -276,11 +306,15 @@ class SchemaTypeTest extends ApiResourcesTest
                             'type' => 'Test.Type2'
                         ]
                     ]
-                ]
+                ],
+                'update_fields' => [],
+                'create_fields' => []
             ],
             'Test.Type2' => [
                 'translations' => [],
-                'fields' => []
+                'fields' => [],
+                'update_fields' => [],
+                'create_fields' => []
             ]
         ];
 
@@ -320,11 +354,15 @@ class SchemaTypeTest extends ApiResourcesTest
                             'list' => true
                         ]
                     ]
-                ]
+                ],
+                'update_fields' => [],
+                'create_fields' => []
             ],
             'Test.Type2' => [
                 'translations' => [],
-                'fields' => []
+                'fields' => [],
+                'update_fields' => [],
+                'create_fields' => []
             ]
         ];
 
@@ -364,15 +402,21 @@ class SchemaTypeTest extends ApiResourcesTest
                             'list' => true
                         ]
                     ]
-                ]
+                ],
+                'update_fields' => [],
+                'create_fields' => []
             ],
             'Test.Type2' => [
                 'translations' => [],
-                'fields' => []
+                'fields' => [],
+                'update_fields' => [],
+                'create_fields' => []
             ],
             'Test.Type3' => [
                 'translations' => [],
-                'fields' => []
+                'fields' => [],
+                'update_fields' => [],
+                'create_fields' => []
             ]
         ];
 

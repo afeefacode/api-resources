@@ -61,7 +61,9 @@ class SchemaValidatorTest extends ApiResourcesTest
                             ]
                         ]
                     ]
-                ]
+                ],
+                'update_fields' => [],
+                'create_fields' => []
             ]
         ];
 

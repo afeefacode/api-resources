@@ -60,7 +60,7 @@ class MutationActionSimpleResolverTest extends MutationRelationTest
      */
     public function test_mutation($update, $fields, $expectedInfo, $expectedFields)
     {
-        $api = $this->createApiWithTypeAndAction(
+        $api = $this->createApiWithUpdateTypeAndAction(
             function (FieldBag $fields) {
                 $fields
                     ->attribute('name', VarcharAttribute::class);
@@ -115,7 +115,7 @@ class MutationActionSimpleResolverTest extends MutationRelationTest
      */
     public function test_save_fields($fields, $expectedFields)
     {
-        $api = $this->createApiWithTypeAndAction(
+        $api = $this->createApiWithUpdateTypeAndAction(
             function (FieldBag $fields) {
                 $fields
                     ->attribute('name', VarcharAttribute::class)
@@ -199,7 +199,7 @@ class MutationActionSimpleResolverTest extends MutationRelationTest
      */
     public function test_save_ignores_relations($fields, $expectedFields, $expectedOrder)
     {
-        $api = $this->createApiWithTypeAndAction(
+        $api = $this->createApiWithUpdateTypeAndAction(
             function (FieldBag $fields) {
                 $fields
                     ->attribute('name', VarcharAttribute::class)

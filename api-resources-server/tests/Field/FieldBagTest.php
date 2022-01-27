@@ -12,6 +12,8 @@ use Afeefa\ApiResources\Field\Fields\VarcharAttribute;
 use Afeefa\ApiResources\Test\ApiResourcesTest;
 use function Afeefa\ApiResources\Test\T;
 
+use Afeefa\ApiResources\Validator\Validators\VarcharValidator;
+
 class FieldBagTest extends ApiResourcesTest
 {
     public function test_field_bag()
@@ -88,70 +90,61 @@ class FieldBagTest extends ApiResourcesTest
         $this->assertTrue($fields->has('name', true));
     }
 
-    public function test_field_by_default_allowed()
+    public function test_from()
     {
         $fields = $this->container->create(FieldBag::class);
         $fields->attribute('name', VarcharAttribute::class);
 
-        $this->assertTrue($fields->get('name')->isAllowed());
-    }
-
-    public function test_clone()
-    {
-        $originalFields = $this->container->create(FieldBag::class);
-        $originalFields->attribute('name', VarcharAttribute::class);
-
-        $this->assertTrue($originalFields->has('name'));
-        $this->assertTrue($originalFields->has('name', true));
-
-        $originalNameField = $originalFields->get('name');
-
-        $fields = $originalFields->clone();
-
-        $this->assertNotSame($originalFields, $fields);
+        $fields2 = $this->container->create(FieldBag::class);
+        $fields2->from($fields, 'name');
 
         $this->assertTrue($fields->has('name'));
-        $this->assertFalse($fields->has('name', true));
-
-        $nameField = $fields->get('name');
-
-        $this->assertNotSame($nameField, $originalNameField);
-
-        $this->assertSame($originalFields, $fields->getOriginal());
+        $this->assertTrue($fields->has('name', true));
     }
 
-    public function test_cloned_field_by_default_not_allowed()
+    public function test_from_clones()
     {
-        $originalFields = $this->container->create(FieldBag::class);
-        $originalFields->attribute('name', VarcharAttribute::class);
-
-        $fields = $originalFields->clone();
-
-        $this->assertFalse($fields->get('name')->isAllowed()); // default not allowed
-
-        $fields->allow(['name']);
-
-        $this->assertTrue($fields->get('name')->isAllowed());
-    }
-
-    public function test_allow()
-    {
+        /** @var FieldBag */
         $fields = $this->container->create(FieldBag::class);
-        $fields->attribute('name', VarcharAttribute::class);
+        $fields->attribute('name', function (VarcharAttribute $attribute) {
+            $attribute
+                ->required()
+                ->validate(function (VarcharValidator $v) {
+                    $v->min(10);
+                })
+                ->options([1])
+                ->resolve(fn () => null);
+        });
 
-        $this->assertTrue($fields->get('name')->isAllowed());
+        /** @var FieldBag */
+        $fields2 = $this->container->create(FieldBag::class);
+        $fields2->from($fields, 'name');
 
-        $fields->allow(['name']);
+        $this->assertTrue($fields->has('name'));
+        $this->assertTrue($fields->get('name')->isRequired());
 
-        $this->assertTrue($fields->get('name')->isAllowed());
+        $field = $fields->get('name');
+        $field2 = $fields2->get('name');
+        $this->assertNotSame($field, $field2);
+
+        $this->assertSame($field->getOptions(), $field2->getOptions());
+        $this->assertSame($field->getResolve(), $field2->getResolve());
+        $this->assertNotSame($field->getValidator(), $field2->getValidator());
+
+        $this->assertSame($field->getValidator()->getParams(), $field2->getValidator()->getParams());
+
+        /** @var VarcharValidator */
+        $validator = $field2->getValidator();
+        $validator->max(5);
+        $this->assertNotSame($field->getValidator()->getParams(), $field2->getValidator()->getParams());
     }
 
-    public function test_allow_unknown_field()
+    public function test_from_unknown_field()
     {
         $this->expectException(NotABagEntryException::class);
         $this->expectExceptionMessage('hoho is not a known Bag entry.');
 
         $fields = $this->container->create(FieldBag::class);
-        $fields->allow(['hoho']);
+        $fields->from($fields, 'hoho');
     }
 }

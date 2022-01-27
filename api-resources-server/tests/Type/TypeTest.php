@@ -38,8 +38,8 @@ class TypeTest extends ApiResourcesTest
         })->get();
 
         $this->assertEquals(1, $type->getFields()->numEntries());
-        $this->assertEquals(1, $type->getUpdateFields()->numEntries());
-        $this->assertEquals(1, $type->getCreateFields()->numEntries());
+        $this->assertEquals(0, $type->getUpdateFields()->numEntries());
+        $this->assertEquals(0, $type->getCreateFields()->numEntries());
 
         $field = $type->getField('name');
         $this->assertEquals($type, $field->getOwner());
