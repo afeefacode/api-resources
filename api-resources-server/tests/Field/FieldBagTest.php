@@ -20,8 +20,6 @@ class FieldBagTest extends ApiResourcesTest
     {
         $fields = $this->container->create(FieldBag::class);
 
-        $this->assertNull($fields->getOriginal());
-
         $this->assertEquals(0, $fields->numEntries());
 
         $fields->attribute('name', VarcharAttribute::class);
