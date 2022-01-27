@@ -7,7 +7,6 @@ use Afeefa\ApiResources\Bag\NotABagEntryException;
 use Afeefa\ApiResources\Exception\Exceptions\NotATypeException;
 use Afeefa\ApiResources\Exception\Exceptions\NotATypeOrCallbackException;
 use Afeefa\ApiResources\Field\FieldBag;
-use Afeefa\ApiResources\Field\Fields\HasOneRelation;
 use Afeefa\ApiResources\Field\Fields\VarcharAttribute;
 use Afeefa\ApiResources\Test\ApiResourcesTest;
 use function Afeefa\ApiResources\Test\T;
@@ -40,7 +39,7 @@ class FieldBagTest extends ApiResourcesTest
     {
         /** @var FieldBag */
         $fields = $this->container->create(FieldBag::class);
-        $fields->relation('name', T('Test.Type'), HasOneRelation::class);
+        $fields->relation('name', T('Test.Type'));
 
         $relation = $fields->getRelation('name');
         $relation2 = $fields->get('name');
@@ -55,7 +54,7 @@ class FieldBagTest extends ApiResourcesTest
         $this->expectExceptionMessage('Value for relation name is not a type.');
 
         $fields = $this->container->create(FieldBag::class);
-        $fields->relation('name', 'Hoho', HasOneRelation::class);
+        $fields->relation('name', 'Hoho');
     }
 
     public function test_wrong_relation_type()

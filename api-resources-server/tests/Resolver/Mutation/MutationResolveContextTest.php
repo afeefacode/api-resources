@@ -3,8 +3,8 @@
 namespace Afeefa\ApiResources\Tests\Resolver\Mutation;
 
 use Afeefa\ApiResources\Field\FieldBag;
-use Afeefa\ApiResources\Field\Fields\HasOneRelation;
 use Afeefa\ApiResources\Field\Fields\VarcharAttribute;
+use Afeefa\ApiResources\Field\Relation;
 use Afeefa\ApiResources\Resolver\Mutation\MutationRelationResolver;
 use Afeefa\ApiResources\Resolver\Mutation\MutationResolveContext;
 use Afeefa\ApiResources\Test\ApiResourcesTest;
@@ -233,7 +233,7 @@ class MutationResolveContextTest extends ApiResourcesTest
 
     private function createRelationResolver(?Closure $callback = null): Closure
     {
-        return function (HasOneRelation $relation) use ($callback) {
+        return function (Relation $relation) use ($callback) {
             $relation->resolveSave(function (MutationRelationResolver $r) use ($callback) {
                 if ($callback) {
                     $callback($r);

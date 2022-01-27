@@ -7,9 +7,8 @@ use Afeefa\ApiResources\Api\Api;
 use Afeefa\ApiResources\Exception\Exceptions\InvalidConfigurationException;
 use Afeefa\ApiResources\Exception\Exceptions\MissingCallbackException;
 use Afeefa\ApiResources\Field\FieldBag;
-use Afeefa\ApiResources\Field\Fields\HasManyRelation;
-use Afeefa\ApiResources\Field\Fields\HasOneRelation;
 use Afeefa\ApiResources\Field\Fields\VarcharAttribute;
+use Afeefa\ApiResources\Field\Relation;
 use Afeefa\ApiResources\Model\Model;
 use Afeefa\ApiResources\Resolver\QueryActionResolver;
 use Afeefa\ApiResources\Resolver\QueryAttributeResolver;
@@ -339,7 +338,7 @@ class QueryAttributeResolverTest extends QueryTest
                             });
                         });
                     })
-                    ->relation('other', T('TYPE'), function (HasOneRelation $relation) {
+                    ->relation('other', T('TYPE'), function (Relation $relation) {
                         $relation->resolve(function (QueryRelationResolver $r) {
                             $r->load(function (array $owners) {
                                 $relatedModels = [];
@@ -406,7 +405,7 @@ class QueryAttributeResolverTest extends QueryTest
                             });
                         });
                     })
-                    ->relation('others', Type::list(T('TYPE')), function (HasManyRelation $relation) {
+                    ->relation('others', Type::list(T('TYPE')), function (Relation $relation) {
                         $relation->resolve(function (QueryRelationResolver $r) {
                             $r->load(function (array $owners) {
                                 $relatedModels = [];

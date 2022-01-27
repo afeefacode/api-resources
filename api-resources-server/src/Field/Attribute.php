@@ -2,6 +2,8 @@
 
 namespace Afeefa\ApiResources\Field;
 
+use Afeefa\ApiResources\Utils\HasStaticTypeTrait;
+
 /**
  * @method Attribute owner($owner)
  * @method Attribute name(string $name)
@@ -15,6 +17,8 @@ namespace Afeefa\ApiResources\Field;
 */
 class Attribute extends Field
 {
+    use HasStaticTypeTrait;
+
     protected array $dependingAttributes;
 
     public function select($attributeOrAttributes): Attribute

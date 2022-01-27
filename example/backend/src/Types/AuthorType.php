@@ -3,9 +3,8 @@
 namespace Backend\Types;
 
 use Afeefa\ApiResources\Field\FieldBag;
-use Afeefa\ApiResources\Field\Fields\HasManyRelation;
-use Afeefa\ApiResources\Field\Fields\LinkManyRelation;
 use Afeefa\ApiResources\Field\Fields\VarcharAttribute;
+use Afeefa\ApiResources\Field\Relation;
 use Afeefa\ApiResources\Type\Type;
 use Afeefa\ApiResources\Validator\Validators\VarcharValidator;
 use Backend\Resolvers\ArticlesResolver;
@@ -32,11 +31,11 @@ class AuthorType extends Type
 
             ->attribute('email', VarcharAttribute::class)
 
-            ->relation('articles', ArticleType::class, function (HasManyRelation $relation) {
+            ->relation('articles', ArticleType::class, function (Relation $relation) {
                 $relation->resolve([ArticlesResolver::class, 'resolve_articles_relation']);
             })
 
-            ->relation('tags', Type::list(TagType::class), function (LinkManyRelation $relation) {
+            ->relation('tags', Type::list(TagType::class), function (Relation $relation) {
                 $relation->resolve([TagsResolver::class, 'resolve_tags_relation']);
             });
     }

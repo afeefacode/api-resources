@@ -3,8 +3,8 @@
 namespace Afeefa\ApiResources\Tests\Resolver\Query;
 
 use Afeefa\ApiResources\Field\FieldBag;
-use Afeefa\ApiResources\Field\Fields\HasOneRelation;
 use Afeefa\ApiResources\Field\Fields\VarcharAttribute;
+use Afeefa\ApiResources\Field\Relation;
 use Afeefa\ApiResources\Model\Model;
 use Afeefa\ApiResources\Resolver\Query\QueryResolveContext;
 use Afeefa\ApiResources\Resolver\QueryAttributeResolver;
@@ -201,7 +201,7 @@ class QueryResolveContextTest extends ApiResourcesTest
     {
         $type = $this->createType(function (FieldBag $fields) {
             $fields->attribute('name', VarcharAttribute::class);
-            $fields->relation('some_relation', T('TEST'), HasOneRelation::class);
+            $fields->relation('some_relation', T('TEST'));
         });
 
         $resolveContext = $this->createResolveContext($type, [
@@ -441,7 +441,7 @@ class QueryResolveContextTest extends ApiResourcesTest
     {
         $type = $this->createType(function (FieldBag $fields) {
             $fields
-                ->relation('other', T('TYPE'), function (HasOneRelation $relation) {
+                ->relation('other', T('TYPE'), function (Relation $relation) {
                     $relation->resolve(function (QueryRelationResolver $r) {
                         $this->testWatcher->called();
                         $r->load(function () {
@@ -450,7 +450,7 @@ class QueryResolveContextTest extends ApiResourcesTest
                         });
                     });
                 })
-                ->relation('another', T('TYPE'), function (HasOneRelation $relation) {
+                ->relation('another', T('TYPE'), function (Relation $relation) {
                     $relation->resolve(function (QueryRelationResolver $r) {
                         $this->testWatcher->called();
                         $r->load(function () {
@@ -517,7 +517,7 @@ class QueryResolveContextTest extends ApiResourcesTest
     {
         $type = $this->createType(function (FieldBag $fields) {
             $fields
-                ->relation('other', T('TYPE'), function (HasOneRelation $relation) {
+                ->relation('other', T('TYPE'), function (Relation $relation) {
                     $relation->resolve(function (QueryRelationResolver $r) {
                         $r->ownerIdFields(['owner_other_id']);
                         $r->load(function () {
@@ -525,7 +525,7 @@ class QueryResolveContextTest extends ApiResourcesTest
                         });
                     });
                 })
-                ->relation('another', T('TYPE'), function (HasOneRelation $relation) {
+                ->relation('another', T('TYPE'), function (Relation $relation) {
                     $relation->resolve(function (QueryRelationResolver $r) {
                         $r->ownerIdFields(fn () => ['owner_another_id']);
                         $r->load(function () {
@@ -555,7 +555,7 @@ class QueryResolveContextTest extends ApiResourcesTest
 
     private function createRelationResolver(): Closure
     {
-        return function (HasOneRelation $relation) {
+        return function (Relation $relation) {
             $relation->resolve(function (QueryRelationResolver $r) {
             });
         };

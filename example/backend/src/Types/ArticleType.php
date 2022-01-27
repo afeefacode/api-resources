@@ -6,7 +6,6 @@ use Afeefa\ApiResources\Api\ApiRequest;
 use Afeefa\ApiResources\Field\Attribute;
 use Afeefa\ApiResources\Field\FieldBag;
 use Afeefa\ApiResources\Field\Fields\DateAttribute;
-use Afeefa\ApiResources\Field\Fields\LinkManyRelation;
 use Afeefa\ApiResources\Field\Fields\TextAttribute;
 use Afeefa\ApiResources\Field\Fields\VarcharAttribute;
 use Afeefa\ApiResources\Field\Relation;
@@ -97,8 +96,7 @@ class ArticleType extends Type
                     });
             })
 
-            ->relation('tags', Type::list(Type::link(TagType::class)), function (LinkManyRelation $relation) {
-            });
+            ->relation('tags', Type::list(Type::link(TagType::class)));
     }
 
     protected function createFields(FieldBag $createFields, FieldBag $updateFields): void

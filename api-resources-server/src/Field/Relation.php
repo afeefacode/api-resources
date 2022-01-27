@@ -18,6 +18,8 @@ use Closure;
  */
 class Relation extends Field
 {
+    protected static string $type = 'Afeefa.Relation';
+
     protected RelatedType $relatedType;
 
     protected bool $isUpdate = false;
@@ -98,6 +100,10 @@ class Relation extends Field
     public function toSchemaJson(): array
     {
         $json = parent::toSchemaJson();
+
+        $type = $this->relatedType->isLink() ? 'Link' : 'Has';
+        $type .= $this->relatedType->isList() ? 'Many' : 'One';
+        $json['type'] = 'Afeefa.' . $type . 'Relation';
 
         $json['related_type'] = $this->relatedType->toSchemaJson();
 

@@ -5,7 +5,6 @@ namespace Afeefa\ApiResources\Tests\Api\Schema;
 use Afeefa\ApiResources\Action\Action;
 use Afeefa\ApiResources\Exception\Exceptions\MissingTypeException;
 use Afeefa\ApiResources\Field\FieldBag;
-use Afeefa\ApiResources\Field\Fields\HasOneRelation;
 use Afeefa\ApiResources\Field\Fields\VarcharAttribute;
 use Afeefa\ApiResources\Test\ApiResourcesTest;
 use function Afeefa\ApiResources\Test\createApiWithSingleResource;
@@ -26,7 +25,7 @@ class SchemaTypeTest extends ApiResourcesTest
                 $fields
                     ->attribute('title', VarcharAttribute::class)
                     ->attribute('name', VarcharAttribute::class)
-                    ->relation('related_type', T('Test.Type'), HasOneRelation::class);
+                    ->relation('related_type', T('Test.Type'));
             }
         );
 
@@ -247,7 +246,7 @@ class SchemaTypeTest extends ApiResourcesTest
             'Test.Type',
             function (FieldBag $fields) {
                 $fields
-                    ->relation('other_type', T('Test.Type2'), HasOneRelation::class);
+                    ->relation('other_type', T('Test.Type2'));
             }
         );
 
@@ -283,8 +282,8 @@ class SchemaTypeTest extends ApiResourcesTest
             'Test.Type',
             function (FieldBag $fields) {
                 $fields
-                    ->relation('other_type', T('Test.Type2'), HasOneRelation::class)
-                    ->relation('other_type2', [T('Test.Type2')], HasOneRelation::class); // single array element
+                    ->relation('other_type', T('Test.Type2'))
+                    ->relation('other_type2', [T('Test.Type2')]); // single array element
             }
         );
 
@@ -329,8 +328,8 @@ class SchemaTypeTest extends ApiResourcesTest
             'Test.Type',
             function (FieldBag $fields) {
                 $fields
-                    ->relation('other_types', Type::list(T('Test.Type2')), HasOneRelation::class)
-                    ->relation('other_types2', Type::list([T('Test.Type2')]), HasOneRelation::class); // single array element
+                    ->relation('other_types', Type::list(T('Test.Type2')))
+                    ->relation('other_types2', Type::list([T('Test.Type2')])); // single array element
             }
         );
 
@@ -341,14 +340,14 @@ class SchemaTypeTest extends ApiResourcesTest
                 'translations' => [],
                 'fields' => [
                     'other_types' => [
-                        'type' => 'Afeefa.HasOneRelation',
+                        'type' => 'Afeefa.HasManyRelation',
                         'related_type' => [
                             'type' => 'Test.Type2',
                             'list' => true
                         ]
                     ],
                     'other_types2' => [
-                        'type' => 'Afeefa.HasOneRelation',
+                        'type' => 'Afeefa.HasManyRelation',
                         'related_type' => [
                             'type' => 'Test.Type2',
                             'list' => true
@@ -378,8 +377,8 @@ class SchemaTypeTest extends ApiResourcesTest
             'Test.Type',
             function (FieldBag $fields) {
                 $fields
-                    ->relation('other_type', [T('Test.Type2'), T('Test.Type3')], HasOneRelation::class)
-                    ->relation('other_types', Type::list([T('Test.Type2'), T('Test.Type3')]), HasOneRelation::class);
+                    ->relation('other_type', [T('Test.Type2'), T('Test.Type3')])
+                    ->relation('other_types', Type::list([T('Test.Type2'), T('Test.Type3')]));
             }
         );
 
@@ -396,7 +395,7 @@ class SchemaTypeTest extends ApiResourcesTest
                         ]
                     ],
                     'other_types' => [
-                        'type' => 'Afeefa.HasOneRelation',
+                        'type' => 'Afeefa.HasManyRelation',
                         'related_type' => [
                             'types' => ['Test.Type2', 'Test.Type3'],
                             'list' => true

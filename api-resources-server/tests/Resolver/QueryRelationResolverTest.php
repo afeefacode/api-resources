@@ -7,9 +7,8 @@ use Afeefa\ApiResources\Api\Api;
 use Afeefa\ApiResources\Exception\Exceptions\InvalidConfigurationException;
 use Afeefa\ApiResources\Exception\Exceptions\MissingCallbackException;
 use Afeefa\ApiResources\Field\FieldBag;
-use Afeefa\ApiResources\Field\Fields\HasManyRelation;
-use Afeefa\ApiResources\Field\Fields\HasOneRelation;
 use Afeefa\ApiResources\Field\Fields\VarcharAttribute;
+use Afeefa\ApiResources\Field\Relation;
 use Afeefa\ApiResources\Model\Model;
 use Afeefa\ApiResources\Resolver\QueryActionResolver;
 use Afeefa\ApiResources\Resolver\QueryRelationResolver;
@@ -30,7 +29,7 @@ class QueryRelationResolverTest extends QueryTest
             function (FieldBag $fields) {
                 $fields
                     ->attribute('title', VarcharAttribute::class)
-                    ->relation('other', T('TYPE'), function (HasOneRelation $relation) {
+                    ->relation('other', T('TYPE'), function (Relation $relation) {
                         $relation->resolve(function (QueryRelationResolver $r) {
                             $r->load(function (array $owners) {
                                 $relatedModels = [];
@@ -72,7 +71,7 @@ class QueryRelationResolverTest extends QueryTest
             function (FieldBag $fields) {
                 $fields
                     ->attribute('title', VarcharAttribute::class)
-                    ->relation('other', T('TYPE'), function (HasOneRelation $relation) {
+                    ->relation('other', T('TYPE'), function (Relation $relation) {
                         $relation->resolve(function (QueryRelationResolver $r) {
                             $r->load(function (array $owners) {
                                 foreach ($owners as $owner) {
@@ -112,7 +111,7 @@ class QueryRelationResolverTest extends QueryTest
             function (FieldBag $fields) {
                 $fields
                     ->attribute('title', VarcharAttribute::class)
-                    ->relation('other', T('TYPE'), function (HasOneRelation $relation) {
+                    ->relation('other', T('TYPE'), function (Relation $relation) {
                         $relation->resolve(function (QueryRelationResolver $r) {
                             $r->load(function (array $owners) {
                                 $this->testWatcher->called();
@@ -157,7 +156,7 @@ class QueryRelationResolverTest extends QueryTest
             function (FieldBag $fields) {
                 $fields
                     ->attribute('title', VarcharAttribute::class)
-                    ->relation('other', T('TYPE'), function (HasOneRelation $relation) {
+                    ->relation('other', T('TYPE'), function (Relation $relation) {
                         $relation->resolve(function (QueryRelationResolver $r) {
                             $r->load(function (array $owners) {
                                 $this->testWatcher->called();
@@ -200,7 +199,7 @@ class QueryRelationResolverTest extends QueryTest
             function (FieldBag $fields) {
                 $fields
                     ->attribute('title', VarcharAttribute::class)
-                    ->relation('other', T('TYPE'), function (HasOneRelation $relation) {
+                    ->relation('other', T('TYPE'), function (Relation $relation) {
                         $relation->resolve(function (QueryRelationResolver $r) {
                             $r->load(function (array $owners) use ($r) {
                                 $this->testWatcher->called();
@@ -261,7 +260,7 @@ class QueryRelationResolverTest extends QueryTest
             function (FieldBag $fields) {
                 $fields
                     ->attribute('title', VarcharAttribute::class)
-                    ->relation('other', T('TYPE'), function (HasOneRelation $relation) {
+                    ->relation('other', T('TYPE'), function (Relation $relation) {
                         $relation->resolve(function (QueryRelationResolver $r) {
                             $r->load(function (array $owners) use ($r) {
                                 $this->testWatcher->called();
@@ -329,7 +328,7 @@ class QueryRelationResolverTest extends QueryTest
             function (FieldBag $fields) {
                 $fields
                     ->attribute('title', VarcharAttribute::class)
-                    ->relation('others', Type::list(T('TYPE')), function (HasManyRelation $relation) {
+                    ->relation('others', Type::list(T('TYPE')), function (Relation $relation) {
                         $relation->resolve(function (QueryRelationResolver $r) {
                             $r->load(function (array $owners) use ($r) {
                                 $this->testWatcher->called();
@@ -394,7 +393,7 @@ class QueryRelationResolverTest extends QueryTest
             function (FieldBag $fields) {
                 $fields
                     ->attribute('title', VarcharAttribute::class)
-                    ->relation('others', Type::list(T('TYPE')), function (HasManyRelation $relation) {
+                    ->relation('others', Type::list(T('TYPE')), function (Relation $relation) {
                         $relation->resolve(function (QueryRelationResolver $r) {
                             $r->load(function (array $owners) use ($r) {
                                 $this->testWatcher->called();
@@ -463,7 +462,7 @@ class QueryRelationResolverTest extends QueryTest
         $api = $this->createApiWithTypeAndAction(
             function (FieldBag $fields) {
                 $fields
-                    ->relation('other', T('TYPE'), function (HasOneRelation $relation) {
+                    ->relation('other', T('TYPE'), function (Relation $relation) {
                         $relation->resolve(function (QueryRelationResolver $r) {
                             $r->load(function () {
                                 $this->testWatcher->called();
@@ -488,7 +487,7 @@ class QueryRelationResolverTest extends QueryTest
             function (FieldBag $fields) {
                 $fields
                     ->attribute('title', VarcharAttribute::class)
-                    ->relation('other', T('TYPE'), function (HasOneRelation $relation) {
+                    ->relation('other', T('TYPE'), function (Relation $relation) {
                         $relation->resolve(function (QueryRelationResolver $r) {
                             $r->load(function (array $owners) use ($r) {
                                 $this->testWatcher->called();
@@ -507,7 +506,7 @@ class QueryRelationResolverTest extends QueryTest
                             });
                         });
                     })
-                    ->relation('different', T('TYPE'), function (HasOneRelation $relation) {
+                    ->relation('different', T('TYPE'), function (Relation $relation) {
                         $relation->resolve(function (QueryRelationResolver $r) {
                             $r->load(function (array $owners) use ($r) {
                                 $this->testWatcher->called();
@@ -611,7 +610,7 @@ class QueryRelationResolverTest extends QueryTest
             function (FieldBag $fields) {
                 $fields
                     ->attribute('title', VarcharAttribute::class)
-                    ->relation('others', Type::list(T('TYPE')), function (HasManyRelation $relation) {
+                    ->relation('others', Type::list(T('TYPE')), function (Relation $relation) {
                         $relation->resolve(function (QueryRelationResolver $r) {
                             $r
                                 ->load(function (array $owners) {
@@ -683,7 +682,7 @@ class QueryRelationResolverTest extends QueryTest
         $api = $this->createApiWithTypeAndAction(
             function (FieldBag $fields) {
                 $fields
-                    ->relation('others', Type::list(T('TYPE')), function (HasManyRelation $relation) {
+                    ->relation('others', Type::list(T('TYPE')), function (Relation $relation) {
                         $relation->resolve(function () {
                         });
                     });
@@ -701,7 +700,7 @@ class QueryRelationResolverTest extends QueryTest
         $api = $this->createApiWithTypeAndAction(
             function (FieldBag $fields) {
                 $fields
-                    ->relation('others', Type::list(T('TYPE')), function (HasManyRelation $relation) {
+                    ->relation('others', Type::list(T('TYPE')), function (Relation $relation) {
                         $relation->resolve(function (QueryRelationResolver $r) {
                         });
                     });
@@ -722,7 +721,7 @@ class QueryRelationResolverTest extends QueryTest
         $api = $this->createApiWithTypeAndAction(
             function (FieldBag $fields) use ($returnValue) {
                 $fields
-                    ->relation('others', Type::list(T('TYPE')), function (HasManyRelation $relation) use ($returnValue) {
+                    ->relation('others', Type::list(T('TYPE')), function (Relation $relation) use ($returnValue) {
                         $relation->resolve(function (QueryRelationResolver $r) use ($returnValue) {
                             $r->load(function () use ($returnValue) {
                                 if ($returnValue !== 'nothing') {
@@ -758,7 +757,7 @@ class QueryRelationResolverTest extends QueryTest
         $api = $this->createApiWithTypeAndAction(
             function (FieldBag $fields) use ($returnValue) {
                 $fields
-                    ->relation('other', T('TYPE'), function (HasManyRelation $relation) use ($returnValue) {
+                    ->relation('other', T('TYPE'), function (Relation $relation) use ($returnValue) {
                         $relation->resolve(function (QueryRelationResolver $r) use ($returnValue) {
                             $r->load(fn () => $returnValue);
                         });
@@ -780,7 +779,7 @@ class QueryRelationResolverTest extends QueryTest
         $api = $this->createApiWithTypeAndAction(
             function (FieldBag $fields) use ($returnValue) {
                 $fields
-                    ->relation('others', Type::list(T('TYPE')), function (HasManyRelation $relation) use ($returnValue) {
+                    ->relation('others', Type::list(T('TYPE')), function (Relation $relation) use ($returnValue) {
                         $relation->resolve(function (QueryRelationResolver $r) use ($returnValue) {
                             $r->load(fn () => $returnValue);
                         });
@@ -802,7 +801,7 @@ class QueryRelationResolverTest extends QueryTest
         $api = $this->createApiWithTypeAndAction(
             function (FieldBag $fields) use ($returnValue) {
                 $fields
-                    ->relation('other', T('TYPE'), function (HasManyRelation $relation) use ($returnValue) {
+                    ->relation('other', T('TYPE'), function (Relation $relation) use ($returnValue) {
                         $relation->resolve(function (QueryRelationResolver $r) use ($returnValue) {
                             $r
                                 ->load(fn () => [])
@@ -826,7 +825,7 @@ class QueryRelationResolverTest extends QueryTest
         $api = $this->createApiWithTypeAndAction(
             function (FieldBag $fields) use ($returnValue) {
                 $fields
-                    ->relation('others', Type::list(T('TYPE')), function (HasManyRelation $relation) use ($returnValue) {
+                    ->relation('others', Type::list(T('TYPE')), function (Relation $relation) use ($returnValue) {
                         $relation->resolve(function (QueryRelationResolver $r) use ($returnValue) {
                             $r
                                 ->load(fn () => [])
@@ -871,7 +870,7 @@ class QueryRelationResolverTest extends QueryTest
                 $fields
                     ->attribute('name', VarcharAttribute::class)
                     ->attribute('title', VarcharAttribute::class)
-                    ->relation('other', T('TYPE'), function (HasOneRelation $relation) {
+                    ->relation('other', T('TYPE'), function (Relation $relation) {
                         $relation->resolve(function (QueryRelationResolver $r) {
                             $r->load(function (array $owners) use ($r) {
                                 foreach ($owners as $owner) {
@@ -958,7 +957,7 @@ class QueryRelationResolverTest extends QueryTest
         $api = $this->createApiWithTypeAndAction(
             function (FieldBag $fields) {
                 $fields
-                    ->relation('other', [T('TYPE'), T('TYPE2')], function (HasOneRelation $relation) {
+                    ->relation('other', [T('TYPE'), T('TYPE2')], function (Relation $relation) {
                         $relation->resolve(function (QueryRelationResolver $r) {
                             $r->load(function () use ($r) {
                                 $r->getRequestedFields();
@@ -982,7 +981,7 @@ class QueryRelationResolverTest extends QueryTest
         $api = $this->createApiWithTypeAndAction(
             function (FieldBag $fields) use ($single) {
                 $fields
-                    ->relation('other', $single ? T('TYPE') : [T('TYPE'), T('TYPE2')], function (HasOneRelation $relation) {
+                    ->relation('other', $single ? T('TYPE') : [T('TYPE'), T('TYPE2')], function (Relation $relation) {
                         $relation->resolve(function (QueryRelationResolver $r) {
                             $r->load(function () use ($r) {
                                 $r->getRequestedFields('TYPE3');
@@ -1003,7 +1002,7 @@ class QueryRelationResolverTest extends QueryTest
         $api = $this->createApiWithTypeAndAction(
             function (FieldBag $fields) {
                 $fields
-                    ->relation('other', [T('TYPE'), T('TYPE2')], function (HasOneRelation $relation) {
+                    ->relation('other', [T('TYPE'), T('TYPE2')], function (Relation $relation) {
                         $relation->resolve(function (QueryRelationResolver $r) {
                             $r->load(function () use ($r) {
                                 $r->getSelectFields();
@@ -1027,7 +1026,7 @@ class QueryRelationResolverTest extends QueryTest
         $api = $this->createApiWithTypeAndAction(
             function (FieldBag $fields) use ($single) {
                 $fields
-                    ->relation('other', $single ? T('TYPE') : [T('TYPE'), T('TYPE2')], function (HasOneRelation $relation) {
+                    ->relation('other', $single ? T('TYPE') : [T('TYPE'), T('TYPE2')], function (Relation $relation) {
                         $relation->resolve(function (QueryRelationResolver $r) {
                             $r->load(function () use ($r) {
                                 $r->getSelectFields('TYPE3');
@@ -1054,12 +1053,12 @@ class QueryRelationResolverTest extends QueryTest
             function (FieldBag $fields) {
                 $fields
                     ->attribute('title', VarcharAttribute::class)
-                    ->relation('other', T('TYPE'), function (HasOneRelation $relation) {
+                    ->relation('other', T('TYPE'), function (Relation $relation) {
                         $relation->resolve(function (QueryRelationResolver $r) {
                             $r->ownerIdFields(['owner_other_id']);
                         });
                     })
-                    ->relation('another', T('TYPE'), function (HasOneRelation $relation) {
+                    ->relation('another', T('TYPE'), function (Relation $relation) {
                         $relation->resolve(function (QueryRelationResolver $r) {
                             $r->ownerIdFields(fn () => ['anowner_other_id']);
                         });
@@ -1091,7 +1090,7 @@ class QueryRelationResolverTest extends QueryTest
             function (FieldBag $fields) {
                 $fields
                     ->attribute('title', VarcharAttribute::class)
-                    ->relation('other', T('TYPE'), function (HasOneRelation $relation) {
+                    ->relation('other', T('TYPE'), function (Relation $relation) {
                         $relation->resolve(function (TestRelationResolver $r) {
                             $r->load(function () use ($r) {
                                 $this->testWatcher->info($r->countCalculateCalls);
@@ -1121,7 +1120,7 @@ class QueryRelationResolverTest extends QueryTest
         $api = $this->createApiWithTypeAndAction(
             function (FieldBag $fields) {
                 $fields
-                    ->relation('other', T('TYPE'), function (HasOneRelation $relation) {
+                    ->relation('other', T('TYPE'), function (Relation $relation) {
                         $relation->resolve(function (TestRelationResolver $r) {
                             $r->load(function () use ($r) {
                                 $this->testWatcher->info($r->getResolveParams());
