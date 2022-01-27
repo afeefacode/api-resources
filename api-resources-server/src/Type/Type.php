@@ -240,11 +240,11 @@ class Type implements ToSchemaJsonInterface, ContainerAwareInterface
     {
     }
 
-    protected function updateFields(FieldBag $fields): void
+    protected function updateFields(FieldBag $updateFields): void
     {
     }
 
-    protected function createFields(FieldBag $fields, FieldBag $updateFields): void
+    protected function createFields(FieldBag $createFields, FieldBag $updateFields): void
     {
     }
 }
