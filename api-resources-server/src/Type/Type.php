@@ -18,6 +18,10 @@ class Type implements ToSchemaJsonInterface, ContainerAwareInterface
 
     protected FieldBag $fields;
 
+    protected FieldBag $updateFields;
+
+    protected FieldBag $createFields;
+
     public static function list($TypeClassOrClassesOrMeta): TypeMeta
     {
         return (new TypeMeta())
@@ -52,6 +56,16 @@ class Type implements ToSchemaJsonInterface, ContainerAwareInterface
             ->create(FieldBag::class)
             ->owner($this);
         $this->fields($this->fields);
+
+        $this->updateFields = $this->container
+            ->create(FieldBag::class)
+            ->owner($this);
+        $this->updateFields($this->updateFields);
+
+        $this->createFields = $this->container
+            ->create(FieldBag::class)
+            ->owner($this);
+        $this->createFields($this->createFields, $this->updateFields);
     }
 
     public function hasField(string $name): bool
@@ -87,6 +101,18 @@ class Type implements ToSchemaJsonInterface, ContainerAwareInterface
             }
         }
 
+        foreach ($this->updateFields->getEntries() as $field) {
+            if ($ValidatorClass = $field->getValidatorClass()) {
+                $ValidatorClasses[] = $ValidatorClass;
+            }
+        }
+
+        foreach ($this->createFields->getEntries() as $field) {
+            if ($ValidatorClass = $field->getValidatorClass()) {
+                $ValidatorClasses[] = $ValidatorClass;
+            }
+        }
+
         return $ValidatorClasses;
     }
 
@@ -102,7 +128,7 @@ class Type implements ToSchemaJsonInterface, ContainerAwareInterface
 
     public function getUpdateFields(): FieldBag
     {
-        return $this->fields;
+        return $this->updateFields;
     }
 
     public function getUpdateField(string $name): Field
@@ -117,7 +143,7 @@ class Type implements ToSchemaJsonInterface, ContainerAwareInterface
 
     public function getCreateFields(): FieldBag
     {
-        return $this->fields;
+        return $this->createFields;
     }
 
     public function getCreateField(string $name): Field
@@ -213,7 +239,9 @@ class Type implements ToSchemaJsonInterface, ContainerAwareInterface
     {
         return [
             'translations' => $this->translations(),
-            'fields' => $this->fields->toSchemaJson()
+            'fields' => $this->fields->toSchemaJson(),
+            'update_fields' => $this->updateFields->toSchemaJson(),
+            'create_fields' => $this->createFields->toSchemaJson()
         ];
     }
 
@@ -223,6 +251,14 @@ class Type implements ToSchemaJsonInterface, ContainerAwareInterface
     }
 
     protected function fields(FieldBag $fields): void
+    {
+    }
+
+    protected function updateFields(FieldBag $fields): void
+    {
+    }
+
+    protected function createFields(FieldBag $fields, FieldBag $updateFields): void
     {
     }
 }
