@@ -27,22 +27,23 @@ class AuthorType extends Type
 
     protected function fields(FieldBag $fields): void
     {
-        $fields->attribute('name', VarcharAttribute::class);
+        $fields
+            ->attribute('name', VarcharAttribute::class)
 
-        $fields->attribute('email', VarcharAttribute::class);
+            ->attribute('email', VarcharAttribute::class)
 
-        $fields->relation('articles', ArticleType::class, function (HasManyRelation $relation) {
-            $relation->resolve([ArticlesResolver::class, 'resolve_articles_relation']);
-        });
+            ->relation('articles', ArticleType::class, function (HasManyRelation $relation) {
+                $relation->resolve([ArticlesResolver::class, 'resolve_articles_relation']);
+            })
 
-        $fields->relation('tags', Type::list(TagType::class), function (LinkManyRelation $relation) {
-            $relation->resolve([TagsResolver::class, 'resolve_tags_relation']);
-        });
+            ->relation('tags', Type::list(TagType::class), function (LinkManyRelation $relation) {
+                $relation->resolve([TagsResolver::class, 'resolve_tags_relation']);
+            });
     }
 
-    protected function updateFields(FieldBag $fields): void
+    protected function updateFields(FieldBag $updateFields): void
     {
-        $fields->attribute('name', function (VarcharAttribute $attribute) {
+        $updateFields->attribute('name', function (VarcharAttribute $attribute) {
             $attribute->validate(function (VarcharValidator $v) {
                 $v
                     ->filled()
