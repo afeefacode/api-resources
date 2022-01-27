@@ -157,6 +157,10 @@ class ActionResponse implements ToSchemaJsonInterface, ContainerAwareInterface
             $json['list'] = true;
         }
 
+        if ($this->link) {
+            $json['link'] = true;
+        }
+
         return $json;
     }
 
