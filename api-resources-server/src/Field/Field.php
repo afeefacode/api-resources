@@ -139,6 +139,11 @@ class Field extends BagEntry
         return null;
     }
 
+    public function getValidator(): ?Validator
+    {
+        return $this->validator;
+    }
+
     public function validate($validatorOrCallback): Field
     {
         if ($validatorOrCallback instanceof Validator) {
