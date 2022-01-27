@@ -35,12 +35,6 @@ class ActionResponse implements ToSchemaJsonInterface, ContainerAwareInterface
 
             $this->list = $typeMeta->list;
             $this->link = $typeMeta->link;
-
-            if ($this instanceof ActionInput) {
-                $this
-                    ->create($typeMeta->create)
-                    ->update($typeMeta->update);
-            }
         } else {
             $TypeClassOrClasses = $TypeClassOrClassesOrMeta;
         }

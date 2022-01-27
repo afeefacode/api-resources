@@ -36,20 +36,6 @@ class Type implements ToSchemaJsonInterface, ContainerAwareInterface
             ->link();
     }
 
-    public static function create(string $TypeClassOrClassesOrMeta): TypeMeta
-    {
-        return (new TypeMeta())
-            ->typeClassOrClassesOrMeta($TypeClassOrClassesOrMeta)
-            ->create();
-    }
-
-    public static function update(string $TypeClassOrClassesOrMeta): TypeMeta
-    {
-        return (new TypeMeta())
-            ->typeClassOrClassesOrMeta($TypeClassOrClassesOrMeta)
-            ->update();
-    }
-
     public function created(): void
     {
         $this->fields = $this->container
