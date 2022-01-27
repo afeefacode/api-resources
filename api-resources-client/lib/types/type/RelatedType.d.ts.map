@@ -1,0 +1,1 @@
+{"version":3,"file":"RelatedType.d.ts","sourceRoot":"","sources":["../../../src/type/RelatedType.ts"],"names":[],"mappings":"AAAA,oBAAY,eAAe,GAAG;IAC5B,IAAI,EAAE,MAAM,CAAA;IACZ,KAAK,EAAE,MAAM,EAAE,CAAA;IACf,IAAI,EAAE,OAAO,CAAA;IACb,IAAI,EAAE,OAAO,CAAA;CACd,CAAA;AAED,qBAAa,WAAW;IACf,KAAK,EAAE,MAAM,EAAE,CAAK;IACpB,MAAM,UAAQ;IACd,MAAM,UAAQ;gBAER,IAAI,EAAE,eAAe;CASnC"}

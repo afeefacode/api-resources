@@ -44,7 +44,7 @@ class SchemaTypeTest extends ApiResourcesTest
                         'type' => 'Afeefa.VarcharAttribute'
                     ],
                     'related_type' => [
-                        'type' => 'Afeefa.HasOneRelation',
+                        'type' => 'Afeefa.Relation',
                         'related_type' => [
                             'type' => 'Test.Type'
                         ]
@@ -294,13 +294,13 @@ class SchemaTypeTest extends ApiResourcesTest
                 'translations' => [],
                 'fields' => [
                     'other_type' => [
-                        'type' => 'Afeefa.HasOneRelation',
+                        'type' => 'Afeefa.Relation',
                         'related_type' => [
                             'type' => 'Test.Type2'
                         ]
                     ],
                     'other_type2' => [
-                        'type' => 'Afeefa.HasOneRelation',
+                        'type' => 'Afeefa.Relation',
                         'related_type' => [
                             'type' => 'Test.Type2'
                         ]
@@ -340,14 +340,14 @@ class SchemaTypeTest extends ApiResourcesTest
                 'translations' => [],
                 'fields' => [
                     'other_types' => [
-                        'type' => 'Afeefa.HasManyRelation',
+                        'type' => 'Afeefa.Relation',
                         'related_type' => [
                             'type' => 'Test.Type2',
                             'list' => true
                         ]
                     ],
                     'other_types2' => [
-                        'type' => 'Afeefa.HasManyRelation',
+                        'type' => 'Afeefa.Relation',
                         'related_type' => [
                             'type' => 'Test.Type2',
                             'list' => true
@@ -389,13 +389,13 @@ class SchemaTypeTest extends ApiResourcesTest
                 'translations' => [],
                 'fields' => [
                     'other_type' => [
-                        'type' => 'Afeefa.HasOneRelation',
+                        'type' => 'Afeefa.Relation',
                         'related_type' => [
                             'types' => ['Test.Type2', 'Test.Type3']
                         ]
                     ],
                     'other_types' => [
-                        'type' => 'Afeefa.HasManyRelation',
+                        'type' => 'Afeefa.Relation',
                         'related_type' => [
                             'types' => ['Test.Type2', 'Test.Type3'],
                             'list' => true

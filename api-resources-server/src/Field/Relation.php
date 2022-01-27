@@ -101,10 +101,6 @@ class Relation extends Field
     {
         $json = parent::toSchemaJson();
 
-        $type = $this->relatedType->isLink() ? 'Link' : 'Has';
-        $type .= $this->relatedType->isList() ? 'Many' : 'One';
-        $json['type'] = 'Afeefa.' . $type . 'Relation';
-
         $json['related_type'] = $this->relatedType->toSchemaJson();
 
         return $json;

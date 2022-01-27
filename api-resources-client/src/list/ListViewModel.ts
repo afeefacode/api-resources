@@ -1,7 +1,6 @@
 import { ApiRequest } from '../api/ApiRequest'
 import { BagEntries } from '../bag/Bag'
 import { ActionFilterValueType } from '../filter/ActionFilter'
-import { PageFilter } from '../filter/filters/PageFilter'
 import { ListViewConfig } from './ListViewConfig'
 import { ListViewFilter } from './ListViewFilter'
 import { ListViewFilterBag } from './ListViewFilterBag'

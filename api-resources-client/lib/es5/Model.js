@@ -58,10 +58,10 @@ export class Model {
             model.id = this.id;
         }
         const type = apiResources.getType(this.type);
-        for (const name of Object.keys(type.getUpdateFields())) {
+        for (const [name, field] of Object.entries(type.getUpdateFields())) {
             if (!fields || fields[name]) {
                 // TODO clone relations too
-                model[name] = this[name];
+                model[name] = this[name] || field.default();
             }
         }
         return model;
