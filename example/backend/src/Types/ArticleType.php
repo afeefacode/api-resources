@@ -11,7 +11,6 @@ use Afeefa\ApiResources\Field\Fields\LinkOneRelation;
 use Afeefa\ApiResources\Field\Fields\TextAttribute;
 use Afeefa\ApiResources\Field\Fields\VarcharAttribute;
 use Afeefa\ApiResources\Field\Relation;
-use Afeefa\ApiResources\Type\ModelType;
 use Afeefa\ApiResources\Type\Type;
 use Afeefa\ApiResources\Validator\Validators\LinkOneValidator;
 use Afeefa\ApiResources\Validator\Validators\VarcharValidator;
@@ -20,7 +19,7 @@ use Backend\Resolvers\CommentsResolver;
 use Backend\Resolvers\TagsResolver;
 use Backend\Resources\AuthorResource;
 
-class ArticleType extends ModelType
+class ArticleType extends Type
 {
     protected static string $type = 'Example.Article';
 

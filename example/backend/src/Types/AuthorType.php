@@ -6,13 +6,12 @@ use Afeefa\ApiResources\Field\FieldBag;
 use Afeefa\ApiResources\Field\Fields\HasManyRelation;
 use Afeefa\ApiResources\Field\Fields\LinkManyRelation;
 use Afeefa\ApiResources\Field\Fields\VarcharAttribute;
-use Afeefa\ApiResources\Type\ModelType;
 use Afeefa\ApiResources\Type\Type;
 use Afeefa\ApiResources\Validator\Validators\VarcharValidator;
 use Backend\Resolvers\ArticlesResolver;
 use Backend\Resolvers\TagsResolver;
 
-class AuthorType extends ModelType
+class AuthorType extends Type
 {
     protected static string $type = 'Example.Author';
 
