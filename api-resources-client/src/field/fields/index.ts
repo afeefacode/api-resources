@@ -5,12 +5,10 @@ import { EnumAttribute } from './EnumAttribute'
 import { IdAttribute } from './IdAttribute'
 import { IntAttribute } from './IntAttribute'
 import { NumberAttribute } from './NumberAttribute'
-import { TextAttribute } from './TextAttribute'
 import { VarcharAttribute } from './VarcharAttribute'
 
 export const fields = [
   new VarcharAttribute(),
-  new TextAttribute(),
   new BooleanAttribute(),
   new IdAttribute(),
   new DateAttribute(),

@@ -16,7 +16,7 @@
         label="Kurzbeschreibung"
       />
 
-      <form-field-text
+      <form-field-text-area
         name="content"
         label="Text"
       />

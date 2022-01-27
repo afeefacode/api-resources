@@ -6,7 +6,6 @@ use Afeefa\ApiResources\Api\ApiRequest;
 use Afeefa\ApiResources\Field\Attribute;
 use Afeefa\ApiResources\Field\FieldBag;
 use Afeefa\ApiResources\Field\Fields\DateAttribute;
-use Afeefa\ApiResources\Field\Fields\TextAttribute;
 use Afeefa\ApiResources\Field\Fields\VarcharAttribute;
 use Afeefa\ApiResources\Field\Relation;
 use Afeefa\ApiResources\Type\Type;
@@ -35,9 +34,9 @@ class ArticleType extends Type
     {
         $fields->attribute('title', VarcharAttribute::class)
 
-            ->attribute('summary', TextAttribute::class)
+            ->attribute('summary', VarcharAttribute::class)
 
-            ->attribute('content', TextAttribute::class)
+            ->attribute('content', VarcharAttribute::class)
 
             ->attribute('date', DateAttribute::class)
 
@@ -67,7 +66,7 @@ class ArticleType extends Type
                     });
             })
 
-            ->attribute('summary', function (TextAttribute $attribute) {
+            ->attribute('summary', function (VarcharAttribute $attribute) {
                 $attribute
                     ->validate(function (VarcharValidator $v) {
                         $v
@@ -76,7 +75,7 @@ class ArticleType extends Type
                     });
             })
 
-            ->attribute('content', TextAttribute::class)
+            ->attribute('content', VarcharAttribute::class)
 
             ->attribute('date', DateAttribute::class)
 
