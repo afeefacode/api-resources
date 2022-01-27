@@ -1,4 +1,7 @@
 {
   "restructuredtext.confPath": "${workspaceFolder}/docs/source",
-  "restructuredtext.builtDocumentationPath": "${workspaceFolder}/docs/build"
+  "restructuredtext.builtDocumentationPath": "${workspaceFolder}/docs/build",
+  "eslint.workingDirectories": [
+    "./api-resources-client",
+  ]
 }
