@@ -31,7 +31,7 @@ class AuthorType extends Type
 
             ->attribute('email', StringAttribute::class)
 
-            ->relation('articles', ArticleType::class, function (Relation $relation) {
+            ->relation('articles', Type::list(ArticleType::class), function (Relation $relation) {
                 $relation->resolve([ArticlesResolver::class, 'resolve_articles_relation']);
             })
 

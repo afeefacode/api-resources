@@ -17,7 +17,7 @@ class TagType extends Type
         $fields
             ->attribute('name', StringAttribute::class)
 
-            ->relation('users', [AuthorType::class, ArticleType::class], function (Relation $relation) {
+            ->relation('users', Type::list([AuthorType::class, ArticleType::class]), function (Relation $relation) {
                 $relation->resolve([TagsResolver::class, 'resolve_tag_users_relation']);
             });
     }
