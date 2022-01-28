@@ -106,6 +106,7 @@ class QueryResolveContextTest extends ApiResourcesTest
         $fields = [
             'name' => true,
             'other_relation' => true,
+            'count_other_relation' => true,
             '@TEST' => [ // on type
                 'count_some_relation' => true,
                 'some_relation' => [
@@ -125,6 +126,7 @@ class QueryResolveContextTest extends ApiResourcesTest
         $expectedFields = [
             'name' => true,
             'other_relation' => [],
+            'count_other_relation' => true,
             'count_some_relation' => true,
             'some_relation' => [
                 'name' => true
@@ -139,6 +141,7 @@ class QueryResolveContextTest extends ApiResourcesTest
         $expectedFields = [
             'name' => true,
             'other_relation' => [],
+            'count_other_relation' => true,
             'count_some_relation2' => true,
             'some_relation2' => [
                 'name' => true

@@ -95,9 +95,9 @@ trait QueryResolverTrait
 
             // mark visible fields
 
-            $getRequestedFieldNames = $this->getRequestedFieldNames($typeName);
+            $requestedFieldNames = $this->getRequestedFieldNames($typeName);
             foreach ($models as $model) {
-                $visibleFields = ['id', 'type', ...$getRequestedFieldNames];
+                $visibleFields = ['id', 'type', ...$requestedFieldNames];
                 $model->apiResourcesSetVisibleFields($visibleFields);
             }
         }

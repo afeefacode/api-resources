@@ -342,7 +342,7 @@ class QueryRelationResolverTest extends QueryTest
                                         ['title' => 'title' . 3 * $index + 2]
                                     ]);
                                     $owner->apiResourcesSetRelation('others', $otherModels);
-                                    yield from $otherModels;
+                                    yield $otherModels;
                                 }
                             });
                         });
@@ -387,7 +387,7 @@ class QueryRelationResolverTest extends QueryTest
         $this->assertEquals($expectedFields, $model->jsonSerialize());
     }
 
-    public function test_list_with_nested_has_many_relation()
+    public function test_list_nested_has_many_relation()
     {
         $api = $this->createApiWithTypeAndAction(
             function (FieldBag $fields) {
@@ -407,7 +407,7 @@ class QueryRelationResolverTest extends QueryTest
                                         ['title' => 'title' . 3 * $index + 2]
                                     ]);
                                     $owner->apiResourcesSetRelation('others', $otherModels);
-                                    yield from $otherModels;
+                                    yield $otherModels;
                                 }
                             });
                         });
@@ -621,20 +621,15 @@ class QueryRelationResolverTest extends QueryTest
                                             ['title' => 'title' . 3 * $index + 1],
                                             ['title' => 'title' . 3 * $index + 2]
                                         ]);
+                                        $id = strval($index + 1);
+                                        $owner->apiResourcesSetAttribute('id', $id);
                                         $owner->apiResourcesSetRelation('others', $otherModels);
-                                        $objects[] = [
-                                            'owner' => $owner,
-                                            'models' => $otherModels
-                                        ];
+                                        $objects[$id] = $otherModels;
                                     }
                                     return $objects;
                                 })
                                 ->map(function ($objects, Model $owner) {
-                                    foreach ($objects as $object) {
-                                        if ($object['owner'] === $owner) {
-                                            return $object['models'];
-                                        }
-                                    }
+                                    return $objects[$owner->id];
                                 });
                         });
                     });
@@ -652,18 +647,18 @@ class QueryRelationResolverTest extends QueryTest
         ]);
 
         $expectedFields = [
-            'type' => 'TYPE', 'title' => 'title0', 'others' => [
-                ['type' => 'TYPE', 'title' => 'title0', 'others' => [
+            'type' => 'TYPE', 'id' => '1', 'title' => 'title0', 'others' => [
+                ['type' => 'TYPE', 'id' => '1', 'title' => 'title0', 'others' => [
                     ['type' => 'TYPE', 'title' => 'title0'],
                     ['type' => 'TYPE', 'title' => 'title1'],
                     ['type' => 'TYPE', 'title' => 'title2']
                 ]],
-                ['type' => 'TYPE', 'title' => 'title1', 'others' => [
+                ['type' => 'TYPE', 'id' => '2', 'title' => 'title1', 'others' => [
                     ['type' => 'TYPE', 'title' => 'title3'],
                     ['type' => 'TYPE', 'title' => 'title4'],
                     ['type' => 'TYPE', 'title' => 'title5']
                 ]],
-                ['type' => 'TYPE', 'title' => 'title2', 'others' => [
+                ['type' => 'TYPE', 'id' => '3', 'title' => 'title2', 'others' => [
                     ['type' => 'TYPE', 'title' => 'title6'],
                     ['type' => 'TYPE', 'title' => 'title7'],
                     ['type' => 'TYPE', 'title' => 'title8']
@@ -774,7 +769,7 @@ class QueryRelationResolverTest extends QueryTest
     public function test_list_load_returns_no_list_of_models($returnValue)
     {
         $this->expectException(InvalidConfigurationException::class);
-        $this->expectExceptionMessage('Resolver for relation others needs to return an array of ModelInterface objects from its load() method.');
+        $this->expectExceptionMessage('Resolver for relation others needs to return a nested array of ModelInterface objects from its load() method.');
 
         $api = $this->createApiWithTypeAndAction(
             function (FieldBag $fields) use ($returnValue) {
@@ -814,6 +809,31 @@ class QueryRelationResolverTest extends QueryTest
         $this->requestSingle($api, ['other' => true]);
     }
 
+    public function test_single_map_returns_null()
+    {
+        $api = $this->createApiWithTypeAndAction(
+            function (FieldBag $fields) {
+                $fields
+                    ->relation('other', T('TYPE'), function (Relation $relation) {
+                        $relation->resolve(function (QueryRelationResolver $r) {
+                            $r
+                                ->load(fn () => [])
+                                ->map(fn () => null);
+                        });
+                    });
+            }
+        );
+
+        $model = $this->requestSingle($api, ['other' => true]);
+
+        $expectedFields = [
+            'type' => 'TYPE',
+            'other' => null
+        ];
+
+        $this->assertEquals($expectedFields, $model->jsonSerialize());
+    }
+
     /**
      * @dataProvider loadNoArrayOfModelsDataprovider
      */
@@ -828,7 +848,7 @@ class QueryRelationResolverTest extends QueryTest
                     ->relation('others', Type::list(T('TYPE')), function (Relation $relation) use ($returnValue) {
                         $relation->resolve(function (QueryRelationResolver $r) use ($returnValue) {
                             $r
-                                ->load(fn () => [])
+                                ->load(fn () => [[]])
                                 ->map(fn () => $returnValue);
                         });
                     });
@@ -841,7 +861,6 @@ class QueryRelationResolverTest extends QueryTest
     public function mapNoModelDataprovider()
     {
         return [
-            'return null' => [null],
             'return string' => ['string'],
             'return number' => [0],
             'return array' => [[]],
@@ -856,7 +875,7 @@ class QueryRelationResolverTest extends QueryTest
             'return null' => [[null]],
             'return string' => [['string']],
             'return number' => [[0]],
-            'return number' => [[0, null, 'string']]
+            'return mixed' => [[0, null, 'string']]
         ];
     }
 

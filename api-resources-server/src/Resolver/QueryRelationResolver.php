@@ -86,29 +86,45 @@ class QueryRelationResolver extends BaseFieldResolver
         $loadResult = $loadCallback($this->owners);
 
         if ($loadResult instanceof Generator) {
-            $loadResult = iterator_to_array($loadResult, false);
+            $loadResult = iterator_to_array($loadResult);
         }
 
         if (!is_array($loadResult)) {
             throw new InvalidConfigurationException("{$resolverForRelation} needs to return an array from its load() method.");
         }
 
+        // this is just a nifty one-liner to detect if there are non-models in the given array
+        $isAllModels = fn ($array) => !count(array_filter($array, fn ($elm) => !$elm instanceof ModelInterface));
+
+        $isList = $this->relation->getRelatedType()->isList();
+
+        if ($isList) {
+            foreach ($loadResult as $modelsOfOwner) {
+                if (!is_array($modelsOfOwner) || !$isAllModels($modelsOfOwner)) {
+                    throw new InvalidConfigurationException("{$resolverForRelation} needs to return a nested array of ModelInterface objects from its load() method.");
+                }
+            }
+        } else {
+            if (!$isAllModels($loadResult)) {
+                throw new InvalidConfigurationException("{$resolverForRelation} needs to return an array of ModelInterface objects from its load() method.");
+            }
+        }
+
         $models = [];
 
         // map results to owners
 
-        // this is just a nifty one-liner to detect if there are non-models in the given array
-        $isAllModels = fn ($array) => !count(array_filter($array, fn ($elm) => !$elm instanceof ModelInterface));
-
         if (isset($this->mapCallback)) {
-            $relationName = $this->relation->getName();
             foreach ($this->owners as $owner) {
                 $value = ($this->mapCallback)($loadResult, $owner);
                 $owner->apiResourcesSetRelation($relationName, $value);
+
+                if ($isList || $value !== null) { // save only if non null
                 $models[] = $value;
+                }
             }
 
-            if ($this->relation->getRelatedType()->isList()) {
+            if ($isList) {
                 $models = array_merge(...$models); // make flat
                 if (!$isAllModels($models)) {
                     throw new InvalidConfigurationException("{$resolverForRelation} needs to return an array of ModelInterface objects from its map() method.");
@@ -120,8 +136,8 @@ class QueryRelationResolver extends BaseFieldResolver
             }
         } else {
             $models = $loadResult;
-            if (!$isAllModels($models)) {
-                throw new InvalidConfigurationException("{$resolverForRelation} needs to return an array of ModelInterface objects from its load() method.");
+            if ($isList) {
+                $models = array_merge(...$models); // make flat
             }
         }
 

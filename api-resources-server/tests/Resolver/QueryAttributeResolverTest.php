@@ -412,7 +412,7 @@ class QueryAttributeResolverTest extends QueryTest
                                 foreach ($owners as $owner) {
                                     $otherModels = Model::fromList('TYPE', [[], [], []]);
                                     $owner->apiResourcesSetRelation('others', $otherModels);
-                                    $relatedModels = [...$relatedModels, ...$otherModels];
+                                    $relatedModels[] = $otherModels;
                                 }
                                 return $relatedModels;
                             });
