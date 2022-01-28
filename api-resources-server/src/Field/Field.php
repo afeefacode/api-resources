@@ -37,11 +37,6 @@ class Field extends BagEntry
      */
     protected $resolveCallback = null;
 
-    /**
-     * @var string|callable|Closure
-     */
-    protected $resolveSaveCallback = null;
-
     public function owner($owner): Field
     {
         $this->owner = $owner;
@@ -214,41 +209,6 @@ class Field extends BagEntry
         throw new NotACallbackException("Resolve callback for field {$this->name} is not callable.");
     }
 
-    /**
-     * @param string|callable|Closure $classOrCallback
-     */
-    public function resolveSave($classOrCallback): Field
-    {
-        $this->resolveSaveCallback = $classOrCallback;
-        return $this;
-    }
-
-    public function hasSaveResolver(): bool
-    {
-        return isset($this->resolveSaveCallback);
-    }
-
-    public function getSaveResolve(): ?Closure
-    {
-        $callback = $this->resolveSaveCallback ?? null;
-
-        if (!$callback) {
-            throw new InvalidConfigurationException("Field {$this->name} does not have a save resolver.");
-        }
-
-        if (is_array($callback) && is_string($callback[0])) { // static class -> create instance
-            $callback[0] = $this->container->create($callback[0]);
-        }
-
-        if (is_callable($callback)) {
-            return Closure::fromCallable($callback);
-        } elseif ($callback instanceof Closure) {
-            return $callback;
-        }
-
-        throw new NotACallbackException("Save resolve callback for field {$this->name} is not callable.");
-    }
-
     public function clone(): Field
     {
         return $this->container->create(static::class, function (Field $field) {
@@ -266,9 +226,6 @@ class Field extends BagEntry
             }
             if (isset($this->resolveCallback)) {
                 $field->resolveCallback = $this->resolveCallback;
-            }
-            if (isset($this->resolveSaveCallback)) {
-                $field->resolveSaveCallback = $this->resolveSaveCallback;
             }
         });
     }

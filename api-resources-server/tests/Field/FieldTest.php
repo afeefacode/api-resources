@@ -27,8 +27,8 @@ class FieldTest extends ApiResourcesTest
         $this->assertFalse($field->hasOptionsRequest());
         $this->assertNull($field->getOptionsRequest());
         $this->assertFalse($field->hasResolver());
-        $this->assertFalse($field->hasSaveResolver());
-        $this->assertFalse($field->hasSaveResolver());
+        $this->assertFalse($field->hasResolver());
+        $this->assertFalse($field->hasResolver());
         $this->assertFalse($field->hasResolveParam('something'));
         $this->assertSame([], $field->getResolveParams());
     }
@@ -77,8 +77,8 @@ class FieldTest extends ApiResourcesTest
         $this->assertFalse($field->hasOptionsRequest());
         $this->assertNull($field->getOptionsRequest());
         $this->assertFalse($field->hasResolver());
-        $this->assertFalse($field->hasSaveResolver());
-        $this->assertFalse($field->hasSaveResolver());
+        $this->assertFalse($field->hasResolver());
+        $this->assertFalse($field->hasResolver());
         $this->assertFalse($field->hasResolveParam('something'));
         $this->assertSame([], $field->getResolveParams());
     }

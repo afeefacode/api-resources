@@ -251,7 +251,7 @@ class MutationActionModelResolverTest extends MutationRelationTest
                     ->attribute('name', StringAttribute::class)
                     ->attribute('title', StringAttribute::class)
                     ->relation('relation', T('TYPE'), function (Relation $relation) {
-                        $relation->resolveSave(function (MutationRelationHasOneResolver $r) {
+                        $relation->resolve(function (MutationRelationHasOneResolver $r) {
                             $r
                                 ->get(function () {
                                     $this->testWatcher->info('relation_get');
@@ -268,7 +268,7 @@ class MutationActionModelResolverTest extends MutationRelationTest
                         });
                     })
                     ->relation('relation_before', T('TYPE'), function (Relation $relation) {
-                        $relation->resolveSave(function (MutationRelationHasOneResolver $r) {
+                        $relation->resolve(function (MutationRelationHasOneResolver $r) {
                             $r
                                 ->saveRelatedToOwner(function (?string $id, ?string $typeName) {
                                     return [
@@ -290,7 +290,7 @@ class MutationActionModelResolverTest extends MutationRelationTest
                         });
                     })
                     ->relation('relation_after', T('TYPE'), function (Relation $relation) {
-                        $relation->resolveSave(function (MutationRelationHasOneResolver $r) {
+                        $relation->resolve(function (MutationRelationHasOneResolver $r) {
                             $r
                                 ->saveOwnerToRelated(function (string $id, string $typeName) {
                                     return [
@@ -432,7 +432,7 @@ class MutationActionModelResolverTest extends MutationRelationTest
                     ->attribute('name', StringAttribute::class)
                     ->attribute('title', StringAttribute::class)
                     ->relation('relation', T('TYPE'), function (Relation $relation) {
-                        $relation->resolveSave(function (MutationRelationHasOneResolver $r) {
+                        $relation->resolve(function (MutationRelationHasOneResolver $r) {
                             $r
                                 ->get(function () {
                                     $this->testWatcher->info('relation_get');
@@ -451,7 +451,7 @@ class MutationActionModelResolverTest extends MutationRelationTest
                         });
                     })
                     ->relation('relation_before', T('TYPE'), function (Relation $relation) {
-                        $relation->resolveSave(function (MutationRelationHasOneResolver $r) {
+                        $relation->resolve(function (MutationRelationHasOneResolver $r) {
                             $r
                                 ->saveRelatedToOwner(function (?string $id, ?string $typeName) {
                                     return [
@@ -480,7 +480,7 @@ class MutationActionModelResolverTest extends MutationRelationTest
                         });
                     })
                     ->relation('relation_after', T('TYPE'), function (Relation $relation) {
-                        $relation->resolveSave(function (MutationRelationHasOneResolver $r) {
+                        $relation->resolve(function (MutationRelationHasOneResolver $r) {
                             $r
                                 ->saveOwnerToRelated(function (string $id, string $typeName) {
                                     return [

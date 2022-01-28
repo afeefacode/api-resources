@@ -85,7 +85,7 @@ class ArticleType extends Type
                     ->validate(function (LinkOneValidator $v) {
                         $v->filled();
                     })
-                    ->resolveSave([AuthorsResolver::class, 'resolve_save_author_relation'])
+                    ->resolve([AuthorsResolver::class, 'resolve_save_author_relation'])
                     ->optionsRequest(function (ApiRequest $request) {
                         $request
                             ->resourceType(AuthorResource::type())

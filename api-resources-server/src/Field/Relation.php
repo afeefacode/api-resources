@@ -12,7 +12,6 @@ use Closure;
  * @method Relation validator(Validator $validator)
  * @method Relation required(bool $required = true)
  * @method Relation resolve(string|callable|Closure $classOrCallback)
- * @method Relation resolveSave(string|callable|Closure $classOrCallback)
  * @method Relation resolveParam(string $key, $value)
  * @method Relation resolveParams(array $params)
  */
