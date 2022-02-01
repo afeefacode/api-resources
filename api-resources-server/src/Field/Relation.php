@@ -14,6 +14,7 @@ use Closure;
  * @method Relation resolve(string|callable|Closure $classOrCallback)
  * @method Relation resolveParam(string $key, $value)
  * @method Relation resolveParams(array $params)
+ * @method Relation isMutation(bool $isMutation)
  */
 class Relation extends Field
 {

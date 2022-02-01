@@ -1,6 +1,6 @@
 import { Attribute } from '../Attribute';
 export class StringAttribute extends Attribute {
-    default() {
+    fallbackDefault() {
         return '';
     }
 }

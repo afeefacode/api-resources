@@ -123,6 +123,7 @@ class RequestAttributeTest extends ApiResourcesTest
 // id type are always sent
 // attribute with depedencies
 // attribute with custom resolver
+// attribute with default value
 
 class TestWatcher
 {

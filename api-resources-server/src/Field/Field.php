@@ -18,9 +18,13 @@ class Field extends BagEntry
     use ToSchemaJsonTrait;
     use HasStaticTypeTrait;
 
+    protected string $name;
+
     protected $owner;
 
-    protected string $name;
+    protected bool $isMutation = false;
+
+    protected $default = null;
 
     protected ?Validator $validator = null;
 
@@ -37,6 +41,17 @@ class Field extends BagEntry
      */
     protected $resolveCallback = null;
 
+    public function name(string $name): Field
+    {
+        $this->name = $name;
+        return $this;
+    }
+
+    public function getName(): string
+    {
+        return $this->name;
+    }
+
     public function owner($owner): Field
     {
         $this->owner = $owner;
@@ -48,15 +63,26 @@ class Field extends BagEntry
         return $this->owner;
     }
 
-    public function name(string $name): Field
+    public function default($default): Field
     {
-        $this->name = $name;
+        $this->default = $default;
         return $this;
     }
 
-    public function getName(): string
+    public function hasDefaultValue(): bool
     {
-        return $this->name;
+        return $this->default !== null;
+    }
+
+    public function getDefaultValue()
+    {
+        return $this->default;
+    }
+
+    public function isMutation(bool $isMutation = true): Field
+    {
+        $this->isMutation = $isMutation;
+        return $this;
     }
 
     public function options(array $options): Field
@@ -214,16 +240,22 @@ class Field extends BagEntry
         return $this->container->create(static::class, function (Field $field) {
             $field
                 ->name($this->name)
-                ->required($this->required);
+                ->required($this->required)
+                ->default($this->default)
+                ->isMutation($this->isMutation);
+
             if ($this->validator) {
                 $field->validator = $this->validator->clone();
             }
+
             if (isset($this->optionsRequestCallback)) {
                 $field->optionsRequestCallback = $this->optionsRequestCallback;
             }
+
             if (isset($this->options)) {
                 $field->options = $this->options;
             }
+
             if (isset($this->resolveCallback)) {
                 $field->resolveCallback = $this->resolveCallback;
             }

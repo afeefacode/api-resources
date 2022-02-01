@@ -6,6 +6,7 @@ import { FieldValidator, FieldValidatorJSON } from '../validator/FieldValidator'
 
 export type FieldJSON = {
   type: string
+  default: FieldJSONValue
   validator: FieldValidatorJSON
   options: Record<string, string>
   options_request: ApiRequestJSON
@@ -25,6 +26,8 @@ type RequestFactory = (() => ApiRequest) | null
 export class Field {
   public type!: string
 
+  private _default: FieldValue = null;
+
   private _validator: FieldValidator | null = null
 
   private _options: Record<string, string> = {}
@@ -40,6 +43,10 @@ export class Field {
 
   public createTypeField (json: FieldJSON): Field {
     const field = this.newInstance<Field>()
+
+    if (json.default) {
+      field._default = json.default as FieldValue
+    }
 
     if (json.options_request) {
       const optionsRequest = json.options_request
@@ -86,7 +93,7 @@ export class Field {
   }
 
   public default (): FieldValue {
-    return null
+    return this._default || this.fallbackDefault()
   }
 
   public deserialize (value: FieldJSONValue): FieldValue {
@@ -95,6 +102,10 @@ export class Field {
 
   public serialize (value: FieldValue): FieldJSONValue {
     return value as FieldJSONValue
+  }
+
+  protected fallbackDefault (): FieldValue {
+    return null
   }
 
   protected setupFieldValidator (json: FieldValidatorJSON): void {

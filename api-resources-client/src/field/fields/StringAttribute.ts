@@ -4,7 +4,7 @@ import { FieldValue } from '../Field'
 export class StringAttribute extends Attribute {
   public static type: string = 'Afeefa.StringAttribute'
 
-  public default (): FieldValue {
+  public fallbackDefault (): FieldValue {
     return ''
   }
 }

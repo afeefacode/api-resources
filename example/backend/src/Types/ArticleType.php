@@ -101,12 +101,12 @@ class ArticleType extends Type
     protected function createFields(FieldBag $createFields, FieldBag $updateFields): void
     {
         $createFields
-            ->from($updateFields, 'author', function (Relation $relation) {
-                $relation->required();
-            })
-
             ->from($updateFields, 'title', function (Attribute $attribute) {
                 $attribute->required();
+            })
+
+            ->from($updateFields, 'author', function (Relation $relation) {
+                $relation->required();
             });
     }
 }

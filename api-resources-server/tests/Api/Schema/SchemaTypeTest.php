@@ -190,6 +190,86 @@ class SchemaTypeTest extends ApiResourcesTest
         $this->assertEquals($expectedTypesSchema, $schema['types']);
     }
 
+    public function test_attribute_default_value()
+    {
+        $api = createApiWithSingleType(
+            'Test.Type',
+            function (FieldBag $fields) {
+                $fields
+                    ->attribute('title', function (StringAttribute $a) {
+                        $a->default('title_default');
+                    });
+            },
+            function (FieldBag $fields) {
+                $fields
+                    ->attribute('title_update', function (StringAttribute $a) {
+                        $a->default('title_update_default');
+                    })
+                    ->attribute('title_update_create', function (StringAttribute $a) {
+                        $a->default('title_update_create_default');
+                    })
+                    ->attribute('title_update_create2', function (StringAttribute $a) {
+                        $a->default('title_update_create2_default');
+                    });
+            },
+            function (FieldBag $fields, FieldBag $updateFields) {
+                $fields
+                    ->from($updateFields, 'title_update_create', function (StringAttribute $a) {
+                        $a->default('title_update_create_default_create');
+                    })
+                    ->from($updateFields, 'title_update_create2')
+                    ->attribute('title_create', function (StringAttribute $a) {
+                        $a->default('title_create_default');
+                    });
+            }
+        );
+
+        $schema = $api->toSchemaJson();
+
+        // debug_dump($schema);
+
+        $expectedTypesSchema = [
+            'Test.Type' => [
+                'translations' => [],
+                'fields' => [
+                    'title' => [
+                        'type' => 'Afeefa.StringAttribute'
+                    ]
+                ],
+                'update_fields' => [
+                    'title_update' => [
+                        'type' => 'Afeefa.StringAttribute',
+                        'default' => 'title_update_default'
+                    ],
+                    'title_update_create' => [
+                        'type' => 'Afeefa.StringAttribute',
+                        'default' => 'title_update_create_default'
+                    ],
+                    'title_update_create2' => [
+                        'type' => 'Afeefa.StringAttribute',
+                        'default' => 'title_update_create2_default'
+                    ]
+                ],
+                'create_fields' => [
+                    'title_update_create' => [
+                        'type' => 'Afeefa.StringAttribute',
+                        'default' => 'title_update_create_default_create'
+                    ],
+                    'title_update_create2' => [
+                        'type' => 'Afeefa.StringAttribute',
+                        'default' => 'title_update_create2_default'
+                    ],
+                    'title_create' => [
+                        'type' => 'Afeefa.StringAttribute',
+                        'default' => 'title_create_default'
+                    ]
+                ]
+            ]
+        ];
+
+        $this->assertEquals($expectedTypesSchema, $schema['types']);
+    }
+
     public function test_type_not_in_action()
     {
         $this->typeBuilder()->type('Test.Type')->get();

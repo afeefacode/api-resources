@@ -2,6 +2,7 @@ import { ApiRequest } from '../api/ApiRequest';
 import { apiResources } from '../ApiResources';
 export class Field {
     constructor() {
+        this._default = null;
         this._validator = null;
         this._options = {};
         this._optionsRequestFactory = null;
@@ -12,6 +13,9 @@ export class Field {
     }
     createTypeField(json) {
         const field = this.newInstance();
+        if (json.default) {
+            field._default = json.default;
+        }
         if (json.options_request) {
             const optionsRequest = json.options_request;
             const api = apiResources.getApi(optionsRequest.api);
@@ -48,13 +52,16 @@ export class Field {
         return this._options;
     }
     default() {
-        return null;
+        return this._default || this.fallbackDefault();
     }
     deserialize(value) {
         return value;
     }
     serialize(value) {
         return value;
+    }
+    fallbackDefault() {
+        return null;
     }
     setupFieldValidator(json) {
         if (json) {

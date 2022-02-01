@@ -18,7 +18,7 @@ class Attribute extends Field
 {
     use HasStaticTypeTrait;
 
-    protected array $dependingAttributes;
+    protected array $dependingAttributes = [];
 
     public function select($attributeOrAttributes): Attribute
     {
@@ -33,6 +33,17 @@ class Attribute extends Field
 
     public function hasDependingAttributes(): bool
     {
-        return isset($this->dependingAttributes);
+        return count($this->dependingAttributes) > 0;
+    }
+
+    public function toSchemaJson(): array
+    {
+        $json = parent::toSchemaJson();
+
+        if ($this->isMutation && $this->hasDefaultValue()) {
+            $json['default'] = $this->default;
+        }
+
+        return $json;
     }
 }

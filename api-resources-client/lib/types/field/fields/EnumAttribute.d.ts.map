@@ -1,1 +1,1 @@
-{"version":3,"file":"EnumAttribute.d.ts","sourceRoot":"","sources":["../../../../src/field/fields/EnumAttribute.ts"],"names":[],"mappings":"AAAA,OAAO,EAAE,SAAS,EAAE,MAAM,cAAc,CAAA;AACxC,OAAO,EAAE,UAAU,EAAE,MAAM,UAAU,CAAA;AAErC,qBAAa,aAAc,SAAQ,SAAS;IAC1C,OAAc,IAAI,EAAE,MAAM,CAAyB;IAE5C,OAAO,IAAK,UAAU;CAG9B"}
+{"version":3,"file":"EnumAttribute.d.ts","sourceRoot":"","sources":["../../../../src/field/fields/EnumAttribute.ts"],"names":[],"mappings":"AAAA,OAAO,EAAE,SAAS,EAAE,MAAM,cAAc,CAAA;AAExC,qBAAa,aAAc,SAAQ,SAAS;IAC1C,OAAc,IAAI,EAAE,MAAM,CAAyB;CACpD"}
