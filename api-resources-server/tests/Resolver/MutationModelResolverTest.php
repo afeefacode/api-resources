@@ -675,7 +675,7 @@ class MutationModelResolverTest extends MutationRelationTest
 
     private function getApi(): Api
     {
-        return $this->createApiWithUpdateTypeAndAction(
+        return $this->createApiWithUpdateTypeAndMutation(
             function (FieldBag $fields) {
                 $fields
                     ->attribute('title', StringAttribute::class)
@@ -808,7 +808,6 @@ class MutationModelResolverTest extends MutationRelationTest
             fn () => T('TYPE'),
             function (Action $action) {
                 $action
-                    ->input(T('TYPE'))
                     ->resolve(function (MutationActionModelResolver $r) {
                         $r
                             ->get(function (string $id, string $typeName) {

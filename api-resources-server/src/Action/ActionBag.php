@@ -23,12 +23,13 @@ class ActionBag extends Bag
         return $this;
     }
 
-    public function mutation(string $name, Closure $callback): ActionBag
+    public function mutation(string $name, $TypeClassOrClassesOrMeta, Closure $callback): ActionBag
     {
-        $this->setDefinition($name, $callback, function (Action $action) use ($name) {
+        $this->setDefinition($name, $callback, function (Action $action) use ($name, $TypeClassOrClassesOrMeta) {
             $action
                 ->name($name)
-                ->isMutation();
+                ->isMutation()
+                ->input($TypeClassOrClassesOrMeta);
         });
 
         return $this;

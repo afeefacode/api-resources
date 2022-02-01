@@ -117,7 +117,6 @@ class FieldTest extends ApiResourcesTest
             $addResource('RES', function (Closure $addAction) {
                 $addAction('ACT', T('TYPE'), function (Action $action) {
                     $action
-                        ->input(T('TYPE'))
                         ->resolve(function () {
                         });
                 });
@@ -125,7 +124,6 @@ class FieldTest extends ApiResourcesTest
             $addResource('RES2', function (Closure $addAction) {
                 $addAction('ACT2', T('TYPE'), function (Action $action) {
                     $action
-                        ->input(T('TYPE'))
                         ->resolve(function () {
                         });
                 });

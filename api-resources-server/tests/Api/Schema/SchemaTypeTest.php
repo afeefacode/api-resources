@@ -285,13 +285,10 @@ class SchemaTypeTest extends ApiResourcesTest
     {
         $this->typeBuilder()->type('Test.Type')->get();
 
-        $api = createApiWithSingleResource(function (Closure $addAction) {
-            $addAction('type', T('Test.Type'), function (Action $action) {
-                $action
-                    ->input(T('Test.Type'))
-                    ->response(T('Test.Type'))
-                    ->resolve(function () {
-                    });
+        $api = createApiWithSingleResource(function (Closure $addAction, Closure $addMutation) {
+            $addMutation('type', T('Test.Type'), function (Action $action) {
+                $action->resolve(function () {
+                });
             });
         });
 

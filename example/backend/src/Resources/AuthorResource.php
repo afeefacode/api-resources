@@ -69,13 +69,11 @@ class AuthorResource extends Resource
                     ->resolve([AuthorsResolver::class, 'get_author']);
             })
 
-            ->mutation('save_author', function (Action $action) {
+            ->mutation('save_author', AuthorType::class, function (Action $action) {
                 $action
                     ->params(function (ActionParams $params) {
                         $params->attribute('id', IdAttribute::class);
                     })
-
-                    ->input(AuthorType::class)
 
                     ->response(AuthorType::class)
 

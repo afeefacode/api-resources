@@ -18,15 +18,15 @@ use Closure;
 
 class SchemaActionTest extends ApiResourcesTest
 {
-    public function test_simple()
+    public function test_simple_mutation()
     {
-        $api = createApiWithSingleResource(function (Closure $addAction) {
-            $addAction('test_action', T('Test.ResponseType'), function (Action $action) {
+        $api = createApiWithSingleResource(function (Closure $addAction, Closure $addMutation) {
+            $addMutation('test_action', T('Test.InputType'), function (Action $action) {
                 $action
                     ->params(function (ActionParams $params) {
                         $params->attribute('id', IdAttribute::class);
                     })
-                    ->input(T('Test.InputType'))
+                    ->response(T('Test.ResponseType'))
                     ->filters(function (FilterBag $filters) {
                         $filters->add('search', KeywordFilter::class);
                     })
@@ -53,6 +53,32 @@ class SchemaActionTest extends ApiResourcesTest
                             'type' => 'Afeefa.KeywordFilter'
                         ]
                     ],
+                    'response' => [
+                        'type' => 'Test.ResponseType'
+                    ]
+                ]
+            ]
+        ];
+
+        $this->assertEquals($expectedResourcesSchema, $schema['resources']);
+    }
+
+    public function test_query_ignores_input()
+    {
+        $api = createApiWithSingleResource(function (Closure $addAction, Closure $addMutation) {
+            $addAction('test_action', T('Test.ResponseType'), function (Action $action) {
+                $action
+                    ->input(T('Test.InputType'))
+                    ->resolve(function () {
+                    });
+            });
+        });
+
+        $schema = $api->toSchemaJson();
+
+        $expectedResourcesSchema = [
+            'Test.Resource' => [
+                'test_action' => [
                     'response' => [
                         'type' => 'Test.ResponseType'
                     ]

@@ -57,7 +57,13 @@ class TestResource extends Resource
                 }
                 $actions->query($name, $TypeClassOrClassesOrMeta, $actionCallback);
             };
-            (static::$addActionCallback)($addAction);
+            $addMutation = function (string $name, $TypeClassOrClassesOrMeta, Closure $actionCallback) use ($actions): void {
+                if ($TypeClassOrClassesOrMeta instanceof Closure) {
+                    $TypeClassOrClassesOrMeta = $TypeClassOrClassesOrMeta();
+                }
+                $actions->mutation($name, $TypeClassOrClassesOrMeta, $actionCallback);
+            };
+            (static::$addActionCallback)($addAction, $addMutation);
         }
     }
 }

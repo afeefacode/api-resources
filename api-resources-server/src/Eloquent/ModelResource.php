@@ -121,15 +121,13 @@ class ModelResource extends Resource
                     ->resolve([$this->getEloquentResolver(), 'get']);
             })
 
-            ->mutation('save', function (Action $action) {
+            ->mutation('save', $this->ModelTypeClass, function (Action $action) {
                 $action
                     ->params(function (ActionParams $params) {
                         $params->attribute('id', IdAttribute::class);
                     })
 
-                    ->input($this->ModelTypeClass)
-
-                    ->response($this->ModelTypeClass)
+                    ->response->mutation($this->ModelTypeClass)
 
                     ->resolve([$this->getEloquentResolver(), 'save']);
             });

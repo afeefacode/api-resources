@@ -84,13 +84,11 @@ class ArticleResource extends Resource
                     ->resolve([ArticlesResolver::class, 'get_article']);
             })
 
-            ->mutation('save_article', function (Action $action) {
+            ->mutation('save_article', ArticleType::class, function (Action $action) {
                 $action
                     ->params(function (ActionParams $params) {
                         $params->attribute('id', IdAttribute::class);
                     })
-
-                    ->input(ArticleType::class)
 
                     ->response(ArticleType::class)
 
