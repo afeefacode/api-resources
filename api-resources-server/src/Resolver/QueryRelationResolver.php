@@ -62,7 +62,7 @@ class QueryRelationResolver extends BaseFieldResolver
         );
 
         return $this->getResolveContext($typeName, $this->fields)
-            ->getSelectFields($typeName);
+            ->getSelectFields();
     }
 
     public function map(Closure $callback): QueryRelationResolver
@@ -83,7 +83,11 @@ class QueryRelationResolver extends BaseFieldResolver
         if (!$loadCallback) {
             throw new MissingCallbackException("{$resolverForRelation} needs to implement a load() method.");
         }
-        $loadResult = $loadCallback($this->owners);
+        $loadResult = $loadCallback(
+            $this->owners,
+            fn ($typeName = null) => $this->getSelectFields($typeName),
+            fn ($typeName = null) => $this->getRequestedFieldNames($typeName)
+        );
 
         if ($loadResult instanceof Generator) {
             $loadResult = iterator_to_array($loadResult);
