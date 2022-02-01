@@ -52,7 +52,7 @@ class TestResource extends Resource
     {
         if (static::$addActionCallback) {
             $addAction = function (string $name, Closure $actionCallback) use ($actions): void {
-                $actions->add($name, $actionCallback);
+                $actions->query($name, $actionCallback);
             };
             (static::$addActionCallback)($addAction);
         }

@@ -16,7 +16,7 @@ class SearchResource extends Resource
 
     protected function actions(ActionBag $actions): void
     {
-        $actions->add('search', function (Action $action) {
+        $actions->query('search', function (Action $action) {
             $action->filters(function (FilterBag $filters) {
                 $filters->keyword('q');
             });

@@ -15,7 +15,7 @@ class TestResource extends Resource
 
     protected function actions(ActionBag $actions): void
     {
-        $actions->add('get_types', function (Action $action) {
+        $actions->query('get_types', function (Action $action) {
             $action
                 ->filters(function (FilterBag $filters) {
                     $filters->add('page_size', function (PageSizeFilter $filter) {

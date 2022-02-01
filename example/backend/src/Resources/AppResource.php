@@ -18,7 +18,7 @@ class AppResource extends Resource
 
     protected function actions(ActionBag $actions): void
     {
-        $actions->add('get_counts', function (Action $action) {
+        $actions->query('get_counts', function (Action $action) {
             $action
                 ->response(CountsType::class)
 

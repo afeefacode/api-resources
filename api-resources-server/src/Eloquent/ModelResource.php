@@ -98,43 +98,44 @@ class ModelResource extends Resource
 
     protected function actions(ActionBag $actions): void
     {
-        $actions->add('list', function (Action $action) {
-            $action
-                ->params(function (ActionParams $params) {
-                    $this->params($params);
-                })
+        $actions
+            ->query('list', function (Action $action) {
+                $action
+                    ->params(function (ActionParams $params) {
+                        $this->params($params);
+                    })
 
-                ->filters(function (FilterBag $filters) {
-                    $this->filters($filters);
-                })
+                    ->filters(function (FilterBag $filters) {
+                        $this->filters($filters);
+                    })
 
-                ->response(Type::list($this->ModelTypeClass))
+                    ->response(Type::list($this->ModelTypeClass))
 
-                ->resolve([$this->getEloquentResolver(), 'list']);
-        });
+                    ->resolve([$this->getEloquentResolver(), 'list']);
+            })
 
-        $actions->add('get', function (Action $action) {
-            $action
-                ->params(function (ActionParams $params) {
-                    $params->attribute('id', IdAttribute::class);
-                })
+            ->query('get', function (Action $action) {
+                $action
+                    ->params(function (ActionParams $params) {
+                        $params->attribute('id', IdAttribute::class);
+                    })
 
-                ->response($this->ModelTypeClass)
+                    ->response($this->ModelTypeClass)
 
-                ->resolve([$this->getEloquentResolver(), 'get']);
-        });
+                    ->resolve([$this->getEloquentResolver(), 'get']);
+            })
 
-        $actions->add('save', function (Action $action) {
-            $action
-                ->params(function (ActionParams $params) {
-                    $params->attribute('id', IdAttribute::class);
-                })
+            ->mutation('save', function (Action $action) {
+                $action
+                    ->params(function (ActionParams $params) {
+                        $params->attribute('id', IdAttribute::class);
+                    })
 
-                ->input($this->ModelTypeClass)
+                    ->input($this->ModelTypeClass)
 
-                ->response($this->ModelTypeClass)
+                    ->response($this->ModelTypeClass)
 
-                ->resolve([$this->getEloquentResolver(), 'save']);
-        });
+                    ->resolve([$this->getEloquentResolver(), 'save']);
+            });
     }
 }
