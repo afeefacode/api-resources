@@ -25,10 +25,10 @@ class MutationActionSimpleResolverTest extends MutationRelationTest
         $this->expectExceptionMessage('Resolver for action ACT on resource RES needs to implement a save() method.');
 
         $api = $this->createApiWithAction(
+            fn () => T('TYPE'),
             function (Action $action) {
                 $action
                     ->input(T('TYPE'))
-                    ->response(T('TYPE'))
                     ->resolve(function (MutationActionSimpleResolver $r) {
                     });
             }
@@ -40,10 +40,10 @@ class MutationActionSimpleResolverTest extends MutationRelationTest
     public function test_with_save_callback()
     {
         $api = $this->createApiWithAction(
+            fn () => T('TYPE'),
             function (Action $action) {
                 $action
                     ->input(T('TYPE'))
-                    ->response(T('TYPE'))
                     ->resolve(function (MutationActionSimpleResolver $r) {
                         $r->save(fn () => Model::fromSingle('TYPE', []));
                     });
@@ -65,10 +65,10 @@ class MutationActionSimpleResolverTest extends MutationRelationTest
                 $fields
                     ->attribute('name', StringAttribute::class);
             },
+            fn () => T('TYPE'),
             function (Action $action) {
                 $action
                     ->input(T('TYPE'))
-                    ->response(T('TYPE'))
                     ->resolve(function (MutationActionSimpleResolver $r) {
                         $r
                             ->save(function (array $saveFields) {
@@ -121,10 +121,10 @@ class MutationActionSimpleResolverTest extends MutationRelationTest
                     ->attribute('name', StringAttribute::class)
                     ->attribute('title', StringAttribute::class);
             },
+            fn () => T('TYPE'),
             function (Action $action) {
                 $action
                     ->input(T('TYPE'))
-                    ->response(T('TYPE'))
                     ->resolve(function (MutationActionSimpleResolver $r) {
                         $r
                             ->save(function (array $saveFields) {
@@ -222,10 +222,10 @@ class MutationActionSimpleResolverTest extends MutationRelationTest
                         });
                     });
             },
+            fn () => T('TYPE'),
             function (Action $action) {
                 $action
                     ->input(T('TYPE'))
-                    ->response(T('TYPE'))
                     ->resolve(function (MutationActionSimpleResolver $r) {
                         $r
                             ->save(function (array $saveFields) {
@@ -276,10 +276,10 @@ class MutationActionSimpleResolverTest extends MutationRelationTest
         $this->expectExceptionMessage('Save callback of mutation resolver for action ACT on resource RES must return a ModelInterface object.');
 
         $api = $this->createApiWithAction(
+            fn () => T('TYPE'),
             function (Action $action) use ($return) {
                 $action
                     ->input(T('TYPE'))
-                    ->response(T('TYPE'))
                     ->resolve(function (MutationActionSimpleResolver $r) use ($return) {
                         $r
                             ->save(function () use ($return) {

@@ -25,7 +25,7 @@ class ArticleResource extends Resource
     protected function actions(ActionBag $actions): void
     {
         $actions
-            ->query('get_articles', function (Action $action) {
+            ->query('get_articles', Type::list(ArticleType::class), function (Action $action) {
                 $action->params(function (ActionParams $params) {
                     $params->attribute('author_id', IdAttribute::class);
                 });
@@ -72,18 +72,14 @@ class ArticleResource extends Resource
                     $filters->add('page', PageFilter::class);
                 });
 
-                $action->response(Type::list(ArticleType::class));
-
                 $action->resolve([ArticlesResolver::class, 'get_articles']);
             })
 
-            ->query('get_article', function (Action $action) {
+            ->query('get_article', ArticleType::class, function (Action $action) {
                 $action
                     ->params(function (ActionParams $params) {
                         $params->attribute('id', IdAttribute::class);
                     })
-
-                    ->response(ArticleType::class)
 
                     ->resolve([ArticlesResolver::class, 'get_article']);
             })

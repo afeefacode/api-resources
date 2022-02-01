@@ -99,7 +99,7 @@ class ModelResource extends Resource
     protected function actions(ActionBag $actions): void
     {
         $actions
-            ->query('list', function (Action $action) {
+            ->query('list', Type::list($this->ModelTypeClass), function (Action $action) {
                 $action
                     ->params(function (ActionParams $params) {
                         $this->params($params);
@@ -109,18 +109,14 @@ class ModelResource extends Resource
                         $this->filters($filters);
                     })
 
-                    ->response(Type::list($this->ModelTypeClass))
-
                     ->resolve([$this->getEloquentResolver(), 'list']);
             })
 
-            ->query('get', function (Action $action) {
+            ->query('get', $this->ModelTypeClass, function (Action $action) {
                 $action
                     ->params(function (ActionParams $params) {
                         $params->attribute('id', IdAttribute::class);
                     })
-
-                    ->response($this->ModelTypeClass)
 
                     ->resolve([$this->getEloquentResolver(), 'get']);
             })

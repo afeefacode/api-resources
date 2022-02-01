@@ -21,7 +21,7 @@ class SchemaActionTest extends ApiResourcesTest
     public function test_simple()
     {
         $api = createApiWithSingleResource(function (Closure $addAction) {
-            $addAction('test_action', function (Action $action) {
+            $addAction('test_action', T('Test.ResponseType'), function (Action $action) {
                 $action
                     ->params(function (ActionParams $params) {
                         $params->attribute('id', IdAttribute::class);
@@ -30,7 +30,6 @@ class SchemaActionTest extends ApiResourcesTest
                     ->filters(function (FilterBag $filters) {
                         $filters->add('search', KeywordFilter::class);
                     })
-                    ->response(T('Test.ResponseType'))
                     ->resolve(function () {
                     });
             });
@@ -67,11 +66,9 @@ class SchemaActionTest extends ApiResourcesTest
     public function test_list_response()
     {
         $api = createApiWithSingleResource(function (Closure $addAction) {
-            $addAction('test_action', function (Action $action) {
-                $action
-                    ->response(Type::list(T('Test.ResponseType')))
-                    ->resolve(function () {
-                        });
+            $addAction('test_action', Type::list(T('Test.ResponseType')), function (Action $action) {
+                $action->resolve(function () {
+                });
             });
         });
 

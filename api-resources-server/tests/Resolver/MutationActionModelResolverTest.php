@@ -32,10 +32,10 @@ class MutationActionModelResolverTest extends MutationRelationTest
         $this->expectExceptionMessage("Resolver for action ACT on resource RES needs to implement a{$n} {$missingCallback}() method.");
 
         $api = $this->createApiWithAction(
+            fn () => T('TYPE'),
             function (Action $action) use ($missingCallback) {
                 $action
                     ->input(T('TYPE'))
-                    ->response(T('TYPE'))
                     ->resolve(function (MutationActionModelResolver $r) use ($missingCallback) {
                         if ($missingCallback !== 'get') {
                             $r->get(fn () => null);
@@ -69,10 +69,10 @@ class MutationActionModelResolverTest extends MutationRelationTest
     public function test_with_all_callbacks()
     {
         $api = $this->createApiWithAction(
+            fn () => T('TYPE'),
             function (Action $action) {
                 $action
                     ->input(T('TYPE'))
-                    ->response(T('TYPE'))
                     ->resolve(function (MutationActionModelResolver $r) {
                         $r
                             ->get(fn () => [])
@@ -102,10 +102,10 @@ class MutationActionModelResolverTest extends MutationRelationTest
                 $fields
                     ->attribute('name', StringAttribute::class);
             },
+            fn () => T('TYPE'),
             function (Action $action) {
                 $action
                     ->input(T('TYPE'))
-                    ->response(T('TYPE'))
                     ->resolve(function (MutationActionModelResolver $r) {
                         $r
                             ->get(function () {
@@ -169,10 +169,10 @@ class MutationActionModelResolverTest extends MutationRelationTest
                     ->attribute('name', StringAttribute::class)
                     ->attribute('title', StringAttribute::class);
             },
+            fn () => T('TYPE'),
             function (Action $action) {
                 $action
                     ->input(T('TYPE'))
-                    ->response(T('TYPE'))
                     ->resolve(function (MutationActionModelResolver $r) {
                         $r
                             ->get(fn () => null)
@@ -313,10 +313,10 @@ class MutationActionModelResolverTest extends MutationRelationTest
                         });
                     });
             },
+            fn () => T('TYPE'),
             function (Action $action) {
                 $action
                     ->input(T('TYPE'))
-                    ->response(T('TYPE'))
                     ->resolve(function (MutationActionModelResolver $r) {
                         $r
                             ->get(fn () => null)
@@ -505,10 +505,10 @@ class MutationActionModelResolverTest extends MutationRelationTest
                         });
                     });
             },
+            fn () => T('TYPE'),
             function (Action $action) {
                 $action
                     ->input(T('TYPE'))
-                    ->response(T('TYPE'))
                     ->resolve(function (MutationActionModelResolver $r) {
                         $r
                             ->add(fn () => null)
@@ -623,10 +623,10 @@ class MutationActionModelResolverTest extends MutationRelationTest
         $this->expectExceptionMessage('Add callback of mutation resolver for action ACT on resource RES must return a ModelInterface object.');
 
         $api = $this->createApiWithAction(
+            fn () => T('TYPE'),
             function (Action $action) use ($return) {
                 $action
                     ->input(T('TYPE'))
-                    ->response(T('TYPE'))
                     ->resolve(function (MutationActionModelResolver $r) use ($return) {
                         $r
                             ->get(fn () => null)
@@ -668,10 +668,10 @@ class MutationActionModelResolverTest extends MutationRelationTest
         }
 
         $api = $this->createApiWithAction(
+            fn () => T('TYPE'),
             function (Action $action) use ($return) {
                 $action
                     ->input(T('TYPE'))
-                    ->response(T('TYPE'))
                     ->resolve(function (MutationActionModelResolver $r) use ($return) {
                         $r
                             ->get(function () use ($return) {
@@ -710,10 +710,10 @@ class MutationActionModelResolverTest extends MutationRelationTest
                 $fields
                     ->attribute('name', StringAttribute::class);
             },
+            fn () => T('TYPE'),
             function (Action $action) {
                 $action
                     ->input(T('TYPE'))
-                    ->response(T('TYPE'))
                     ->resolve(function (MutationActionModelResolver $r) {
                         $r
                             ->get(function (string $id, string $typeName) {

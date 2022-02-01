@@ -25,7 +25,7 @@ class AuthorResource extends Resource
     protected function actions(ActionBag $actions): void
     {
         $actions
-            ->query('get_authors', function (Action $action) {
+            ->query('get_authors', Type::list(AuthorType::class), function (Action $action) {
                 $action->filters(function (FilterBag $filters) {
                     $filters->add('q', KeywordFilter::class);
 
@@ -57,18 +57,14 @@ class AuthorResource extends Resource
                     $filters->add('page', PageFilter::class);
                 });
 
-                $action->response(Type::list(AuthorType::class));
-
                 $action->resolve([AuthorsResolver::class, 'get_authors']);
             })
 
-            ->query('get_author', function (Action $action) {
+            ->query('get_author', AuthorType::class, function (Action $action) {
                 $action
                     ->params(function (ActionParams $params) {
                         $params->attribute('id', IdAttribute::class);
                     })
-
-                    ->response(AuthorType::class)
 
                     ->resolve([AuthorsResolver::class, 'get_author']);
             })

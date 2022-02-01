@@ -115,19 +115,17 @@ class FieldTest extends ApiResourcesTest
     {
         $this->apiBuilder()->api('API', function (Closure $addResource) {
             $addResource('RES', function (Closure $addAction) {
-                $addAction('ACT', function (Action $action) {
+                $addAction('ACT', T('TYPE'), function (Action $action) {
                     $action
                         ->input(T('TYPE'))
-                        ->response(T('TYPE'))
                         ->resolve(function () {
                         });
                 });
             });
             $addResource('RES2', function (Closure $addAction) {
-                $addAction('ACT2', function (Action $action) {
+                $addAction('ACT2', T('TYPE'), function (Action $action) {
                     $action
                         ->input(T('TYPE'))
-                        ->response(T('TYPE'))
                         ->resolve(function () {
                         });
                 });

@@ -15,9 +15,7 @@ class TagResource extends Resource
 
     protected function actions(ActionBag $actions): void
     {
-        $actions->query('get_tags', function (Action $action) {
-            $action->response(Type::list(TagType::class));
-
+        $actions->query('get_tags', Type::list(TagType::class), function (Action $action) {
             $action->resolve([TagsResolver::class, 'get_tags']);
         });
     }

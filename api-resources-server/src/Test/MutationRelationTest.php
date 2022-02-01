@@ -32,10 +32,9 @@ class MutationRelationTest extends ApiResourcesTest
         return $this->apiBuilder()->api('API', function (Closure $addResource, Closure $addType) use ($fieldsCallback, $updateFieldsCallback, $createFieldsCallback) {
             $addType('TYPE', $fieldsCallback, $updateFieldsCallback, $createFieldsCallback);
             $addResource('RES', function (Closure $addAction) {
-                $addAction('ACT', function (Action $action) {
+                $addAction('ACT', T('TYPE'), function (Action $action) {
                     $action
                         ->input(T('TYPE'))
-                        ->response(T('TYPE'))
                         ->resolve(function (MutationActionModelResolver $r) {
                             $r
                                 ->get(function (string $id, string $typeName) {
@@ -54,26 +53,26 @@ class MutationRelationTest extends ApiResourcesTest
         })->get();
     }
 
-    protected function createApiWithUpdateTypeAndAction(Closure $updateFieldsCallback, Closure $actionCallback): Api
+    protected function createApiWithUpdateTypeAndAction(Closure $updateFieldsCallback, $TypeClassOrClassesOrMeta, Closure $actionCallback): Api
     {
-        return $this->createApiWithTypeAndAction(null, $updateFieldsCallback, $updateFieldsCallback, $actionCallback);
+        return $this->createApiWithTypeAndAction(null, $updateFieldsCallback, $updateFieldsCallback, $TypeClassOrClassesOrMeta, $actionCallback);
     }
 
-    protected function createApiWithTypeAndAction(?Closure $fieldsCallback, ?Closure $updateFieldsCallback, ?Closure $createFieldsCallback, Closure $actionCallback): Api
+    protected function createApiWithTypeAndAction(?Closure $fieldsCallback, ?Closure $updateFieldsCallback, ?Closure $createFieldsCallback, $TypeClassOrClassesOrMeta, Closure $actionCallback): Api
     {
-        return $this->apiBuilder()->api('API', function (Closure $addResource, Closure $addType) use ($fieldsCallback, $updateFieldsCallback, $createFieldsCallback, $actionCallback) {
+        return $this->apiBuilder()->api('API', function (Closure $addResource, Closure $addType) use ($fieldsCallback, $updateFieldsCallback, $createFieldsCallback, $TypeClassOrClassesOrMeta, $actionCallback) {
             $addType('TYPE', $fieldsCallback, $updateFieldsCallback, $createFieldsCallback);
-            $addResource('RES', function (Closure $addAction) use ($actionCallback) {
-                $addAction('ACT', $actionCallback);
+            $addResource('RES', function (Closure $addAction) use ($TypeClassOrClassesOrMeta, $actionCallback) {
+                $addAction('ACT', $TypeClassOrClassesOrMeta, $actionCallback);
             });
         })->get();
     }
 
-    protected function createApiWithAction(Closure $actionCallback): Api
+    protected function createApiWithAction($TypeClassOrClassesOrMeta, Closure $actionCallback): Api
     {
-        return $this->apiBuilder()->api('API', function (Closure $addResource) use ($actionCallback) {
-            $addResource('RES', function (Closure $addAction) use ($actionCallback) {
-                $addAction('ACT', $actionCallback);
+        return $this->apiBuilder()->api('API', function (Closure $addResource) use ($TypeClassOrClassesOrMeta, $actionCallback) {
+            $addResource('RES', function (Closure $addAction) use ($TypeClassOrClassesOrMeta, $actionCallback) {
+                $addAction('ACT', $TypeClassOrClassesOrMeta, $actionCallback);
             });
         })->get();
     }

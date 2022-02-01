@@ -805,10 +805,10 @@ class MutationModelResolverTest extends MutationRelationTest
                         });
                     });
             },
+            fn () => T('TYPE'),
             function (Action $action) {
                 $action
                     ->input(T('TYPE'))
-                    ->response(T('TYPE'))
                     ->resolve(function (MutationActionModelResolver $r) {
                         $r
                             ->get(function (string $id, string $typeName) {

@@ -585,12 +585,13 @@ class QueryAttributeResolverTest extends QueryTest
         $this->assertEquals($expectedFields, $model->jsonSerialize());
     }
 
-    protected function createApiWithTypeAndAction(Closure $fieldsCallback, ?Closure $actionCallback = null, bool $isList = false): Api
+    protected function createApiWithTypeAndAction(Closure $fieldsCallback, $TypeClassOrClassesOrMeta = null, ?Closure $actionCallback = null, bool $isList = false): Api
     {
+        $TypeClassOrClassesOrMeta ??= $isList ? fn () => Type::list(T('TYPE')) : fn () => T('TYPE');
+
         $actionCallback ??= function (Action $action) use ($isList) {
             $response = $isList ? Type::list(T('TYPE')) : T('TYPE');
             $action
-                ->response($response)
                 ->resolve(function (QueryActionResolver $r) use ($isList) {
                     $r->get(function () use ($isList, $r) {
                         $m = function () use ($r) {
@@ -608,7 +609,7 @@ class QueryAttributeResolverTest extends QueryTest
                 });
         };
 
-        return parent::createApiWithTypeAndAction($fieldsCallback, $actionCallback);
+        return parent::createApiWithTypeAndAction($fieldsCallback, $TypeClassOrClassesOrMeta, $actionCallback);
     }
 
     protected function request(Api $api, ?array $fields = null, ?array $params = null, ?array $filters = null)

@@ -18,10 +18,8 @@ class AppResource extends Resource
 
     protected function actions(ActionBag $actions): void
     {
-        $actions->query('get_counts', function (Action $action) {
+        $actions->query('get_counts', CountsType::class, function (Action $action) {
             $action
-                ->response(CountsType::class)
-
                 ->resolve(function (QueryActionResolver $r, Medoo $db) {
                     $r->get(function (ApiRequest $request, Closure $getSelectFields) use ($db) {
                         $selectFields = $getSelectFields();

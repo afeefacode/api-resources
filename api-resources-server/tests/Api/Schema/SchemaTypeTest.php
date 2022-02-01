@@ -3,7 +3,7 @@
 namespace Afeefa\ApiResources\Tests\Api\Schema;
 
 use Afeefa\ApiResources\Action\Action;
-use Afeefa\ApiResources\Exception\Exceptions\MissingTypeException;
+use Afeefa\ApiResources\Exception\Exceptions\NotATypeException;
 use Afeefa\ApiResources\Field\FieldBag;
 use Afeefa\ApiResources\Field\Fields\StringAttribute;
 use Afeefa\ApiResources\Test\ApiResourcesTest;
@@ -286,7 +286,7 @@ class SchemaTypeTest extends ApiResourcesTest
         $this->typeBuilder()->type('Test.Type')->get();
 
         $api = createApiWithSingleResource(function (Closure $addAction) {
-            $addAction('type', function (Action $action) {
+            $addAction('type', T('Test.Type'), function (Action $action) {
                 $action
                     ->input(T('Test.Type'))
                     ->response(T('Test.Type'))
@@ -305,7 +305,7 @@ class SchemaTypeTest extends ApiResourcesTest
         $this->typeBuilder()->type('Test.Type')->get();
 
         $api = createApiWithSingleResource(function (Closure $addAction) {
-            $addAction('type', function (Action $action) {
+            $addAction('type', T('Test.Type'), function (Action $action) {
                 $action
                     ->response(T('Test.Type'))
                     ->resolve(function () {
@@ -337,15 +337,14 @@ class SchemaTypeTest extends ApiResourcesTest
 
     public function test_add_with_missing_type()
     {
-        $this->expectException(MissingTypeException::class);
-        $this->expectExceptionMessageMatches('/^Missing type for class Afeefa\\\ApiResources\\\Test\\\TestType@anonymous/');
+        $this->expectException(NotATypeException::class);
+        $this->expectExceptionMessage('Value for response $TypeClassOrClasses is not a type or a list of types.');
 
         $type = $this->typeBuilder()->type()->get();
 
         $api = createApiWithSingleResource(function (Closure $addAction) use ($type) {
-            $addAction('type', function (Action $action) use ($type) {
+            $addAction('type', null, function (Action $action) use ($type) {
                 $action
-                    ->response($type::class)
                     ->resolve(function () {
                     });
             });

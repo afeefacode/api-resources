@@ -51,8 +51,11 @@ class TestResource extends Resource
     protected function actions(ActionBag $actions): void
     {
         if (static::$addActionCallback) {
-            $addAction = function (string $name, Closure $actionCallback) use ($actions): void {
-                $actions->query($name, $actionCallback);
+            $addAction = function (string $name, $TypeClassOrClassesOrMeta, Closure $actionCallback) use ($actions): void {
+                if ($TypeClassOrClassesOrMeta instanceof Closure) {
+                    $TypeClassOrClassesOrMeta = $TypeClassOrClassesOrMeta();
+                }
+                $actions->query($name, $TypeClassOrClassesOrMeta, $actionCallback);
             };
             (static::$addActionCallback)($addAction);
         }
