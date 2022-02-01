@@ -53,7 +53,10 @@ class QueryActionResolver extends BaseActionResolver
             throw new MissingCallbackException("Action resolver for action {$actionName} on resource {$resourceType} must provide a load callback.");
         }
 
-        $modelOrModels = ($this->loadCallback)();
+        if ($modelOrModels instanceof ActionResult) {
+            $this->meta = $modelOrModels->meta;
+            $modelOrModels = $modelOrModels->data;
+        }
 
         $models = [];
         $data = null;
