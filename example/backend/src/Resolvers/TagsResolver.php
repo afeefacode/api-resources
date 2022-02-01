@@ -17,7 +17,7 @@ class TagsResolver
     public function get_tags(QueryActionResolver $r, Medoo $db)
     {
         $r
-            ->load(function (ApiRequest $request, Closure $getSelectFields) use ($db) {
+            ->get(function (ApiRequest $request, Closure $getSelectFields) use ($db) {
                 $count = $db->count('tags');
 
                 $objects = $db->select(
@@ -63,7 +63,7 @@ class TagsResolver
                 }
             })
 
-            ->load(function (array $owners, Closure $getSelectFields) use ($db) {
+            ->get(function (array $owners, Closure $getSelectFields) use ($db) {
                 $tagIds = array_unique(
                     array_map(function (ModelInterface $owner) {
                         return $owner->id;
@@ -119,7 +119,7 @@ class TagsResolver
     public function resolve_tags_relation(QueryRelationResolver $r, Medoo $db)
     {
         $r
-            ->load(function (array $owners, Closure $getSelectFields) use ($db) {
+            ->get(function (array $owners, Closure $getSelectFields) use ($db) {
                 $selectFields = $getSelectFields();
 
                 $queryFields = ['tag_users.user_id', 'tag_users.user_type'];

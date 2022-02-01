@@ -23,7 +23,7 @@ class AppResource extends Resource
                 ->response(CountsType::class)
 
                 ->resolve(function (QueryActionResolver $r, Medoo $db) {
-                    $r->load(function (ApiRequest $request, Closure $getSelectFields) use ($db) {
+                    $r->get(function (ApiRequest $request, Closure $getSelectFields) use ($db) {
                         $selectFields = $getSelectFields();
 
                         $attributes = ['id' => 'app'];

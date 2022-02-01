@@ -47,7 +47,7 @@ class CommentsResolver
                 }
             })
 
-            ->load(function (array $owners, Closure $getSelectFields) use ($db) {
+            ->get(function (array $owners, Closure $getSelectFields) use ($db) {
                 /** @var ModelInterface[] $owners */
                 $selectFields = array_merge($getSelectFields(), ['owner_type', 'owner_id']);
 

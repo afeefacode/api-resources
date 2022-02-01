@@ -122,11 +122,11 @@ class QueryRelationResolver extends BaseFieldResolver
 
         // query db
 
-        $loadCallback = $this->loadCallback;
-        if (!$loadCallback) {
-            throw new MissingCallbackException("{$resolverForRelation} needs to implement a load() method.");
+        $getCallback = $this->getCallback;
+        if (!$getCallback) {
+            throw new MissingCallbackException("{$resolverForRelation} needs to implement a get() method.");
         }
-        $loadResult = $loadCallback(
+        $loadResult = $getCallback(
             $this->owners,
             fn ($typeName = null) => $this->getSelectFields($typeName),
             fn ($typeName = null) => $this->getRequestedFieldNames($typeName)
@@ -137,7 +137,7 @@ class QueryRelationResolver extends BaseFieldResolver
         }
 
         if (!is_array($loadResult)) {
-            throw new InvalidConfigurationException("{$resolverForRelation} needs to return an array from its load() method.");
+            throw new InvalidConfigurationException("{$resolverForRelation} needs to return an array from its get() method.");
         }
 
         // this is just a nifty one-liner to detect if there are non-models in the given array
@@ -148,12 +148,12 @@ class QueryRelationResolver extends BaseFieldResolver
         if ($isList) {
             foreach ($loadResult as $modelsOfOwner) {
                 if (!is_array($modelsOfOwner) || !$isAllModels($modelsOfOwner)) {
-                    throw new InvalidConfigurationException("{$resolverForRelation} needs to return a nested array of ModelInterface objects from its load() method.");
+                    throw new InvalidConfigurationException("{$resolverForRelation} needs to return a nested array of ModelInterface objects from its get() method.");
                 }
             }
         } else {
             if (!$isAllModels($loadResult)) {
-                throw new InvalidConfigurationException("{$resolverForRelation} needs to return an array of ModelInterface objects from its load() method.");
+                throw new InvalidConfigurationException("{$resolverForRelation} needs to return an array of ModelInterface objects from its get() method.");
             }
         }
 

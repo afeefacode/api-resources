@@ -11,13 +11,13 @@ trait QueryResolverTrait
 {
     protected array $requestedFields = [];
 
-    protected ?Closure $loadCallback = null;
+    protected ?Closure $getCallback = null;
 
     protected ?Closure $countCallback = null;
 
-    public function load(Closure $callback): self
+    public function get(Closure $callback): self
     {
-        $this->loadCallback = $callback;
+        $this->getCallback = $callback;
         return $this;
     }
 

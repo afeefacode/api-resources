@@ -45,7 +45,7 @@ class RequestAttributeTest extends ApiResourcesTest
                         $attribute->resolve(function (QueryAttributeResolver $r) {
                             $this->testWatcher->attributeResolvers[] = $r;
 
-                            $r->load(function (array $owners) {
+                            $r->get(function (array $owners) {
                                 /** @var ModelInterface[] $owners */
                                 foreach ($owners as $owner) {
                                     $owner->apiResourcesSetAttribute('resolved', 'test_dependency');
@@ -63,7 +63,7 @@ class RequestAttributeTest extends ApiResourcesTest
                         ->resolve(function (QueryActionResolver $r) {
                             $this->testWatcher->actionResolvers[] = $r;
 
-                            $r->load(function (ApiRequest $request, Closure $getSelectFields, Closure $getRequestedFields) {
+                            $r->get(function (ApiRequest $request, Closure $getSelectFields, Closure $getRequestedFields) {
                                 $selectFields = $getSelectFields();
 
                                 $attributes = [];

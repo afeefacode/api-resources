@@ -28,7 +28,7 @@ class QueryActionResolverTest extends QueryTest
                 ->resolve(function (QueryActionResolver $r) {
                     $this->testWatcher->called();
 
-                    $r->load(function () {
+                    $r->get(function () {
                         $this->testWatcher->called();
                         return Model::fromSingle('TYPE', []);
                     });
@@ -48,7 +48,7 @@ class QueryActionResolverTest extends QueryTest
             $action
                 ->response(T('TYPE'))
                 ->resolve(function (TestActionResolver $r) {
-                    $r->load(function () use ($r) {
+                    $r->get(function () use ($r) {
                         $this->testWatcher->info($r->countCalculateCalls);
 
                         $r->getRequestedFields();
@@ -85,7 +85,7 @@ class QueryActionResolverTest extends QueryTest
     public function test_missing_load_callback()
     {
         $this->expectException(MissingCallbackException::class);
-        $this->expectExceptionMessage('Action resolver for action ACT on resource RES must provide a load callback.');
+        $this->expectExceptionMessage('Action resolver for action ACT on resource RES must provide a get callback.');
 
         $api = $this->createApiWithAction(function (Action $action) {
             $action
@@ -103,7 +103,7 @@ class QueryActionResolverTest extends QueryTest
             $action
                 ->response(T('TYPE'))
                 ->resolve(function (QueryActionResolver $r) {
-                    $r->load(function () {
+                    $r->get(function () {
                         return TestModel::fromSingle('TYPE', []);
                     });
                 });
@@ -132,7 +132,7 @@ class QueryActionResolverTest extends QueryTest
             $action
                 ->response(T('TYPE'))
                 ->resolve(function (QueryActionResolver $r) use ($null) {
-                    $r->load(function () use ($null) {
+                    $r->get(function () use ($null) {
                         if ($null !== 'NOTHING') {
                             return null;
                         }
@@ -162,7 +162,7 @@ class QueryActionResolverTest extends QueryTest
             $action
                 ->response(T('TYPE'))
                 ->resolve(function (QueryActionResolver $r) {
-                    $r->load(function () {
+                    $r->get(function () {
                         return TestModel::fromSingle('TYPE_WRONG', []);
                     });
                 });
@@ -177,7 +177,7 @@ class QueryActionResolverTest extends QueryTest
             $action
                 ->response([T('TYPE'), T('TYPE2')])
                 ->resolve(function (QueryActionResolver $r) {
-                    $r->load(function () {
+                    $r->get(function () {
                         return TestModel::fromSingle('TYPE2', []);
                     });
                 });
@@ -206,7 +206,7 @@ class QueryActionResolverTest extends QueryTest
             $action
                 ->response([T('TYPE'), T('TYPE2')])
                 ->resolve(function (QueryActionResolver $r) {
-                    $r->load(function () {
+                    $r->get(function () {
                         return TestModel::fromSingle('TYPE_WRONG', []);
                     });
                 });
@@ -227,7 +227,7 @@ class QueryActionResolverTest extends QueryTest
             $action
                 ->response(T('TYPE'))
                 ->resolve(function (QueryActionResolver $r) use ($wrongModel) {
-                    $r->load(function () use ($wrongModel) {
+                    $r->get(function () use ($wrongModel) {
                         return $wrongModel;
                     });
                 });
@@ -251,7 +251,7 @@ class QueryActionResolverTest extends QueryTest
             $action
                 ->response(Type::list(T('TYPE')))
                 ->resolve(function (QueryActionResolver $r) {
-                    $r->load(function () {
+                    $r->get(function () {
                         return TestModel::fromList('TYPE', [[], []]);
                     });
                 });
@@ -282,7 +282,7 @@ class QueryActionResolverTest extends QueryTest
             $action
                 ->response(Type::list([T('TYPE'), T('TYPE2')]))
                 ->resolve(function (QueryActionResolver $r) {
-                    $r->load(function () {
+                    $r->get(function () {
                         return TestModel::fromList('TYPE2', [[], []]);
                     });
                 });
@@ -313,7 +313,7 @@ class QueryActionResolverTest extends QueryTest
             $action
                 ->response(Type::list(T('TYPE')))
                 ->resolve(function (QueryActionResolver $r) {
-                    $r->load(function () {
+                    $r->get(function () {
                         return Model::fromList('TYPE', []);
                     });
                 });
@@ -338,7 +338,7 @@ class QueryActionResolverTest extends QueryTest
             $action
                 ->response(Type::list(T('TYPE')))
                 ->resolve(function (QueryActionResolver $r) use ($wrongList) {
-                    $r->load(function () use ($wrongList) {
+                    $r->get(function () use ($wrongList) {
                         return $wrongList;
                     });
                 });
@@ -369,7 +369,7 @@ class QueryActionResolverTest extends QueryTest
             $action
                 ->response(Type::list(T('TYPE')))
                 ->resolve(function (QueryActionResolver $r) use ($wrongModel) {
-                    $r->load(function () use ($wrongModel) {
+                    $r->get(function () use ($wrongModel) {
                         return [
                             Model::fromSingle('TYPE', []),
                             $wrongModel
@@ -406,7 +406,7 @@ class QueryActionResolverTest extends QueryTest
                 $action
                     ->response(T('TYPE'))
                     ->resolve(function (QueryActionResolver $r) {
-                        $r->load(function () use ($r) {
+                        $r->get(function () use ($r) {
                             $this->testWatcher->requestedFields($r->getRequestedFieldNames());
                         });
                     });
@@ -433,7 +433,7 @@ class QueryActionResolverTest extends QueryTest
                 $action
                     ->response(T('TYPE'))
                     ->resolve(function (QueryActionResolver $r) {
-                        $r->load(function () use ($r) {
+                        $r->get(function () use ($r) {
                             $this->testWatcher->selectFields($r->getSelectFields());
                         });
                     });
@@ -457,7 +457,7 @@ class QueryActionResolverTest extends QueryTest
                 $action
                     ->response([T('TYPE'), T('TYPE2')])
                     ->resolve(function (QueryActionResolver $r) {
-                        $r->load(function () use ($r) {
+                        $r->get(function () use ($r) {
                             $this->testWatcher->requestedFields($r->getRequestedFields());
                         });
                     });
@@ -480,7 +480,7 @@ class QueryActionResolverTest extends QueryTest
                 $action
                     ->response($single ? T('TYPE') : [T('TYPE'), T('TYPE2')])
                     ->resolve(function (QueryActionResolver $r) {
-                        $r->load(function () use ($r) {
+                        $r->get(function () use ($r) {
                             $this->testWatcher->requestedFields($r->getRequestedFields('TYPE3'));
                         });
                     });
@@ -500,7 +500,7 @@ class QueryActionResolverTest extends QueryTest
                 $action
                     ->response([T('TYPE'), T('TYPE2')])
                     ->resolve(function (QueryActionResolver $r) {
-                        $r->load(function () use ($r) {
+                        $r->get(function () use ($r) {
                             $r->getSelectFields();
                         });
                     });
@@ -520,7 +520,7 @@ class QueryActionResolverTest extends QueryTest
                 $action
                     ->response([T('TYPE'), T('TYPE2')])
                     ->resolve(function (QueryActionResolver $r) {
-                        $r->load(function (ApiRequest $request, Closure $getSelectFields) {
+                        $r->get(function (ApiRequest $request, Closure $getSelectFields) {
                             $getSelectFields();
                         });
                     });
@@ -543,7 +543,7 @@ class QueryActionResolverTest extends QueryTest
                 $action
                     ->response($single ? T('TYPE') : [T('TYPE'), T('TYPE2')])
                     ->resolve(function (QueryActionResolver $r) {
-                        $r->load(function () use ($r) {
+                        $r->get(function () use ($r) {
                             $r->getSelectFields('TYPE3');
                         });
                     });
@@ -566,7 +566,7 @@ class QueryActionResolverTest extends QueryTest
                 $action
                     ->response($single ? T('TYPE') : [T('TYPE'), T('TYPE2')])
                     ->resolve(function (QueryActionResolver $r) {
-                        $r->load(function (ApiRequest $request, Closure $getSelectFields) {
+                        $r->get(function (ApiRequest $request, Closure $getSelectFields) {
                             $getSelectFields('TYPE3');
                         });
                     });
@@ -599,7 +599,7 @@ class QueryActionResolverTest extends QueryTest
                 $action
                     ->response(T('TYPE'))
                     ->resolve(function (QueryActionResolver $r) {
-                        $r->load(function () {
+                        $r->get(function () {
                             return TestModel::fromSingle('TYPE', []);
                         });
                     });
@@ -653,7 +653,7 @@ class QueryActionResolverTest extends QueryTest
             $action
                 ->response(T('TYPE'))
                 ->resolve(function (QueryActionResolver $r) {
-                    $r->load(function () use ($r) {
+                    $r->get(function () use ($r) {
                         $this->testWatcher->request($r->getRequest());
                     });
                 });

@@ -373,7 +373,7 @@ class QueryResolveContextTest extends ApiResourcesTest
                 ->attribute('name', function (StringAttribute $attribute) {
                     $attribute->resolve(function (QueryAttributeResolver $r) {
                         $this->testWatcher->called();
-                        $r->load(function () {
+                        $r->get(function () {
                             $this->testWatcher->called();
                         });
                     });
@@ -381,7 +381,7 @@ class QueryResolveContextTest extends ApiResourcesTest
                 ->attribute('title', function (StringAttribute $attribute) {
                     $attribute->resolve(function (QueryAttributeResolver $r) {
                         $this->testWatcher->called();
-                        $r->load(function () {
+                        $r->get(function () {
                             $this->testWatcher->called();
                         });
                     });
@@ -447,7 +447,7 @@ class QueryResolveContextTest extends ApiResourcesTest
                 ->relation('other', T('TYPE'), function (Relation $relation) {
                     $relation->resolve(function (QueryRelationResolver $r) {
                         $this->testWatcher->called();
-                        $r->load(function () {
+                        $r->get(function () {
                             $this->testWatcher->called();
                             yield Model::fromSingle('TYPE', []);
                         });
@@ -456,7 +456,7 @@ class QueryResolveContextTest extends ApiResourcesTest
                 ->relation('another', T('TYPE'), function (Relation $relation) {
                     $relation->resolve(function (QueryRelationResolver $r) {
                         $this->testWatcher->called();
-                        $r->load(function () {
+                        $r->get(function () {
                             $this->testWatcher->called();
                             yield Model::fromSingle('TYPE', []);
                         });
@@ -523,7 +523,7 @@ class QueryResolveContextTest extends ApiResourcesTest
                 ->relation('other', T('TYPE'), function (Relation $relation) {
                     $relation->resolve(function (QueryRelationResolver $r) {
                         $r->ownerIdFields(['owner_other_id']);
-                        $r->load(function () {
+                        $r->get(function () {
                             yield Model::fromSingle('TYPE', []);
                         });
                     });
@@ -531,7 +531,7 @@ class QueryResolveContextTest extends ApiResourcesTest
                 ->relation('another', T('TYPE'), function (Relation $relation) {
                     $relation->resolve(function (QueryRelationResolver $r) {
                         $r->ownerIdFields(fn () => ['owner_another_id']);
-                        $r->load(function () {
+                        $r->get(function () {
                             yield Model::fromSingle('TYPE', []);
                         });
                     });

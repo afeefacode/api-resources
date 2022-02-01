@@ -23,7 +23,7 @@ class SimpleRequestTest extends ApiResourcesTest
                     $action
                         ->response(T('TYPE'))
                         ->resolve(function (QueryActionResolver $resolver) {
-                            $resolver->load(function () {
+                            $resolver->get(function () {
                                 return Model::fromSingle('TYPE', [
                                     'id' => '123',
                                     'name' => 'test'
@@ -89,7 +89,7 @@ class SimpleRequestTest extends ApiResourcesTest
                     $action
                         ->response(T('TYPE'))
                         ->resolve(function (QueryActionResolver $resolver) {
-                            $resolver->load(function () {
+                            $resolver->get(function () {
                                 return Model::fromSingle('TYPE', [
                                     'id' => '123',
                                     'name' => 'test'

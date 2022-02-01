@@ -19,7 +19,7 @@ class AuthorsResolver
     public function get_authors(QueryActionResolver $r, Medoo $db)
     {
         $r
-            ->load(function (ApiRequest $request, Closure $getSelectFields) use ($db) {
+            ->get(function (ApiRequest $request, Closure $getSelectFields) use ($db) {
                 $selectFields = $getSelectFields();
 
                 $usedFilters = [];
@@ -107,7 +107,7 @@ class AuthorsResolver
     public function get_author(QueryActionResolver $r, Medoo $db)
     {
         $r
-            ->load(function (ApiRequest $request, Closure $getSelectFields) use ($db) {
+            ->get(function (ApiRequest $request, Closure $getSelectFields) use ($db) {
                 $object = $db->get(
                     'authors',
                     $getSelectFields(),
@@ -164,7 +164,7 @@ class AuthorsResolver
         $r
             ->ownerIdFields(['author_id'])
 
-            ->load(function (array $owners, Closure $getSelectFields) use ($db) {
+            ->get(function (array $owners, Closure $getSelectFields) use ($db) {
                 /** @var ModelInterface[] $owners */
                 $authorIds = array_unique(
                     array_map(function (ModelInterface $owner) {

@@ -19,7 +19,7 @@ class ArticlesResolver
     public function get_articles(QueryActionResolver $r, Medoo $db)
     {
         $r
-            ->load(function (ApiRequest $request, Closure $getSelectFields) use ($db) {
+            ->get(function (ApiRequest $request, Closure $getSelectFields) use ($db) {
                 $selectFields = array_map(function ($field) {
                     return 'articles.' . $field;
                 }, $getSelectFields());
@@ -131,7 +131,7 @@ class ArticlesResolver
     public function get_article(QueryActionResolver $r, Medoo $db)
     {
         $r
-            ->load(function (ApiRequest $request, Closure $getSelectFields) use ($db) {
+            ->get(function (ApiRequest $request, Closure $getSelectFields) use ($db) {
                 $object = $db->get(
                     'articles',
                     $getSelectFields(),
@@ -212,7 +212,7 @@ class ArticlesResolver
                 }
             })
 
-            // ->load(function (array $owners, Closure $getSelectFields) use ($db) {
+            // ->get(function (array $owners, Closure $getSelectFields) use ($db) {
             //     /** @var ModelInterface[] $owners */
             //     $selectFields = array_merge($getSelectFields(), ['author_id']);
 
