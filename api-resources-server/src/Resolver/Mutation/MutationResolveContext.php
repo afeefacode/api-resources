@@ -79,7 +79,7 @@ class MutationResolveContext implements ContainerAwareInterface
             if ($this->hasSaveRelation($type, $operation, $fieldName)) {
                 $relation = $this->getSaveRelation($type, $operation, $fieldName);
 
-                if ($relation->isList()) {
+                if ($relation->getRelatedType()->isList()) {
                     if (!is_array($value)) {
                         throw new ValidationFailedException("Value passed to the many relation {$fieldName} must be an array.");
                     }

@@ -21,60 +21,6 @@ class Relation extends Field
 
     protected RelatedType $relatedType;
 
-    protected bool $isUpdate = false;
-
-    protected bool $isAdd = false;
-
-    protected bool $isDelete = false;
-
-    public function updatesItems(bool $updates = true): Relation
-    {
-        $this->isUpdate = $updates;
-        return $this;
-    }
-
-    public function shallUpdateItems(): bool
-    {
-        return $this->isUpdate;
-    }
-
-    public function addsItems(bool $adds = true): Relation
-    {
-        $this->isAdd = $adds;
-        return $this;
-    }
-
-    public function shallAddItems(): bool
-    {
-        return $this->isAdd;
-    }
-
-    public function deletesItems(bool $deletes = true): Relation
-    {
-        $this->isDelete = $deletes;
-        return $this;
-    }
-
-    public function shallDeleteItems(): bool
-    {
-        return $this->isDelete;
-    }
-
-    public function isSingle(): bool
-    {
-        return !$this->isList();
-    }
-
-    public function isList(): bool
-    {
-        return $this->relatedType->isList();
-    }
-
-    public function isLink(): bool
-    {
-        return $this->relatedType->isLink();
-    }
-
     public function typeClassOrClassesOrMeta($TypeClassOrClassesOrMeta): Relation
     {
         $this->relatedType = $this->container->create(RelatedType::class)
