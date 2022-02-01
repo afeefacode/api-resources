@@ -14,6 +14,8 @@ class Action extends BagEntry
 {
     protected string $name;
 
+    protected bool $isMutation = false;
+
     protected ActionParams $params;
 
     protected ActionInput $input;
@@ -36,6 +38,12 @@ class Action extends BagEntry
     public function getName(): string
     {
         return $this->name;
+    }
+
+    public function isMutation(bool $isMutation = true): Action
+    {
+        $this->isMutation = $isMutation;
+        return $this;
     }
 
     public function params(Closure $callback): Action

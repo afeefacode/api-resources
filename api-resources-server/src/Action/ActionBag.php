@@ -24,7 +24,9 @@ class ActionBag extends Bag
     public function mutation(string $name, Closure $callback): ActionBag
     {
         $this->setDefinition($name, $callback, function (Action $action) use ($name) {
-            $action->name($name);
+            $action
+                ->name($name)
+                ->isMutation();
         });
 
         return $this;
