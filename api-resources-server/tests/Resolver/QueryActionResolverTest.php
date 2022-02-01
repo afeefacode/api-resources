@@ -15,7 +15,7 @@ use Afeefa\ApiResources\Test\QueryTest;
 use function Afeefa\ApiResources\Test\T;
 
 use Afeefa\ApiResources\Type\Type;
-
+use Closure;
 use stdClass;
 
 class QueryActionResolverTest extends QueryTest
@@ -501,7 +501,27 @@ class QueryActionResolverTest extends QueryTest
                     ->response([T('TYPE'), T('TYPE2')])
                     ->resolve(function (QueryActionResolver $r) {
                         $r->load(function () use ($r) {
-                            $this->testWatcher->selectFields($r->getSelectFields());
+                            $r->getSelectFields();
+                        });
+                    });
+            }
+        );
+
+        $this->request($api);
+    }
+
+    public function test_select_fields_union_missing_type2()
+    {
+        $this->expectException(InvalidConfigurationException::class);
+        $this->expectExceptionMessage('You need to pass a type name to getSelectFields() in the resolver of action ACT on resource RES since the action returns an union type.');
+
+        $api = $this->createApiWithAction(
+            function (Action $action) {
+                $action
+                    ->response([T('TYPE'), T('TYPE2')])
+                    ->resolve(function (QueryActionResolver $r) {
+                        $r->load(function (ApiRequest $request, Closure $getSelectFields) {
+                            $getSelectFields();
                         });
                     });
             }
@@ -524,7 +544,30 @@ class QueryActionResolverTest extends QueryTest
                     ->response($single ? T('TYPE') : [T('TYPE'), T('TYPE2')])
                     ->resolve(function (QueryActionResolver $r) {
                         $r->load(function () use ($r) {
-                            $this->testWatcher->selectFields($r->getSelectFields('TYPE3'));
+                            $r->getSelectFields('TYPE3');
+                        });
+                    });
+            }
+        );
+
+        $this->request($api);
+    }
+
+    /**
+     * @dataProvider wrongTypeNameToSelectFieldsDataProvider
+     */
+    public function test_select_fields_wrong_type2($single)
+    {
+        $this->expectException(InvalidConfigurationException::class);
+        $this->expectExceptionMessage('The type name passed to getSelectFields() in the resolver of action ACT on resource RES is not supported by the action.');
+
+        $api = $this->createApiWithAction(
+            function (Action $action) use ($single) {
+                $action
+                    ->response($single ? T('TYPE') : [T('TYPE'), T('TYPE2')])
+                    ->resolve(function (QueryActionResolver $r) {
+                        $r->load(function (ApiRequest $request, Closure $getSelectFields) {
+                            $getSelectFields('TYPE3');
                         });
                     });
             }

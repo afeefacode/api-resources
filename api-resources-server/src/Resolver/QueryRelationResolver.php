@@ -71,6 +71,49 @@ class QueryRelationResolver extends BaseFieldResolver
         return $this;
     }
 
+    public function resolveCount(): void
+    {
+        // if error
+        $relationName = 'count_' . $this->relation->getName();
+        $resolverForRelation = "Resolver for relation {$relationName}";
+
+        // query db
+
+        $countCallback = $this->countCallback;
+        if (!$countCallback) {
+            throw new MissingCallbackException("{$resolverForRelation} needs to implement a count() method.");
+        }
+        $countResult = $countCallback($this->owners);
+
+        if ($countResult instanceof Generator) {
+            $countResult = iterator_to_array($countResult);
+        }
+
+        // map results to owners
+
+        $isList = $this->relation->getRelatedType()->isList();
+
+        if (isset($this->mapCallback)) {
+            // this is just a nifty one-liner to detect if there are non-ints in the given array
+            $isAllInts = fn ($array) => !count(array_filter($array, fn ($elm) => !is_int($elm)));
+
+            if (!is_array($countResult) || !$isAllInts($countResult)) {
+                throw new InvalidConfigurationException("{$resolverForRelation} needs to return an array of integers from its count() method.");
+            }
+
+            foreach ($this->owners as $owner) {
+                $value = ($this->mapCallback)($countResult, $owner);
+                if ($isList && !$value) {
+                    $value = 0;
+                }
+                if (!is_int($value)) {
+                    throw new InvalidConfigurationException("{$resolverForRelation} needs to return an integer value from its map() method.");
+                }
+                $owner->apiResourcesSetRelation($relationName, $value);
+            }
+        }
+    }
+
     public function resolve(): void
     {
         // if error
@@ -124,7 +167,7 @@ class QueryRelationResolver extends BaseFieldResolver
                 $owner->apiResourcesSetRelation($relationName, $value);
 
                 if ($isList || $value !== null) { // save only if non null
-                $models[] = $value;
+                    $models[] = $value;
                 }
             }
 

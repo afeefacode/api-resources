@@ -63,15 +63,17 @@ class RequestAttributeTest extends ApiResourcesTest
                         ->resolve(function (QueryActionResolver $r) {
                             $this->testWatcher->actionResolvers[] = $r;
 
-                            $r->load(function () use ($r) {
+                            $r->load(function (ApiRequest $request, Closure $getSelectFields, Closure $getRequestedFields) {
+                                $selectFields = $getSelectFields();
+
                                 $attributes = [];
-                                foreach ($r->getSelectFields() as $fieldName) {
+                                foreach ($getSelectFields() as $fieldName) {
                                     $attributes[$fieldName] = $fieldName;
                                 }
 
                                 $model = Model::fromSingle('TYPE', $attributes);
 
-                                if (in_array('dependent', $r->getRequestedFieldNames())) {
+                                if (in_array('dependent', $getRequestedFields())) {
                                     $model->apiResourcesSetAttribute('dependent', 'source');
                                 }
 

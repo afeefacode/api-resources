@@ -17,9 +17,25 @@ use Closure;
  */
 class Relation extends Field
 {
+    public const RESTRICT_TO_GET = 'get';
+    public const RESTRICT_TO_COUNT = 'count';
+
     protected static string $type = 'Afeefa.Relation';
 
     protected RelatedType $relatedType;
+
+    protected ?string $restrictTo = null;
+
+    public function restrictTo(?string $restrictTo): Relation
+    {
+        $this->restrictTo = $restrictTo;
+        return $this;
+    }
+
+    public function isRestrictedTo(string $restrictedTo): bool
+    {
+        return $this->restrictTo === $restrictedTo;
+    }
 
     public function typeClassOrClassesOrMeta($TypeClassOrClassesOrMeta): Relation
     {

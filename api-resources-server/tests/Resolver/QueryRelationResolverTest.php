@@ -65,6 +65,398 @@ class QueryRelationResolverTest extends QueryTest
         $this->assertEquals($expectedFields, $model->jsonSerialize());
     }
 
+    public function test_count()
+    {
+        $api = $this->createApiWithTypeAndAction(
+            function (FieldBag $fields) {
+                $fields
+                    ->attribute('title', StringAttribute::class)
+                    ->relation('other', T('TYPE'), function (Relation $relation) {
+                        $relation->resolve(function (QueryRelationResolver $r) {
+                            $r->count(function (array $owners) {
+                                foreach ($owners as $owner) {
+                                    $owner->apiResourcesSetRelation('count_other', 1);
+                                }
+                            });
+                        });
+                    });
+            }
+        );
+
+        $model = $this->requestSingle($api, [
+            'title' => true,
+            'count_other' => true
+        ]);
+
+        $expectedFields = [
+            'type' => 'TYPE',
+            'title' => 'title0',
+            'count_other' => 1
+        ];
+
+        $this->assertEquals($expectedFields, $model->jsonSerialize());
+    }
+
+    public function test_count_no_count_callback()
+    {
+        $this->expectException(MissingCallbackException::class);
+        $this->expectExceptionMessage('Resolver for relation count_others needs to implement a count() method.');
+
+        $api = $this->createApiWithTypeAndAction(
+            function (FieldBag $fields) {
+                $fields
+                    ->relation('others', Type::list(T('TYPE')), function (Relation $relation) {
+                        $relation->resolve(function (QueryRelationResolver $r) {
+                        });
+                    });
+            }
+        );
+
+        $this->requestSingle($api, ['count_others' => true]);
+    }
+
+    public function test_count_map()
+    {
+        $api = $this->createApiWithTypeAndAction(
+            function (FieldBag $fields) {
+                $fields
+                    ->attribute('title', StringAttribute::class)
+                    ->relation('other', T('TYPE'), function (Relation $relation) {
+                        $relation->resolve(function (QueryRelationResolver $r) {
+                            $r
+                                ->count(function (array $owners) {
+                                    $objects = [];
+                                    foreach ($owners as $index => $owner) {
+                                        $objects['ownerId'] = $index + 1;
+                                    }
+                                    return $objects;
+                                })
+                                ->map(function (array $objects, Model $owner) {
+                                    return $objects['ownerId'];
+                                });
+                        });
+                    });
+            }
+        );
+
+        $model = $this->requestSingle($api, [
+            'title' => true,
+            'count_other' => true
+        ]);
+
+        $expectedFields = [
+            'type' => 'TYPE',
+            'title' => 'title0',
+            'count_other' => 1
+        ];
+
+        $this->assertEquals($expectedFields, $model->jsonSerialize());
+    }
+
+    /**
+     * @dataProvider countNoArrayOfIntegersDataprovider
+     */
+    public function test_single_count_map_no_array($returnValue)
+    {
+        $this->expectException(InvalidConfigurationException::class);
+        $this->expectExceptionMessage('Resolver for relation count_other needs to return an array of integers from its count() method.');
+
+        $api = $this->createApiWithTypeAndAction(
+            function (FieldBag $fields) use ($returnValue) {
+                $fields
+                    ->relation('other', T('TYPE'), function (Relation $relation) use ($returnValue) {
+                        $relation->resolve(function (QueryRelationResolver $r) use ($returnValue) {
+                            $r
+                                ->count(function (array $owners) use ($returnValue) {
+                                    return $returnValue;
+                                })
+                                ->map(fn () => null);
+                        });
+                    });
+            }
+        );
+
+        $this->requestSingle($api, [
+            'count_other' => true
+        ]);
+    }
+
+    public function countNoArrayOfIntegersDataprovider()
+    {
+        return [
+            'return null' => [[null]],
+            'return string' => [['string']],
+            'return number' => [['0']],
+            'return mixed' => [[0, '0', null, 'string']]
+        ];
+    }
+
+    /**
+     * @dataProvider countNoArrayOfIntegersDataprovider2
+     */
+    public function test_single_count_map_no_array2($returnValue)
+    {
+        $this->expectException(InvalidConfigurationException::class);
+        $this->expectExceptionMessage('Resolver for relation count_other needs to return an integer value from its map() method.');
+
+        $api = $this->createApiWithTypeAndAction(
+            function (FieldBag $fields) use ($returnValue) {
+                $fields
+                    ->relation('other', T('TYPE'), function (Relation $relation) use ($returnValue) {
+                        $relation->resolve(function (QueryRelationResolver $r) use ($returnValue) {
+                            $r
+                                ->count(function (array $owners) {
+                                    return [1, 2, 3];
+                                })
+                                ->map(fn () => $returnValue);
+                        });
+                    });
+            }
+        );
+
+        $this->requestSingle($api, [
+            'count_other' => true
+        ]);
+    }
+
+    public function countNoArrayOfIntegersDataprovider2()
+    {
+        return [
+            'return null' => [null],
+            'return string' => ['string'],
+            'return number' => ['0']
+        ];
+    }
+
+    public function test_count_map_yield()
+    {
+        $api = $this->createApiWithTypeAndAction(
+            function (FieldBag $fields) {
+                $fields
+                    ->attribute('title', StringAttribute::class)
+                    ->relation('other', T('TYPE'), function (Relation $relation) {
+                        $relation->resolve(function (QueryRelationResolver $r) {
+                            $r
+                                ->count(function (array $owners) {
+                                    foreach ($owners as $owner) {
+                                        yield 'ownerId' => 2;
+                                    }
+                                })
+                                ->map(function (array $objects, Model $owner) {
+                                    return $objects['ownerId'];
+                                });
+                        });
+                    });
+            }
+        );
+
+        $model = $this->requestSingle($api, [
+            'title' => true,
+            'count_other' => true
+        ]);
+
+        $expectedFields = [
+            'type' => 'TYPE',
+            'title' => 'title0',
+            'count_other' => 2
+        ];
+
+        $this->assertEquals($expectedFields, $model->jsonSerialize());
+    }
+
+    public function test_count_list()
+    {
+        $api = $this->createApiWithTypeAndAction(
+            function (FieldBag $fields) {
+                $fields
+                    ->attribute('title', StringAttribute::class)
+                    ->relation('other', T('TYPE'), function (Relation $relation) {
+                        $relation->resolve(function (QueryRelationResolver $r) {
+                            $r
+                                ->count(function (array $owners) {
+                                    foreach ($owners as $index => $owner) {
+                                        $owner->apiResourcesSetRelation('count_other', $index + 1);
+                                    }
+                                });
+                        });
+                    });
+            },
+            null,
+            isList: true
+        );
+
+        $models = $this->requestList($api, [
+            'title' => true,
+            'count_other' => true
+        ]);
+
+        foreach ($models as $index => $model) {
+            $expectedFields = [
+                'type' => 'TYPE',
+                'title' => 'title' . $index,
+                'count_other' => $index + 1
+            ];
+
+            $this->assertEquals($expectedFields, $model->jsonSerialize());
+        }
+    }
+
+    public function test_count_map_list()
+    {
+        $api = $this->createApiWithTypeAndAction(
+            function (FieldBag $fields) {
+                $fields
+                    ->attribute('title', StringAttribute::class)
+                    ->relation('other', T('TYPE'), function (Relation $relation) {
+                        $relation->resolve(function (QueryRelationResolver $r) {
+                            $r
+                                ->count(function (array $owners) {
+                                    $objects = [];
+                                    foreach ($owners as $index => $owner) {
+                                        $id = strval($index + 1);
+                                        $owner->apiResourcesSetAttribute('id', $id);
+                                        $objects[$id] = $index + 1;
+                                    }
+                                    return $objects;
+                                })
+                                ->map(function (array $objects, Model $owner) {
+                                    return $objects[$owner->id];
+                                });
+                        });
+                    });
+            },
+            null,
+            isList: true
+        );
+
+        $models = $this->requestList($api, [
+            'title' => true,
+            'count_other' => true
+        ]);
+
+        foreach ($models as $index => $model) {
+            $expectedFields = [
+                'id' => strval($index + 1),
+                'type' => 'TYPE',
+                'title' => 'title' . $index,
+                'count_other' => $index + 1
+            ];
+
+            $this->assertEquals($expectedFields, $model->jsonSerialize());
+        }
+    }
+
+    public function test_count_map_list_yield()
+    {
+        $api = $this->createApiWithTypeAndAction(
+            function (FieldBag $fields) {
+                $fields
+                    ->attribute('title', StringAttribute::class)
+                    ->relation('other', T('TYPE'), function (Relation $relation) {
+                        $relation->resolve(function (QueryRelationResolver $r) {
+                            $r
+                                ->count(function (array $owners) {
+                                    foreach ($owners as $index => $owner) {
+                                        $id = strval($index + 1);
+                                        $owner->apiResourcesSetAttribute('id', $id);
+                                        yield $id => $index + 1;
+                                    }
+                                })
+                                ->map(function (array $objects, Model $owner) {
+                                    return $objects[$owner->id];
+                                });
+                        });
+                    });
+            },
+            null,
+            isList: true
+        );
+
+        $models = $this->requestList($api, [
+            'title' => true,
+            'count_other' => true
+        ]);
+
+        foreach ($models as $index => $model) {
+            $expectedFields = [
+                'id' => strval($index + 1),
+                'type' => 'TYPE',
+                'title' => 'title' . $index,
+                'count_other' => $index + 1
+            ];
+
+            $this->assertEquals($expectedFields, $model->jsonSerialize());
+        }
+    }
+
+    /**
+     * @dataProvider restrictToDataProvider
+     */
+    public function test_relation_restricted($restrictTo)
+    {
+        $api = $this->createApiWithTypeAndAction(
+            function (FieldBag $fields) use ($restrictTo) {
+                $fields
+                    ->relation('other', T('TYPE'), function (Relation $relation) use ($restrictTo) {
+                        $relation
+                            ->restrictTo($restrictTo)
+                            ->resolve(function (QueryRelationResolver $r) {
+                                $r
+                                    ->count(function (array $owners) {
+                                        foreach ($owners as $index => $owner) {
+                                            $owner->id = strval($index + 1);
+                                            yield $owner->id => $index + 1;
+                                        }
+                                    })
+                                    ->load(function (array $owners) {
+                                        foreach ($owners as $index => $owner) {
+                                            $owner->id = strval($index + 1);
+                                            yield $owner->id => Model::fromSingle('TYPE', ['id' => 'fromOwner' . $owner->id]);
+                                        }
+                                    })
+                                    ->map(function (array $objects, Model $owner) {
+                                        return $objects[$owner->id];
+                                    });
+                            });
+                    });
+            },
+            null,
+            isList: true
+        );
+
+        $models = $this->requestList($api, [
+            'other' => true,
+            'count_other' => true
+        ]);
+
+        foreach ($models as $index => $model) {
+            $id = strval($index + 1);
+            $expectedFields = [
+                'id' => $id,
+                'type' => 'TYPE'
+            ];
+
+            if ($restrictTo !== Relation::RESTRICT_TO_GET) {
+                $expectedFields['count_other'] = $index + 1;
+            }
+
+            if ($restrictTo !== Relation::RESTRICT_TO_COUNT) {
+                $expectedFields['other'] = ['type' => 'TYPE', 'id' => 'fromOwner' . $id];
+            }
+
+            $this->assertEquals($expectedFields, $model->jsonSerialize());
+        }
+    }
+
+    public function restrictToDataProvider()
+    {
+        return [
+            'not restricted' => [null],
+            'restricted to get' => [Relation::RESTRICT_TO_GET],
+            'restricted to count' => [Relation::RESTRICT_TO_COUNT]
+        ];
+    }
+
     public function test_simple_yield()
     {
         $api = $this->createApiWithTypeAndAction(
@@ -201,10 +593,10 @@ class QueryRelationResolverTest extends QueryTest
                     ->attribute('title', StringAttribute::class)
                     ->relation('other', T('TYPE'), function (Relation $relation) {
                         $relation->resolve(function (QueryRelationResolver $r) {
-                            $r->load(function (array $owners) use ($r) {
+                            $r->load(function (array $owners, Closure $getSelectFields, Closure $getRequestedFields) use ($r) {
                                 $this->testWatcher->called();
-                                $this->testWatcher->selectFields($r->getSelectFields());
-                                $this->testWatcher->requestedFields($r->getRequestedFieldNames());
+                                $this->testWatcher->selectFields($getSelectFields());
+                                $this->testWatcher->requestedFields($getRequestedFields());
 
                                 foreach ($owners as $owner) {
                                     $relatedModel = Model::fromSingle('TYPE', ['title' => 'title' . $this->testWatcher->countCalls]);
@@ -1034,6 +1426,27 @@ class QueryRelationResolverTest extends QueryTest
         $this->request($api, ['other' => true]);
     }
 
+    public function test_select_fields_union_missing_type2()
+    {
+        $this->expectException(InvalidConfigurationException::class);
+        $this->expectExceptionMessage('You need to pass a type name to getSelectFields() in the resolver of relation other since the relation returns an union type');
+
+        $api = $this->createApiWithTypeAndAction(
+            function (FieldBag $fields) {
+                $fields
+                    ->relation('other', [T('TYPE'), T('TYPE2')], function (Relation $relation) {
+                        $relation->resolve(function (QueryRelationResolver $r) {
+                            $r->load(function (array $owners, Closure $getSelectFields) {
+                                $getSelectFields();
+                            });
+                        });
+                    });
+            }
+        );
+
+        $this->request($api, ['other' => true]);
+    }
+
     /**
      * @dataProvider wrongTypeNameToSelectFieldsDataProvider
      */
@@ -1049,6 +1462,30 @@ class QueryRelationResolverTest extends QueryTest
                         $relation->resolve(function (QueryRelationResolver $r) {
                             $r->load(function () use ($r) {
                                 $r->getSelectFields('TYPE3');
+                            });
+                        });
+                    });
+            }
+        );
+
+        $this->request($api, ['other' => true]);
+    }
+
+    /**
+     * @dataProvider wrongTypeNameToSelectFieldsDataProvider
+     */
+    public function test_select_fields_wrong_type2($single)
+    {
+        $this->expectException(InvalidConfigurationException::class);
+        $this->expectExceptionMessage('The type name passed to getSelectFields() in the resolver of relation other is not supported by the relation');
+
+        $api = $this->createApiWithTypeAndAction(
+            function (FieldBag $fields) use ($single) {
+                $fields
+                    ->relation('other', $single ? T('TYPE') : [T('TYPE'), T('TYPE2')], function (Relation $relation) {
+                        $relation->resolve(function (QueryRelationResolver $r) {
+                            $r->load(function (array $owners, Closure $getSelectFields) {
+                                $getSelectFields('TYPE3');
                             });
                         });
                     });

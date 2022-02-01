@@ -4,6 +4,7 @@ namespace Afeefa\ApiResources\Resolver\Query;
 
 use Afeefa\ApiResources\Action\ActionResponse;
 use Afeefa\ApiResources\Exception\Exceptions\InvalidConfigurationException;
+use Afeefa\ApiResources\Field\Relation;
 use Closure;
 
 trait QueryResolverTrait
@@ -12,9 +13,17 @@ trait QueryResolverTrait
 
     protected ?Closure $loadCallback = null;
 
+    protected ?Closure $countCallback = null;
+
     public function load(Closure $callback): self
     {
         $this->loadCallback = $callback;
+        return $this;
+    }
+
+    public function count(Closure $callback): self
+    {
+        $this->countCallback = $callback;
         return $this;
     }
 
@@ -89,8 +98,21 @@ trait QueryResolverTrait
             // resolve relations
 
             foreach ($resolveContext->getRelationResolvers() as $relationResolver) {
+                if ($relationResolver->getRelation()->isRestrictedTo(Relation::RESTRICT_TO_COUNT)) {
+                    continue;
+                }
                 $relationResolver->addOwners($models);
                 $relationResolver->resolve();
+            }
+
+            // resolve relation counts
+
+            foreach ($resolveContext->getRelationCountResolvers() as $relationResolver) {
+                if ($relationResolver->getRelation()->isRestrictedTo(Relation::RESTRICT_TO_GET)) {
+                    continue;
+                }
+                $relationResolver->addOwners($models);
+                $relationResolver->resolveCount();
             }
 
             // mark visible fields
