@@ -2,11 +2,14 @@
 
 namespace Backend\Resolvers;
 
+use Afeefa\ApiResources\Api\ApiRequest;
 use Afeefa\ApiResources\Model\Model;
 use Afeefa\ApiResources\Model\ModelInterface;
+use Afeefa\ApiResources\Resolver\ActionResult;
 use Afeefa\ApiResources\Resolver\QueryActionResolver;
 use Afeefa\ApiResources\Resolver\QueryRelationResolver;
 use Backend\Types\TagType;
+use Closure;
 use Medoo\Medoo;
 
 class TagsResolver
@@ -14,37 +17,53 @@ class TagsResolver
     public function get_tags(QueryActionResolver $r, Medoo $db)
     {
         $r
-            ->load(function () use ($r, $db) {
-                $requestedFieldNames = $r->getRequestedFieldNames();
-                $selectFields = $r->getSelectFields();
-
+            ->load(function (ApiRequest $request, Closure $getSelectFields) use ($db) {
                 $count = $db->count('tags');
-
-                if (in_array('count_users', $requestedFieldNames)) {
-                    if (!isset($selectFields['count_users'])) {
-                        $selectFields['count_users'] = $this->selectCountUsers();
-                    }
-                }
 
                 $objects = $db->select(
                     'tags',
-                    $selectFields
+                    $getSelectFields()
                 );
 
-                $r->meta([
-                    'count_all' => $count,
-                    'count_filter' => $count,
-                    'count_search' => $count
-                ]);
+                return (new ActionResult())
+                    ->data(Model::fromList(TagType::type(), $objects))
 
-                return Model::fromList(TagType::type(), $objects);
+                    ->meta([
+                        'count_all' => $count,
+                        'count_filter' => $count,
+                        'count_search' => $count
+                    ]);
             });
     }
 
     public function resolve_tag_users_relation(QueryRelationResolver $r, Medoo $db)
     {
         $r
-            ->load(function (array $owners) use ($r, $db) {
+            ->count(function (array $owners) use ($db) {
+                $tagIds = array_unique(
+                    array_map(function (ModelInterface $owner) {
+                        return $owner->id;
+                    }, $owners)
+                );
+
+                $result = $db->select(
+                    'tag_users',
+                    [
+                        'count' => Medoo::raw('COUNT(tag_id)'),
+                        'tag_id'
+                    ],
+                    [
+                        'tag_id' => $tagIds,
+                        'GROUP' => 'tag_id'
+                    ]
+                );
+
+                foreach ($result as $row) {
+                    yield $row['tag_id'] => intval($row['count']);
+                }
+            })
+
+            ->load(function (array $owners, Closure $getSelectFields) use ($db) {
                 $tagIds = array_unique(
                     array_map(function (ModelInterface $owner) {
                         return $owner->id;
@@ -73,14 +92,10 @@ class TagsResolver
                 foreach ($ownerIdsByType as $typeName => $ids) {
                     $table = $typeName === 'Example.Article' ? 'articles' : 'authors';
 
-                    $selectFields = $r->getSelectFields($typeName);
-
                     $result = $db->select(
                         $table,
-                        $selectFields,
-                        [
-                            'id' => $ids
-                        ]
+                        $getSelectFields($typeName),
+                        ['id' => $ids]
                     );
 
                     foreach ($result as $row) {
@@ -104,9 +119,8 @@ class TagsResolver
     public function resolve_tags_relation(QueryRelationResolver $r, Medoo $db)
     {
         $r
-            ->load(function (array $owners) use ($r, $db) {
-                $requestedFieldNames = $r->getRequestedFieldNames();
-                $selectFields = $r->getSelectFields();
+            ->load(function (array $owners, Closure $getSelectFields) use ($db) {
+                $selectFields = $getSelectFields();
 
                 $queryFields = ['tag_users.user_id', 'tag_users.user_type'];
 
@@ -116,12 +130,6 @@ class TagsResolver
                     $alias = "tag_{$selectField}";
                     $fieldMap[$selectField] = $alias;
                     $queryFields[] = "tags.{$selectField}({$alias})";
-                }
-
-                if (in_array('count_users', $requestedFieldNames)) {
-                    $alias = 'tag_users_count_users';
-                    $fieldMap['count_users'] = $alias;
-                    $queryFields[$alias] = $this->selectCountUsers();
                 }
 
                 $where = [];

@@ -4,10 +4,12 @@ namespace Backend\Resources;
 
 use Afeefa\ApiResources\Action\Action;
 use Afeefa\ApiResources\Action\ActionBag;
+use Afeefa\ApiResources\Api\ApiRequest;
 use Afeefa\ApiResources\Model\Model;
 use Afeefa\ApiResources\Resolver\QueryActionResolver;
 use Afeefa\ApiResources\Resource\Resource;
 use Backend\Types\CountsType;
+use Closure;
 use Medoo\Medoo;
 
 class AppResource extends Resource
@@ -21,16 +23,16 @@ class AppResource extends Resource
                 ->response(CountsType::class)
 
                 ->resolve(function (QueryActionResolver $r, Medoo $db) {
-                    $r->load(function () use ($r, $db) {
-                        $attributes = [
-                            'id' => 'app'
-                        ];
+                    $r->load(function (ApiRequest $request, Closure $getSelectFields) use ($db) {
+                        $selectFields = $getSelectFields();
 
-                        if ($r->fieldIsRequested('count_articles')) {
+                        $attributes = ['id' => 'app'];
+
+                        if (in_array('count_articles', $selectFields)) {
                             $attributes['count_articles'] = $db->count('articles');
                         }
 
-                        if ($r->fieldIsRequested('count_authors')) {
+                        if (in_array('count_authors', $selectFields)) {
                             $attributes['count_authors'] = $db->count('authors');
                         }
 

@@ -5,11 +5,13 @@ namespace Backend\Resolvers;
 use Afeefa\ApiResources\Api\ApiRequest;
 use Afeefa\ApiResources\Model\Model;
 use Afeefa\ApiResources\Model\ModelInterface;
+use Afeefa\ApiResources\Resolver\ActionResult;
 use Afeefa\ApiResources\Resolver\MutationActionModelResolver;
 use Afeefa\ApiResources\Resolver\MutationRelationLinkOneResolver;
 use Afeefa\ApiResources\Resolver\QueryActionResolver;
 use Afeefa\ApiResources\Resolver\QueryRelationResolver;
 use Backend\Types\AuthorType;
+use Closure;
 use Medoo\Medoo;
 
 class AuthorsResolver
@@ -17,12 +19,8 @@ class AuthorsResolver
     public function get_authors(QueryActionResolver $r, Medoo $db)
     {
         $r
-            ->load(function () use ($r, $db) {
-                $request = $r->getRequest();
-                $action = $request->getAction();
-                $requestedFieldNames = $r->getRequestedFieldNames();
-                $filters = $request->getFilters();
-                $selectFields = $r->getSelectFields();
+            ->load(function (ApiRequest $request, Closure $getSelectFields) use ($db) {
+                $selectFields = $getSelectFields();
 
                 $usedFilters = [];
                 $where = [];
@@ -31,7 +29,7 @@ class AuthorsResolver
 
                 // tag_id search
 
-                $tagId = $filters['tag_id'] ?? null;
+                $tagId = $request->getFilter('tag_id');
 
                 if ($tagId) {
                     $where['EXISTS'] = $this->selectTagId($tagId);
@@ -47,7 +45,7 @@ class AuthorsResolver
 
                 // keyword search
 
-                $keyword = $filters['q'] ?? null;
+                $keyword = $request->getFilter('q');
 
                 if ($keyword) {
                     $where['name[~]'] = $keyword;
@@ -59,10 +57,8 @@ class AuthorsResolver
 
                 // pagination
 
-                $pageSizeFilter = $action->getFilter('page_size');
-
-                $page = $filters['page'] ?? 1;
-                $pageSize = $filters['page_size'] ?? $pageSizeFilter->getDefaultValue();
+                $page = $request->getFilter('page', 1);
+                $pageSize = $request->getFilter('page_size');
 
                 [$offset, $pageSize, $page] = $this->pageToLimit($page, $pageSize, $countSearch);
                 $where['LIMIT'] = [$offset, $pageSize];
@@ -70,18 +66,9 @@ class AuthorsResolver
                 $usedFilters['page'] = $page;
                 $usedFilters['page_size'] = $pageSize;
 
-                // count articles
-
-                if (in_array('count_articles', $requestedFieldNames)) {
-                    if (!isset($selectFields['count_articles'])) {
-                        $selectFields['count_articles'] = $this->selectCountArticles();
-                    }
-                }
-
                 // order
 
-                $oderFilter = $action->getFilter('order');
-                $order = $filters['order'] ?? $oderFilter->getDefaultValue() ?? [];
+                $order = $request->getFilter('order');
 
                 foreach ($order as $field => $direction) {
                     if ($field === 'count_articles') {
@@ -105,41 +92,26 @@ class AuthorsResolver
                     $where
                 );
 
-                $r->meta([
-                    'count_all' => $countAll,
-                    'count_filter' => $countFilters,
-                    'count_search' => $countSearch,
-                    'used_filters' => $usedFilters
-                ]);
+                return (new ActionResult())
+                    ->data(Model::fromList(AuthorType::type(), $objects))
 
-                return Model::fromList(AuthorType::type(), $objects);
+                    ->meta([
+                        'count_all' => $countAll,
+                        'count_filter' => $countFilters,
+                        'count_search' => $countSearch,
+                        'used_filters' => $usedFilters
+                    ]);
             });
     }
 
     public function get_author(QueryActionResolver $r, Medoo $db)
     {
         $r
-            ->load(function () use ($r, $db) {
-                $request = $r->getRequest();
-                $requestedFieldNames = $r->getRequestedFieldNames();
-                $selectFields = $r->getSelectFields();
-
-                $where = ['id' => $request->getParam('id')];
-
-                // count articles
-
-                if (in_array('count_articles', $requestedFieldNames)) {
-                    if (!isset($selectFields['count_articles'])) {
-                        $selectFields['count_articles'] = $this->selectCountArticles();
-                    }
-                }
-
-                // select
-
+            ->load(function (ApiRequest $request, Closure $getSelectFields) use ($db) {
                 $object = $db->get(
                     'authors',
-                    $selectFields,
-                    $where
+                    $getSelectFields(),
+                    ['id' => $request->getParam('id')]
                 );
 
                 return $object ? Model::fromSingle(AuthorType::type(), $object) : null;
@@ -192,7 +164,7 @@ class AuthorsResolver
         $r
             ->ownerIdFields(['author_id'])
 
-            ->load(function (array $owners) use ($r, $db) {
+            ->load(function (array $owners, Closure $getSelectFields) use ($db) {
                 /** @var ModelInterface[] $owners */
                 $authorIds = array_unique(
                     array_map(function (ModelInterface $owner) {
@@ -202,7 +174,7 @@ class AuthorsResolver
 
                 $result = $db->select(
                     'authors',
-                    $r->getSelectFields(),
+                    $getSelectFields(),
                     [
                         'id' => $authorIds,
                         'ORDER' => 'id'

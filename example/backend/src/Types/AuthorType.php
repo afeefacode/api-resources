@@ -32,7 +32,9 @@ class AuthorType extends Type
             ->attribute('email', StringAttribute::class)
 
             ->relation('articles', Type::list(ArticleType::class), function (Relation $relation) {
-                $relation->resolve([ArticlesResolver::class, 'resolve_articles_relation']);
+                $relation
+                    ->restrictTo(Relation::RESTRICT_TO_COUNT)
+                    ->resolve([ArticlesResolver::class, 'resolve_articles_relation']);
             })
 
             ->relation('tags', Type::list(TagType::class), function (Relation $relation) {

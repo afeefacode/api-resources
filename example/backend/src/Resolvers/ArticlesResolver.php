@@ -3,38 +3,34 @@
 namespace Backend\Resolvers;
 
 use Afeefa\ApiResources\Api\ApiRequest;
-use Afeefa\ApiResources\Exception\Exceptions\ApiException;
 use Afeefa\ApiResources\Model\Model;
 use Afeefa\ApiResources\Model\ModelInterface;
+use Afeefa\ApiResources\Resolver\ActionResult;
 use Afeefa\ApiResources\Resolver\MutationActionModelResolver;
 use Afeefa\ApiResources\Resolver\QueryActionResolver;
 use Afeefa\ApiResources\Resolver\QueryRelationResolver;
 use Backend\Types\ArticleType;
+use Closure;
 use Medoo\Medoo;
+use MedooWithSql;
 
 class ArticlesResolver
 {
     public function get_articles(QueryActionResolver $r, Medoo $db)
     {
         $r
-            ->load(function () use ($r, $db) {
-                $request = $r->getRequest();
-                $action = $request->getAction();
-                $requestedFieldNames = $r->getRequestedFieldNames();
-                $filters = $request->getFilters();
-                $params = $request->getParams();
-
+            ->load(function (ApiRequest $request, Closure $getSelectFields) use ($db) {
                 $selectFields = array_map(function ($field) {
                     return 'articles.' . $field;
-                }, $r->getSelectFields());
+                }, $getSelectFields());
 
                 $usedFilters = [];
 
                 $where = [];
 
-                // author_id
+                // author_id scope
 
-                $authorId = $params['author_id'] ?? null;
+                $authorId = $request->getParam('author_id');
 
                 if ($authorId) {
                     $where['author_id'] = $authorId;
@@ -45,7 +41,7 @@ class ArticlesResolver
 
                 // author_id search
 
-                $authorId = $filters['author_id'] ?? null;
+                $authorId = $request->getFilter('author_id');
 
                 if ($authorId) {
                     $where['author_id'] = $authorId;
@@ -55,7 +51,7 @@ class ArticlesResolver
 
                 // tag_id search
 
-                $tagId = $filters['tag_id'] ?? null;
+                $tagId = $request->getFilter('tag_id');
 
                 if ($tagId) {
                     $where['EXISTS'] = $this->selectTagId($tagId);
@@ -71,7 +67,7 @@ class ArticlesResolver
 
                 // keyword search
 
-                $keyword = $filters['q'] ?? null;
+                $keyword = $request->getFilter('q');
 
                 if ($keyword) {
                     $where['title[~]'] = $keyword;
@@ -83,10 +79,8 @@ class ArticlesResolver
 
                 // pagination
 
-                $pageSizeFilter = $action->getFilter('page_size');
-
-                $page = $filters['page'] ?? 1;
-                $pageSize = $filters['page_size'] ?? $pageSizeFilter->getDefaultValue();
+                $page = $request->getFilter('page', 1);
+                $pageSize = $request->getFilter('page_size');
 
                 [$offset, $pageSize, $page] = $this->pageToLimit($page, $pageSize, $countSearch);
                 $where['LIMIT'] = [$offset, $pageSize];
@@ -96,20 +90,15 @@ class ArticlesResolver
 
                 // order
 
-                $oderFilter = $action->getFilter('order');
-                $order = $filters['order'] ?? $oderFilter->getDefaultValue() ?? [];
+                $order = $request->getFilter('order');
 
                 foreach ($order as $field => $direction) {
                     if ($field === 'count_comments') {
-                        if (!isset($selectFields['count_comments'])) {
-                            $selectFields['count_comments'] = $this->selectCountComments();
-                        }
+                        $selectFields['count_comments'] = $this->selectCountComments();
                     }
 
                     if ($field === 'author_name') {
-                        if (!isset($selectFields['author_name'])) {
-                            $selectFields['author_name'] = $this->selectAuthorName();
-                        }
+                        $selectFields['author_name'] = $this->selectAuthorName();
                     }
 
                     $where['ORDER'][$field] = strtoupper($direction);
@@ -117,14 +106,6 @@ class ArticlesResolver
                     $usedFilters['order'] = [
                         $field => $direction
                     ];
-                }
-
-                // count comments
-
-                if (in_array('count_comments', $requestedFieldNames)) {
-                    if (!isset($selectFields['count_comments'])) {
-                        $selectFields['count_comments'] = $this->selectCountComments();
-                    }
                 }
 
                 // select
@@ -135,48 +116,26 @@ class ArticlesResolver
                     $where
                 );
 
-                if ($objects === false) {
-                    throw new ApiException(([
-                        'error' => $db->error,
-                        'query' => $db->log()
-                    ]));
-                }
+                return (new ActionResult())
+                    ->data(Model::fromList(ArticleType::type(), $objects))
 
-                $r->meta([
-                    'count_all' => $countAll,
-                    'count_filter' => $countFilters,
-                    'count_search' => $countSearch,
-                    'used_filters' => $usedFilters
-                ]);
-
-                return Model::fromList(ArticleType::type(), $objects);
+                    ->meta([
+                        'count_all' => $countAll,
+                        'count_filter' => $countFilters,
+                        'count_search' => $countSearch,
+                        'used_filters' => $usedFilters
+                    ]);
             });
     }
 
     public function get_article(QueryActionResolver $r, Medoo $db)
     {
         $r
-            ->load(function () use ($r, $db) {
-                $request = $r->getRequest();
-                $requestedFieldNames = $r->getRequestedFieldNames();
-                $selectFields = $r->getSelectFields();
-
-                $where = ['id' => $request->getParam('id')];
-
-                // count comments
-
-                if (in_array('count_comments', $requestedFieldNames)) {
-                    if (!isset($selectFields['count_comments'])) {
-                        $selectFields['count_comments'] = $this->selectCountComments();
-                    }
-                }
-
-                // select
-
+            ->load(function (ApiRequest $request, Closure $getSelectFields) use ($db) {
                 $object = $db->get(
                     'articles',
-                    $selectFields,
-                    $where
+                    $getSelectFields(),
+                    ['id' => $request->getParam('id')]
                 );
 
                 return $object ? Model::fromSingle(ArticleType::type(), $object) : null;
@@ -229,10 +188,7 @@ class ArticlesResolver
     public function resolve_articles_relation(QueryRelationResolver $r, Medoo $db): void
     {
         $r
-            ->load(function (array $owners) use ($r, $db) {
-                /** @var ModelInterface[] $owners */
-                $selectFields = array_merge($r->getSelectFields(), ['author_id']);
-
+            ->count(function (array $owners) use ($db) {
                 $authorIds = array_unique(
                     array_map(function (ModelInterface $owner) {
                         return $owner->id;
@@ -241,30 +197,57 @@ class ArticlesResolver
 
                 $result = $db->select(
                     'articles',
-                    $selectFields,
+                    [
+                        'count' => Medoo::raw('COUNT(author_id)'),
+                        'author_id'
+                    ],
                     [
                         'author_id' => $authorIds,
-                        'ORDER' => [
-                            'date' => 'DESC'
-                        ]
+                        'GROUP' => 'author_id'
                     ]
                 );
 
-                $objects = [];
                 foreach ($result as $row) {
-                    $key = 'Author:' . $row['author_id'];
-                    $objects[$key][] = Model::fromSingle(ArticleType::type(), $row);
+                    yield $row['author_id'] => intval($row['count']);
                 }
-                return $objects;
             })
+
+            // ->load(function (array $owners, Closure $getSelectFields) use ($db) {
+            //     /** @var ModelInterface[] $owners */
+            //     $selectFields = array_merge($getSelectFields(), ['author_id']);
+
+            //     $authorIds = array_unique(
+            //         array_map(function (ModelInterface $owner) {
+            //             return $owner->id;
+            //         }, $owners)
+            //     );
+
+            //     $result = $db->select(
+            //         'articles',
+            //         $selectFields,
+            //         [
+            //             'author_id' => $authorIds,
+            //             'ORDER' => [
+            //                 'date' => 'DESC'
+            //             ]
+            //         ]
+            //     );
+
+            //     $objects = [];
+            //     foreach ($result as $row) {
+            //         $key = $row['author_id'];
+            //         $objects[$key][] = Model::fromSingle(ArticleType::type(), $row);
+            //     }
+            //     return $objects;
+            // })
 
             ->map(function (array $objects, ModelInterface $owner) {
                 $key = $owner->id;
-                return $objects['Author:' . $key] ?? [];
+                return $objects[$key] ?? [];
             });
     }
 
-    private function getCount(Medoo $db, array $countSelectFields, array $where): int
+    private function getCount(MedooWithSql $db, array $countSelectFields, array $where): int
     {
         $query = $db->sql(
             'articles',
