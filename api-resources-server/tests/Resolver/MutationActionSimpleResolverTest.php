@@ -265,7 +265,7 @@ class MutationActionSimpleResolverTest extends MutationRelationTest
     public function test_save_does_not_return_model($return)
     {
         $this->expectException(InvalidConfigurationException::class);
-        $this->expectExceptionMessage('Save callback of mutation resolver for action ACT on resource RES must return a ModelInterface object.');
+        $this->expectExceptionMessage('Save callback of mutation resolver for action ACT on resource RES must return a ModelInterface object or null.');
 
         $api = $this->createApiWithMutation(
             fn () => T('TYPE'),
@@ -288,11 +288,42 @@ class MutationActionSimpleResolverTest extends MutationRelationTest
     public function saveDoesNotReturnModelDataProvider()
     {
         return [
-            'null' => [null],
             'array' => [[]],
             'string' => ['string'],
-            'object' => [new stdClass()],
-            'nothing' => ['NOTHING']
+            'object' => [new stdClass()]
+        ];
+    }
+
+    /**
+     * @dataProvider saveReturnsNullDataProvider
+     */
+    public function test_save_returns_null($return)
+    {
+        $api = $this->createApiWithMutation(
+            fn () => T('TYPE'),
+            function (Action $action) use ($return) {
+                $action
+                    ->resolve(function (MutationActionSimpleResolver $r) use ($return) {
+                        $r
+                            ->save(function () use ($return) {
+                                if ($return !== 'NOTHING') {
+                                    return $return;
+                                }
+                            });
+                    });
+            }
+        );
+
+        $result = $this->request($api);
+
+        $this->assertNull($result['data']);
+    }
+
+    public function saveReturnsNullDataProvider()
+    {
+        return [
+            'array' => [null],
+            'array' => ['NOTHING']
         ];
     }
 }

@@ -127,7 +127,7 @@ class ModelResource extends Resource
                         $params->attribute('id', IdAttribute::class);
                     })
 
-                    ->response->mutation($this->ModelTypeClass)
+                    ->response($this->ModelTypeClass)
 
                     ->resolve([$this->getEloquentResolver(), 'save']);
             });
