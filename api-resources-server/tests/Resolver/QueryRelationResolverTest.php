@@ -1272,6 +1272,36 @@ class QueryRelationResolverTest extends QueryTest
     }
 
     /**
+     * @dataProvider loadArrayOfModelsDataprovider
+     */
+    public function test_get_list_returns_list_of_models($returnValue)
+    {
+        $api = $this->createApiWithTypeAndAction(
+            function (FieldBag $fields) use ($returnValue) {
+                $fields
+                    ->relation('others', Type::list(T('TYPE')), function (Relation $relation) use ($returnValue) {
+                        $relation->resolve(function (QueryRelationResolver $r) use ($returnValue) {
+                            $r
+                                ->get(fn () => $returnValue);
+                        });
+                    });
+            }
+        );
+
+        $this->requestSingle($api, ['others' => true]);
+
+        $this->assertTrue(true);
+    }
+
+    public function loadArrayOfModelsDataprovider()
+    {
+        return [
+            'return empty' => [[]],
+            'return empty' => [[[Model::fromSingle('TYPE')], [Model::fromSingle('TYPE')]]],
+        ];
+    }
+
+    /**
      * @dataProvider requestFieldsDataProvider
      */
     public function test_requested_fields($fields, $expectedFields)
