@@ -284,7 +284,10 @@ class ModelResolver
             if (preg_match('/^count_(.+)/', $fieldName, $matches)) {
                 $countRelationName = $matches[1];
                 if ($this->type->hasRelation($countRelationName)) {
-                    $relationCounts[] = $countRelationName . ' as count_' . $countRelationName;
+                    $isEloquentRelationResolver = $this->type->getRelation($countRelationName)->getResolveParam('is_eloquent_relation');
+                    if ($isEloquentRelationResolver) {
+                        $relationCounts[] = $countRelationName . ' as count_' . $countRelationName;
+                    }
                 }
             }
         }
