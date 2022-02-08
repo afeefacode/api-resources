@@ -1579,7 +1579,6 @@ class QueryRelationResolverTest extends QueryTest
                     ->relation('other', T('TYPE'), function (Relation $relation) {
                         $relation->resolve(function (TestRelationResolver $r) {
                             $r->get(function () use ($r) {
-                                $this->testWatcher->info($r->getResolveParams());
                                 $this->testWatcher->info($r->getResolveParam('key'));
                                 return [];
                             });
@@ -1590,7 +1589,7 @@ class QueryRelationResolverTest extends QueryTest
 
         $this->request($api, ['other' => true]);
 
-        $this->assertEquals([['key' => 'value'], 'value'], $this->testWatcher->info);
+        $this->assertEquals(['value'], $this->testWatcher->info);
     }
 
     protected function createApiWithTypeAndAction(Closure $fieldsCallback, $TypeClassOrClassesOrMeta = null, ?Closure $actionCallback = null, bool $isList = false): Api
