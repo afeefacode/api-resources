@@ -5,6 +5,10 @@ namespace Afeefa\ApiResources\Eloquent;
 use Afeefa\ApiResources\Field\Relation;
 use Afeefa\ApiResources\Resolver\Field\RelationResolverTrait;
 use Afeefa\ApiResources\Resolver\Mutation\MutationRelationResolver;
+use Afeefa\ApiResources\Resolver\MutationRelationHasManyResolver;
+use Afeefa\ApiResources\Resolver\MutationRelationHasOneResolver;
+use Afeefa\ApiResources\Resolver\MutationRelationLinkManyResolver;
+use Afeefa\ApiResources\Resolver\MutationRelationLinkOneResolver;
 use Afeefa\ApiResources\Resolver\QueryRelationResolver;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -54,16 +58,55 @@ class ModelRelationResolver
             });
     }
 
+    public function save_has_one_relation(MutationRelationHasOneResolver $r)
+    {
+    }
+
+    public function save_has_many_relation(MutationRelationHasManyResolver $r)
+    {
+        $r
+            ->get(function (Model $owner) {
+            })
+            ->add(function (Model $owner, string $typeName, array $saveFields) use ($r) {
+            })
+            ->update(function (Model $owner, Model $modelToUpdate, array $saveFields) use ($r) {
+            })
+            ->delete(function (Model $owner, Model $modelToDelete) {
+            });
+    }
+
+    public function save_link_one_relation(MutationRelationLinkOneResolver $r)
+    {
+        $r
+            ->saveRelatedToOwner(function (?string $id) use ($r) {
+                $eloquentRelation = $this->getEloquentRelationWrapper($r->getRelation())->relation();
+                if ($eloquentRelation instanceof BelongsTo) { // reference to the related in the owner table
+                    return [$eloquentRelation->getForeignKeyName() => $id];
+                }
+            });
+    }
+
+    public function save_link_many_relation(MutationRelationLinkManyResolver $r)
+    {
+    }
+
     public function save_relation(MutationRelationResolver $r)
     {
         $r
-            ->ownerIdFields(function () use ($r) {
-                // save fields on the owner in order to establish a new relation
+            ->saveRelatedToOwner(function (?string $id) use ($r) {
                 $eloquentRelation = $this->getEloquentRelationWrapper($r->getRelation())->relation();
                 if ($eloquentRelation instanceof BelongsTo) { // reference to the related in the owner table
-                    return [$eloquentRelation->getForeignKeyName()];
+                    return [$eloquentRelation->getForeignKeyName() => $id];
                 }
             })
+
+            // ->ownerIdFields(function () use ($r) {
+            //     // save fields on the owner in order to establish a new relation
+            //     $eloquentRelation = $this->getEloquentRelationWrapper($r->getRelation())->relation();
+            //     if ($eloquentRelation instanceof BelongsTo) { // reference to the related in the owner table
+            //         return [$eloquentRelation->getForeignKeyName()];
+            //     }
+            // })
 
             // ->resolveBeforeOwner(function () use ($r) {
             //     // resolve before owner is resolved in order to get an id
