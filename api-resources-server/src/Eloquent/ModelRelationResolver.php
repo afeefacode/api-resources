@@ -45,8 +45,10 @@ class ModelRelationResolver
 
                 $relationCounts = $this->getRelationCountsOfRelation($r);
 
+                $params = $r->getParams();
+
                 $builder = new Builder($relationWrapper->owner);
-                $relatedModels = $builder->afeefaEagerLoadRelation($owners, $relationWrapper->name, $selectFields, $relationCounts);
+                $relatedModels = $builder->afeefaEagerLoadRelation($owners, $relationWrapper->name, $selectFields, $relationCounts, $params);
 
                 return $relatedModels;
             });

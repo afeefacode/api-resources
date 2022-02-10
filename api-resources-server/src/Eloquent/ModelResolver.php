@@ -7,6 +7,7 @@ use Afeefa\ApiResources\Filter\Filters\KeywordFilter;
 use Afeefa\ApiResources\Filter\Filters\OrderFilter;
 use Afeefa\ApiResources\Filter\Filters\PageFilter;
 use Afeefa\ApiResources\Filter\Filters\PageSizeFilter;
+use Afeefa\ApiResources\Resolver\ActionResult;
 use Afeefa\ApiResources\Resolver\MutationActionModelResolver;
 use Afeefa\ApiResources\Resolver\QueryActionResolver;
 use Closure;
@@ -63,8 +64,7 @@ class ModelResolver
     public function list(QueryActionResolver $r)
     {
         $r
-            ->get(function () use ($r) {
-                $request = $r->getRequest();
+            ->get(function (ApiRequest $request, Closure $getSelectFields) use ($r) {
                 $action = $request->getAction();
                 $params = $request->getParams();
                 $filters = $request->getFilters();
@@ -72,7 +72,7 @@ class ModelResolver
                 $table = (new $this->ModelClass())->getTable();
                 $selectFields = array_map(function ($field) use ($table) {
                     return $table . '.' . $field;
-                }, $r->getSelectFields());
+                }, $getSelectFields());
 
                 $usedFilters = [];
 
@@ -189,16 +189,15 @@ class ModelResolver
 
                 // get
 
-                $models = $query->get()->all();
+                return (new ActionResult())
+                    ->data($query->get()->all())
 
-                $r->meta([
-                    'count_all' => $countAll,
-                    'count_filter' => $countFilters,
-                    'count_search' => $countSearch,
-                    'used_filters' => $usedFilters
-                ]);
-
-                return $models;
+                    ->meta([
+                        'count_all' => $countAll,
+                        'count_filter' => $countFilters,
+                        'count_search' => $countSearch,
+                        'used_filters' => $usedFilters
+                    ]);
             });
     }
 

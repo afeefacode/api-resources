@@ -23,7 +23,7 @@ class Builder extends EloquentBuilder
      *
      * @see parent::eagerLoadRelation()
      */
-    public function afeefaEagerLoadRelation(array $models, string $relationName, array $selectFields, array $relationCounts)
+    public function afeefaEagerLoadRelation(array $models, string $relationName, array $selectFields, array $relationCounts, array $params)
     {
         $relation = $this->getRelation($relationName);
 
@@ -37,6 +37,11 @@ class Builder extends EloquentBuilder
         // select $selectFields before counts, since withCount()
         // will add a '*' column by default, which we don't want.
         $relation->select($selectFields);
+
+        $limit = $params['limit'] ?? null;
+        if ($limit) {
+            $relation->limit($limit);
+        }
 
         if (count($relationCounts)) {
             $relation->withCount($relationCounts);

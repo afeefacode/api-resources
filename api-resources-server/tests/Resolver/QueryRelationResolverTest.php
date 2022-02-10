@@ -1622,6 +1622,33 @@ class QueryRelationResolverTest extends QueryTest
         $this->assertEquals(['value'], $this->testWatcher->info);
     }
 
+    public function test_request_params()
+    {
+        $api = $this->createApiWithTypeAndAction(
+            function (FieldBag $fields) {
+                $fields
+                    ->relation('other', T('TYPE'), function (Relation $relation) {
+                        $relation->resolve(function (TestRelationResolver $r) {
+                            $r->get(function () use ($r) {
+                                $this->testWatcher->info($r->getParams());
+                                return [];
+                            });
+                        }, ['key' => 'value']);
+                    });
+            }
+        );
+
+        $this->request($api, [
+            'other' => [
+                '__params' => [
+                    'a' => 'b'
+                ]
+            ]
+        ]);
+
+        $this->assertEquals([['a' => 'b']], $this->testWatcher->info);
+    }
+
     protected function createApiWithTypeAndAction(Closure $fieldsCallback, $TypeClassOrClassesOrMeta = null, ?Closure $actionCallback = null, bool $isList = false): Api
     {
         $TypeClassOrClassesOrMeta ??= $isList ? fn () => Type::list(T('TYPE')) : fn () => T('TYPE');
