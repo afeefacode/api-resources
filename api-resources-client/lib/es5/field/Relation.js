@@ -49,5 +49,11 @@ export class Relation extends Field {
             return null;
         }
     }
+    fallbackDefault() {
+        if (this._relatedType.isList) {
+            return [];
+        }
+        return super.fallbackDefault();
+    }
 }
 Relation.type = 'Afeefa.Relation';

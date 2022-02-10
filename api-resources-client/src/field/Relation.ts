@@ -57,4 +57,11 @@ export class Relation extends Field {
       return null
     }
   }
+
+  public fallbackDefault (): FieldValue {
+    if (this._relatedType.isList) {
+      return []
+    }
+    return super.fallbackDefault()
+  }
 }
