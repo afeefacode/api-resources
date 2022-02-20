@@ -14,6 +14,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
+use Illuminate\Database\Eloquent\Relations\Relation as EloquentRelation;
 
 class ModelRelationResolver
 {
@@ -65,13 +66,35 @@ class ModelRelationResolver
     public function save_has_many_relation(MutationRelationHasManyResolver $r)
     {
         $r
-            ->get(function (Model $owner) {
+            ->saveOwnerToRelated(function (string $id, string $typeName) use ($r) {
+                $eloquentRelation = $this->getEloquentRelationWrapper($r->getRelation())->relation();
+                if ($eloquentRelation instanceof HasMany) { // reference to the owner in the related table
+                    return [$eloquentRelation->getForeignKeyName() => $id];
+                }
+            })
+            ->get(function (Model $owner) use ($r) {
+                $eloquentRelation = $this->getEloquentRelationWrapper($r->getRelation(), $owner)->relation();
+                return $eloquentRelation->get()->all();
             })
             ->add(function (Model $owner, string $typeName, array $saveFields) use ($r) {
+                $eloquentRelation = $this->getEloquentRelationWrapper($r->getRelation(), $owner)->relation();
+                $relatedModel = $eloquentRelation->getRelated();
+                if (!empty($saveFields)) {
+                    $relatedModel->fillable(array_keys($saveFields));
+                    $relatedModel->fill($saveFields);
+                }
+                $relatedModel->save();
+                return $relatedModel->fresh();
             })
             ->update(function (Model $owner, Model $modelToUpdate, array $saveFields) use ($r) {
+                if (!empty($saveFields)) {
+                    $modelToUpdate->fillable(array_keys($saveFields));
+                    $modelToUpdate->fill($saveFields);
+                    $modelToUpdate->save();
+                }
             })
-            ->delete(function (Model $owner, Model $modelToDelete) {
+            ->delete(function (Model $owner, Model $modelToDelete) use ($r) {
+                $modelToDelete->delete();
             });
     }
 
@@ -271,7 +294,7 @@ class EloquentRelationWrapper
     public Model $owner;
     public string $name;
 
-    public function relation()
+    public function relation(): EloquentRelation
     {
         return $this->owner->{$this->name}();
     }
