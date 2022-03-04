@@ -4,7 +4,6 @@ namespace Afeefa\ApiResources\Eloquent;
 
 use Afeefa\ApiResources\Field\Relation;
 use Afeefa\ApiResources\Resolver\Field\RelationResolverTrait;
-use Afeefa\ApiResources\Resolver\Mutation\MutationRelationResolver;
 use Afeefa\ApiResources\Resolver\MutationRelationHasManyResolver;
 use Afeefa\ApiResources\Resolver\MutationRelationHasOneResolver;
 use Afeefa\ApiResources\Resolver\MutationRelationLinkManyResolver;
@@ -14,6 +13,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
+use Illuminate\Database\Eloquent\Relations\MorphTo;
 use Illuminate\Database\Eloquent\Relations\Relation as EloquentRelation;
 
 class ModelRelationResolver
@@ -27,7 +27,11 @@ class ModelRelationResolver
                 // select field on the owner prior loading the relation
                 $eloquentRelation = $this->getEloquentRelationWrapper($r->getRelation())->relation();
                 if ($eloquentRelation instanceof BelongsTo) { // reference to the related in the owner table
-                    return [$eloquentRelation->getForeignKeyName()];
+                    $fields = [$eloquentRelation->getForeignKeyName()];
+                    if ($eloquentRelation instanceof MorphTo) { // reference to the related in the owner table
+                        $fields[] = $eloquentRelation->getMorphType();
+                    }
+                    return $fields;
                 }
             })
 
@@ -113,142 +117,6 @@ class ModelRelationResolver
     {
     }
 
-    public function save_relation(MutationRelationResolver $r)
-    {
-        $r
-            ->saveRelatedToOwner(function (?string $id) use ($r) {
-                $eloquentRelation = $this->getEloquentRelationWrapper($r->getRelation())->relation();
-                if ($eloquentRelation instanceof BelongsTo) { // reference to the related in the owner table
-                    return [$eloquentRelation->getForeignKeyName() => $id];
-                }
-            })
-
-            // ->ownerIdFields(function () use ($r) {
-            //     // save fields on the owner in order to establish a new relation
-            //     $eloquentRelation = $this->getEloquentRelationWrapper($r->getRelation())->relation();
-            //     if ($eloquentRelation instanceof BelongsTo) { // reference to the related in the owner table
-            //         return [$eloquentRelation->getForeignKeyName()];
-            //     }
-            // })
-
-            // ->resolveBeforeOwner(function () use ($r) {
-            //     // resolve before owner is resolved in order to get an id
-            //     $eloquentRelation = $this->getEloquentRelationWrapper($r)->relation();
-            //     if ($eloquentRelation instanceof BelongsTo) { // reference to the related in the owner table
-            //         return [
-            //             'id' => $eloquentRelation->getForeignKeyName(),
-            //             'type' => method_exists($eloquentRelation, 'getForeignPivotKeyName') ? $eloquentRelation->getForeignPivotKeyName() : null
-            //         ];
-            //     }
-            //     return false;
-            // })
-
-            // ->resolveAfterOwner(function () use ($r) {
-            //     // resolve before owner is resolved in order to get an id
-            //     $eloquentRelation = $this->getEloquentRelationWrapper($r)->relation();
-            //     if ($eloquentRelation instanceof BelongsTo) { // reference to the related in the owner table
-            //         return true;
-            //     }
-            //     return false;
-            // })
-
-            // ->getSavedModels(function () {
-            // })
-
-            // ->set(function (Model $owner, array $relatedObjects) use ($r) {
-            //     $relationWrapper = $this->getEloquentRelationWrapper($r, $owner);
-
-            //     // remove all related models that are not part of the related objects
-            //     $ids = array_filter(array_map(function ($relatedObject) {
-            //         return $relatedObject->id;
-            //     }, $relatedObjects));
-
-            //     $relatedModels = $relationWrapper->relation()->whereNotIn('id', $ids)->get();
-            //     foreach ($relatedModels as $relatedModel) {
-            //         $relatedModel->delete();
-            //     }
-
-            //     // add or update all others
-            //     foreach ($relatedObjects as $relatedObject) {
-            //         if ($relatedObject->id) {
-            //             $this->updateRelated($relationWrapper, $relatedObject);
-            //         } else {
-            //             $this->addRelated($relationWrapper, $relatedObject);
-            //         }
-            //     }
-            // })
-
-            ->update(function (Model $owner, array $relatedObjects) use ($r) {
-                $relationWrapper = $this->getEloquentRelationWrapper($r->getRelation(), $owner);
-                foreach ($relatedObjects as $relatedObject) {
-                    $this->updateRelated($relationWrapper, $relatedObject);
-                }
-            })
-
-            ->add(function (Model $owner, array $relatedObjects) use ($r) {
-                $relationWrapper = $this->getEloquentRelationWrapper($r->getRelation(), $owner);
-                foreach ($relatedObjects as $relatedObject) {
-                    $this->addRelated($relationWrapper, $relatedObject);
-                }
-            })
-
-            ->delete(function (Model $owner, array $relatedObjects) use ($r) {
-                $relationWrapper = $this->getEloquentRelationWrapper($r->getRelation(), $owner);
-                foreach ($relatedObjects as $relatedObject) {
-                    $relatedModel = $relationWrapper->relation()->find($relatedObject->id);
-                    if ($relatedModel) {
-                        $relatedModel->delete();
-                    }
-                }
-            });
-    }
-
-    protected function updateRelated(EloquentRelationWrapper $relationWrapper, RelationRelatedData $relatedData): void
-    {
-        $eloquentRelation = $relationWrapper->relation();
-
-        $relatedModel = $eloquentRelation->find($relatedData->id);
-
-        if ($relatedModel) {
-            $relatedModel->fillable(array_keys($relatedData->updates));
-            $relatedModel->update($relatedData->updates);
-        } else {
-            $relatedData->saved = false;
-        }
-    }
-
-    protected function addRelated(EloquentRelationWrapper $relationWrapper, RelationRelatedData $relatedData): void
-    {
-        $eloquentRelation = $relationWrapper->relation();
-
-        $owner = $eloquentRelation->getParent();
-        $relatedModel = $eloquentRelation->getRelated();
-        $updates = $relatedData->updates;
-
-        // set foreign key if neccessary
-        if ($eloquentRelation instanceof HasMany || $eloquentRelation instanceof HasOne) { // reference to the owner in the related table
-                $foreignKey = $eloquentRelation->getForeignKeyName();
-            $updates[$foreignKey] = $owner->id;
-        }
-
-        // check existance
-        $uniqueFields = $relatedModel->getUniqueFields();
-        if (count($uniqueFields)) {
-            $testFields = [];
-            foreach ($uniqueFields as $uniqueField) {
-                $testFields[$uniqueField] = $updates[$uniqueField];
-            }
-            if ($eloquentRelation->where($testFields)->exists()) {
-                $relatedData->saved = false;
-                return;
-            }
-        }
-
-        $relatedModel->fillable(array_keys($updates));
-        $relatedModel->fill($updates);
-        $relatedModel->save();
-    }
-
     protected function getRelationCountsOfRelation(QueryRelationResolver $r): array
     {
         $requestedFieldNames = $r->getRequestedFieldNames();
@@ -298,13 +166,4 @@ class EloquentRelationWrapper
     {
         return $this->owner->{$this->name}();
     }
-}
-
-class RelationRelatedData
-{
-    public ?string $id = null;
-
-    public array $updates = [];
-
-    public bool $saved = true;
 }
