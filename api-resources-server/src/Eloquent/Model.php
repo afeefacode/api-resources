@@ -21,11 +21,6 @@ class Model extends EloquentModel implements ModelInterface
         return static::$type;
     }
 
-    public function getUniqueFields(): array
-    {
-        return [];
-    }
-
     public function apiResourcesGetId(): ?string
     {
         return $this->id ?? null;
