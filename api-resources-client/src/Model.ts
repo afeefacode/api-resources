@@ -97,8 +97,35 @@ export class Model {
     const type: Type = apiResources.getType(this.type) as Type
     for (const [name, field] of Object.entries(type.getUpdateFields())) {
       if (!fields || fields[name]) {
-        // TODO clone relations too
-        model[name] = this[name] || field.default()
+        if (!this[name]) { // value not set, set default value
+          model[name] = field.default()
+        } else {
+          if (this[name] instanceof Model) { // has one relation
+            const relatedModel = this[name] as Model
+            if (fields && fields[name]) { // clone related too
+              const relatedFields = fields ? fields[name] : undefined
+              model[name] = relatedModel.cloneForEdit(relatedFields as ModelAttributes)
+            } else { // copy related
+              model[name] = relatedModel
+            }
+          } else if (Array.isArray(this[name])) { // has many relation or array
+            const relatedValues = this[name] as unknown[]
+            const newRelatedValues: unknown[] = []
+            relatedValues.forEach(rv => {
+              if (rv instanceof Model) { // value is model
+                if (fields && fields[name]) { // clone model too
+                  const relatedFields = fields ? fields[name] : undefined
+                  newRelatedValues.push(rv.cloneForEdit(relatedFields as ModelAttributes))
+                  return
+                }
+              }
+              newRelatedValues.push(rv) // copy value
+            })
+            model[name] = newRelatedValues
+          } else {
+            model[name] = this[name]
+          }
+        }
       }
     }
 
