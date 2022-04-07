@@ -16,7 +16,7 @@ import ArticlesListView, { getListViewConfig } from './ArticlesListView'
   }
 })
 export default class ArticlesList extends Vue {
-  static get listViewConfig () {
+  static getListRouteConfig () {
     return getListViewConfig()
   }
 

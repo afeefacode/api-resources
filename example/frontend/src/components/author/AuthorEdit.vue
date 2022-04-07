@@ -16,7 +16,7 @@ import { Component, Vue } from 'vue-property-decorator'
 
 @Component
 export default class AuthorEdit extends Vue {
-  static get editRouteConfig () {
+  static getEditRouteConfig () {
     return {
       ModelClass: Author,
 

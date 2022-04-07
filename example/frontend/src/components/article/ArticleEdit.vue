@@ -31,7 +31,7 @@ import { Component, Vue } from 'vue-property-decorator'
 
 @Component
 export default class ArticleEdit extends Vue {
-  static get editRouteConfig () {
+  static getEditRouteConfig () {
     return {
       ModelClass: Article,
 

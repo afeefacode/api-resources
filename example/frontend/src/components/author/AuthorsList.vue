@@ -78,7 +78,7 @@ function getListViewConfig () {
 
 @Component
 export default class AuthorsList extends Vue {
-  static get listViewConfig () {
+  static getListRouteConfig () {
     return getListViewConfig()
   }
 
