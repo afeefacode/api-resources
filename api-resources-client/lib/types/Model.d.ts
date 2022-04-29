@@ -6,7 +6,7 @@ export declare type ModelJSON = {
     id?: string | null;
 };
 declare type ModelAttributes = Record<string, unknown>;
-declare type ModelConstructor = {
+export declare type ModelConstructor = {
     new (): Model;
     type: string;
     create(json: ModelJSON): Model;

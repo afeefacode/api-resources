@@ -12,7 +12,7 @@ export type ModelJSON = {
 
 type ModelAttributes = Record<string, unknown>
 
-type ModelConstructor = {
+export type ModelConstructor = {
   new (): Model
   type: string,
   create (json: ModelJSON): Model,

@@ -6,6 +6,7 @@ import { fields } from './field/fields'
 import { Filter } from './filter/Filter'
 import { filters } from './filter/filters'
 import { Model } from './Model'
+import { JsonObject } from './model/JsonObject'
 import { Type } from './type/Type'
 import { Validator } from './validator/Validator'
 import { validators } from './validator/validators'
@@ -24,6 +25,8 @@ class ApiResources {
   private _schemasToLoad: Promise<ApiSchemaJSON>[] = []
 
   constructor () {
+    this.registerModel(JsonObject)
+
     this.registerFields(fields)
     this.registerFilters(filters)
     this.registerValidators(validators)

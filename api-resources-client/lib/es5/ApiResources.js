@@ -2,6 +2,7 @@ import { Api } from './api/Api';
 import { fields } from './field/fields';
 import { filters } from './filter/filters';
 import { Model } from './Model';
+import { JsonObject } from './model/JsonObject';
 import { validators } from './validator/validators';
 class ApiResources {
     constructor() {
@@ -13,6 +14,7 @@ class ApiResources {
         this._filters = {};
         this._types = {};
         this._schemasToLoad = [];
+        this.registerModel(JsonObject);
         this.registerFields(fields);
         this.registerFilters(filters);
         this.registerValidators(validators);

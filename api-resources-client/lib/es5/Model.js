@@ -60,8 +60,39 @@ export class Model {
         const type = apiResources.getType(this.type);
         for (const [name, field] of Object.entries(type.getUpdateFields())) {
             if (!fields || fields[name]) {
-                // TODO clone relations too
-                model[name] = this[name] || field.default();
+                if (!this[name]) { // value not set, set default value
+                    model[name] = field.default();
+                }
+                else {
+                    if (this[name] instanceof Model) { // has one relation
+                        const relatedModel = this[name];
+                        if (fields && fields[name]) { // clone related too
+                            const relatedFields = fields ? fields[name] : undefined;
+                            model[name] = relatedModel.cloneForEdit(relatedFields);
+                        }
+                        else { // copy related
+                            model[name] = relatedModel;
+                        }
+                    }
+                    else if (Array.isArray(this[name])) { // has many relation or array
+                        const relatedValues = this[name];
+                        const newRelatedValues = [];
+                        relatedValues.forEach(rv => {
+                            if (rv instanceof Model) { // value is model
+                                if (fields && fields[name]) { // clone model too
+                                    const relatedFields = fields ? fields[name] : undefined;
+                                    newRelatedValues.push(rv.cloneForEdit(relatedFields));
+                                    return;
+                                }
+                            }
+                            newRelatedValues.push(rv); // copy value
+                        });
+                        model[name] = newRelatedValues;
+                    }
+                    else {
+                        model[name] = this[name];
+                    }
+                }
             }
         }
         return model;
