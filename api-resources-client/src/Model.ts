@@ -33,6 +33,9 @@ export class Model {
   public _ID: number = ++ID
 
   @enumerable(false)
+  public _original?: Model | null = null
+
+  @enumerable(false)
   public class: ModelConstructor
 
   public static getType (): Type {
@@ -89,6 +92,7 @@ export class Model {
   public cloneForEdit (fields?: ModelAttributes): Model {
     const ModelClass = apiResources.getModelClass(this.type)
     const model = new ModelClass()
+    model._original = this
 
     if (this.id) {
       model.id = this.id
