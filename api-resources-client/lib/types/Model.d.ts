@@ -18,6 +18,7 @@ export declare class Model {
     id: string | null;
     type: string;
     _ID: number;
+    _original?: Model | null;
     class: ModelConstructor;
     static getType(): Type;
     static create(json: ModelJSON): Model;

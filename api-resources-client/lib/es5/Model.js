@@ -12,6 +12,7 @@ export class Model {
     constructor(type) {
         this.id = null;
         this._ID = ++ID;
+        this._original = null;
         this.class = this.constructor;
         this.type = type || this.constructor.type;
     }
@@ -54,6 +55,7 @@ export class Model {
     cloneForEdit(fields) {
         const ModelClass = apiResources.getModelClass(this.type);
         const model = new ModelClass();
+        model._original = this;
         if (this.id) {
             model.id = this.id;
         }
@@ -124,6 +126,9 @@ Model.type = 'Model';
 __decorate([
     enumerable(false)
 ], Model.prototype, "_ID", void 0);
+__decorate([
+    enumerable(false)
+], Model.prototype, "_original", void 0);
 __decorate([
     enumerable(false)
 ], Model.prototype, "class", void 0);
