@@ -203,6 +203,9 @@ class ApiResources {
   }
 
   public getType (typeName: string): Type | null {
+    if (!this._types[typeName]) {
+      console.warn(`No type '${typeName}' registered.`)
+    }
     return this._types[typeName] || null
   }
 }
