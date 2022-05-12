@@ -14,15 +14,15 @@ class AuthorType extends Type
 {
     protected static string $type = 'Example.Author';
 
-    protected function translations(): array
-    {
-        return [
-            'TITLE_SINGULAR' => 'Autor:in',
-            'TITLE_PLURAL' => 'Autor:innen',
-            'TITLE_EMPTY' => 'Kein Name',
-            'TITLE_NEW' => 'Neue Autor:in'
-        ];
-    }
+    // protected function translations(): array
+    // {
+    //     return [
+    //         'TITLE_SINGULAR' => 'Autor:in',
+    //         'TITLE_PLURAL' => 'Autor:innen',
+    //         'TITLE_EMPTY' => 'Kein Name',
+    //         'TITLE_NEW' => 'Neue Autor:in'
+    //     ];
+    // }
 
     protected function fields(FieldBag $fields): void
     {

@@ -5,7 +5,6 @@ export type TypeJSON = {
   fields: Record<string, FieldJSON>
   update_fields: Record<string, FieldJSON>
   create_fields: Record<string, FieldJSON>
-  translations: Record<string, string>
 }
 
 export class Type {
@@ -13,14 +12,9 @@ export class Type {
   private _fields: Record<string, Field> = {}
   private _updateFields: Record<string, Field> = {}
   private _createFields: Record<string, Field> = {}
-  private _translations: Record<string, string> = {}
 
   constructor (name: string, json: TypeJSON) {
     this.name = name
-
-    for (const [key, value] of Object.entries(json.translations)) {
-      this._translations[key] = value
-    }
 
     for (const [name, fieldJSON] of Object.entries(json.fields)) {
       const field = apiResources.getField(fieldJSON.type)
@@ -55,14 +49,6 @@ export class Type {
         }
       }
     }
-  }
-
-  public getTranslations (): Record<string, string> {
-    return this._translations
-  }
-
-  public t (key: string): string | null {
-    return this._translations[key] || null
   }
 
   public getFields (): Record<string, Field> {

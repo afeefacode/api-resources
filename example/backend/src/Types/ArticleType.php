@@ -20,15 +20,15 @@ class ArticleType extends Type
 {
     protected static string $type = 'Example.Article';
 
-    protected function translations(): array
-    {
-        return [
-            'TITLE_SINGULAR' => 'Artikel',
-            'TITLE_PLURAL' => 'Artikel',
-            'TITLE_EMPTY' => 'Kein Titel',
-            'TITLE_NEW' => 'Neuer Artikel'
-        ];
-    }
+    // protected function translations(): array
+    // {
+    //     return [
+    //         'TITLE_SINGULAR' => 'Artikel',
+    //         'TITLE_PLURAL' => 'Artikel',
+    //         'TITLE_EMPTY' => 'Kein Titel',
+    //         'TITLE_NEW' => 'Neuer Artikel'
+    //     ];
+    // }
 
     protected function fields(FieldBag $fields): void
     {

@@ -4,11 +4,7 @@ export class Type {
         this._fields = {};
         this._updateFields = {};
         this._createFields = {};
-        this._translations = {};
         this.name = name;
-        for (const [key, value] of Object.entries(json.translations)) {
-            this._translations[key] = value;
-        }
         for (const [name, fieldJSON] of Object.entries(json.fields)) {
             const field = apiResources.getField(fieldJSON.type);
             if (field) {
@@ -43,12 +39,6 @@ export class Type {
                 }
             }
         }
-    }
-    getTranslations() {
-        return this._translations;
-    }
-    t(key) {
-        return this._translations[key] || null;
     }
     getFields() {
         return this._fields;
