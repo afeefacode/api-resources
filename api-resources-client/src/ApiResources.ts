@@ -75,13 +75,13 @@ class ApiResources {
   }
 
   public createRequest (
-    {api: apiType = null, resource: resourceType, action: actionName}:
-    {api: string | null, resource: string, action: string}
+    {apiType = null, resourceType, actionName}:
+    {apiType: string | null, resourceType: string, actionName: string}
   ): ApiRequest | null {
     const action = this.getAction({
-      api: apiType,
-      resource: resourceType,
-      action: actionName
+      apiType,
+      resourceType,
+      actionName
     })
     if (action) {
       return action.createRequest()
@@ -90,8 +90,8 @@ class ApiResources {
   }
 
   public getAction (
-    {api: apiType = null, resource: resourceType, action: actionName}:
-    {api: string | null, resource: string, action: string}
+    {apiType = null, resourceType, actionName}:
+    {apiType: string | null, resourceType: string, actionName: string}
   ): Action | null {
     apiType = apiType || this._defaultApiType
 

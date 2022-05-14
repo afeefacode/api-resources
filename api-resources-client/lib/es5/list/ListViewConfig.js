@@ -7,9 +7,9 @@ export class ListViewConfig {
     }
     action({ apiType = null, resourceType, actionName }) {
         this._action = apiResources.getAction({
-            api: apiType,
-            resource: resourceType,
-            action: actionName
+            apiType,
+            resourceType,
+            actionName
         });
         return this;
     }

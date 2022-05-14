@@ -53,18 +53,18 @@ class ApiResources {
     hasApi(type) {
         return !!this._apis[type];
     }
-    createRequest({ api: apiType = null, resource: resourceType, action: actionName }) {
+    createRequest({ apiType = null, resourceType, actionName }) {
         const action = this.getAction({
-            api: apiType,
-            resource: resourceType,
-            action: actionName
+            apiType,
+            resourceType,
+            actionName
         });
         if (action) {
             return action.createRequest();
         }
         return null;
     }
-    getAction({ api: apiType = null, resource: resourceType, action: actionName }) {
+    getAction({ apiType = null, resourceType, actionName }) {
         apiType = apiType || this._defaultApiType;
         if (!apiType) {
             console.warn('No default api configured.');
