@@ -46,7 +46,7 @@ export default class AuthorDetail extends Vue {
 
   filterSource = FilterSourceType.OBJECT
 
-  static getDetailRouteConfig () {
+  static getModelRouteConfig () {
     return {
       ModelClass: Author,
 

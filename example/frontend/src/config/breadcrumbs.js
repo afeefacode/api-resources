@@ -33,9 +33,13 @@ export function breadcrumbs ({BREADCRUMB, BREADCRUMBSET}) {
   ]
 }
 
-function getBreadcrumbTitleFunction (resourceType, idKey, action, fields) {
+function getBreadcrumbTitleFunction (resourceType, idKey, actionName, fields) {
   return async routeParams => {
-    const result = await apiResources.createRequest({resource: `Example.${resourceType}Resource`, action})
+    const result = await apiResources
+      .createRequest({
+        resourceType: `Example.${resourceType}Resource`,
+        actionName
+      })
       .params({id: routeParams[idKey]})
       .fields(fields)
       .send()

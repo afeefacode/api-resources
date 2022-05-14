@@ -31,7 +31,10 @@ export class MenuConfig {
     return {
       component: ModelCount,
       props: {
-        action: apiResources.getAction({resource: 'Example.AppResource', action: 'get_counts'}),
+        action: apiResources.getAction({
+          resourceType: 'Example.AppResource',
+          actionName: 'get_counts'
+        }),
         field: 'count_' + field
       }
     }
