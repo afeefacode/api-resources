@@ -66,8 +66,11 @@ class ApiResources {
     return this
   }
 
-  public getApi (type: string): Api | null {
-    return this._apis[type] || null
+  public getApi (type: string | null = this._defaultApiType): Api | null {
+    if (type) {
+      return this._apis[type] || null
+    }
+    return null
   }
 
   public hasApi (type: string): boolean {
