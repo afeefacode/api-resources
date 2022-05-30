@@ -1,7 +1,8 @@
+import { ApiAction } from 'src/api/ApiAction'
+
 import { ApiRequest } from '../api/ApiRequest'
 import { BagEntries } from '../bag/Bag'
 import { ActionFilterValueType } from '../filter/ActionFilter'
-import { ListViewConfig } from './ListViewConfig'
 import { ListViewFilter } from './ListViewFilter'
 import { ListViewFilterBag } from './ListViewFilterBag'
 import { ListViewFilterChangeEvent } from './ListViewFilterChangeEvent'
@@ -9,7 +10,7 @@ import { filterHistory } from './ListViewFilterHistory'
 import { ListViewFilterSource } from './ListViewFilterSource'
 
 export class ListViewModel {
-  private _config: ListViewConfig
+  private _apiAction: ApiAction
 
   private _filterSource: ListViewFilterSource | null = null
   private _pushToFilterSource: boolean = false
@@ -25,19 +26,15 @@ export class ListViewModel {
   private _changedFiltersTimeout: number | null = null
   private _lastSavedQuery: BagEntries<string> | null = null
 
-  constructor (config: ListViewConfig) {
-    this._config = config
+  constructor (apiAction: ApiAction) {
+    this._apiAction = apiAction
 
-    const action = this._config.getAction()
+    const action = this._apiAction.getAction()
     if (action) {
       for (const [name, filter] of action.getFilters().entries()) {
         this._filters.add(name, new ListViewFilter(filter, this))
       }
     }
-  }
-
-  public getConfig (): ListViewConfig {
-    return this._config
   }
 
   public initFilters (
@@ -135,16 +132,10 @@ export class ListViewModel {
     }, 10)
   }
 
-  public getApiRequest (): ApiRequest | null {
-    const action = this._config.getAction()
-    if (action) {
-      const request = action.createRequest()
-        .params(this._config.getParams())
-        .fields(this._config.getFields())
-        .filters(this._filters.serialize())
-      return request
-    }
-    return null
+  public getApiRequest (): ApiRequest {
+    const request = this._apiAction.getApiRequest()
+    request.filters(this._filters.serialize())
+    return request
   }
 
   /**
@@ -254,7 +245,7 @@ export class ListViewModel {
     }
 
     if (filters) {
-      filtersToUse = this._config.getFilters()
+      filtersToUse = this._apiAction.getFilters() || {}
     }
 
     return this.setFilterValues(filtersToUse)
