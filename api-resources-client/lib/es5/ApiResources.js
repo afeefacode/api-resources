@@ -47,8 +47,11 @@ class ApiResources {
         }
         return this;
     }
-    getApi(type) {
-        return this._apis[type] || null;
+    getApi(type = this._defaultApiType) {
+        if (type) {
+            return this._apis[type] || null;
+        }
+        return null;
     }
     hasApi(type) {
         return !!this._apis[type];

@@ -3,7 +3,7 @@ import { ListViewFilterBag } from './ListViewFilterBag';
 import { ListViewFilterChangeEvent } from './ListViewFilterChangeEvent';
 import { filterHistory } from './ListViewFilterHistory';
 export class ListViewModel {
-    constructor(config) {
+    constructor(apiAction) {
         this._filterSource = null;
         this._pushToFilterSource = false;
         this._historyKey = null;
@@ -15,16 +15,13 @@ export class ListViewModel {
         this._changedFilters = {};
         this._changedFiltersTimeout = null;
         this._lastSavedQuery = null;
-        this._config = config;
-        const action = this._config.getAction();
+        this._apiAction = apiAction;
+        const action = this._apiAction.getAction();
         if (action) {
             for (const [name, filter] of action.getFilters().entries()) {
                 this._filters.add(name, new ListViewFilter(filter, this));
             }
         }
-    }
-    getConfig() {
-        return this._config;
     }
     initFilters({ source, history, used } = { source: false, history: false, used: false }) {
         if (source && !this._filterSource) {
@@ -98,15 +95,9 @@ export class ListViewModel {
         }, 10);
     }
     getApiRequest() {
-        const action = this._config.getAction();
-        if (action) {
-            const request = action.createRequest()
-                .params(this._config.getParams())
-                .fields(this._config.getFields())
-                .filters(this._filters.serialize());
-            return request;
-        }
-        return null;
+        const request = this._apiAction.getApiRequest();
+        request.filters(this._filters.serialize());
+        return request;
     }
     /**
      * called if the the filter sources has changed and should
@@ -192,7 +183,7 @@ export class ListViewModel {
             }
         }
         if (filters) {
-            filtersToUse = this._config.getFilters();
+            filtersToUse = this._apiAction.getFilters() || {};
         }
         return this.setFilterValues(filtersToUse);
     }

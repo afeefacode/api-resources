@@ -1,11 +1,11 @@
+import { ApiAction } from 'src/api/ApiAction';
 import { ApiRequest } from '../api/ApiRequest';
 import { BagEntries } from '../bag/Bag';
 import { ActionFilterValueType } from '../filter/ActionFilter';
-import { ListViewConfig } from './ListViewConfig';
 import { ListViewFilterBag } from './ListViewFilterBag';
 import { ListViewFilterSource } from './ListViewFilterSource';
 export declare class ListViewModel {
-    private _config;
+    private _apiAction;
     private _filterSource;
     private _pushToFilterSource;
     private _historyKey;
@@ -17,8 +17,7 @@ export declare class ListViewModel {
     private _changedFilters;
     private _changedFiltersTimeout;
     private _lastSavedQuery;
-    constructor(config: ListViewConfig);
-    getConfig(): ListViewConfig;
+    constructor(apiAction: ApiAction);
     initFilters({ source, history, used }?: {
         source: boolean;
         history: boolean;
@@ -34,7 +33,7 @@ export declare class ListViewModel {
     on(type: string, handler: () => {}): ListViewModel;
     off(type: string, handler: () => {}): ListViewModel;
     filterValueChanged(name: string): void;
-    getApiRequest(): ApiRequest | null;
+    getApiRequest(): ApiRequest;
     /**
      * called if the the filter sources has changed and should
      * be reinitialized

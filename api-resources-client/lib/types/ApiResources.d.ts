@@ -21,7 +21,7 @@ declare class ApiResources {
     registerApi(type: string, baseUrl: string): ApiResources;
     registerApis(apis: Record<string, string>): ApiResources;
     defaultApi(type: string): ApiResources;
-    getApi(type: string): Api | null;
+    getApi(type?: string | null): Api | null;
     hasApi(type: string): boolean;
     createRequest({ apiType, resourceType, actionName }: {
         apiType: string | null;

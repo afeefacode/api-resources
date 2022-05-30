@@ -5,14 +5,15 @@ export class ApiRequest {
     // private _lastRequestJSON: string = ''
     // private _lastRequest!: Promise<ApiResponse | boolean>
     constructor(json) {
-        this._fields = {};
         if (json) {
-            this._fields = json.fields;
             if (json.params) {
                 this._params = json.params;
             }
             if (json.filters) {
                 this._filters = json.filters;
+            }
+            if (json.fields) {
+                this._fields = json.fields;
             }
         }
     }
@@ -35,11 +36,8 @@ export class ApiRequest {
         return this;
     }
     addField(name, value) {
+        this.fields(this._fields || {});
         this._fields[name] = value;
-        return this;
-    }
-    addFields(fields) {
-        this._fields = Object.assign(Object.assign({}, this._fields), fields);
         return this;
     }
     getFields() {
@@ -50,11 +48,12 @@ export class ApiRequest {
         return this;
     }
     addFilter(name, value) {
+        this.filters(this._filters || {});
         this._filters[name] = value;
         return this;
     }
     addFilters(filters) {
-        this._filters = Object.assign(Object.assign({}, this._filters), filters);
+        this._filters = Object.assign(Object.assign({}, (this._filters || {})), filters);
         return this;
     }
     getFilters() {
@@ -86,13 +85,22 @@ export class ApiRequest {
         return axiosResponse;
     }
     serialize() {
-        return {
+        const json = {
             resource: this._action.getResource().getType(),
-            action: this._action.getName(),
-            params: this._params,
-            filters: this._filters,
-            fields: this._fields,
-            data: this._data
+            action: this._action.getName()
         };
+        if (this._fields) {
+            json.fields = this._fields;
+        }
+        if (this._params) {
+            json.params = this._params;
+        }
+        if (this._filters) {
+            json.filters = this._filters;
+        }
+        if (this._data || this._data === null) {
+            json.data = this._data;
+        }
+        return json;
     }
 }

@@ -1,13 +1,16 @@
+import { BagEntries } from 'src/bag/Bag';
+import { ActionFilterValueType } from 'src/filter/ActionFilter';
 import { Action } from '../action/Action';
 import { ApiError } from './ApiError';
 import { ApiResponse } from './ApiResponse';
 export declare type ApiRequestJSON = {
-    api: string;
+    api?: string;
     resource: string;
     action: string;
-    params: Record<string, unknown>;
-    filters: Record<string, unknown>;
-    fields: Record<string, unknown>;
+    params?: Record<string, unknown>;
+    filters?: BagEntries<ActionFilterValueType>;
+    fields?: Record<string, unknown>;
+    data?: Record<string, unknown>;
 };
 export declare class ApiRequest {
     private _action;
@@ -22,12 +25,11 @@ export declare class ApiRequest {
     getParams(): Record<string, unknown>;
     fields(fields: Record<string, unknown>): ApiRequest;
     addField(name: string, value: unknown): ApiRequest;
-    addFields(fields: Record<string, unknown>): ApiRequest;
     getFields(): Record<string, unknown>;
-    filters(filters: Record<string, unknown>): ApiRequest;
-    addFilter(name: string, value: unknown): ApiRequest;
-    addFilters(filters: Record<string, unknown>): ApiRequest;
-    getFilters(): Record<string, unknown>;
+    filters(filters: BagEntries<ActionFilterValueType>): ApiRequest;
+    addFilter(name: string, value: ActionFilterValueType): ApiRequest;
+    addFilters(filters: BagEntries<ActionFilterValueType>): ApiRequest;
+    getFilters(): BagEntries<ActionFilterValueType>;
     data(data: Record<string, unknown>): ApiRequest;
     send(): Promise<ApiResponse | ApiError>;
     protected serialize(): object;
