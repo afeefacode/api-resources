@@ -1,23 +1,26 @@
 import axios, { AxiosError } from 'axios'
+import { BagEntries } from 'src/bag/Bag'
+import { ActionFilterValueType } from 'src/filter/ActionFilter'
 
 import { Action } from '../action/Action'
 import { ApiError } from './ApiError'
 import { ApiResponse } from './ApiResponse'
 
 export type ApiRequestJSON = {
-  api: string,
+  api?: string,
   resource: string
   action: string
-  params: Record<string, unknown>
-  filters: Record<string, unknown>
-  fields: Record<string, unknown>
+  params?: Record<string, unknown>
+  filters?: BagEntries<ActionFilterValueType>
+  fields?: Record<string, unknown>
+  data?: Record<string, unknown>
 }
 
 export class ApiRequest {
   private _action!: Action
-  private _fields: Record<string, unknown> = {}
+  private _fields!: Record<string, unknown>
   private _params!: Record<string, unknown>
-  private _filters!: Record<string, unknown>
+  private _filters!: BagEntries<ActionFilterValueType>
   private _data!: Record<string, unknown>
 
   // private _lastRequestJSON: string = ''
@@ -25,14 +28,16 @@ export class ApiRequest {
 
   constructor (json?: ApiRequestJSON) {
     if (json) {
-      this._fields = json.fields
-
       if (json.params) {
         this._params = json.params
       }
 
       if (json.filters) {
         this._filters = json.filters
+      }
+
+      if (json.fields) {
+        this._fields = json.fields
       }
     }
   }
@@ -61,15 +66,8 @@ export class ApiRequest {
   }
 
   public addField (name: string, value: unknown): ApiRequest {
+    this.fields(this._fields || {})
     this._fields[name] = value
-    return this
-  }
-
-  public addFields (fields: Record<string, unknown>): ApiRequest {
-    this._fields = {
-      ...this._fields,
-      ...fields
-    }
     return this
   }
 
@@ -77,25 +75,26 @@ export class ApiRequest {
     return this._fields
   }
 
-  public filters (filters: Record<string, unknown>): ApiRequest {
+  public filters (filters: BagEntries<ActionFilterValueType>): ApiRequest {
     this._filters = filters
     return this
   }
 
-  public addFilter (name: string, value: unknown): ApiRequest {
+  public addFilter (name: string, value: ActionFilterValueType): ApiRequest {
+    this.filters(this._filters || {})
     this._filters[name] = value
     return this
   }
 
-  public addFilters (filters: Record<string, unknown>): ApiRequest {
+  public addFilters (filters: BagEntries<ActionFilterValueType>): ApiRequest {
     this._filters = {
-      ...this._filters,
+      ...(this._filters || {}),
       ...filters
     }
     return this
   }
 
-  public getFilters (): Record<string, unknown> {
+  public getFilters (): BagEntries<ActionFilterValueType> {
     return this._filters
   }
 
@@ -133,13 +132,27 @@ export class ApiRequest {
   }
 
   protected serialize (): object {
-    return {
+    const json: ApiRequestJSON = {
       resource: this._action.getResource().getType(),
-      action: this._action.getName(),
-      params: this._params,
-      filters: this._filters,
-      fields: this._fields,
-      data: this._data
+      action: this._action.getName()
     }
+
+    if (this._fields) {
+      json.fields = this._fields
+    }
+
+    if (this._params) {
+      json.params = this._params
+    }
+
+    if (this._filters) {
+      json.filters = this._filters
+    }
+
+    if (this._data || this._data === null) {
+      json.data = this._data
+    }
+
+    return json
   }
 }
