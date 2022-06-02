@@ -6,5 +6,5 @@ import { PageFilter } from './PageFilter';
 import { PageSizeFilter } from './PageSizeFilter';
 import { SelectFilter } from './SelectFilter';
 import { TypeFilter } from './TypeFilter';
-export declare const filters: (BooleanFilter | IdFilter | KeywordFilter | OrderFilter | PageFilter | PageSizeFilter | SelectFilter | TypeFilter)[];
+export declare const filters: (IdFilter | TypeFilter | PageFilter | PageSizeFilter | KeywordFilter | OrderFilter | BooleanFilter | SelectFilter)[];
 //# sourceMappingURL=index.d.ts.map

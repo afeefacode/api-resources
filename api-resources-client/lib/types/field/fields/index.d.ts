@@ -6,5 +6,5 @@ import { IdAttribute } from './IdAttribute';
 import { IntAttribute } from './IntAttribute';
 import { NumberAttribute } from './NumberAttribute';
 import { StringAttribute } from './StringAttribute';
-export declare const fields: (Relation | BooleanAttribute | DateAttribute | EnumAttribute | IdAttribute | IntAttribute | NumberAttribute | StringAttribute)[];
+export declare const fields: (Relation | StringAttribute | BooleanAttribute | IdAttribute | DateAttribute | IntAttribute | NumberAttribute | EnumAttribute)[];
 //# sourceMappingURL=index.d.ts.map

@@ -23,6 +23,9 @@ export class Relation extends Field {
     }
     serialize(value) {
         if (this._relatedType.isList) {
+            if (!value) {
+                value = this.default();
+            }
             if (this._relatedType.isLink) { // LinkMany
                 return value.map(m => ({
                     type: m.type,

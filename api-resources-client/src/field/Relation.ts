@@ -34,6 +34,9 @@ export class Relation extends Field {
 
   public serialize (value: FieldValue): FieldJSONValue {
     if (this._relatedType.isList) {
+      if (!value) {
+        value = this.default()
+      }
       if (this._relatedType.isLink) { // LinkMany
         return (value as Model[]).map(m => ({
           type: m.type,
