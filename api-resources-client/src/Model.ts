@@ -99,36 +99,46 @@ export class Model {
     }
 
     const type: Type = apiResources.getType(this.type) as Type
-    for (const [name, field] of Object.entries(type.getUpdateFields())) {
-      if (!fields || fields[name]) {
-        if (!this[name]) { // value not set, set default value
-          model[name] = field.default()
-        } else {
-          if (this[name] instanceof Model) { // has one relation
-            const relatedModel = this[name] as Model
-            if (fields && fields[name]) { // clone related too
-              const relatedFields = fields ? fields[name] : undefined
-              model[name] = relatedModel.cloneForEdit(relatedFields as ModelAttributes)
-            } else { // copy related
-              model[name] = relatedModel
-            }
-          } else if (Array.isArray(this[name])) { // has many relation or array
-            const relatedValues = this[name] as unknown[]
-            const newRelatedValues: unknown[] = []
-            relatedValues.forEach(rv => {
-              if (rv instanceof Model) { // value is model
-                if (fields && fields[name]) { // clone model too
-                  const relatedFields = fields ? fields[name] : undefined
-                  newRelatedValues.push(rv.cloneForEdit(relatedFields as ModelAttributes))
-                  return
-                }
-              }
-              newRelatedValues.push(rv) // copy value
-            })
-            model[name] = newRelatedValues
-          } else {
-            model[name] = this[name]
+    // console.log('cloneForEdit', this, fields, Object.entries(type.getUpdateFields()))
+
+    // determine all allowed fields
+    const typeFields = {
+      ...type.getFields(),
+      ...type.getUpdateFields()
+    }
+
+    for (const name of Object.keys(typeFields)) {
+      if (!this[name]) { // value not set, just copy
+        // console.log('novalue-copy', this, name)
+        model[name] = this[name]
+      } else {
+        if (this[name] instanceof Model) { // has one relation
+          const relatedModel = this[name] as Model
+          if (fields && fields[name]) { // clone related too
+            // console.log('one-relation', relatedModel, relatedFields, relatedModel.cloneForEdit(relatedFields as ModelAttributes))
+            model[name] = relatedModel.cloneForEdit(fields[name] as ModelAttributes)
+          } else { // copy related
+            // console.log('one-relation-copy', relatedModel)
+            model[name] = relatedModel
           }
+        } else if (Array.isArray(this[name])) { // has many relation or array
+          const relatedValues = this[name] as unknown[]
+          const newRelatedValues: unknown[] = []
+          relatedValues.forEach(rv => {
+            if (rv instanceof Model) { // value is model
+              if (fields && fields[name]) { // clone model too
+                // console.log('many-relation', rv, relatedFields, rv.cloneForEdit(relatedFields as ModelAttributes))
+                newRelatedValues.push(rv.cloneForEdit(fields[name] as ModelAttributes))
+                return
+              }
+            }
+            // console.log('many-relation-copy', rv)
+            newRelatedValues.push(rv) // copy value
+          })
+          model[name] = newRelatedValues
+        } else {
+          // console.log('value-copy', this, name)
+          model[name] = this[name]
         }
       }
     }
