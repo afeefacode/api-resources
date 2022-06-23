@@ -2,6 +2,7 @@ import { ApiAction } from 'src/api/ApiAction';
 import { ApiRequest } from '../api/ApiRequest';
 import { BagEntries } from '../bag/Bag';
 import { ActionFilterValueType } from '../filter/ActionFilter';
+import { ListViewFilter } from './ListViewFilter';
 import { ListViewFilterBag } from './ListViewFilterBag';
 import { ListViewFilterSource } from './ListViewFilterSource';
 export declare class ListViewModel {
@@ -27,9 +28,11 @@ export declare class ListViewModel {
     getFilterSource(): ListViewFilterSource | null;
     historyKey(historyKey: string, saveInHistory: boolean): ListViewModel;
     getHistoryKey(): string | null;
+    getNonDefaultFilterNames(): string[];
     usedFilters(usedFilters: BagEntries<ActionFilterValueType> | null, count: number): ListViewModel;
     getUsedFilters(): BagEntries<ActionFilterValueType> | null;
     getFilters(): ListViewFilterBag;
+    getFilter(name: string): ListViewFilter | null;
     on(type: string, handler: () => {}): ListViewModel;
     off(type: string, handler: () => {}): ListViewModel;
     filterValueChanged(name: string): void;

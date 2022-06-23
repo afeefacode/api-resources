@@ -56,6 +56,15 @@ export class ListViewModel {
     getHistoryKey() {
         return this._historyKey;
     }
+    getNonDefaultFilterNames() {
+        const filterNames = [];
+        this._filters.values().forEach(f => {
+            if (!f.hasDefaultValueSet()) {
+                filterNames.push(f.name);
+            }
+        });
+        return filterNames;
+    }
     usedFilters(usedFilters, count) {
         this._usedFilters = usedFilters;
         this._usedFiltersCount = count;
@@ -66,6 +75,9 @@ export class ListViewModel {
     }
     getFilters() {
         return this._filters;
+    }
+    getFilter(name) {
+        return this._filters.get(name);
     }
     on(type, handler) {
         this._eventTarget.addEventListener(type, handler);

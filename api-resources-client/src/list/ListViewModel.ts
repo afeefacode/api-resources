@@ -85,6 +85,16 @@ export class ListViewModel {
     return this._historyKey
   }
 
+  public getNonDefaultFilterNames (): string[] {
+    const filterNames: string[] = []
+    this._filters.values().forEach(f => {
+      if (!f.hasDefaultValueSet()) {
+        filterNames.push(f.name)
+      }
+    })
+    return filterNames
+  }
+
   public usedFilters (usedFilters: BagEntries<ActionFilterValueType> | null, count: number): ListViewModel {
     this._usedFilters = usedFilters
     this._usedFiltersCount = count
@@ -97,6 +107,10 @@ export class ListViewModel {
 
   public getFilters (): ListViewFilterBag {
     return this._filters
+  }
+
+  public getFilter (name: string): ListViewFilter | null {
+    return this._filters.get(name)
   }
 
   public on (type: string, handler: () => {}): ListViewModel {
