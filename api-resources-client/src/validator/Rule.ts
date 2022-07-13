@@ -16,7 +16,7 @@ export class Rule {
     }
 
     return this._message.replace(/{{\s*(\w+)\s*}}/g, function (placeholder: string, placeholderName: string): string {
-      return params[placeholderName] as string || placeholder
+      return String(params[placeholderName]) || placeholder
     })
   }
 }
