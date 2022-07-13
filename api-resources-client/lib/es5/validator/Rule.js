@@ -8,7 +8,7 @@ export class Rule {
             param
         };
         return this._message.replace(/{{\s*(\w+)\s*}}/g, function (placeholder, placeholderName) {
-            return params[placeholderName] || placeholder;
+            return String(params[placeholderName]) || placeholder;
         });
     }
 }

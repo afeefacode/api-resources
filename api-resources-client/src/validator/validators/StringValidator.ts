@@ -1,11 +1,11 @@
 import { Rule } from '../Rule'
 import { RuleValidator, Validator } from '../Validator'
 
-export class StringValidator extends Validator<string> {
-  public createRuleValidator (fieldLabel: string, ruleName: string, rule: Rule, params: unknown): RuleValidator<string> {
+export class StringValidator extends Validator<string | null> {
+  public createRuleValidator (fieldLabel: string, ruleName: string, rule: Rule, params: unknown): RuleValidator<string | null> {
     if (ruleName === 'filled') {
       return value => {
-        if (params === true && !value.length) {
+        if (params === true && (!value || !value.length)) {
           return rule.getMessage(fieldLabel, params)
         }
         return true
@@ -14,7 +14,7 @@ export class StringValidator extends Validator<string> {
 
     if (ruleName === 'max') {
       return value => {
-        if (value.length > (params as number)) {
+        if (value && value.length > (params as number)) {
           return rule.getMessage(fieldLabel, params)
         }
         return true
@@ -23,11 +23,10 @@ export class StringValidator extends Validator<string> {
 
     if (ruleName === 'min') {
       return value => {
-        if (!this._params.filled && !value.length) {
+        if (!this._params.filled && (!value || !value.length)) {
           return true
         }
-
-        if (value.length < (params as number)) {
+        if (value && value.length < (params as number)) {
           return rule.getMessage(fieldLabel, params)
         }
         return true

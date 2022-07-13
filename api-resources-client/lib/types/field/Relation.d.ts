@@ -10,7 +10,7 @@ export declare class Relation extends Field {
     getRelatedType(): RelatedType;
     deserialize(value: FieldJSONValue): FieldValue;
     serialize(value: FieldValue): FieldJSONValue;
-    fallbackDefault(): FieldValue;
+    protected fallbackDefault(): FieldValue;
 }
 export {};
 //# sourceMappingURL=Relation.d.ts.map

@@ -1,17 +1,18 @@
 import { Validator } from '../Validator';
-export class StringValidator extends Validator {
+export class NumberValidator extends Validator {
     createRuleValidator(fieldLabel, ruleName, rule, params) {
-        if (ruleName === 'filled') {
+        if (ruleName === 'number') {
             return value => {
-                if (params === true && (!value || !value.length)) {
+                if (isNaN(Number(value))) {
                     return rule.getMessage(fieldLabel, params);
                 }
                 return true;
             };
         }
-        if (ruleName === 'max') {
+        if (ruleName === 'filled') {
             return value => {
-                if (value && value.length > params) {
+                value = Number(value);
+                if (params === true && !value) {
                     return rule.getMessage(fieldLabel, params);
                 }
                 return true;
@@ -19,10 +20,20 @@ export class StringValidator extends Validator {
         }
         if (ruleName === 'min') {
             return value => {
-                if (!this._params.filled && (!value || !value.length)) {
+                value = Number(value);
+                if (!this._params.filled && !value) {
                     return true;
                 }
-                if (value && value.length < params) {
+                if (value < params) {
+                    return rule.getMessage(fieldLabel, params);
+                }
+                return true;
+            };
+        }
+        if (ruleName === 'max') {
+            return value => {
+                value = Number(value);
+                if (value > params) {
                     return rule.getMessage(fieldLabel, params);
                 }
                 return true;
