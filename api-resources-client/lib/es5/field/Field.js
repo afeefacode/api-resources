@@ -4,7 +4,7 @@ export class Field {
     constructor() {
         this._default = null;
         this._validator = null;
-        this._options = {};
+        this._options = [];
         this._optionsRequestFactory = null;
         this.type = this.constructor.type;
     }

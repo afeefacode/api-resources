@@ -8,7 +8,7 @@ export type FieldJSON = {
   type: string
   default: FieldJSONValue
   validator: FieldValidatorJSON
-  options: Record<string, string>
+  options: FieldOption[]
   options_request: ApiRequestJSON
 }
 
@@ -23,6 +23,10 @@ type FieldConstructor<T> = {
 
 type RequestFactory = (() => ApiRequest) | null
 
+type FieldObjectOption = {title: string, value: FieldOption}
+
+type FieldOption = boolean | string | number | FieldObjectOption
+
 export class Field {
   public type!: string
 
@@ -30,7 +34,7 @@ export class Field {
 
   private _validator: FieldValidator | null = null
 
-  private _options: Record<string, string> = {}
+  private _options: FieldOption[] = []
   private _optionsRequestFactory: RequestFactory = null
 
   constructor () {
@@ -88,7 +92,7 @@ export class Field {
     return !!Object.keys(this._options).length
   }
 
-  public getOptions (): Record<string, string> {
+  public getOptions (): FieldOption[] {
     return this._options
   }
 

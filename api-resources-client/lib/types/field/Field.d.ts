@@ -5,11 +5,16 @@ export declare type FieldJSON = {
     type: string;
     default: FieldJSONValue;
     validator: FieldValidatorJSON;
-    options: Record<string, string>;
+    options: FieldOption[];
     options_request: ApiRequestJSON;
 };
 export declare type FieldValue = boolean | string | number | Date | null | Model | Model[];
 export declare type FieldJSONValue = boolean | string | number | null | ModelJSON | ModelJSON[];
+declare type FieldObjectOption = {
+    title: string;
+    value: FieldOption;
+};
+declare type FieldOption = boolean | string | number | FieldObjectOption;
 export declare class Field {
     type: string;
     private _default;
@@ -23,11 +28,12 @@ export declare class Field {
     hasOptionsRequest(): boolean;
     getOptionsRequest(): ApiRequest | null;
     hasOptions(): boolean;
-    getOptions(): Record<string, string>;
+    getOptions(): FieldOption[];
     default(): FieldValue;
     deserialize(value: FieldJSONValue): FieldValue;
     serialize(value: FieldValue): FieldJSONValue;
     protected fallbackDefault(): FieldValue;
     protected setupFieldValidator(json: FieldValidatorJSON): void;
 }
+export {};
 //# sourceMappingURL=Field.d.ts.map
