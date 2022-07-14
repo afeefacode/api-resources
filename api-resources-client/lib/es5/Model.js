@@ -118,6 +118,14 @@ export class Model {
                 json[name] = field.serialize(this[name]);
             }
         }
+        // check all given fields are allowed to update/create
+        if (fields) {
+            for (const name of Object.keys(fields)) {
+                if (!typeFields[name]) {
+                    console.warn(`Field "${name}" not configured for type ${this.type}#${this.id ? 'update' : 'create'}`);
+                }
+            }
+        }
         return json;
     }
     equals(model) {
