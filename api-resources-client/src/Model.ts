@@ -108,7 +108,11 @@ export class Model {
     }
 
     for (const name of Object.keys(typeFields)) {
-      if (!this[name]) { // value not set, just copy
+      if (fields && fields[name] === false) { // ignore deactivated fields
+        continue
+      }
+
+      if (!this[name]) { // value not set (undefined or null or false or '' or 0), just copy
         // console.log('novalue-copy', this, name)
         model[name] = this[name]
       } else {
