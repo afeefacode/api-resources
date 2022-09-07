@@ -4,6 +4,7 @@ import { ApiRequest } from './ApiRequest'
 
 export type ApiResponseErrorJSON = {
   message: string,
+  error_details: string[] | string,
   exception: {message: string}[]
 }
 
@@ -11,17 +12,18 @@ export class ApiError {
   public request: ApiRequest
   public error: AxiosError
   public message: string | null
-  public detail: string | null
+  public detail: string[] | string | null
 
   constructor (request: ApiRequest, error: AxiosError) {
     this.request = request
     this.error = error
 
-    this.message = this.getErrorDescription()
+    this.message = this.getErrorMessage()
     this.detail = this.getErrorDetail()
   }
 
-  private getErrorDescription (): string | null {
+  private getErrorMessage (): string | null {
+    // error message from server
     if (this.error.response) {
       const data = this.error.response.data as ApiResponseErrorJSON
       if (data.message) {
@@ -29,6 +31,7 @@ export class ApiError {
       }
     }
 
+    // else if error has a message field
     if (this.error.message) {
       return this.error.message
     }
@@ -36,13 +39,15 @@ export class ApiError {
     return null
   }
 
-  private getErrorDetail (): string | null {
+  private getErrorDetail (): string[] | string | null {
+    // error message from server
     if (this.error.response) {
       const data = this.error.response.data as ApiResponseErrorJSON
-      if (data.exception && data.exception[0]) {
-        return data.exception[0].message
+      if (data.error_details) {
+        return data.error_details
       }
     }
+
     return null
   }
 }
