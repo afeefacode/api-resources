@@ -9,6 +9,7 @@ export type FieldValidatorJSON = {
 export class FieldValidator<T=any> {
   private _validator: Validator<T>
   private _params: Record<string, unknown> = {}
+  private _additionalRules: RuleValidator<T>[] = []
 
   constructor (validator: Validator<T>, json: FieldValidatorJSON) {
     this._validator = validator
@@ -28,9 +29,17 @@ export class FieldValidator<T=any> {
 
   public getRules (fieldLabel: string): RuleValidator<T>[] {
     const rules = this._validator.getRules()
-    return Object.keys(rules).map(name => {
-      return this.createRuleValidator(fieldLabel, name, rules[name]!, this._params[name])
-    })
+    return [
+      ...Object.keys(rules).map(name => {
+        return this.createRuleValidator(fieldLabel, name, rules[name]!, this._params[name])
+      }),
+      ...this._additionalRules
+    ]
+  }
+
+  public addRule (validate: RuleValidator<T>): FieldValidator {
+    this._additionalRules.push(validate)
+    return this
   }
 
   protected createRuleValidator (fieldLabel: string, ruleName: string, rule: Rule, params: unknown): RuleValidator<T> {
