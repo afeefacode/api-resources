@@ -1,3 +1,4 @@
+import { IntValidator } from './IntValidator';
 import { LinkOneValidator } from './LinkOneValidator';
 import { NumberValidator } from './NumberValidator';
 import { SelectValidator } from './SelectValidator';
@@ -6,5 +7,6 @@ export const validators = {
     'Afeefa.StringValidator': new StringValidator(),
     'Afeefa.LinkOneValidator': new LinkOneValidator(),
     'Afeefa.SelectValidator': new SelectValidator(),
-    'Afeefa.NumberValidator': new NumberValidator()
+    'Afeefa.NumberValidator': new NumberValidator(),
+    'Afeefa.IntValidator': new IntValidator()
 };
