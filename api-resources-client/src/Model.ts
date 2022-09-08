@@ -170,7 +170,7 @@ export class Model {
     // check all given fields are allowed to update/create
     if (fields) {
       for (const name of Object.keys(fields)) {
-        if (!typeFields[name]) {
+        if (fields[name] && !typeFields[name]) { // ignore false fields
           console.warn(`Field "${name}" not configured for type ${this.type}#${this.id ? 'update' : 'create'}`)
         }
       }
