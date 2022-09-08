@@ -128,6 +128,24 @@ class ApiResources {
         }
         return validator;
     }
+    createFieldValidator(type, params = {}, rules = null) {
+        const validator = this.getValidator(type);
+        if (validator) {
+            const fieldValidator = validator.createFieldValidator({ type, params });
+            if (rules) {
+                if (Array.isArray(rules)) {
+                    rules.forEach(rule => {
+                        fieldValidator.addRule(rule);
+                    });
+                }
+                else {
+                    fieldValidator.addRule(rules);
+                }
+            }
+            return fieldValidator;
+        }
+        return null;
+    }
     registerFilter(filter) {
         this._filters[filter.type] = filter;
         return this;

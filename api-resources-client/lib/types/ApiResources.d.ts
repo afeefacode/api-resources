@@ -5,7 +5,8 @@ import { Field } from './field/Field';
 import { Filter } from './filter/Filter';
 import { Model } from './Model';
 import { Type } from './type/Type';
-import { Validator } from './validator/Validator';
+import { FieldValidator } from './validator/FieldValidator';
+import { RuleValidator, Validator } from './validator/Validator';
 declare type ModelType = typeof Model;
 declare class ApiResources {
     private _apis;
@@ -42,6 +43,7 @@ declare class ApiResources {
     registerValidator(type: string, validator: Validator): ApiResources;
     registerValidators(validators: Record<string, Validator>): ApiResources;
     getValidator(type: string): Validator | null;
+    createFieldValidator<T>(type: string, params?: Record<string, unknown>, rules?: RuleValidator<T>[] | RuleValidator<T> | null): FieldValidator | null;
     registerFilter(filter: Filter): ApiResources;
     registerFilters(filters: Filter[]): ApiResources;
     getFilter(type: string): (Filter | null);

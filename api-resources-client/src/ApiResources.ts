@@ -8,7 +8,8 @@ import { filters } from './filter/filters'
 import { Model } from './Model'
 import { JsonObject } from './model/JsonObject'
 import { Type } from './type/Type'
-import { Validator } from './validator/Validator'
+import { FieldValidator } from './validator/FieldValidator'
+import { RuleValidator, Validator } from './validator/Validator'
 import { validators } from './validator/validators'
 
 type ModelType = typeof Model
@@ -175,6 +176,24 @@ class ApiResources {
       console.warn(`No validator of type '${type}' registered.`)
     }
     return validator
+  }
+
+  public createFieldValidator<T> (type: string, params: Record<string, unknown> = {}, rules: RuleValidator<T>[] | RuleValidator<T> | null = null): FieldValidator | null {
+    const validator = this.getValidator(type)
+    if (validator) {
+      const fieldValidator = validator.createFieldValidator({type, params})
+      if (rules) {
+        if (Array.isArray(rules)) {
+          rules.forEach(rule => {
+            fieldValidator.addRule(rule)
+          })
+        } else {
+          fieldValidator.addRule(rules)
+        }
+      }
+      return fieldValidator
+    }
+    return null
   }
 
   public registerFilter (filter: Filter): ApiResources {
