@@ -1,3 +1,4 @@
+import { DateValidator } from './DateValidator';
 import { IntValidator } from './IntValidator';
 import { LinkOneValidator } from './LinkOneValidator';
 import { NumberValidator } from './NumberValidator';
@@ -9,5 +10,6 @@ export declare const validators: {
     'Afeefa.SelectValidator': SelectValidator;
     'Afeefa.NumberValidator': NumberValidator;
     'Afeefa.IntValidator': IntValidator;
+    'Afeefa.DateValidator': DateValidator;
 };
 //# sourceMappingURL=index.d.ts.map
