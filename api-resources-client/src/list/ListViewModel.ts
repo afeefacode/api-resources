@@ -37,6 +37,11 @@ export class ListViewModel {
     }
   }
 
+  /**
+   * Take all filters sources and some magic
+   * and set up initial values for all available
+   * filters.
+   */
   public initFilters (
     {source, history, used}:
     {source: boolean, history: boolean, used: boolean}
@@ -134,16 +139,7 @@ export class ListViewModel {
 
     this._changedFilters[name] = this._filters.get(name)!.value
 
-    if (this._changedFiltersTimeout) {
-      return
-    }
-
-    this._changedFiltersTimeout = setTimeout(() => {
-      clearTimeout(this._changedFiltersTimeout!)
-      this._changedFiltersTimeout = null
-      this.dispatchChange(this._changedFilters)
-      this._changedFilters = {}
-    }, 10)
+    this.dispatchChange()
   }
 
   public getApiRequest (): ApiRequest {
@@ -153,8 +149,8 @@ export class ListViewModel {
   }
 
   /**
-   * called if the the filter sources has changed and should
-   * be reinitialized
+   * called if the the filter source has changed and should
+   * be reinitialized (e.g. query string got modified)
    */
   public filterSourceChanged (): void {
     if (!this._filterSource) {
@@ -168,19 +164,17 @@ export class ListViewModel {
       return
     }
 
-    const changedFilters = this.initFilterValues({
+    this._changedFilters = this.initFilterValues({
       source: true,
       history: false,
       used: false,
       filters: true
     })
 
-    if (Object.keys(changedFilters).length) {
-      this.dispatchChange(changedFilters)
-    }
+    this.dispatchChange()
 
     // if a link without query is clicked,
-    // and custom fiters apply, then this should
+    // and custom filters apply, then this should
     // be set to the query string
     this.pushToFilterSource()
   }
@@ -194,19 +188,16 @@ export class ListViewModel {
   }
 
   public resetFilters (): void {
-    const changedFilters: BagEntries<ActionFilterValueType> = {}
+    this._changedFilters = {}
+
     this._filters.values().forEach(f => {
       const changed = f.reset()
       if (changed) {
-        changedFilters[f.name] = f.value
+        this._changedFilters[f.name] = f.value
       }
     })
 
-    if (Object.keys(changedFilters).length) {
-      this.pushToFilterSource()
-
-      this.dispatchChange(changedFilters)
-    }
+    this.dispatchChange()
   }
 
   private handleFilterHistory (count: number): void {
@@ -222,8 +213,23 @@ export class ListViewModel {
     }
   }
 
-  private dispatchChange (changedFilters: BagEntries<ActionFilterValueType>): void {
-    this._eventTarget.dispatchEvent(new ListViewFilterChangeEvent('change', changedFilters))
+  private dispatchChange (): void {
+    if (!Object.keys(this._changedFilters).length) {
+      return
+    }
+
+    if (this._changedFiltersTimeout) {
+      return
+    }
+
+    this._changedFiltersTimeout = setTimeout(() => {
+      clearTimeout(this._changedFiltersTimeout!)
+      this._changedFiltersTimeout = null
+
+      this._eventTarget.dispatchEvent(new ListViewFilterChangeEvent('change', this._changedFilters))
+
+      this._changedFilters = {}
+    }, 10)
   }
 
   private initFilterValues (

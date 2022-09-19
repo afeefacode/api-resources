@@ -23,6 +23,11 @@ export class ListViewModel {
             }
         }
     }
+    /**
+     * Take all filters sources and some magic
+     * and set up initial values for all available
+     * filters.
+     */
     initFilters({ source, history, used } = { source: false, history: false, used: false }) {
         if (source && !this._filterSource) {
             console.warn('Can\'t init from filter source without setting up a filter source.');
@@ -96,15 +101,7 @@ export class ListViewModel {
             }
         }
         this._changedFilters[name] = this._filters.get(name).value;
-        if (this._changedFiltersTimeout) {
-            return;
-        }
-        this._changedFiltersTimeout = setTimeout(() => {
-            clearTimeout(this._changedFiltersTimeout);
-            this._changedFiltersTimeout = null;
-            this.dispatchChange(this._changedFilters);
-            this._changedFilters = {};
-        }, 10);
+        this.dispatchChange();
     }
     getApiRequest() {
         const request = this._apiAction.getApiRequest();
@@ -112,8 +109,8 @@ export class ListViewModel {
         return request;
     }
     /**
-     * called if the the filter sources has changed and should
-     * be reinitialized
+     * called if the the filter source has changed and should
+     * be reinitialized (e.g. query string got modified)
      */
     filterSourceChanged() {
         if (!this._filterSource) {
@@ -125,17 +122,15 @@ export class ListViewModel {
         if (JSON.stringify(this._lastSavedQuery) === JSON.stringify(query)) {
             return;
         }
-        const changedFilters = this.initFilterValues({
+        this._changedFilters = this.initFilterValues({
             source: true,
             history: false,
             used: false,
             filters: true
         });
-        if (Object.keys(changedFilters).length) {
-            this.dispatchChange(changedFilters);
-        }
+        this.dispatchChange();
         // if a link without query is clicked,
-        // and custom fiters apply, then this should
+        // and custom filters apply, then this should
         // be set to the query string
         this.pushToFilterSource();
     }
@@ -145,17 +140,14 @@ export class ListViewModel {
         this.pushToFilterSource();
     }
     resetFilters() {
-        const changedFilters = {};
+        this._changedFilters = {};
         this._filters.values().forEach(f => {
             const changed = f.reset();
             if (changed) {
-                changedFilters[f.name] = f.value;
+                this._changedFilters[f.name] = f.value;
             }
         });
-        if (Object.keys(changedFilters).length) {
-            this.pushToFilterSource();
-            this.dispatchChange(changedFilters);
-        }
+        this.dispatchChange();
     }
     handleFilterHistory(count) {
         const historyKey = this._historyKey;
@@ -169,8 +161,19 @@ export class ListViewModel {
             }
         }
     }
-    dispatchChange(changedFilters) {
-        this._eventTarget.dispatchEvent(new ListViewFilterChangeEvent('change', changedFilters));
+    dispatchChange() {
+        if (!Object.keys(this._changedFilters).length) {
+            return;
+        }
+        if (this._changedFiltersTimeout) {
+            return;
+        }
+        this._changedFiltersTimeout = setTimeout(() => {
+            clearTimeout(this._changedFiltersTimeout);
+            this._changedFiltersTimeout = null;
+            this._eventTarget.dispatchEvent(new ListViewFilterChangeEvent('change', this._changedFilters));
+            this._changedFilters = {};
+        }, 10);
     }
     initFilterValues({ source, history, used, filters }) {
         let filtersToUse = {};

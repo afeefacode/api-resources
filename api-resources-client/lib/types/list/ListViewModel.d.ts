@@ -19,6 +19,11 @@ export declare class ListViewModel {
     private _changedFiltersTimeout;
     private _lastSavedQuery;
     constructor(apiAction: ApiAction);
+    /**
+     * Take all filters sources and some magic
+     * and set up initial values for all available
+     * filters.
+     */
     initFilters({ source, history, used }?: {
         source: boolean;
         history: boolean;
@@ -38,8 +43,8 @@ export declare class ListViewModel {
     filterValueChanged(name: string): void;
     getApiRequest(): ApiRequest;
     /**
-     * called if the the filter sources has changed and should
-     * be reinitialized
+     * called if the the filter source has changed and should
+     * be reinitialized (e.g. query string got modified)
      */
     filterSourceChanged(): void;
     initFromUsedFilters(usedFilters: BagEntries<ActionFilterValueType>, count: number): void;
