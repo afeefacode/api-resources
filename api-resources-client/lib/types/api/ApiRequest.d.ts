@@ -22,6 +22,8 @@ export declare class ApiRequest {
     action(action: Action): ApiRequest;
     getAction(): Action;
     params(params: Record<string, unknown>): ApiRequest;
+    addParam(name: string, value: unknown): ApiRequest;
+    addParams(params: Record<string, unknown>): ApiRequest;
     getParams(): Record<string, unknown>;
     fields(fields: Record<string, unknown>): ApiRequest;
     addField(name: string, value: unknown): ApiRequest;

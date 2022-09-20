@@ -28,6 +28,15 @@ export class ApiRequest {
         this._params = params;
         return this;
     }
+    addParam(name, value) {
+        this.params(this._params || {});
+        this._params[name] = value;
+        return this;
+    }
+    addParams(params) {
+        this._params = Object.assign(Object.assign({}, (this._params || {})), params);
+        return this;
+    }
     getParams() {
         return this._params;
     }

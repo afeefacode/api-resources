@@ -56,6 +56,20 @@ export class ApiRequest {
     return this
   }
 
+  public addParam (name: string, value: unknown): ApiRequest {
+    this.params(this._params || {})
+    this._params[name] = value
+    return this
+  }
+
+  public addParams (params: Record<string, unknown>): ApiRequest {
+    this._params = {
+      ...(this._params || {}),
+      ...params
+    }
+    return this
+  }
+
   public getParams (): Record<string, unknown> {
     return this._params
   }
