@@ -17,9 +17,11 @@ export declare class ApiAction {
     protected _params: BagEntries<unknown>;
     protected _filters: BagEntries<ActionFilterValueType>;
     protected _data: BagEntries<unknown>;
+    protected _bulkIsSequential: boolean;
     static fromRequest(apiRequest: ApiRequest): ApiAction;
     apiAction(apiAction: ApiAction): ApiAction;
     get isBulk(): boolean;
+    sequential(sequential?: boolean): ApiAction;
     action({ apiType, resourceType, actionName }: {
         apiType: string | null;
         resourceType: string;

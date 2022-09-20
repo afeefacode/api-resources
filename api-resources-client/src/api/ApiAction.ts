@@ -21,6 +21,7 @@ export class ApiAction {
   protected _params!: BagEntries<unknown>
   protected _filters!: BagEntries<ActionFilterValueType>
   protected _data!: BagEntries<unknown>
+  protected _bulkIsSequential: boolean = false
 
   public static fromRequest (apiRequest: ApiRequest): ApiAction {
     const action = new this()
@@ -40,6 +41,11 @@ export class ApiAction {
 
   public get isBulk (): boolean {
     return !!this._apiActions.length
+  }
+
+  public sequential (sequential: boolean = true): ApiAction {
+    this._bulkIsSequential = sequential
+    return this
   }
 
   // action
@@ -124,19 +130,34 @@ export class ApiAction {
 
   public async execute (): Promise<ApiActionResponse | ApiActionResponse[]> {
     if (this.isBulk) {
-      const promises: Promise<ApiActionResponse>[] = []
+      if (this._bulkIsSequential) {
+        const results: ApiActionResponse[] = []
 
-      this._apiActions.forEach(a => {
-        promises.push(a.execute() as Promise<ApiActionResponse>)
-      })
+        this.beforeBulkRequest()
 
-      this.beforeBulkRequest()
+        for (const action of this._apiActions) {
+          const result = await action.execute() as ApiActionResponse
+          results.push(result)
+        }
 
-      const result = await Promise.all(promises)
+        this.afterBulkRequest()
 
-      this.afterBulkRequest()
+        return results
+      } else {
+        const promises: Promise<ApiActionResponse>[] = []
 
-      return result
+        this._apiActions.forEach(a => {
+          promises.push(a.execute() as Promise<ApiActionResponse>)
+        })
+
+        this.beforeBulkRequest()
+
+        const result = await Promise.all(promises)
+
+        this.afterBulkRequest()
+
+        return result
+      }
     } else {
       const request = this.getApiRequest()
 

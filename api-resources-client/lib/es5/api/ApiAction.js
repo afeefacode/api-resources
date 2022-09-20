@@ -4,6 +4,7 @@ import { ApiError } from './ApiError';
 export class ApiAction {
     constructor() {
         this._apiActions = [];
+        this._bulkIsSequential = false;
     }
     static fromRequest(apiRequest) {
         const action = new this();
@@ -20,6 +21,10 @@ export class ApiAction {
     }
     get isBulk() {
         return !!this._apiActions.length;
+    }
+    sequential(sequential = true) {
+        this._bulkIsSequential = sequential;
+        return this;
     }
     // action
     action({ apiType = null, resourceType, actionName }) {
@@ -83,14 +88,26 @@ export class ApiAction {
     }
     async execute() {
         if (this.isBulk) {
-            const promises = [];
-            this._apiActions.forEach(a => {
-                promises.push(a.execute());
-            });
-            this.beforeBulkRequest();
-            const result = await Promise.all(promises);
-            this.afterBulkRequest();
-            return result;
+            if (this._bulkIsSequential) {
+                const results = [];
+                this.beforeBulkRequest();
+                for (const action of this._apiActions) {
+                    const result = await action.execute();
+                    results.push(result);
+                }
+                this.afterBulkRequest();
+                return results;
+            }
+            else {
+                const promises = [];
+                this._apiActions.forEach(a => {
+                    promises.push(a.execute());
+                });
+                this.beforeBulkRequest();
+                const result = await Promise.all(promises);
+                this.afterBulkRequest();
+                return result;
+            }
         }
         else {
             const request = this.getApiRequest();
