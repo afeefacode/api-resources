@@ -162,7 +162,7 @@ export class Model {
     const type: Type = apiResources.getType(this.type) as Type
     const typeFields = this.id ? type.getUpdateFields() : type.getCreateFields()
     for (const [name, field] of Object.entries(typeFields)) {
-      if (!fields || fields[name]) {
+      if (!fields || fields[name]) { // serialize all allowed fields if no specific fields are given
         json[name] = field.serialize(this[name] as FieldValue)
       }
     }
