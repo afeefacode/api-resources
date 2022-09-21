@@ -99,7 +99,6 @@ export class Model {
     }
 
     const type: Type = apiResources.getType(this.type) as Type
-    // console.log('cloneForEdit', this, fields, Object.entries(type.getUpdateFields()))
 
     // determine all allowed fields
     const typeFields = {
@@ -107,8 +106,11 @@ export class Model {
       ...type.getUpdateFields()
     }
 
+    // console.log('cloneForEdit', this, fields, typeFields)
+
     for (const name of Object.keys(typeFields)) {
       if (fields && fields[name] === false) { // ignore deactivated fields
+        // console.log('ignore', this, name)
         continue
       }
 
@@ -119,7 +121,7 @@ export class Model {
         if (this[name] instanceof Model) { // has one relation
           const relatedModel = this[name] as Model
           if (fields && fields[name]) { // clone related too
-            // console.log('one-relation', relatedModel, relatedFields, relatedModel.cloneForEdit(relatedFields as ModelAttributes))
+            // console.log('one-relation', relatedModel, fields[name], relatedModel.cloneForEdit(fields[name] as ModelAttributes))
             model[name] = relatedModel.cloneForEdit(fields[name] as ModelAttributes)
           } else { // copy related
             // console.log('one-relation-copy', relatedModel)
@@ -131,7 +133,7 @@ export class Model {
           relatedValues.forEach(rv => {
             if (rv instanceof Model) { // value is model
               if (fields && fields[name]) { // clone model too
-                // console.log('many-relation', rv, relatedFields, rv.cloneForEdit(relatedFields as ModelAttributes))
+                // console.log('many-relation', rv, fields[name], rv.cloneForEdit(fields[name] as ModelAttributes))
                 newRelatedValues.push(rv.cloneForEdit(fields[name] as ModelAttributes))
                 return
               }

@@ -60,11 +60,12 @@ export class Model {
             model.id = this.id;
         }
         const type = apiResources.getType(this.type);
-        // console.log('cloneForEdit', this, fields, Object.entries(type.getUpdateFields()))
         // determine all allowed fields
         const typeFields = Object.assign(Object.assign({}, type.getFields()), type.getUpdateFields());
+        // console.log('cloneForEdit', this, fields, typeFields)
         for (const name of Object.keys(typeFields)) {
             if (fields && fields[name] === false) { // ignore deactivated fields
+                // console.log('ignore', this, name)
                 continue;
             }
             if (!this[name]) { // value not set (undefined or null or false or '' or 0), just copy
@@ -75,7 +76,7 @@ export class Model {
                 if (this[name] instanceof Model) { // has one relation
                     const relatedModel = this[name];
                     if (fields && fields[name]) { // clone related too
-                        // console.log('one-relation', relatedModel, relatedFields, relatedModel.cloneForEdit(relatedFields as ModelAttributes))
+                        // console.log('one-relation', relatedModel, fields[name], relatedModel.cloneForEdit(fields[name] as ModelAttributes))
                         model[name] = relatedModel.cloneForEdit(fields[name]);
                     }
                     else { // copy related
@@ -89,7 +90,7 @@ export class Model {
                     relatedValues.forEach(rv => {
                         if (rv instanceof Model) { // value is model
                             if (fields && fields[name]) { // clone model too
-                                // console.log('many-relation', rv, relatedFields, rv.cloneForEdit(relatedFields as ModelAttributes))
+                                // console.log('many-relation', rv, fields[name], rv.cloneForEdit(fields[name] as ModelAttributes))
                                 newRelatedValues.push(rv.cloneForEdit(fields[name]));
                                 return;
                             }
