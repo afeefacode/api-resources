@@ -22,8 +22,12 @@ export class FieldValidator {
             ...this._additionalRules
         ];
     }
-    addRule(validate) {
-        this._additionalRules.push(validate);
+    addAdditionalRule(rule) {
+        this._additionalRules.push(rule);
+        return this;
+    }
+    setAdditionalRules(rules) {
+        this._additionalRules = rules;
         return this;
     }
     createRuleValidator(fieldLabel, ruleName, rule, params) {

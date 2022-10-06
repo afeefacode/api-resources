@@ -37,10 +37,16 @@ export class FieldValidator<T=any> {
     ]
   }
 
-  public addRule (validate: RuleValidator<T>): FieldValidator {
-    this._additionalRules.push(validate)
+  public addAdditionalRule (rule: RuleValidator<T>): FieldValidator {
+    this._additionalRules.push(rule)
     return this
   }
+
+  public setAdditionalRules (rules: RuleValidator<T>[]): FieldValidator {
+    this._additionalRules = rules
+    return this
+  }
+
 
   protected createRuleValidator (fieldLabel: string, ruleName: string, rule: Rule, params: unknown): RuleValidator<T> {
     return this._validator.createRuleValidator(fieldLabel, ruleName, rule, params)

@@ -185,10 +185,10 @@ class ApiResources {
       if (rules) {
         if (Array.isArray(rules)) {
           rules.forEach(rule => {
-            fieldValidator.addRule(rule)
+            fieldValidator.addAdditionalRule(rule)
           })
         } else {
-          fieldValidator.addRule(rules)
+          fieldValidator.addAdditionalRule(rules)
         }
       }
       return fieldValidator

@@ -12,7 +12,8 @@ export declare class FieldValidator<T = any> {
     getParams(): Record<string, unknown>;
     param(name: string): unknown;
     getRules(fieldLabel: string): RuleValidator<T>[];
-    addRule(validate: RuleValidator<T>): FieldValidator;
+    addAdditionalRule(rule: RuleValidator<T>): FieldValidator;
+    setAdditionalRules(rules: RuleValidator<T>[]): FieldValidator;
     protected createRuleValidator(fieldLabel: string, ruleName: string, rule: Rule, params: unknown): RuleValidator<T>;
 }
 //# sourceMappingURL=FieldValidator.d.ts.map
