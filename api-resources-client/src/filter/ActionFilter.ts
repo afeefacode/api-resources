@@ -13,6 +13,8 @@ export type ActionFilterJSON = {
   options: []
   options_request: ApiRequestJSON
   null_is_option: boolean
+  all_is_option: boolean
+  none_is_option: boolean
 }
 
 type RequestFactory = (() => ApiRequest) | null
@@ -22,6 +24,8 @@ export class ActionFilter {
   private _name: string
   private _defaultValue: ActionFilterValueType = null
   private _nullIsOption: boolean = false
+  private _allIsOption: boolean = false
+  private _noneIsOption: boolean = false
   private _options: unknown[] = []
   private _requestFactory: RequestFactory = null
 
@@ -31,6 +35,8 @@ export class ActionFilter {
     this._defaultValue = json.default || null
     this._options = json.options || []
     this._nullIsOption = json.null_is_option || false
+    this._allIsOption = json.all_is_option || false
+    this._noneIsOption = json.none_is_option || false
 
     if (json.options_request) {
       this._requestFactory = (): ApiRequest => {
@@ -67,6 +73,14 @@ export class ActionFilter {
 
   public get nullIsOption (): boolean {
     return this._nullIsOption
+  }
+
+  public get allIsOption (): boolean {
+    return this._allIsOption
+  }
+
+  public get noneIsOption (): boolean {
+    return this._noneIsOption
   }
 
   public hasOptionsRequest (): boolean {

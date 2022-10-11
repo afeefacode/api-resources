@@ -12,6 +12,8 @@ export declare class ListViewFilter {
     get defaultValue(): ActionFilterValueType;
     hasDefaultValueSet(): boolean;
     get nullIsOption(): boolean;
+    get allIsOption(): boolean;
+    get noneIsOption(): boolean;
     hasOptions(): boolean;
     get options(): unknown[];
     hasOptionsRequest(): boolean;

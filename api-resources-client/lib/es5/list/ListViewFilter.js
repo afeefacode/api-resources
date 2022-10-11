@@ -19,6 +19,12 @@ export class ListViewFilter {
     get nullIsOption() {
         return this._filter.nullIsOption;
     }
+    get allIsOption() {
+        return this._filter.allIsOption;
+    }
+    get noneIsOption() {
+        return this._filter.noneIsOption;
+    }
     hasOptions() {
         return this._filter.hasOptions();
     }

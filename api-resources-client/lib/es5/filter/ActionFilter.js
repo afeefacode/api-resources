@@ -3,6 +3,8 @@ export class ActionFilter {
     constructor(action, filter, name, json) {
         this._defaultValue = null;
         this._nullIsOption = false;
+        this._allIsOption = false;
+        this._noneIsOption = false;
         this._options = [];
         this._requestFactory = null;
         this._filter = filter;
@@ -10,6 +12,8 @@ export class ActionFilter {
         this._defaultValue = json.default || null;
         this._options = json.options || [];
         this._nullIsOption = json.null_is_option || false;
+        this._allIsOption = json.all_is_option || false;
+        this._noneIsOption = json.none_is_option || false;
         if (json.options_request) {
             this._requestFactory = () => {
                 const requestAction = action.getApi().getAction(json.options_request.resource, json.options_request.action);
@@ -38,6 +42,12 @@ export class ActionFilter {
     }
     get nullIsOption() {
         return this._nullIsOption;
+    }
+    get allIsOption() {
+        return this._allIsOption;
+    }
+    get noneIsOption() {
+        return this._noneIsOption;
     }
     hasOptionsRequest() {
         return !!this._requestFactory;

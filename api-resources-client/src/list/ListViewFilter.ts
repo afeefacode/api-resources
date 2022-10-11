@@ -1,7 +1,6 @@
 import { ApiRequest } from '../api/ApiRequest'
 import { BagEntries } from '../bag/Bag'
 import { ActionFilter, ActionFilterValueType } from '../filter/ActionFilter'
-
 import { ListViewModel } from './ListViewModel'
 
 export class ListViewFilter {
@@ -32,6 +31,14 @@ export class ListViewFilter {
 
   public get nullIsOption (): boolean {
     return this._filter.nullIsOption
+  }
+
+  public get allIsOption (): boolean {
+    return this._filter.allIsOption
+  }
+
+  public get noneIsOption (): boolean {
+    return this._filter.noneIsOption
   }
 
   public hasOptions (): boolean {

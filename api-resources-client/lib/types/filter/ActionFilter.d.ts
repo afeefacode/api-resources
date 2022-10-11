@@ -8,12 +8,16 @@ export declare type ActionFilterJSON = {
     options: [];
     options_request: ApiRequestJSON;
     null_is_option: boolean;
+    all_is_option: boolean;
+    none_is_option: boolean;
 };
 export declare class ActionFilter {
     private _filter;
     private _name;
     private _defaultValue;
     private _nullIsOption;
+    private _allIsOption;
+    private _noneIsOption;
     private _options;
     private _requestFactory;
     constructor(action: Action, filter: Filter, name: string, json: ActionFilterJSON);
@@ -24,6 +28,8 @@ export declare class ActionFilter {
     hasOption(value: unknown): boolean;
     get options(): unknown[];
     get nullIsOption(): boolean;
+    get allIsOption(): boolean;
+    get noneIsOption(): boolean;
     hasOptionsRequest(): boolean;
     createOptionsRequest(): ApiRequest | null;
     valueToQuery(value: ActionFilterValueType): string | undefined;
