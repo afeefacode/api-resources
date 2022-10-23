@@ -22,14 +22,11 @@ class MutationActionSimpleResolver extends BaseMutationActionResolver
         return $this;
     }
 
-    public function resolve(): array
+    protected function _resolve(): array
     {
-        $action = $this->request->getAction();
-
         // if errors
 
-        $actionName = $action->getName();
-        $resourceType = $this->request->getResource()::type();
+        [$resourceType, $actionName] = $this->getResourceAndActionNames();
         $mustReturn = "callback of mutation resolver for action {$actionName} on resource {$resourceType} must return";
         $needsToImplement = "Resolver for action {$actionName} on resource {$resourceType} needs to implement";
 
@@ -39,8 +36,7 @@ class MutationActionSimpleResolver extends BaseMutationActionResolver
 
         // save model
 
-        $input = $action->getInput();
-
+        $input = $this->getInput();
         if ($input->isUnion() && !$this->request->hasParam('type')) {
             throw new InvalidConfigurationException('Must specify a type in the payload of the union action {$actionName} on resource {$resourceType}');
         };
