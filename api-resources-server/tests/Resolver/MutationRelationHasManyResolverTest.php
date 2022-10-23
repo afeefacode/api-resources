@@ -10,14 +10,14 @@ use Afeefa\ApiResources\Field\Relation;
 use Afeefa\ApiResources\Model\Model;
 use Afeefa\ApiResources\Model\ModelInterface;
 use Afeefa\ApiResources\Resolver\MutationRelationHasManyResolver;
-use Afeefa\ApiResources\Test\MutationRelationTest;
+use Afeefa\ApiResources\Test\MutationTest;
 
 use function Afeefa\ApiResources\Test\T;
 
 use Afeefa\ApiResources\Type\Type;
 use stdClass;
 
-class MutationRelationHasManyResolverTest extends MutationRelationTest
+class MutationRelationHasManyResolverTest extends MutationTest
 {
     /**
      * @dataProvider missingCallbacksDataProvider

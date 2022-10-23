@@ -12,13 +12,13 @@ use Afeefa\ApiResources\Model\Model;
 use Afeefa\ApiResources\Model\ModelInterface;
 use Afeefa\ApiResources\Resolver\MutationActionModelResolver;
 use Afeefa\ApiResources\Resolver\MutationRelationHasOneResolver;
-use Afeefa\ApiResources\Test\MutationRelationTest;
+use Afeefa\ApiResources\Test\MutationTest;
 
 use function Afeefa\ApiResources\Test\T;
 
 use stdClass;
 
-class MutationActionModelResolverTest extends MutationRelationTest
+class MutationActionModelResolverTest extends MutationTest
 {
     private $should_update = false;
 

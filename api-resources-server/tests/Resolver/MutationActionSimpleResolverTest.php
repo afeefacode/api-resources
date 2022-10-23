@@ -11,13 +11,13 @@ use Afeefa\ApiResources\Field\Relation;
 use Afeefa\ApiResources\Model\Model;
 use Afeefa\ApiResources\Resolver\MutationActionSimpleResolver;
 use Afeefa\ApiResources\Resolver\MutationRelationHasOneResolver;
-use Afeefa\ApiResources\Test\MutationRelationTest;
+use Afeefa\ApiResources\Test\MutationTest;
 
 use function Afeefa\ApiResources\Test\T;
 
 use stdClass;
 
-class MutationActionSimpleResolverTest extends MutationRelationTest
+class MutationActionSimpleResolverTest extends MutationTest
 {
     public function test_missing_save_callback()
     {
