@@ -7,13 +7,10 @@ use Afeefa\ApiResources\Exception\Exceptions\MissingCallbackException;
 use Afeefa\ApiResources\Model\ModelInterface;
 use Afeefa\ApiResources\Resolver\Mutation\BaseMutationActionResolver;
 use Afeefa\ApiResources\Resolver\Mutation\MutationResolveContext;
-use Afeefa\ApiResources\Resolver\Mutation\MutationResolverTrait;
 use Closure;
 
 class MutationActionSimpleResolver extends BaseMutationActionResolver
 {
-    use MutationResolverTrait;
-
     protected ?Closure $saveCallback = null;
 
     public function save(Closure $callback): self
