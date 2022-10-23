@@ -48,8 +48,8 @@ class MutationRelationHasManyResolver extends MutationRelationResolver
             }
         }
 
-        if ($relation->hasSkipRelatedIfCallback()) {
-            $skipIf = $relation->getSkipRelatedIfCallback();
+        if ($relation->hasSkipSaveRelatedIfCallback()) {
+            $skipIf = $relation->getSkipSaveRelatedIfCallback();
             $data = array_filter($data, fn ($single) => !$skipIf($single));
         }
 
