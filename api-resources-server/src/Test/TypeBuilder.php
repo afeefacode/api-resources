@@ -5,7 +5,7 @@ namespace Afeefa\ApiResources\Test;
 use Afeefa\ApiResources\Type\Type;
 use Afeefa\ApiResources\Type\TypeClassMap;
 use Closure;
-use Webmozart\PathUtil\Path;
+use Symfony\Component\Filesystem\Path;
 
 class TypeBuilder extends Builder
 {

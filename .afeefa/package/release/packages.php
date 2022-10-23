@@ -1,7 +1,7 @@
 <?php
 
 use Afeefa\Component\Package\Package\Package;
-use Webmozart\PathUtil\Path;
+use Symfony\Component\Filesystem\Path;
 
 return [
     Package::composer()

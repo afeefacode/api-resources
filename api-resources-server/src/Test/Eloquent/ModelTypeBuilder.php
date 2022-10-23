@@ -6,7 +6,7 @@ use Afeefa\ApiResources\Eloquent\ModelType;
 use Afeefa\ApiResources\Test\TypeBuilder;
 use Afeefa\ApiResources\Test\TypeBuilderTrait;
 use Closure;
-use Webmozart\PathUtil\Path;
+use Symfony\Component\Filesystem\Path;
 
 /**
  * @property ModelType $type
