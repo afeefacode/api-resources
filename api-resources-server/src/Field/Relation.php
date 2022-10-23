@@ -5,15 +5,6 @@ namespace Afeefa\ApiResources\Field;
 use Afeefa\ApiResources\Type\RelatedType;
 use Closure;
 
-/**
- * @method Relation owner($owner)
- * @method Relation name(string $name)
- * @method Relation validate(Closure $callback)
- * @method Relation validator(Validator $validator)
- * @method Relation required(bool $required = true)
- * @method Relation resolve(string|callable|Closure $classOrCallback, array $params = [])
- * @method Relation isMutation(bool $isMutation)
- */
 class Relation extends Field
 {
     public const RESTRICT_TO_GET = 'get';
@@ -85,7 +76,7 @@ class Relation extends Field
         return $this->relatedType;
     }
 
-    public function clone(): Relation
+    public function clone(): static
     {
         /** @var Relation */
         $relation = parent::clone();
