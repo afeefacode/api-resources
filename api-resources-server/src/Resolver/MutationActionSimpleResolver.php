@@ -40,6 +40,11 @@ class MutationActionSimpleResolver extends BaseMutationActionResolver
         // save model
 
         $input = $action->getInput();
+
+        if ($input->isUnion() && !$this->request->hasParam('type')) {
+            throw new InvalidConfigurationException('Must specify a type in the payload of the union action {$actionName} on resource {$resourceType}');
+        };
+
         $typeName = $input->isUnion() ? $this->request->getParam('type') : $input->getTypeClass()::type();
 
         $resolveContext = $this->container->create(MutationResolveContext::class)

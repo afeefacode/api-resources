@@ -67,14 +67,6 @@ class MutationActionModelResolver extends BaseMutationActionResolver
 
     protected function _resolve(): array
     {
-        if ($this->beforeResolveCallback) {
-            $params = $this->request->getParams();
-            $fieldsToSave = $this->request->getFieldsToSave();
-            [$params, $fieldsToSave] = ($this->beforeResolveCallback)($params, $fieldsToSave);
-            $this->request->params($params);
-            $this->request->fieldsToSave($fieldsToSave);
-        }
-
         $action = $this->request->getAction();
 
         // if errors
@@ -83,6 +75,24 @@ class MutationActionModelResolver extends BaseMutationActionResolver
         $resourceType = $this->request->getResource()::type();
         $mustReturn = "callback of mutation resolver for action {$actionName} on resource {$resourceType} must return";
         $needsToImplement = "Resolver for action {$actionName} on resource {$resourceType} needs to implement";
+
+        if ($this->beforeResolveCallback) {
+            $params = $this->request->getParams();
+            $fieldsToSave = $this->request->getFieldsToSave();
+            $result = ($this->beforeResolveCallback)($params, $fieldsToSave);
+
+            if (!is_array($result) || !array_is_list($result) || count($result) !== 2) {
+                throw new InvalidConfigurationException("BeforeResolve {$mustReturn} an array of [params, fieldsToSave].");
+            }
+
+            [$params, $fieldsToSave] = $result;
+            if (!is_array($params) || !is_array($fieldsToSave)) {
+                throw new InvalidConfigurationException("BeforeResolve {$mustReturn} an array of [params, fieldsToSave].");
+            }
+
+            $this->request->params($params);
+            $this->request->fieldsToSave($fieldsToSave);
+        }
 
         if (!$this->getCallback) {
             throw new MissingCallbackException("{$needsToImplement} a get() method.");
@@ -113,8 +123,8 @@ class MutationActionModelResolver extends BaseMutationActionResolver
             throw new InvalidConfigurationException('Must specify a type in the payload of the union action {$actionName} on resource {$resourceType}');
         };
 
-        $id = $this->request->getParam('id', null);
         $typeName = $input->isUnion() ? $this->request->getParam('type') : $input->getTypeClass()::type();
+        $id = $this->request->getParam('id', null);
 
         if ($id) {
             $existingModel = ($this->getCallback)($id, $typeName);
