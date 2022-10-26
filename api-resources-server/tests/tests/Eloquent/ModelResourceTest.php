@@ -13,8 +13,8 @@ class ModelResourceTest extends ApiResourcesEloquentTest
     public function test_model_resource()
     {
         Author::factory()
-            ->count(5)
-            ->has(Article::factory()->count(5))
+            ->count(2)
+            ->has(Article::factory()->count(3))
             ->create();
 
         $result = (new ApiResources())->requestFromInput(BackendApi::class, [
@@ -22,14 +22,14 @@ class ModelResourceTest extends ApiResourcesEloquentTest
             'action' => 'list',
             'fields' => [
                 'name' => true,
-                'articles' => true,
                 'count_articles' => true
             ]
         ]);
 
-        $this->assertEquals(5, count($result['data']));
+        ['data' => $data] = $result;
 
-        // $models = array_map(fn ($m) => $m->toArray(), $result['data']);
-        // debug_dump($models);
+        $this->assertCount(2, $data);
+        $this->assertEquals(3, $data[0]['count_articles']);
+        $this->assertEquals(3, $data[1]['count_articles']);
     }
 }
