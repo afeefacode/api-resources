@@ -4,7 +4,6 @@ namespace Afeefa\ApiResources\Eloquent;
 
 use Afeefa\ApiResources\Model\ModelInterface;
 use Illuminate\Database\Eloquent\Model as EloquentModel;
-use Illuminate\Events\Dispatcher;
 use Staudenmeir\EloquentEagerLimit\HasEagerLimit;
 
 class Model extends EloquentModel implements ModelInterface
@@ -20,11 +19,6 @@ class Model extends EloquentModel implements ModelInterface
     public static function boot()
     {
         parent::boot();
-
-        if (!static::$dispatcher) {
-            $dispatcher = new Dispatcher();
-            static::setEventDispatcher($dispatcher);
-        }
 
         static::created(function (Model $model) {
             $model->afterCreate();
