@@ -2,7 +2,6 @@
 
 namespace Afeefa\ApiResources\Test\Eloquent;
 
-use Afeefa\ApiResources\Eloquent\Model;
 use Afeefa\ApiResources\Test\ApiResourcesTest;
 use Illuminate\Database\Capsule\Manager as DB;
 use Illuminate\Database\Eloquent\Factories\Factory;
@@ -20,13 +19,10 @@ class ApiResourcesEloquentTest extends ApiResourcesTest
         static::connectDb();
     }
 
-    protected function setUp(): void
+    protected function tearDown(): void
     {
-        parent::setUp();
+        parent::tearDown();
 
-        // remove tables used in last test
-        // before the next one to allow for
-        // exploring database after test
         $tables = array_keys(static::$usedTables);
         if (count($tables)) {
             $pdo = static::$pdo;
