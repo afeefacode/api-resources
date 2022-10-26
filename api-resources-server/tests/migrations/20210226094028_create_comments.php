@@ -10,14 +10,12 @@ final class CreateComments extends AbstractMigration
     {
         $this->table('comments', ['signed' => false])
             ->addColumn('owner_id', 'integer', ['signed' => false])
+            ->addIndex(['owner_id', 'owner_type'])
             ->addColumn('owner_type', 'string', ['limit' => 255])
 
             ->addColumn('author_name', 'string', ['limit' => 255])
             ->addColumn('content', 'text')
-
             ->addColumn('date', 'datetime', ['null' => true])
-
-            ->addIndex(['owner_id', 'owner_type'])
 
             ->create();
     }
