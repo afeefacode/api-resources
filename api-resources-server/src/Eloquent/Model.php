@@ -78,6 +78,18 @@ class Model extends EloquentModel implements ModelInterface
         return $json;
     }
 
+    public function toArray(): array
+    {
+        $array = [];
+
+        foreach ($this->visibleFields as $visibleFieldName) {
+            $value = $this->_toArray($this->$visibleFieldName);
+            $array[$visibleFieldName] = $value;
+        }
+
+        return $array;
+    }
+
     protected function afterCreate()
     {
         // fill in in sub class
@@ -96,5 +108,15 @@ class Model extends EloquentModel implements ModelInterface
     protected function afterDelete()
     {
         // fill in in sub class
+    }
+
+    private function _toArray($value): mixed
+    {
+        if (is_object($value) && method_exists($value, 'toArray')) {
+            return $value->toArray();
+        } elseif (is_array($value)) {
+            return array_map([$this, '_toArray'], $value);
+        }
+        return $value;
     }
 }
