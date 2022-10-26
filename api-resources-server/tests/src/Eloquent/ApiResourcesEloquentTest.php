@@ -23,14 +23,11 @@ class ApiResourcesEloquentTest extends ApiResourcesTest
     protected function setUp(): void
     {
         parent::setUp();
-    }
 
-    protected function tearDown(): void
-    {
-        parent::tearDown();
-
+        // remove tables used in last test
+        // before the next one to allow for
+        // exploring database after test
         $tables = array_keys(static::$usedTables);
-
         if (count($tables)) {
             $pdo = static::$pdo;
             $pdo->exec('SET foreign_key_checks = 0');
