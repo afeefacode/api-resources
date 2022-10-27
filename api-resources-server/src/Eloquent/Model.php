@@ -4,6 +4,7 @@ namespace Afeefa\ApiResources\Eloquent;
 
 use Afeefa\ApiResources\Model\ModelInterface;
 use Illuminate\Database\Eloquent\Model as EloquentModel;
+use Illuminate\Database\Eloquent\Relations\Relation;
 use Staudenmeir\EloquentEagerLimit\HasEagerLimit;
 
 class Model extends EloquentModel implements ModelInterface
@@ -19,6 +20,10 @@ class Model extends EloquentModel implements ModelInterface
     public static function boot()
     {
         parent::boot();
+
+        Relation::morphMap([
+            static::$type => static::class
+        ]);
 
         static::created(function (Model $model) {
             $model->afterCreate();
