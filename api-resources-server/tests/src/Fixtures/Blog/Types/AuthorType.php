@@ -55,6 +55,10 @@ class AuthorType extends ModelType
         $createFields
             ->from($updateFields, 'name')
 
-            ->attribute('email', StringAttribute::class);
+            ->attribute('email', StringAttribute::class)
+
+            ->from($updateFields, 'tags')
+
+            ->from($updateFields, 'links');
     }
 }

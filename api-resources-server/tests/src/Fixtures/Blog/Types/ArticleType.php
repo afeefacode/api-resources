@@ -10,7 +10,6 @@ use Afeefa\ApiResources\Field\Fields\DateAttribute;
 use Afeefa\ApiResources\Field\Fields\StringAttribute;
 use Afeefa\ApiResources\Field\Relation;
 use Afeefa\ApiResources\Test\Fixtures\Blog\Models\Article;
-use Afeefa\ApiResources\Test\Fixtures\Blog\Resolvers\AuthorsResolver;
 use Afeefa\ApiResources\Test\Fixtures\Blog\Resources\AuthorResource;
 use Afeefa\ApiResources\Type\Type;
 use Afeefa\ApiResources\Validator\Validators\LinkOneValidator;
@@ -71,7 +70,6 @@ class ArticleType extends ModelType
                     ->validate(function (LinkOneValidator $v) {
                         $v->filled();
                     })
-                    ->resolve([AuthorsResolver::class, 'resolve_save_author_relation'])
                     ->optionsRequest(function (ApiRequest $request) {
                         $request
                             ->resourceType(AuthorResource::type())

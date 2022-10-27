@@ -116,14 +116,15 @@ class EloquentLinkManyRelationTest extends ApiResourcesEloquentTest
     {
         $author = $this->createAuthorWithTags(2);
 
-        $tags = Tag::factory(2)->sequence(['name' => 'tag3'], ['name' => 'tag4'])->create();
+        Tag::factory(2)->sequence(['name' => 'tag3'], ['name' => 'tag4'])->create();
 
         $this->save(
             id: $author->id,
             data: [
                 'tags#add' => [
                     ['id' => '3'],
-                    ['id' => '4']
+                    ['id' => '4'],
+                    ['id' => 'does_not_exist']
                 ]
             ]
         );
@@ -181,6 +182,111 @@ class EloquentLinkManyRelationTest extends ApiResourcesEloquentTest
         $this->assertTags($author->id, ['1' => 'tag1', '3' => 'tag3', '5' => 'tag5']);
     }
 
+    public function test_create_set_one()
+    {
+        Tag::factory()->create(['name' => 'tag1']);
+
+        $author = $this->create([
+            'tags' => [
+                ['id' => '1']
+            ]
+        ]);
+
+        $this->assertTags($author->id, ['1' => 'tag1']);
+    }
+
+    public function test_create_set_one_not_exists()
+    {
+        $author = $this->create([
+            'tags' => [
+                ['id' => 'does_not_exist']
+            ]
+        ]);
+
+        $this->assertTags($author->id, []);
+    }
+
+    public function test_create_set_many()
+    {
+        Tag::factory(2)->sequence(['name' => 'tag1'], ['name' => 'tag2'])->create();
+
+        $author = $this->create([
+            'tags' => [
+                ['id' => '1'],
+                ['id' => '2'],
+                ['id' => 'does_not_exist']
+            ]
+        ]);
+
+        $this->assertTags($author->id, ['1' => 'tag1', '2' => 'tag2']);
+    }
+
+    public function test_create_set_empty()
+    {
+        $author = $this->create([
+            'tags' => []
+        ]);
+
+        $this->assertTags($author->id, []);
+
+        $author = $this->create([]);
+
+        $this->assertTags($author->id, []);
+    }
+
+    public function test_create_add_one()
+    {
+        Tag::factory()->create(['name' => 'tag1']);
+
+        $author = $this->create([
+            'tags#add' => [
+                ['id' => '1']
+            ]
+        ]);
+
+        $this->assertTags($author->id, ['1' => 'tag1']);
+    }
+
+    public function test_create_add_one_not_exists()
+    {
+        $author = $this->create([
+            'tags#add' => [
+                ['id' => 'does_not_exist']
+            ]
+        ]);
+
+        $this->assertTags($author->id, []);
+    }
+
+    public function test_create_add_many()
+    {
+        Tag::factory(2)->sequence(['name' => 'tag1'], ['name' => 'tag2'])->create();
+
+        $author = $this->create([
+            'tags#add' => [
+                ['id' => '1'],
+                ['id' => '2'],
+                ['id' => 'does_not_exist']
+            ]
+        ]);
+
+        $this->assertTags($author->id, ['1' => 'tag1', '2' => 'tag2']);
+    }
+
+    public function test_create_delete()
+    {
+        Tag::factory()->create(['name' => 'tag1']);
+
+        $author = $this->create([
+            'tags#delete' => [
+                ['id' => '1'],
+                ['id' => 'does_not_exist']
+            ]
+        ]);
+
+        $this->assertTags($author->id, []);
+    }
+
     protected function createAuthorWithTags($numTags): Author
     {
         $author = Author::factory()
@@ -197,7 +303,7 @@ class EloquentLinkManyRelationTest extends ApiResourcesEloquentTest
         return $author;
     }
 
-    protected function save(string $id, array $data = []): array
+    protected function save(?string $id = null, array $data = []): array
     {
         return (new ApiResources())->requestFromInput(BlogApi::class, [
             'resource' => 'Blog.AuthorResource',
@@ -207,6 +313,16 @@ class EloquentLinkManyRelationTest extends ApiResourcesEloquentTest
             ],
             'data' => $data
         ]);
+    }
+
+    protected function create(array $data = []): Author
+    {
+        ['data' => $author] = $this->save(null, [
+            'name' => 'author1',
+            'email' => 'mail@author1',
+            ...$data
+        ]);
+        return $author;
     }
 
     protected function get(string $id): array
