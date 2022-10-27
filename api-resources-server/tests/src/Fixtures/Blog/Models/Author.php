@@ -11,12 +11,17 @@ class Author extends EloquentModel
 
     public static $type = 'Blog.Author';
 
-    public $timestamps = false;
-
     protected $table = 'authors';
+
+    public $timestamps = false;
 
     public function articles()
     {
         return $this->hasMany(Article::class);
+    }
+
+    public function tags()
+    {
+        return $this->morphToMany(Tag::class, 'user', 'tag_users');
     }
 }

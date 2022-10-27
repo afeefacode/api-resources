@@ -8,7 +8,7 @@ use Afeefa\ApiResources\Type\Type;
 
 class TagType extends Type
 {
-    protected static string $type = 'Blog.TagType';
+    protected static string $type = 'Blog.Tag';
 
     protected function fields(FieldBag $fields): void
     {
