@@ -45,7 +45,7 @@ class ModelRelationResolver
                 $selectFields = $r->getSelectFields();
                 if ($eloquentRelation instanceof HasOneOrMany) { // reference to the owner in the related table
                     $selectFields[] = $eloquentRelation->getForeignKeyName();
-                    if ($eloquentRelation instanceof MorphOneOrMany) { // reference to the owner in the related table
+                    if ($eloquentRelation instanceof MorphOneOrMany) { // polymorphic type
                         $selectFields[] = $eloquentRelation->getMorphType();
                     }
                 }
@@ -72,7 +72,7 @@ class ModelRelationResolver
                 });
         }
 
-        if ($eloquentRelation instanceof BelongsTo) { // reference to the owner in the related table
+        if ($eloquentRelation instanceof BelongsTo) { // reference to the related in the owner table
             $r
                 ->saveRelatedToOwner(function (?string $id) use ($eloquentRelation) {
                     return [$eloquentRelation->getForeignKeyName() => $id];
