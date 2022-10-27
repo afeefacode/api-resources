@@ -250,4 +250,9 @@ class ApiRequest implements ContainerAwareInterface, ToSchemaJsonInterface, Json
         ];
         return $json;
     }
+
+    public function toArray(): array
+    {
+        return $this->jsonSerialize();
+    }
 }
