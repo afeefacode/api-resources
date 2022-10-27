@@ -15,7 +15,7 @@ class ApiResources
         return $container->get($ApiClass);
     }
 
-    public function requestFromInput($ApiClass, ?array $input = null)
+    public function requestFromInput($ApiClass, ?array $input = null): array
     {
         $container = $this->getContainer();
         /** @var Api */
