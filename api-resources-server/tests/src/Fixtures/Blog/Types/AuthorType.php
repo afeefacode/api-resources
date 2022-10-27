@@ -45,6 +45,11 @@ class AuthorType extends ModelType
 
     protected function createFields(FieldBag $createFields, FieldBag $updateFields): void
     {
-        $createFields->from($updateFields, 'name');
+        $createFields
+            ->from($updateFields, 'name')
+
+            ->attribute('email', StringAttribute::class)
+
+            ->attribute('password', StringAttribute::class);
     }
 }

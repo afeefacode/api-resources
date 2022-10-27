@@ -33,6 +33,36 @@ class ModelResourceTest extends ApiResourcesEloquentTest
         $this->assertEquals(3, $data[1]['count_articles']);
     }
 
+    public function test_create_model()
+    {
+        Author::factory()
+            ->count(2)
+            ->has(Article::factory()->count(3))
+            ->create();
+
+        $result = (new ApiResources())->requestFromInput(BackendApi::class, [
+            'resource' => 'Blog.AuthorResource',
+            'action' => 'save',
+            'data' => [
+                'name' => 'King Writer',
+                'email' => 'king@writer',
+                'password' => 'kingwriter123'
+            ],
+            'fields' => [
+                'name' => true,
+                'count_articles' => true
+            ]
+        ]);
+
+        ['data' => $data] = $result;
+
+        $this->assertEquals('King Writer', $data['name']);
+        $this->assertEquals(0, $data['count_articles']);
+
+        $this->assertEquals(3, Author::count());
+        $this->assertEquals(6, Article::count());
+    }
+
     public function test_update_model()
     {
         $authors = Author::factory()
@@ -58,7 +88,6 @@ class ModelResourceTest extends ApiResourcesEloquentTest
         ['data' => $data] = $result;
 
         $this->assertEquals('King Writer', $data['name']);
-        $this->assertEquals(3, $data['count_articles']);
         $this->assertEquals(3, $data['count_articles']);
     }
 }
