@@ -32,7 +32,9 @@ class AuthorType extends ModelType
 
             ->relation('links', Type::list(LinkType::class))
 
-            ->relation('featured_tag', TagType::class);
+            ->relation('featured_tag', TagType::class)
+
+            ->relation('profile', ProfileType::class);
     }
 
     protected function updateFields(FieldBag $updateFields): void
@@ -51,7 +53,9 @@ class AuthorType extends ModelType
 
             ->relation('links', Type::list(LinkType::class))
 
-            ->relation('featured_tag', Type::link(TagType::class));
+            ->relation('featured_tag', Type::link(TagType::class))
+
+            ->relation('profile', ProfileType::class);
     }
 
     protected function createFields(FieldBag $createFields, FieldBag $updateFields): void
@@ -65,6 +69,8 @@ class AuthorType extends ModelType
 
             ->from($updateFields, 'links')
 
-            ->from($updateFields, 'featured_tag');
+            ->from($updateFields, 'featured_tag')
+
+            ->from($updateFields, 'profile');
     }
 }

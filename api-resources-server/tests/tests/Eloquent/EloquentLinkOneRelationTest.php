@@ -9,8 +9,6 @@ use Afeefa\ApiResources\Test\Fixtures\Blog\Api\BlogApi;
 use Afeefa\ApiResources\Test\Fixtures\Blog\Models\Author;
 use Afeefa\ApiResources\Test\Fixtures\Blog\Models\Tag;
 
-use function Afeefa\ApiResources\Test\toArray;
-
 class EloquentLinkOneRelationTest extends ApiResourcesEloquentTest
 {
     public function test_set()
@@ -47,6 +45,24 @@ class EloquentLinkOneRelationTest extends ApiResourcesEloquentTest
         $this->assertFeaturedTag($author->id, []);
     }
 
+    public function test_set_empty()
+    {
+        $author = Author::factory()
+            ->for(Tag::factory()->create(['name' => 'tag1']), 'featured_tag')
+            ->create();
+
+        $this->assertFeaturedTag($author->id, ['1', 'tag1']);
+
+        $this->save(
+            id: $author->id,
+            data: [
+                'featured_tag' => null
+            ]
+        );
+
+        $this->assertFeaturedTag($author->id, []);
+    }
+
     public function test_create_set()
     {
         Tag::factory()->create(['name' => 'tag1']);
@@ -67,6 +83,19 @@ class EloquentLinkOneRelationTest extends ApiResourcesEloquentTest
                 'id' => 'does_not_exist'
             ]
         ]);
+
+        $this->assertFeaturedTag($author->id, []);
+    }
+
+    public function test_create_set_empty()
+    {
+        $author = $this->create([
+            'featured_tag' => null
+        ]);
+
+        $this->assertFeaturedTag($author->id, []);
+
+        $author = $this->create();
 
         $this->assertFeaturedTag($author->id, []);
     }

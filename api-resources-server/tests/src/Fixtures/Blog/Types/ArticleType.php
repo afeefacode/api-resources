@@ -33,8 +33,6 @@ class ArticleType extends ModelType
 
             ->relation('author', AuthorType::class)
 
-            ->relation('comments', Type::list(CommentType::class))
-
             ->relation('tags', Type::list(TagType::class));
     }
 

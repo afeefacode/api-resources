@@ -34,4 +34,9 @@ class Author extends EloquentModel
     {
         return $this->belongsTo(Tag::class);
     }
+
+    public function profile()
+    {
+        return $this->belongsTo(Profile::class);
+    }
 }
