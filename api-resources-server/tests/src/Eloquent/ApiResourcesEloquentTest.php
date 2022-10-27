@@ -5,6 +5,7 @@ namespace Afeefa\ApiResources\Test\Eloquent;
 use Afeefa\ApiResources\Test\ApiResourcesTest;
 use Illuminate\Database\Capsule\Manager as DB;
 use Illuminate\Database\Eloquent\Factories\Factory;
+use Illuminate\Database\Eloquent\Relations\Relation;
 use Illuminate\Events\Dispatcher;
 use PDO;
 
@@ -12,26 +13,18 @@ class ApiResourcesEloquentTest extends ApiResourcesTest
 {
     private static ?PDO $pdo = null;
 
-    private static array $usedTables = [];
+    private static ?string $dbName = null;
 
     public static function setUpBeforeClass(): void
     {
         static::connectDb();
     }
 
-    protected function tearDown(): void
+    protected function setUp(): void
     {
-        parent::tearDown();
+        parent::setUp();
 
-        $tables = array_keys(static::$usedTables);
-        if (count($tables)) {
-            $pdo = static::$pdo;
-            $pdo->exec('SET foreign_key_checks = 0');
-            foreach (array_keys(static::$usedTables) as $table) {
-                $pdo->exec("truncate table {$table}");
-            }
-            $pdo->exec('SET foreign_key_checks = 1');
-        }
+        $this->truncateUsedTables();
     }
 
     protected function modelTypeBuilder(): ModelTypeBuilder
@@ -59,6 +52,11 @@ class ApiResourcesEloquentTest extends ApiResourcesTest
             ]);
 
             self::$pdo = $capsule->getConnection()->getPdo();
+            self::$dbName = $dbConfig['name'];
+
+            // enforce morph maps
+
+            Relation::requireMorphMap();
 
             // Model factories have to live here Models/Factories
 
@@ -69,15 +67,31 @@ class ApiResourcesEloquentTest extends ApiResourcesTest
             Factory::guessModelNamesUsing(function (Factory $factory) {
                 return preg_replace('/Factories\\\(.+)Factory/', '$1', $factory::class);
             });
+        }
+    }
 
-            // track all tables changed
+    protected static function truncateUsedTables()
+    {
+        $dbName = self::$dbName;
+        $tables = DB::select(
+            <<<EOT
+                SELECT TABLE_NAME
+                from information_schema.tables
+                WHERE TABLE_SCHEMA = '{$dbName}'
+                AND TABLE_NAME <> 'phinxlog'
+                AND TABLE_ROWS > 0
+                EOT
+        );
 
-            $dispatcher = $capsule->getEventDispatcher();
-            $dispatcher->listen('eloquent.created: *', function (string $event, array $models) {
-                foreach ($models as $model) {
-                    static::$usedTables[$model->getTable()] = true;
-                }
-            });
+        $tables = array_map(fn ($table) => $table->TABLE_NAME, $tables);
+
+        if (count($tables)) {
+            $pdo = static::$pdo;
+            $pdo->exec('SET foreign_key_checks = 0');
+            foreach ($tables as $table) {
+                $pdo->exec("truncate table {$table}");
+            }
+            $pdo->exec('SET foreign_key_checks = 1');
         }
     }
 }
