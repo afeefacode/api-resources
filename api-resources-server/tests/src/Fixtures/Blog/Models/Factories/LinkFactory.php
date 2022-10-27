@@ -6,12 +6,12 @@ use function Afeefa\ApiResources\Test\fake;
 
 use Illuminate\Database\Eloquent\Factories\Factory;
 
-class TagFactory extends Factory
+class LinkFactory extends Factory
 {
     public function definition()
     {
         return [
-            'name' => fake()->unique()->word()
+            'url' => fake()->url()
         ];
     }
 }

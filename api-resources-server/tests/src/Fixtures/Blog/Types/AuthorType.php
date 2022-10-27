@@ -28,19 +28,26 @@ class AuthorType extends ModelType
                     ->restrictTo(Relation::RESTRICT_TO_COUNT);
             })
 
-            ->relation('tags', Type::list(TagType::class));
+            ->relation('tags', Type::list(TagType::class))
+
+            ->relation('links', Type::list(LinkType::class));
     }
 
     protected function updateFields(FieldBag $updateFields): void
     {
-        $updateFields->attribute('name', function (StringAttribute $attribute) {
-            $attribute->validate(function (StringValidator $v) {
-                $v
-                    ->filled()
-                    ->min(5)
-                    ->max(101);
-            });
-        });
+        $updateFields
+            ->attribute('name', function (StringAttribute $attribute) {
+                $attribute->validate(function (StringValidator $v) {
+                    $v
+                        ->filled()
+                        ->min(5)
+                        ->max(101);
+                });
+            })
+
+            ->relation('tags', Type::list(Type::link(TagType::class)))
+
+            ->relation('links', Type::list(LinkType::class));
     }
 
     protected function createFields(FieldBag $createFields, FieldBag $updateFields): void
@@ -48,8 +55,6 @@ class AuthorType extends ModelType
         $createFields
             ->from($updateFields, 'name')
 
-            ->attribute('email', StringAttribute::class)
-
-            ->attribute('password', StringAttribute::class);
+            ->attribute('email', StringAttribute::class);
     }
 }

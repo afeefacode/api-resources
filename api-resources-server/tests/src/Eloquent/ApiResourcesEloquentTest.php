@@ -79,7 +79,7 @@ class ApiResourcesEloquentTest extends ApiResourcesTest
                 from information_schema.tables
                 WHERE TABLE_SCHEMA = '{$dbName}'
                 AND TABLE_NAME <> 'phinxlog'
-                AND TABLE_ROWS > 0
+                AND (TABLE_ROWS > 0 OR AUTO_INCREMENT > 1)
                 EOT
         );
 

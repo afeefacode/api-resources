@@ -95,7 +95,7 @@ class MutationRelationLinkManyResolverTest extends MutationTest
                                 ->get(function () {
                                     $this->testWatcher->info('get');
                                 })
-                                ->link(function (ModelInterface $owner, ?string $id, string $typeName) use ($r) {
+                                ->link(function (ModelInterface $owner, string $id, string $typeName) use ($r) {
                                     $this->testWatcher->info('link');
 
                                     $this->testWatcher->info2([
@@ -173,7 +173,7 @@ class MutationRelationLinkManyResolverTest extends MutationTest
                                     }
                                     return [];
                                 })
-                                ->link(function (ModelInterface $owner, ?string $id, string $typeName) use ($r) {
+                                ->link(function (ModelInterface $owner, string $id, string $typeName) use ($r) {
                                     $this->testWatcher->info('link');
 
                                     $this->testWatcher->info2([
@@ -349,7 +349,7 @@ class MutationRelationLinkManyResolverTest extends MutationTest
                                     $this->testWatcher->info('get');
                                     return Model::fromList('TYPE', $this->test_related_operation_add_existingData);
                                 })
-                                ->link(function (ModelInterface $owner, ?string $id, string $typeName) use ($r) {
+                                ->link(function (ModelInterface $owner, string $id, string $typeName) use ($r) {
                                     $this->testWatcher->info('link:' . $id);
                                 })
                                 ->unlink(function (ModelInterface $owner, ModelInterface $modelToUnlink) use ($r) {

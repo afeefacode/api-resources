@@ -128,7 +128,7 @@ class MutationRelationLinkOneResolverTest extends MutationTest
                                     }
                                     return null;
                                 })
-                                ->link(function (ModelInterface $owner, ?string $id, string $typeName) use ($r) {
+                                ->link(function (ModelInterface $owner, string $id, string $typeName) use ($r) {
                                     $this->testWatcher->info('link');
 
                                     $this->testWatcher->info2([
@@ -279,7 +279,7 @@ class MutationRelationLinkOneResolverTest extends MutationTest
                                     $this->testWatcher->info('get'); // never called
                                     return null;
                                 })
-                                ->link(function (ModelInterface $owner, ?string $id, string $typeName) use ($r) {
+                                ->link(function (ModelInterface $owner, string $id, string $typeName) use ($r) {
                                     $this->testWatcher->info('link');
 
                                     $this->testWatcher->info2([

@@ -45,8 +45,7 @@ class ModelResourceTest extends ApiResourcesEloquentTest
             'action' => 'save',
             'data' => [
                 'name' => 'King Writer',
-                'email' => 'king@writer',
-                'password' => 'kingwriter123'
+                'email' => 'king@writer'
             ],
             'fields' => [
                 'name' => true,

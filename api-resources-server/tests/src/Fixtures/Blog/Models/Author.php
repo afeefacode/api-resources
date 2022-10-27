@@ -24,4 +24,9 @@ class Author extends EloquentModel
     {
         return $this->morphToMany(Tag::class, 'user', 'tag_users');
     }
+
+    public function links()
+    {
+        return $this->hasMany(Link::class);
+    }
 }

@@ -779,7 +779,7 @@ class MutationActionModelResolverRelationsTest extends MutationTest
                                 ->get(function (ModelInterface $owner) {
                                     $this->testWatcher->info('linkOneGet_' . $owner->id);
                                 })
-                                ->link(function (ModelInterface $owner, ?string $id, string $typeName) {
+                                ->link(function (ModelInterface $owner, string $id, string $typeName) {
                                     $this->testWatcher->info('linkOneLink_' . $id);
                                     $owner->link_one = Model::fromSingle($typeName, ['title' => $id]);
                                 })
@@ -795,7 +795,7 @@ class MutationActionModelResolverRelationsTest extends MutationTest
                                     $this->testWatcher->info('linkManyGet_' . $owner->id);
                                     return [];
                                 })
-                                ->link(function (ModelInterface $owner, ?string $id, string $typeName) {
+                                ->link(function (ModelInterface $owner, string $id, string $typeName) {
                                     $this->testWatcher->info('linkManyLink_' . $id);
                                     $owner->link_many[] = Model::fromSingle($typeName, ['title' => $id]);
                                 })
