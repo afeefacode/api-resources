@@ -21,7 +21,7 @@ use Afeefa\ApiResources\Type\Type;
 
 use Afeefa\ApiResources\Type\TypeClassMap;
 
-class MutationModelResolverTest extends MutationTest
+class MutationActionModelResolverRelationsTest extends MutationTest
 {
     protected Model $model;
     protected array $modelIdMap = [];
