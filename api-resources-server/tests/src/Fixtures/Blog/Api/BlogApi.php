@@ -9,9 +9,9 @@ use Afeefa\ApiResources\Test\Fixtures\Blog\Resources\ArticleResource;
 use Afeefa\ApiResources\Test\Fixtures\Blog\Resources\AuthorResource;
 use Afeefa\ApiResources\Test\Fixtures\Blog\Resources\TagResource;
 
-class BackendApi extends Api
+class BlogApi extends Api
 {
-    protected static string $type = 'Blog.BackendApi';
+    protected static string $type = 'Blog.BlogApi';
 
     protected function resources(ResourceBag $resources): void
     {

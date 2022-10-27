@@ -4,7 +4,7 @@ namespace Afeefa\ApiResources\Tests\Eloquent;
 
 use Afeefa\ApiResources\ApiResources;
 use Afeefa\ApiResources\Test\Eloquent\ApiResourcesEloquentTest;
-use Afeefa\ApiResources\Test\Fixtures\Blog\Api\BackendApi;
+use Afeefa\ApiResources\Test\Fixtures\Blog\Api\BlogApi;
 use Afeefa\ApiResources\Test\Fixtures\Blog\Models\Article;
 use Afeefa\ApiResources\Test\Fixtures\Blog\Models\Author;
 
@@ -17,7 +17,7 @@ class ModelResourceTest extends ApiResourcesEloquentTest
             ->has(Article::factory()->count(3))
             ->create();
 
-        $result = (new ApiResources())->requestFromInput(BackendApi::class, [
+        $result = (new ApiResources())->requestFromInput(BlogApi::class, [
             'resource' => 'Blog.AuthorResource',
             'action' => 'list',
             'fields' => [
@@ -40,7 +40,7 @@ class ModelResourceTest extends ApiResourcesEloquentTest
             ->has(Article::factory()->count(3))
             ->create();
 
-        $result = (new ApiResources())->requestFromInput(BackendApi::class, [
+        $result = (new ApiResources())->requestFromInput(BlogApi::class, [
             'resource' => 'Blog.AuthorResource',
             'action' => 'save',
             'data' => [
@@ -70,7 +70,7 @@ class ModelResourceTest extends ApiResourcesEloquentTest
             ->has(Article::factory()->count(3))
             ->create();
 
-        $result = (new ApiResources())->requestFromInput(BackendApi::class, [
+        $result = (new ApiResources())->requestFromInput(BlogApi::class, [
             'resource' => 'Blog.AuthorResource',
             'action' => 'save',
             'params' => [
