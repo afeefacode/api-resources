@@ -76,7 +76,7 @@ class MutationRelationResolver extends BaseFieldResolver
 
     public function getSaveOwnerToRelatedFields(?string $id, ?string $typeName): array
     {
-        return ($this->saveOwnerToRelatedCallback)($id, $typeName);
+        return ($this->saveOwnerToRelatedCallback)($id, $typeName) ?? [];
     }
 
     public function ownerOperation(string $ownerOperation): self
