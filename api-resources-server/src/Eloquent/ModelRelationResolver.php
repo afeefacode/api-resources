@@ -169,6 +169,22 @@ class ModelRelationResolver
 
     public function save_link_many_relation(MutationRelationLinkManyResolver $r)
     {
+        $r
+            ->get(function (Model $owner) use ($r) {
+                $eloquentRelation = $this->getEloquentRelationWrapper($r->getRelation(), $owner)->relation();
+                return $eloquentRelation->get()->all();
+            })
+            ->link(function (Model $owner, string $id, string $typeName) use ($r) {
+                $eloquentRelation = $this->getEloquentRelationWrapper($r->getRelation(), $owner)->relation();
+                $relatedModel = $eloquentRelation->getRelated()::find($id);
+                if ($relatedModel) {
+                    $eloquentRelation->attach($relatedModel);
+                }
+            })
+            ->unlink(function (Model $owner, Model $modelToUnlink) use ($r) {
+                $eloquentRelation = $this->getEloquentRelationWrapper($r->getRelation(), $owner)->relation();
+                $eloquentRelation->detach($modelToUnlink);
+            });
     }
 
     protected function getRelationCountsOfRelation(QueryRelationResolver $r): array
