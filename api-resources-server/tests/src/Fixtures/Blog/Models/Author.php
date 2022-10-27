@@ -29,4 +29,9 @@ class Author extends EloquentModel
     {
         return $this->hasMany(Link::class);
     }
+
+    public function featured_tag()
+    {
+        return $this->belongsTo(Tag::class);
+    }
 }

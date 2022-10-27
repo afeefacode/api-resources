@@ -5,37 +5,76 @@ namespace Afeefa\ApiResources\Tests\Eloquent\Blog;
 use Afeefa\ApiResources\ApiResources;
 use Afeefa\ApiResources\Test\Eloquent\ApiResourcesEloquentTest;
 use Afeefa\ApiResources\Test\Fixtures\Blog\Api\BlogApi;
-use Afeefa\ApiResources\Test\Fixtures\Blog\Models\Article;
+
 use Afeefa\ApiResources\Test\Fixtures\Blog\Models\Author;
+use Afeefa\ApiResources\Test\Fixtures\Blog\Models\Tag;
+
+use function Afeefa\ApiResources\Test\toArray;
 
 class EloquentLinkOneRelationTest extends ApiResourcesEloquentTest
 {
     public function test_set()
     {
-        $article = Article::factory()
-            ->forAuthor()
-            ->create();
+        $author = Author::factory()->create();
 
-        $author = Author::factory()->create([
-            'name' => 'author2'
-        ]);
+        Tag::factory()->create(['name' => 'tag1']);
 
         $this->save(
-            id: $article->id,
+            id: $author->id,
             data: [
-                'author' => [
-                    'id' => $author->id
+                'featured_tag' => [
+                    'id' => '1'
                 ]
             ]
         );
 
-        $this->assertAuthor($article->id, ['2', 'author2']);
+        $this->assertFeaturedTag($author->id, ['1', 'tag1']);
     }
 
-    protected function save(string $id, array $data = []): array
+    public function test_set_not_exists()
+    {
+        $author = Author::factory()->create();
+
+        $this->save(
+            id: $author->id,
+            data: [
+                'featured_tag' => [
+                    'id' => 'does_not_exist'
+                ]
+            ]
+        );
+
+        $this->assertFeaturedTag($author->id, []);
+    }
+
+    public function test_create_set()
+    {
+        Tag::factory()->create(['name' => 'tag1']);
+
+        $author = $this->create([
+            'featured_tag' => [
+                'id' => '1'
+            ]
+        ]);
+
+        $this->assertFeaturedTag($author->id, ['1', 'tag1']);
+    }
+
+    public function test_create_set_not_exists()
+    {
+        $author = $this->create([
+            'featured_tag' => [
+                'id' => 'does_not_exist'
+            ]
+        ]);
+
+        $this->assertFeaturedTag($author->id, []);
+    }
+
+    protected function save(?string $id = null, array $data = []): array
     {
         return (new ApiResources())->requestFromInput(BlogApi::class, [
-            'resource' => 'Blog.ArticleResource',
+            'resource' => 'Blog.AuthorResource',
             'action' => 'save',
             'params' => [
                 'id' => $id
@@ -44,33 +83,45 @@ class EloquentLinkOneRelationTest extends ApiResourcesEloquentTest
         ]);
     }
 
+    protected function create(array $data = []): Author
+    {
+        ['data' => $author] = $this->save(null, [
+            'name' => 'author1',
+            'email' => 'mail@author1',
+            ...$data
+        ]);
+        return $author;
+    }
+
     protected function get(string $id): array
     {
         return (new ApiResources())->requestFromInput(BlogApi::class, [
-            'resource' => 'Blog.ArticleResource',
+            'resource' => 'Blog.AuthorResource',
             'action' => 'get',
             'params' => [
                 'id' => $id
             ],
             'fields' => [
-                'author' => [
+                'featured_tag' => [
                     'name' => true
                 ]
             ]
         ]);
     }
 
-    protected function assertAuthor(?string $id, ?array $author)
+    protected function assertFeaturedTag(?string $id, ?array $tag)
     {
         $result = $this->get($id);
 
+        // debug_dump(toArray($result));
+
         $data = $result['data'];
 
-        if ($author) {
-            $this->assertEquals($author[0], $data['author']['id']);
-            $this->assertEquals($author[1], $data['author']['name']);
+        if ($tag) {
+            $this->assertEquals($tag[0], $data['featured_tag']['id']);
+            $this->assertEquals($tag[1], $data['featured_tag']['name']);
         } else {
-            $this->assertNull($id, $data['author']);
+            $this->assertNull($data['featured_tag']);
         }
     }
 }

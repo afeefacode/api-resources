@@ -89,6 +89,10 @@ class ArticleType extends ModelType
                 $attribute->required();
             })
 
+            ->from($updateFields, 'date', function (Attribute $attribute) {
+                $attribute->required();
+            })
+
             ->from($updateFields, 'author', function (Relation $relation) {
                 $relation->required();
             });

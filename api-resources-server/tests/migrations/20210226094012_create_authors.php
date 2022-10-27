@@ -12,6 +12,9 @@ final class CreateAuthors extends AbstractMigration
             ->addColumn('name', 'string', ['limit' => 255])
             ->addColumn('email', 'string', ['limit' => 255])
 
+            ->addColumn('featured_tag_id', 'integer', ['signed' => false, 'null' => true])
+            ->addForeignKey('featured_tag_id', 'tags', 'id', ['delete' => 'SET_NULL', 'update' => 'NO_ACTION'])
+
             ->create();
     }
 

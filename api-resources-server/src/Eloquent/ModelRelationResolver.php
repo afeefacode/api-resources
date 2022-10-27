@@ -164,6 +164,10 @@ class ModelRelationResolver
                 if ($eloquentRelation instanceof BelongsTo) { // reference to the related in the owner table
                     return [$eloquentRelation->getForeignKeyName() => $id];
                 }
+            })
+            ->exists(function (string $id, string $typeName) use ($r) {
+                $eloquentRelation = $this->getEloquentRelationWrapper($r->getRelation())->relation();
+                return !!$eloquentRelation->getRelated()::find($id);
             });
     }
 
@@ -174,12 +178,14 @@ class ModelRelationResolver
                 $eloquentRelation = $this->getEloquentRelationWrapper($r->getRelation(), $owner)->relation();
                 return $eloquentRelation->get()->all();
             })
+            ->exists(function (string $id, string $typeName) use ($r) {
+                $eloquentRelation = $this->getEloquentRelationWrapper($r->getRelation())->relation();
+                return !!$eloquentRelation->getRelated()::find($id);
+            })
             ->link(function (Model $owner, string $id, string $typeName) use ($r) {
                 $eloquentRelation = $this->getEloquentRelationWrapper($r->getRelation(), $owner)->relation();
                 $relatedModel = $eloquentRelation->getRelated()::find($id);
-                if ($relatedModel) {
-                    $eloquentRelation->attach($relatedModel);
-                }
+                $eloquentRelation->attach($relatedModel);
             })
             ->unlink(function (Model $owner, Model $modelToUnlink) use ($r) {
                 $eloquentRelation = $this->getEloquentRelationWrapper($r->getRelation(), $owner)->relation();
