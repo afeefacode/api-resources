@@ -221,7 +221,7 @@ export class ListViewModel {
       return
     }
 
-    this._changedFiltersTimeout = setTimeout(() => {
+    this._changedFiltersTimeout = window.setTimeout(() => {
       clearTimeout(this._changedFiltersTimeout!)
       this._changedFiltersTimeout = null
 
