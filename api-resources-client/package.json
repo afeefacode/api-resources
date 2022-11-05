@@ -9,7 +9,7 @@
   ],
   "scripts": {
     "dev": "tsc --watch",
-    "build": "rm -rf lib/ && tsc",
+    "build": "rm -rf lib/ && tsc -p tsconfig.build.json",
     "test": "jest"
   },
   "author": "Afeefa Kollektiv <kollektiv@afeefa.de>",
