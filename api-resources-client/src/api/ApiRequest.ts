@@ -1,8 +1,8 @@
 import axios, { AxiosError } from 'axios'
-import { BagEntries } from 'src/bag/Bag'
-import { ActionFilterValueType } from 'src/filter/ActionFilter'
 
 import { Action } from '../action/Action'
+import { BagEntries } from '../bag/Bag'
+import { ActionFilterValueType } from '../filter/ActionFilter'
 import { ApiError } from './ApiError'
 import { ApiResponse } from './ApiResponse'
 
