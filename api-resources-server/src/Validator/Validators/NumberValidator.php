@@ -59,7 +59,7 @@ class NumberValidator extends Validator
         $rules->add('filled')
             ->message('{{ fieldLabel }} sollte einen Wert enthalten.')
             ->validate(function ($value, $filled) {
-                if ($filled && !$value) {
+                if ($filled && !$value && $value !== 0) {
                     return false;
                 }
                 return true;

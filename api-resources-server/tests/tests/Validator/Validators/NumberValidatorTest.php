@@ -25,6 +25,8 @@ class NumberValidatorTest extends TestCase
 
         foreach ([
             'test',
+            '1',
+            '1.1',
             [],
             $this,
             null
@@ -41,6 +43,7 @@ class NumberValidatorTest extends TestCase
             ->filled();
 
         foreach ([
+            0,
             1,
             1.1
         ] as $value) {
@@ -48,7 +51,7 @@ class NumberValidatorTest extends TestCase
         }
 
         foreach ([
-            0,
+            '0',
             '',
             null
         ] as $value) {
@@ -79,6 +82,7 @@ class NumberValidatorTest extends TestCase
             ->min(5);
 
         foreach ([
+            5.0000,
             5,
             6
         ] as $value) {
@@ -87,6 +91,7 @@ class NumberValidatorTest extends TestCase
 
         foreach ([
             4,
+            4.9999,
             0,
             -1
         ] as $value) {
@@ -110,6 +115,7 @@ class NumberValidatorTest extends TestCase
         }
 
         foreach ([
+            5.00001,
             6,
             100
         ] as $value) {
