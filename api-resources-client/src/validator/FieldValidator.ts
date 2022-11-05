@@ -1,4 +1,4 @@
-import { Rule } from './Rule'
+import { FieldRule } from './FieldRule'
 import { RuleValidator, Validator } from './Validator'
 
 export type FieldValidatorJSON = {
@@ -14,8 +14,8 @@ export class FieldValidator<T=any> {
   constructor (validator: Validator<T>, json: FieldValidatorJSON) {
     this._validator = validator
 
-    for (const [name, paramJSON] of Object.entries(json.params)) {
-      this._params[name] = paramJSON
+    for (const [ruleName, paramJSON] of Object.entries(json.params)) {
+      this._params[ruleName] = paramJSON
     }
   }
 
@@ -23,15 +23,16 @@ export class FieldValidator<T=any> {
     return this._params
   }
 
-  public param (name: string): unknown {
-    return this._params[name]
+  public param (ruleName: string): unknown {
+    return this._params[ruleName]
   }
 
   public getRules (fieldLabel: string): RuleValidator<T>[] {
     const rules = this._validator.getRules()
     return [
-      ...Object.keys(rules).map(name => {
-        return this.createRuleValidator(fieldLabel, name, rules[name]!, this._params[name])
+      ...Object.keys(rules).map(ruleName => {
+        const rule = rules[ruleName]!
+        return this.createRuleValidator(new FieldRule(rule, this._params, fieldLabel))
       }),
       ...this._additionalRules
     ]
@@ -48,7 +49,7 @@ export class FieldValidator<T=any> {
   }
 
 
-  protected createRuleValidator (fieldLabel: string, ruleName: string, rule: Rule, params: unknown): RuleValidator<T> {
-    return this._validator.createRuleValidator(fieldLabel, ruleName, rule, params)
+  protected createRuleValidator (rule: FieldRule): RuleValidator<T> {
+    return this._validator.createRuleValidator(rule)
   }
 }

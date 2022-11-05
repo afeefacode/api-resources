@@ -3,9 +3,11 @@ export type RuleJSON = {
 }
 
 export class Rule {
+  public name: string
   private _message: string
 
-  constructor (json: RuleJSON) {
+  constructor (name: string, json: RuleJSON) {
+    this.name = name
     this._message = json.message
   }
 

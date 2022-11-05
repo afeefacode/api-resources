@@ -1,30 +1,30 @@
 import { Validator } from '../Validator';
 export class DateValidator extends Validator {
-    createRuleValidator(fieldLabel, ruleName, rule, params) {
-        if (ruleName === 'date') {
+    createRuleValidator(rule) {
+        if (rule.name === 'date') {
             return value => {
                 if (value !== null && !(value instanceof Date)) { // validate null later
-                    return rule.getMessage(fieldLabel, params);
+                    return rule.message;
                 }
                 return true;
             };
         }
-        if (ruleName === 'null') {
+        if (rule.name === 'null') {
             return value => {
-                if (params === true && !value && value !== null) {
-                    return rule.getMessage(fieldLabel, params);
+                if (rule.params === true && !value && value !== null) {
+                    return rule.message;
                 }
                 return true;
             };
         }
-        if (ruleName === 'filled') {
+        if (rule.name === 'filled') {
             return value => {
-                if (params === true && !value) {
-                    return rule.getMessage(fieldLabel, params);
+                if (rule.params === true && !value) {
+                    return rule.message;
                 }
                 return true;
             };
         }
-        return super.createRuleValidator(fieldLabel, ruleName, rule, params);
+        return super.createRuleValidator(rule);
     }
 }

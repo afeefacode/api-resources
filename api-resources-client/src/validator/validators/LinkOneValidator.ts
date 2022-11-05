@@ -1,18 +1,18 @@
 import { ModelJSON } from '../../Model'
-import { Rule } from '../Rule'
+import { FieldRule } from '../FieldRule'
 import { RuleValidator, Validator } from '../Validator'
 
 export class LinkOneValidator extends Validator<ModelJSON | null> {
-  public createRuleValidator (fieldLabel: string, ruleName: string, rule: Rule, params: unknown): RuleValidator<ModelJSON | null> {
-    if (ruleName === 'filled') {
+  public createRuleValidator (rule: FieldRule): RuleValidator<ModelJSON | null> {
+    if (rule.name === 'filled') {
       return value => {
-        if (params === true && !value) {
-          return rule.getMessage(fieldLabel, params)
+        if (rule.params === true && !value) {
+          return rule.message
         }
         return true
       }
     }
 
-    return super.createRuleValidator(fieldLabel, ruleName, rule, params)
+    return super.createRuleValidator(rule)
   }
 }

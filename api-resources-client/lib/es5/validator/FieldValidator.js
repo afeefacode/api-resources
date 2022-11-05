@@ -1,23 +1,25 @@
+import { FieldRule } from './FieldRule';
 export class FieldValidator {
     constructor(validator, json) {
         this._params = {};
         this._additionalRules = [];
         this._validator = validator;
-        for (const [name, paramJSON] of Object.entries(json.params)) {
-            this._params[name] = paramJSON;
+        for (const [ruleName, paramJSON] of Object.entries(json.params)) {
+            this._params[ruleName] = paramJSON;
         }
     }
     getParams() {
         return this._params;
     }
-    param(name) {
-        return this._params[name];
+    param(ruleName) {
+        return this._params[ruleName];
     }
     getRules(fieldLabel) {
         const rules = this._validator.getRules();
         return [
-            ...Object.keys(rules).map(name => {
-                return this.createRuleValidator(fieldLabel, name, rules[name], this._params[name]);
+            ...Object.keys(rules).map(ruleName => {
+                const rule = rules[ruleName];
+                return this.createRuleValidator(new FieldRule(rule, this._params, fieldLabel));
             }),
             ...this._additionalRules
         ];
@@ -30,7 +32,7 @@ export class FieldValidator {
         this._additionalRules = rules;
         return this;
     }
-    createRuleValidator(fieldLabel, ruleName, rule, params) {
-        return this._validator.createRuleValidator(fieldLabel, ruleName, rule, params);
+    createRuleValidator(rule) {
+        return this._validator.createRuleValidator(rule);
     }
 }

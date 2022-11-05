@@ -1,14 +1,14 @@
 import { Validator } from '../Validator';
 export class SelectValidator extends Validator {
-    createRuleValidator(fieldLabel, ruleName, rule, params) {
-        if (ruleName === 'filled') {
+    createRuleValidator(rule) {
+        if (rule.name === 'filled') {
             return value => {
-                if (params === true && !value) {
-                    return rule.getMessage(fieldLabel, params);
+                if (rule.params === true && !value) {
+                    return rule.message;
                 }
                 return true;
             };
         }
-        return super.createRuleValidator(fieldLabel, ruleName, rule, params);
+        return super.createRuleValidator(rule);
     }
 }

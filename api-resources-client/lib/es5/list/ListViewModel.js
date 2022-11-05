@@ -168,7 +168,7 @@ export class ListViewModel {
         if (this._changedFiltersTimeout) {
             return;
         }
-        this._changedFiltersTimeout = setTimeout(() => {
+        this._changedFiltersTimeout = window.setTimeout(() => {
             clearTimeout(this._changedFiltersTimeout);
             this._changedFiltersTimeout = null;
             this._eventTarget.dispatchEvent(new ListViewFilterChangeEvent('change', this._changedFilters));

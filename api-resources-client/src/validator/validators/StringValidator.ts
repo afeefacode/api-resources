@@ -1,38 +1,38 @@
-import { Rule } from '../Rule'
+import { FieldRule } from '../FieldRule'
 import { RuleValidator, Validator } from '../Validator'
 
 export class StringValidator extends Validator<string | null> {
-  public createRuleValidator (fieldLabel: string, ruleName: string, rule: Rule, params: unknown): RuleValidator<string | null> {
-    if (ruleName === 'filled') {
+  public createRuleValidator (rule: FieldRule): RuleValidator<string | null> {
+    if (rule.name === 'filled') {
       return value => {
-        if (params === true && (!value || !value.length)) {
-          return rule.getMessage(fieldLabel, params)
+        if (rule.params === true && (!value || !value.length)) {
+          return rule.message
         }
         return true
       }
     }
 
-    if (ruleName === 'max') {
+    if (rule.name === 'max') {
       return value => {
-        if (value && value.length > (params as number)) {
-          return rule.getMessage(fieldLabel, params)
+        if (value && value.length > (rule.params as number)) {
+          return rule.message
         }
         return true
       }
     }
 
-    if (ruleName === 'min') {
+    if (rule.name === 'min') {
       return value => {
-        if (!this._params.filled && (!value || !value.length)) {
+        if (!rule.getParams('filled') && (!value || !value.length)) {
           return true
         }
-        if (value && value.length < (params as number)) {
-          return rule.getMessage(fieldLabel, params)
+        if (value && value.length < (rule.params as number)) {
+          return rule.message
         }
         return true
       }
     }
 
-    return super.createRuleValidator(fieldLabel, ruleName, rule, params)
+    return super.createRuleValidator(rule)
   }
 }

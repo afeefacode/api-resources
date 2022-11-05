@@ -1,5 +1,6 @@
 export class Rule {
-    constructor(json) {
+    constructor(name, json) {
+        this.name = name;
         this._message = json.message;
     }
     getMessage(fieldLabel, param) {

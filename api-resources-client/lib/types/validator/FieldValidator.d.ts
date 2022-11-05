@@ -1,4 +1,4 @@
-import { Rule } from './Rule';
+import { FieldRule } from './FieldRule';
 import { RuleValidator, Validator } from './Validator';
 export declare type FieldValidatorJSON = {
     type: string;
@@ -10,10 +10,10 @@ export declare class FieldValidator<T = any> {
     private _additionalRules;
     constructor(validator: Validator<T>, json: FieldValidatorJSON);
     getParams(): Record<string, unknown>;
-    param(name: string): unknown;
+    param(ruleName: string): unknown;
     getRules(fieldLabel: string): RuleValidator<T>[];
     addAdditionalRule(rule: RuleValidator<T>): FieldValidator;
     setAdditionalRules(rules: RuleValidator<T>[]): FieldValidator;
-    protected createRuleValidator(fieldLabel: string, ruleName: string, rule: Rule, params: unknown): RuleValidator<T>;
+    protected createRuleValidator(rule: FieldRule): RuleValidator<T>;
 }
 //# sourceMappingURL=FieldValidator.d.ts.map

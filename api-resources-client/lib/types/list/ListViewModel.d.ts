@@ -1,4 +1,4 @@
-import { ApiAction } from 'src/api/ApiAction';
+import { ApiAction } from '../api/ApiAction';
 import { ApiRequest } from '../api/ApiRequest';
 import { BagEntries } from '../bag/Bag';
 import { ActionFilterValueType } from '../filter/ActionFilter';

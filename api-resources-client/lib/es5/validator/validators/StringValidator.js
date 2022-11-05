@@ -1,33 +1,33 @@
 import { Validator } from '../Validator';
 export class StringValidator extends Validator {
-    createRuleValidator(fieldLabel, ruleName, rule, params) {
-        if (ruleName === 'filled') {
+    createRuleValidator(rule) {
+        if (rule.name === 'filled') {
             return value => {
-                if (params === true && (!value || !value.length)) {
-                    return rule.getMessage(fieldLabel, params);
+                if (rule.params === true && (!value || !value.length)) {
+                    return rule.message;
                 }
                 return true;
             };
         }
-        if (ruleName === 'max') {
+        if (rule.name === 'max') {
             return value => {
-                if (value && value.length > params) {
-                    return rule.getMessage(fieldLabel, params);
+                if (value && value.length > rule.params) {
+                    return rule.message;
                 }
                 return true;
             };
         }
-        if (ruleName === 'min') {
+        if (rule.name === 'min') {
             return value => {
-                if (!this._params.filled && (!value || !value.length)) {
+                if (!rule.getParams('filled') && (!value || !value.length)) {
                     return true;
                 }
-                if (value && value.length < params) {
-                    return rule.getMessage(fieldLabel, params);
+                if (value && value.length < rule.params) {
+                    return rule.message;
                 }
                 return true;
             };
         }
-        return super.createRuleValidator(fieldLabel, ruleName, rule, params);
+        return super.createRuleValidator(rule);
     }
 }

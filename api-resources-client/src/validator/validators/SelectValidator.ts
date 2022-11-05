@@ -1,17 +1,17 @@
-import { Rule } from '../Rule'
+import { FieldRule } from '../FieldRule'
 import { RuleValidator, Validator } from '../Validator'
 
 export class SelectValidator extends Validator<unknown> {
-  public createRuleValidator (fieldLabel: string, ruleName: string, rule: Rule, params: unknown): RuleValidator<unknown> {
-    if (ruleName === 'filled') {
+  public createRuleValidator (rule: FieldRule): RuleValidator<unknown> {
+    if (rule.name === 'filled') {
       return value => {
-        if (params === true && !value) {
-          return rule.getMessage(fieldLabel, params)
+        if (rule.params === true && !value) {
+          return rule.message
         }
         return true
       }
     }
 
-    return super.createRuleValidator(fieldLabel, ruleName, rule, params)
+    return super.createRuleValidator(rule)
   }
 }
