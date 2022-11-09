@@ -3,12 +3,11 @@ import { Rule } from '../../src/validator/Rule'
 import { RuleValidator } from '../../src/validator/Validator'
 import { IntValidator } from '../../src/validator/validators/IntValidator'
 
-function createIntValidator (ruleName: string, params = {}, message: string = ''): RuleValidator<string | number | null> {
+function createIntValidator (ruleName: string, params = {}, message: string = ''): RuleValidator<number | null> {
   const validator = new IntValidator()
   const rule = new Rule(ruleName, { message })
   const fieldRule = new FieldRule(rule, params, 'MyInt')
-  const ruleValidator = validator.createRuleValidator(fieldRule)
-  return ruleValidator
+  return validator.createRuleValidator(fieldRule)
 }
 
 describe.each([
@@ -16,11 +15,7 @@ describe.each([
   1,
   1000,
   3.0,
-  null,
-  '',
-  '1',
-  '3.0',
-  '3'
+  null
 ])('int', value => {
   test('valid int: ' + String(value), () => {
     const ruleValidator = createIntValidator('int')
@@ -29,12 +24,16 @@ describe.each([
 })
 
 describe.each([
-  -1,
-  3.3,
+  'test',
+  '1',
   '1.1',
-  '-3',
-  'abc',
-  {},
+  '-1',
+  -1,
+  1.1,
+  -1.1,
+  [],
+  this,
+  '',
   () => {}
 ])('int', value => {
   test('invalid int: ' + String(value), () => {
@@ -54,12 +53,11 @@ describe.each([
 })
 
 describe.each([
-  '',
   null
 ])('filled', value => {
   test('invalid filled: ' + String(value), () => {
     const ruleValidator = createIntValidator('filled', { filled: true }, '{{ fieldLabel }} muss ausgefüllt sein.')
-    expect(ruleValidator(value as any)).toBe('MyInt muss ausgefüllt sein.')
+    expect(ruleValidator(value)).toBe('MyInt muss ausgefüllt sein.')
   })
 })
 
@@ -79,7 +77,7 @@ describe.each([
 ])('null', value => {
   test('invalid null: ' + String(value), () => {
     const ruleValidator = createIntValidator('null', {}, '{{ fieldLabel }} darf nicht null sein.')
-    expect(ruleValidator(value as any)).toBe('MyInt darf nicht null sein.')
+    expect(ruleValidator(value)).toBe('MyInt darf nicht null sein.')
   })
 })
 
@@ -98,11 +96,12 @@ describe.each([
 ])('max', value => {
   test('invalid max: ' + String(value), () => {
     const ruleValidator = createIntValidator('max', { max: 5 }, '{{ fieldLabel }} muss <= {{ param }} sein.')
-    expect(ruleValidator(value as any)).toBe('MyInt muss <= 5 sein.')
+    expect(ruleValidator(value)).toBe('MyInt muss <= 5 sein.')
   })
 })
 
 describe.each([
+  null,
   5,
   6
 ])('min', value => {
@@ -117,6 +116,6 @@ describe.each([
 ])('min', value => {
   test('invalid min: ' + String(value), () => {
     const ruleValidator = createIntValidator('min', { min: 5 }, '{{ fieldLabel }} muss >= {{ param }} sein.')
-    expect(ruleValidator(value as any)).toBe('MyInt muss >= 5 sein.')
+    expect(ruleValidator(value)).toBe('MyInt muss >= 5 sein.')
   })
 })

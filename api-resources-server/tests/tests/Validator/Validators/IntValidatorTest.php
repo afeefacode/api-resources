@@ -10,9 +10,7 @@ class IntValidatorTest extends TestCase
 {
     public function test_default_int()
     {
-        /** @var IntValidator */
-        $validator = (new Container())
-            ->create(IntValidator::class);
+        $validator = $this->createIntValidator();
 
         foreach ([
             0,
@@ -34,7 +32,8 @@ class IntValidatorTest extends TestCase
             -1.1,
             [],
             $this,
-            ''
+            '',
+            fn () => null
         ] as $value) {
             $this->assertFalse($validator->validateRule('int', $value));
         }
@@ -42,9 +41,7 @@ class IntValidatorTest extends TestCase
 
     public function test_filled()
     {
-        /** @var IntValidator */
-        $validator = (new Container())
-            ->create(IntValidator::class)
+        $validator = $this->createIntValidator()
             ->filled();
 
         foreach ([
@@ -63,21 +60,18 @@ class IntValidatorTest extends TestCase
 
     public function test_null()
     {
-        /** @var IntValidator */
-        $validator = (new Container())
-            ->create(IntValidator::class)
+        $validator = $this->createIntValidator()
             ->null();
 
         foreach ([
+            0,
             1,
             null
         ] as $value) {
             $this->assertTrue($validator->validateRule('null', $value));
         }
 
-        /** @var IntValidator */
-        $validator = (new Container())
-            ->create(IntValidator::class);
+        $validator = $this->createIntValidator();
 
         foreach ([
             null
@@ -88,9 +82,7 @@ class IntValidatorTest extends TestCase
 
     public function test_max()
     {
-        /** @var IntValidator */
-        $validator = (new Container())
-            ->create(IntValidator::class)
+        $validator = $this->createIntValidator()
             ->max(5);
 
         foreach ([
@@ -109,12 +101,11 @@ class IntValidatorTest extends TestCase
 
     public function test_min()
     {
-        /** @var StringValidator */
-        $validator = (new Container())
-            ->create(IntValidator::class)
+        $validator = $this->createIntValidator()
             ->min(5);
 
         foreach ([
+            null,
             5,
             6
         ] as $value) {
@@ -126,5 +117,27 @@ class IntValidatorTest extends TestCase
         ] as $value) {
             $this->assertFalse($validator->validateRule('min', $value));
         }
+
+        $validator = $this->createIntValidator()
+            ->filled()
+            ->min(5);
+
+        foreach ([
+            null
+        ] as $value) {
+            $this->assertTrue($validator->validateRule('min', $value));
+        }
+
+        foreach ([
+            null
+        ] as $value) {
+            $this->assertFalse($validator->validate('min', $value));
+        }
+    }
+
+    protected function createIntValidator(): IntValidator
+    {
+        return (new Container())
+            ->create(IntValidator::class);
     }
 }

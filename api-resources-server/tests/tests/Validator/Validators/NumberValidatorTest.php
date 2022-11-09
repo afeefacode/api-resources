@@ -10,36 +10,33 @@ class NumberValidatorTest extends TestCase
 {
     public function test_default_number()
     {
-        /** @var NumberValidator */
-        $validator = (new Container())
-            ->create(NumberValidator::class);
+        $validator = $this->createNumberValidator();
 
         foreach ([
             1,
             1.1,
             0,
-            -1
+            null
         ] as $value) {
-            $this->assertTrue($validator->validate($value));
+            $this->assertTrue($validator->validateRule('number', $value));
         }
 
         foreach ([
+            -1,
+            -1.1,
             'test',
             '1',
             '1.1',
             [],
-            $this,
-            null
+            $this
         ] as $value) {
-            $this->assertFalse($validator->validate($value));
+            $this->assertFalse($validator->validateRule('number', $value));
         }
     }
 
     public function test_filled()
     {
-        /** @var NumberValidator */
-        $validator = (new Container())
-            ->create(NumberValidator::class)
+        $validator = $this->createNumberValidator()
             ->filled();
 
         foreach ([
@@ -47,30 +44,57 @@ class NumberValidatorTest extends TestCase
             1,
             1.1
         ] as $value) {
-            $this->assertTrue($validator->validate($value));
+            $this->assertTrue($validator->validateRule('filled', $value));
         }
 
         foreach ([
-            '0',
-            '',
             null
         ] as $value) {
-            $this->assertFalse($validator->validate($value));
+            $this->assertFalse($validator->validateRule('filled', $value));
         }
     }
 
     public function test_null()
     {
-        /** @var NumberValidator */
-        $validator = (new Container())
-            ->create(NumberValidator::class)
+        $validator = $this->createNumberValidator()
             ->null();
 
         foreach ([
             1,
+            1.2,
             null
         ] as $value) {
-            $this->assertTrue($validator->validate($value));
+            $this->assertTrue($validator->validateRule('null', $value));
+        }
+
+        $validator = $this->createNumberValidator();
+
+        foreach ([
+            null
+        ] as $value) {
+            $this->assertFalse($validator->validateRule('null', $value));
+        }
+    }
+
+    public function test_max()
+    {
+        $validator = $this->createNumberValidator()
+            ->max(5);
+
+        foreach ([
+            -4,
+            0,
+            5
+        ] as $value) {
+            $this->assertTrue($validator->validateRule('max', $value));
+        }
+
+        foreach ([
+            5.00001,
+            6,
+            100
+        ] as $value) {
+            $this->assertFalse($validator->validateRule('max', $value));
         }
     }
 
@@ -86,7 +110,7 @@ class NumberValidatorTest extends TestCase
             5,
             6
         ] as $value) {
-            $this->assertTrue($validator->validate($value));
+            $this->assertTrue($validator->validateRule('min', $value));
         }
 
         foreach ([
@@ -95,31 +119,29 @@ class NumberValidatorTest extends TestCase
             0,
             -1
         ] as $value) {
+            $this->assertFalse($validator->validateRule('min', $value));
+        }
+
+        $validator = $this->createNumberValidator()
+            ->filled()
+            ->min(5.1);
+
+        foreach ([
+            null
+        ] as $value) {
+            $this->assertTrue($validator->validateRule('min', $value));
+        }
+
+        foreach ([
+            null
+        ] as $value) {
             $this->assertFalse($validator->validate($value));
         }
     }
 
-    public function test_max()
+    protected function createNumberValidator(): NumberValidator
     {
-        /** @var NumberValidator */
-        $validator = (new Container())
-            ->create(NumberValidator::class)
-            ->max(5);
-
-        foreach ([
-            -4,
-            0,
-            5
-        ] as $value) {
-            $this->assertTrue($validator->validate($value));
-        }
-
-        foreach ([
-            5.00001,
-            6,
-            100
-        ] as $value) {
-            $this->assertFalse($validator->validate($value));
-        }
+        return (new Container())
+            ->create(NumberValidator::class);
     }
 }

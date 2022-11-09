@@ -3,7 +3,12 @@ export class DateValidator extends Validator {
     createRuleValidator(rule) {
         if (rule.name === 'date') {
             return value => {
-                if (value !== null && !(value instanceof Date)) { // validate null later
+                // validate null in null-rule
+                if (value === null) {
+                    return true;
+                }
+                // not a date
+                if (!(value instanceof Date)) {
                     return rule.message;
                 }
                 return true;
@@ -11,15 +16,9 @@ export class DateValidator extends Validator {
         }
         if (rule.name === 'null') {
             return value => {
-                if (rule.params === true && !value && value !== null) {
-                    return rule.message;
-                }
-                return true;
-            };
-        }
-        if (rule.name === 'filled') {
-            return value => {
-                if (rule.params === true && !value) {
+                const allowNull = rule.params === true;
+                // null only allowed if set
+                if (!allowNull && value === null) {
                     return rule.message;
                 }
                 return true;

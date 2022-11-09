@@ -1,6 +1,7 @@
 import { FieldRule } from '../FieldRule';
-import { RuleValidator, Validator } from '../Validator';
-export declare class IntValidator extends Validator<string | number | null> {
-    createRuleValidator(rule: FieldRule): RuleValidator<string | number | null>;
+import { RuleValidator } from '../Validator';
+import { NumberValidator } from './NumberValidator';
+export declare class IntValidator extends NumberValidator {
+    createRuleValidator(rule: FieldRule): RuleValidator<number | null>;
 }
 //# sourceMappingURL=IntValidator.d.ts.map

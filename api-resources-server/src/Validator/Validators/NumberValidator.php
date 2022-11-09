@@ -24,7 +24,7 @@ class NumberValidator extends Validator
         return $this->param('max', $max);
     }
 
-    public function min(int $min): NumberValidator
+    public function min(float $min): NumberValidator
     {
         return $this->param('min', $min);
     }
@@ -38,10 +38,16 @@ class NumberValidator extends Validator
                 if (is_null($value)) { // validate null in null-rule
                     return true;
                 }
+                // a numeric string
                 if (is_string($value)) {
                     return false;
                 }
+                // not numeric, e.g. bool
                 if (!is_numeric($value)) {
+                    return false;
+                }
+                // non negative
+                if ($value < 0) {
                     return false;
                 }
                 return true;
@@ -50,6 +56,7 @@ class NumberValidator extends Validator
         $rules->add('null')
             ->message('{{ fieldLabel }} sollte eine Zahl sein.')
             ->validate(function ($value, $null) {
+                // null only allowed if set
                 if (!$null && is_null($value)) {
                     return false;
                 }
@@ -59,6 +66,7 @@ class NumberValidator extends Validator
         $rules->add('filled')
             ->message('{{ fieldLabel }} sollte einen Wert enthalten.')
             ->validate(function ($value, $filled) {
+                // must not be empty (but 0 is okay)
                 if ($filled && !$value && $value !== 0) {
                     return false;
                 }
@@ -78,9 +86,12 @@ class NumberValidator extends Validator
             });
 
         $rules->add('min')
-            ->message('{{ fieldLabel }} sollte größer als {{ param }} sein.')
-            ->validate(function ($value, $min) {
+            ->message('{{ fieldLabel }} sollte mindestens {{ param }} sein.')
+            ->validate(function ($value, $min, $filled) {
                 if ($min === null) {
+                    return true;
+                }
+                if (is_null($value)) {
                     return true;
                 }
                 if ($value < $min) {

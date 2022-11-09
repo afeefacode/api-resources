@@ -19,7 +19,7 @@ class IntValidator extends Validator
         return $this->param('null', $null);
     }
 
-    public function max(float $max): IntValidator
+    public function max(int $max): IntValidator
     {
         return $this->param('max', $max);
     }
@@ -86,6 +86,9 @@ class IntValidator extends Validator
             ->message('{{ fieldLabel }} sollte mindestens {{ param }} sein.')
             ->validate(function ($value, $min) {
                 if ($min === null) {
+                    return true;
+                }
+                if (is_null($value)) {
                     return true;
                 }
                 if ($value < $min) {
