@@ -8,7 +8,7 @@
     "lib"
   ],
   "scripts": {
-    "dev": "tsc --watch",
+    "dev": "rm -rf lib/ && tsc --watch -p tsconfig.build.json",
     "build": "rm -rf lib/ && tsc -p tsconfig.build.json",
     "test": "jest"
   },
