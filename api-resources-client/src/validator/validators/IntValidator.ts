@@ -16,11 +16,6 @@ export class IntValidator extends NumberValidator {
           return rule.message
         }
 
-        // non negative
-        if (value < 0) {
-          return rule.message
-        }
-
         return true
       }
     }

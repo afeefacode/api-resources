@@ -1,14 +1,17 @@
 export type RuleJSON = {
-  message: string
+  message: string,
+  default?: unknown
 }
 
 export class Rule {
   public name: string
   private _message: string
+  public default: unknown
 
   constructor (name: string, json: RuleJSON) {
     this.name = name
     this._message = json.message
+    this.default = json.default || null
   }
 
   public getMessage (fieldLabel: string, param: unknown): string {

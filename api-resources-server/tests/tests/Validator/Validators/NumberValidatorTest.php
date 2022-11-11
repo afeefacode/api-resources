@@ -16,14 +16,14 @@ class NumberValidatorTest extends TestCase
             1,
             1.1,
             0,
+            -1,
+            -1.1,
             null
         ] as $value) {
             $this->assertTrue($validator->validateRule('number', $value));
         }
 
         foreach ([
-            -1,
-            -1.1,
             'test',
             '1',
             '1.1',
@@ -31,6 +31,25 @@ class NumberValidatorTest extends TestCase
             $this
         ] as $value) {
             $this->assertFalse($validator->validateRule('number', $value));
+        }
+    }
+
+    public function test_default_min()
+    {
+        $validator = $this->createNumberValidator();
+
+        foreach ([
+            0,
+            1,
+        ] as $value) {
+            $this->assertTrue($validator->validate($value));
+        }
+
+        foreach ([
+            -.00001,
+            -1,
+        ] as $value) {
+            $this->assertFalse($validator->validate($value));
         }
     }
 
@@ -100,9 +119,7 @@ class NumberValidatorTest extends TestCase
 
     public function test_min()
     {
-        /** @var StringValidator */
-        $validator = (new Container())
-            ->create(NumberValidator::class)
+        $validator = $this->createNumberValidator()
             ->min(5);
 
         foreach ([
@@ -132,10 +149,19 @@ class NumberValidatorTest extends TestCase
             $this->assertTrue($validator->validateRule('min', $value));
         }
 
+        $validator = $this->createNumberValidator()
+            ->min(0);
+
         foreach ([
-            null
+            0
         ] as $value) {
-            $this->assertFalse($validator->validate($value));
+            $this->assertTrue($validator->validateRule('min', $value));
+        }
+
+        foreach ([
+            -1
+        ] as $value) {
+            $this->assertFalse($validator->validateRule('min', $value));
         }
     }
 

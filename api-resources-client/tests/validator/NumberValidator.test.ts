@@ -16,6 +16,8 @@ describe.each([
   1000,
   3.0,
   3.3,
+  -1,
+  -3.3,
   null
 ])('number', value => {
   test('valid number: ' + String(value), () => {
@@ -25,8 +27,6 @@ describe.each([
 })
 
 describe.each([
-  -1,
-  -3.3,
   '',
   '1',
   '3.0',

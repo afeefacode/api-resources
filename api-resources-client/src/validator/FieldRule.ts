@@ -24,7 +24,10 @@ export class FieldRule {
   }
 
   public getParams (ruleName: string = this.rule.name): unknown {
-    return this._params[ruleName]
+    if (this._params.hasOwnProperty(ruleName)) {
+      return this._params[ruleName]
+    }
+    return this.rule.default
   }
 
   public get message (): string {

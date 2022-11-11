@@ -16,6 +16,7 @@ class IntValidatorTest extends TestCase
             0,
             1,
             1000,
+            -1,
             null
         ] as $value) {
             $this->assertTrue($validator->validateRule('int', $value));
@@ -26,7 +27,6 @@ class IntValidatorTest extends TestCase
             '1',
             '1.1',
             '-1',
-            -1,
             3.0,
             1.1,
             -1.1,
@@ -36,6 +36,24 @@ class IntValidatorTest extends TestCase
             fn () => null
         ] as $value) {
             $this->assertFalse($validator->validateRule('int', $value));
+        }
+    }
+
+    public function test_default_min()
+    {
+        $validator = $this->createIntValidator();
+
+        foreach ([
+            1,
+        ] as $value) {
+            $this->assertTrue($validator->validate($value));
+        }
+
+        foreach ([
+            0,
+            -1,
+        ] as $value) {
+            $this->assertFalse($validator->validate($value));
         }
     }
 
@@ -128,10 +146,23 @@ class IntValidatorTest extends TestCase
             $this->assertTrue($validator->validateRule('min', $value));
         }
 
+        $validator = $this->createIntValidator()
+            ->min(0);
+
         foreach ([
-            null
+            0,
+            .0,
+            0.0,
+            0.1
         ] as $value) {
-            $this->assertFalse($validator->validate('min', $value));
+            $this->assertTrue($validator->validateRule('min', $value));
+        }
+
+        foreach ([
+            -.1,
+            -1
+        ] as $value) {
+            $this->assertFalse($validator->validateRule('min', $value));
         }
     }
 

@@ -46,10 +46,6 @@ class NumberValidator extends Validator
                 if (!is_numeric($value)) {
                     return false;
                 }
-                // non negative
-                if ($value < 0) {
-                    return false;
-                }
                 return true;
             });
 
@@ -86,6 +82,7 @@ class NumberValidator extends Validator
             });
 
         $rules->add('min')
+            ->default(0)
             ->message('{{ fieldLabel }} sollte mindestens {{ param }} sein.')
             ->validate(function ($value, $min, $filled) {
                 if ($min === null) {

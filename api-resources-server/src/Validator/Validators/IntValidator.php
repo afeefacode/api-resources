@@ -43,10 +43,6 @@ class IntValidator extends Validator
                 if (!is_int($value)) {
                     return false;
                 }
-                // non negative
-                if ($value < 0) {
-                    return false;
-                }
                 return true;
             });
 
@@ -83,6 +79,7 @@ class IntValidator extends Validator
             });
 
         $rules->add('min')
+            ->default(1)
             ->message('{{ fieldLabel }} sollte mindestens {{ param }} sein.')
             ->validate(function ($value, $min) {
                 if ($min === null) {

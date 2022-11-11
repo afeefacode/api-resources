@@ -15,6 +15,7 @@ describe.each([
   1,
   1000,
   3.0,
+  -1,
   null
 ])('int', value => {
   test('valid int: ' + String(value), () => {
@@ -28,7 +29,6 @@ describe.each([
   '1',
   '1.1',
   '-1',
-  -1,
   1.1,
   -1.1,
   [],
