@@ -32,4 +32,12 @@ export class Validator<T=any> {
   public createRuleValidator (_rule: FieldRule): RuleValidator<T> {
     return (): boolean => true
   }
+
+  public getEmptyValue (_params: Record<string, unknown>): unknown {
+    return null
+  }
+
+  public getMaxValueLength (_params: Record<string, unknown>): number | null {
+    return null
+  }
 }

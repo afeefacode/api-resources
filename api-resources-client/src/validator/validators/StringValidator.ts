@@ -72,4 +72,12 @@ export class StringValidator extends Validator<string | null> {
 
     return super.createRuleValidator(rule)
   }
+
+  public getEmptyValue (params: Record<string, unknown>): unknown {
+    return params.null ? null : ''
+  }
+
+  public getMaxValueLength (params: Record<string, unknown>): number | null {
+    return params.max as number || null
+  }
 }
