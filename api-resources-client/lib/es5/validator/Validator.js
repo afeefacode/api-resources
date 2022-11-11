@@ -21,4 +21,10 @@ export class Validator {
     createRuleValidator(_rule) {
         return () => true;
     }
+    getEmptyValue(_params) {
+        return null;
+    }
+    getMaxValueLength(_params) {
+        return null;
+    }
 }

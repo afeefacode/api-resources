@@ -55,4 +55,10 @@ export class StringValidator extends Validator {
         }
         return super.createRuleValidator(rule);
     }
+    getEmptyValue(params) {
+        return params.null ? null : '';
+    }
+    getMaxValueLength(params) {
+        return params.max || null;
+    }
 }

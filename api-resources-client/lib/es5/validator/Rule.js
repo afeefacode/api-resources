@@ -2,6 +2,7 @@ export class Rule {
     constructor(name, json) {
         this.name = name;
         this._message = json.message;
+        this.default = json.default || null;
     }
     getMessage(fieldLabel, param) {
         const params = {

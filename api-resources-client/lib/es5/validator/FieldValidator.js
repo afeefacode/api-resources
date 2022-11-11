@@ -35,4 +35,10 @@ export class FieldValidator {
     createRuleValidator(rule) {
         return this._validator.createRuleValidator(rule);
     }
+    getEmptyValue() {
+        return this._validator.getEmptyValue(this._params);
+    }
+    getMaxValueLength() {
+        return this._validator.getMaxValueLength(this._params);
+    }
 }

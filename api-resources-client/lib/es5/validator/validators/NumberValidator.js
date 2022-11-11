@@ -11,10 +11,6 @@ export class NumberValidator extends Validator {
                 if (typeof value !== 'number') {
                     return rule.message;
                 }
-                // non negative
-                if (value < 0) {
-                    return rule.message;
-                }
                 return true;
             };
         }

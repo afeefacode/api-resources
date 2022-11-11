@@ -11,7 +11,10 @@ export class FieldRule {
         return this.getParams();
     }
     getParams(ruleName = this.rule.name) {
-        return this._params[ruleName];
+        if (this._params.hasOwnProperty(ruleName)) {
+            return this._params[ruleName];
+        }
+        return this.rule.default;
     }
     get message() {
         return this.rule.getMessage(this.fieldLabel, this.getParams());

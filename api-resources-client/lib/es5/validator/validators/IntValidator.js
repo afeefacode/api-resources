@@ -11,10 +11,6 @@ export class IntValidator extends NumberValidator {
                 if (!Number.isInteger(value)) {
                     return rule.message;
                 }
-                // non negative
-                if (value < 0) {
-                    return rule.message;
-                }
                 return true;
             };
         }
