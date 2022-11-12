@@ -32,13 +32,15 @@ export class FieldValidator {
         this._additionalRules = rules;
         return this;
     }
-    createRuleValidator(rule) {
-        return this._validator.createRuleValidator(rule);
-    }
     getEmptyValue() {
-        return this._validator.getEmptyValue(this._params);
+        const params = this._validator.getParamsWithDefaults(this._params);
+        return this._validator.getEmptyValue(params);
     }
     getMaxValueLength() {
-        return this._validator.getMaxValueLength(this._params);
+        const params = this._validator.getParamsWithDefaults(this._params);
+        return this._validator.getMaxValueLength(params);
+    }
+    createRuleValidator(rule) {
+        return this._validator.createRuleValidator(rule);
     }
 }

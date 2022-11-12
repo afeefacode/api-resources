@@ -48,15 +48,17 @@ export class FieldValidator<T=any> {
     return this
   }
 
-  protected createRuleValidator (rule: FieldRule): RuleValidator<T> {
-    return this._validator.createRuleValidator(rule)
-  }
-
   public getEmptyValue (): unknown {
-    return this._validator.getEmptyValue(this._params)
+    const params = this._validator.getParamsWithDefaults(this._params)
+    return this._validator.getEmptyValue(params)
   }
 
   public getMaxValueLength (): number | null {
-    return this._validator.getMaxValueLength(this._params)
+    const params = this._validator.getParamsWithDefaults(this._params)
+    return this._validator.getMaxValueLength(params)
+  }
+
+  protected createRuleValidator (rule: FieldRule): RuleValidator<T> {
+    return this._validator.createRuleValidator(rule)
   }
 }

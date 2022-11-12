@@ -18,6 +18,14 @@ export class Validator {
     getRules() {
         return this._rules;
     }
+    getParamsWithDefaults(params) {
+        return Object.entries(this._rules).reduce((params, [ruleName, rule]) => {
+            if (!params.hasOwnProperty(ruleName)) {
+                params[ruleName] = rule.default;
+            }
+            return params;
+        }, params);
+    }
     createRuleValidator(_rule) {
         return () => true;
     }

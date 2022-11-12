@@ -11,6 +11,7 @@ export declare class Validator<T = any> {
     setRules(rules: Record<string, RuleJSON>): void;
     createFieldValidator(json: FieldValidatorJSON): FieldValidator<T>;
     getRules(): Record<string, Rule>;
+    getParamsWithDefaults(params: Record<string, unknown>): Record<string, unknown>;
     createRuleValidator(_rule: FieldRule): RuleValidator<T>;
     getEmptyValue(_params: Record<string, unknown>): unknown;
     getMaxValueLength(_params: Record<string, unknown>): number | null;

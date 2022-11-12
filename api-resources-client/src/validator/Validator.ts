@@ -29,6 +29,15 @@ export class Validator<T=any> {
     return this._rules
   }
 
+  public getParamsWithDefaults (params: Record<string, unknown>): Record<string, unknown> {
+    return Object.entries(this._rules).reduce((params, [ruleName, rule]) => {
+      if (!params.hasOwnProperty(ruleName)) {
+        params[ruleName] = rule.default
+      }
+      return params
+    }, params)
+  }
+
   public createRuleValidator (_rule: FieldRule): RuleValidator<T> {
     return (): boolean => true
   }
