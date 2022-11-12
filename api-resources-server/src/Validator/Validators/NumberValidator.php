@@ -50,6 +50,7 @@ class NumberValidator extends Validator
             });
 
         $rules->add('null')
+            ->default(true)
             ->message('{{ fieldLabel }} sollte eine Zahl sein.')
             ->validate(function ($value, $null) {
                 // null only allowed if set

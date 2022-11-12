@@ -45,8 +45,7 @@ class DateValidatorTest extends TestCase
 
     public function test_null()
     {
-        $validator = $this->createDateValidator()
-            ->null();
+        $validator = $this->createDateValidator();
 
         foreach ([
             new DateTime(),
@@ -55,7 +54,8 @@ class DateValidatorTest extends TestCase
             $this->assertTrue($validator->validateRule('null', $value));
         }
 
-        $validator = $this->createDateValidator();
+        $validator = $this->createDateValidator()
+            ->null(false);
 
         foreach ([
             null

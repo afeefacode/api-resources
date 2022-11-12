@@ -50,6 +50,7 @@ class StringValidator extends Validator
             });
 
         $rules->add('null')
+            ->default(true)
             ->message('{{ fieldLabel }} sollte eine Zeichenkette sein.')
             ->validate(function ($value, $null) {
                 if (!$null && is_null($value)) {

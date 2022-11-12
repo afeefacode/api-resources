@@ -75,8 +75,7 @@ class NumberValidatorTest extends TestCase
 
     public function test_null()
     {
-        $validator = $this->createNumberValidator()
-            ->null();
+        $validator = $this->createNumberValidator();
 
         foreach ([
             1,
@@ -86,7 +85,8 @@ class NumberValidatorTest extends TestCase
             $this->assertTrue($validator->validateRule('null', $value));
         }
 
-        $validator = $this->createNumberValidator();
+        $validator = $this->createNumberValidator()
+            ->null(false);
 
         foreach ([
             null

@@ -60,6 +60,7 @@ class DateValidator extends Validator
             });
 
         $rules->add('null')
+            ->default(true)
             ->message('{{ fieldLabel }} sollte ein Datum sein.')
             ->validate(function ($value, $null) {
                 // null only allowed if set

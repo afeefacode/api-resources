@@ -78,8 +78,7 @@ class IntValidatorTest extends TestCase
 
     public function test_null()
     {
-        $validator = $this->createIntValidator()
-            ->null();
+        $validator = $this->createIntValidator();
 
         foreach ([
             0,
@@ -89,7 +88,8 @@ class IntValidatorTest extends TestCase
             $this->assertTrue($validator->validateRule('null', $value));
         }
 
-        $validator = $this->createIntValidator();
+        $validator = $this->createIntValidator()
+            ->null(false);
 
         foreach ([
             null
