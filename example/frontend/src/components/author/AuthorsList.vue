@@ -5,7 +5,7 @@
       :listViewConfig="listViewConfig"
     >
       <template #filters>
-        <list-filter-row>
+        <a-row>
           <list-filter-search />
 
           <list-filter-select
@@ -13,7 +13,7 @@
             label="Tag"
             maxWidth="200"
           />
-        </list-filter-row>
+        </a-row>
 
         <list-filter-page />
       </template>
