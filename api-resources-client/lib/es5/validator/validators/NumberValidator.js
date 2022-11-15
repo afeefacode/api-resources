@@ -8,7 +8,7 @@ export class NumberValidator extends Validator {
                     return true;
                 }
                 // not a number
-                if (typeof value !== 'number') {
+                if (typeof value !== 'number' || Number.isNaN(value)) {
                     return rule.message;
                 }
                 return true;

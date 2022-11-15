@@ -31,6 +31,7 @@ describe.each([
   '-1',
   1.1,
   -1.1,
+  NaN,
   [],
   this,
   '',

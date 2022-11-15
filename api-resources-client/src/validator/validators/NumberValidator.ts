@@ -11,7 +11,7 @@ export class NumberValidator extends Validator<number | null> {
         }
 
         // not a number
-        if (typeof value !== 'number') {
+        if (typeof value !== 'number' || Number.isNaN(value)) {
           return rule.message
         }
 
