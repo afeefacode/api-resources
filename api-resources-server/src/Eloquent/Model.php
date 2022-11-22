@@ -88,9 +88,18 @@ class Model extends EloquentModel implements ModelInterface
         return $json;
     }
 
-    public function toArray(): array
+    /**
+     * @param bool $onlyVisible Useful in tests
+     */
+    public function toArray(bool $onlyVisible = true): array
     {
         $array = [];
+
+        if (!$onlyVisible) {
+            foreach ($this as $name => $value) {
+                $this->visibleFields = ['type', 'id', ...array_keys($this->attributes)];
+            }
+        }
 
         foreach ($this->visibleFields as $visibleFieldName) {
             $value = $this->_toArray($this->$visibleFieldName);
