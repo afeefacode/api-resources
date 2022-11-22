@@ -21,9 +21,7 @@ class Model extends EloquentModel implements ModelInterface
     {
         parent::boot();
 
-        Relation::morphMap([
-            static::$type => static::class
-        ]);
+        static::registerMorphType();
 
         static::created(function (Model $model) {
             $model->afterCreate();
@@ -40,6 +38,13 @@ class Model extends EloquentModel implements ModelInterface
         static::deleted(function ($model) {
             $model->afterDelete();
         });
+    }
+
+    public static function registerMorphType()
+    {
+        Relation::morphMap([
+            static::$type => static::class
+        ]);
     }
 
     public function getTypeAttribute(): string
