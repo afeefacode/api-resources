@@ -14,8 +14,6 @@ use function Afeefa\ApiResources\DI\getCallbackArgumentType;
  */
 class ResourceBag extends Bag
 {
-    protected array $definitions = [];
-
     public function add($classOrCallback): ResourceBag
     {
         [$ResourceClass, $callback] = classOrCallback($classOrCallback);
