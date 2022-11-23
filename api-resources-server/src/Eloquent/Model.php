@@ -97,7 +97,7 @@ class Model extends EloquentModel implements ModelInterface
 
         if (!$onlyVisible) {
             foreach ($this as $name => $value) {
-                $this->visibleFields = ['type', 'id', ...array_keys($this->attributes)];
+                $this->visibleFields = ['type', 'id', ...array_keys($this->attributes), ...array_keys($this->relations)];
             }
         }
 
