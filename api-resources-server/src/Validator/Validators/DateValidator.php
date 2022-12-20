@@ -11,11 +11,6 @@ class DateValidator extends Validator
 {
     public static string $type = 'Afeefa.DateValidator';
 
-    public function filled(bool $filled = true): DateValidator
-    {
-        return $this->param('filled', $filled);
-    }
-
     public function null(bool $null = true): DateValidator
     {
         return $this->param('null', $null);
