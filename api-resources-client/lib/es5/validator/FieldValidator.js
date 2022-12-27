@@ -11,7 +11,7 @@ export class FieldValidator {
     getParams() {
         return this._params;
     }
-    param(ruleName) {
+    getParam(ruleName) {
         return this._params[ruleName];
     }
     getRules(fieldLabel) {

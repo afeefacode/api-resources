@@ -38,7 +38,20 @@ export class Validator<T=any> {
     }, params)
   }
 
-  public createRuleValidator (_rule: FieldRule): RuleValidator<T> {
+  public createRuleValidator (rule: FieldRule): RuleValidator<T> {
+    if (rule.name === 'filled') {
+      return value => {
+        const filled = rule.params === true
+
+        // filled and value is empty
+        if (filled && !this.valueIsFilled(value)) {
+          return rule.message
+        }
+
+        return true
+      }
+    }
+
     return (): boolean => true
   }
 
@@ -48,5 +61,9 @@ export class Validator<T=any> {
 
   public getMaxValueLength (_params: Record<string, unknown>): number | null {
     return null
+  }
+
+  protected valueIsFilled (value: T): boolean {
+    return !!value
   }
 }

@@ -5,39 +5,13 @@ export class NumberValidator extends Validator<number | null> {
   public createRuleValidator (rule: FieldRule): RuleValidator<number | null> {
     if (rule.name === 'number') {
       return value => {
-        // validate null in null-rule
+        // validate null in filled-rule
         if (value === null) {
           return true
         }
 
         // not a number
         if (typeof value !== 'number' || Number.isNaN(value)) {
-          return rule.message
-        }
-
-        return true
-      }
-    }
-
-    if (rule.name === 'null') {
-      return value => {
-        const allowNull = rule.params === true
-
-        // null only allowed if set
-        if (!allowNull && value === null) {
-          return rule.message
-        }
-
-        return true
-      }
-    }
-
-    if (rule.name === 'filled') {
-      return value => {
-        const filled = rule.params === true
-
-        // filled and value is empty
-        if (filled && !value && value !== 0) {
           return rule.message
         }
 
@@ -82,5 +56,9 @@ export class NumberValidator extends Validator<number | null> {
     }
 
     return super.createRuleValidator(rule)
+  }
+
+  protected valueIsFilled (value: number | null): boolean {
+    return !!value || value === 0
   }
 }

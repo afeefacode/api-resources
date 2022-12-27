@@ -23,7 +23,7 @@ export class FieldValidator<T=any> {
     return this._params
   }
 
-  public param (ruleName: string): unknown {
+  public getParam (ruleName: string): unknown {
     return this._params[ruleName]
   }
 

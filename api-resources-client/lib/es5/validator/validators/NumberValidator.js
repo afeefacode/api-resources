@@ -3,32 +3,12 @@ export class NumberValidator extends Validator {
     createRuleValidator(rule) {
         if (rule.name === 'number') {
             return value => {
-                // validate null in null-rule
+                // validate null in filled-rule
                 if (value === null) {
                     return true;
                 }
                 // not a number
                 if (typeof value !== 'number' || Number.isNaN(value)) {
-                    return rule.message;
-                }
-                return true;
-            };
-        }
-        if (rule.name === 'null') {
-            return value => {
-                const allowNull = rule.params === true;
-                // null only allowed if set
-                if (!allowNull && value === null) {
-                    return rule.message;
-                }
-                return true;
-            };
-        }
-        if (rule.name === 'filled') {
-            return value => {
-                const filled = rule.params === true;
-                // filled and value is empty
-                if (filled && !value && value !== 0) {
                     return rule.message;
                 }
                 return true;
@@ -64,5 +44,8 @@ export class NumberValidator extends Validator {
             };
         }
         return super.createRuleValidator(rule);
+    }
+    valueIsFilled(value) {
+        return !!value || value === 0;
     }
 }

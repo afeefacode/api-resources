@@ -10,7 +10,7 @@ export declare class FieldValidator<T = any> {
     private _additionalRules;
     constructor(validator: Validator<T>, json: FieldValidatorJSON);
     getParams(): Record<string, unknown>;
-    param(ruleName: string): unknown;
+    getParam(ruleName: string): unknown;
     getRules(fieldLabel: string): RuleValidator<T>[];
     addAdditionalRule(rule: RuleValidator<T>): FieldValidator;
     setAdditionalRules(rules: RuleValidator<T>[]): FieldValidator;

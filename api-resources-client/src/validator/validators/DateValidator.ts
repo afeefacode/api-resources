@@ -5,7 +5,7 @@ export class DateValidator extends Validator<Date | null> {
   public createRuleValidator (rule: FieldRule): RuleValidator<Date | null> {
     if (rule.name === 'date') {
       return value => {
-        // validate null in null-rule
+        // validate null in filled-rule
         if (value === null) {
           return true
         }
@@ -15,18 +15,6 @@ export class DateValidator extends Validator<Date | null> {
           return rule.message
         }
 
-        return true
-      }
-    }
-
-    if (rule.name === 'null') {
-      return value => {
-        const allowNull = rule.params === true
-
-        // null only allowed if set
-        if (!allowNull && value === null) {
-          return rule.message
-        }
         return true
       }
     }

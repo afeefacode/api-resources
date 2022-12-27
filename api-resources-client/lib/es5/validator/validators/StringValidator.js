@@ -3,7 +3,7 @@ export class StringValidator extends Validator {
     createRuleValidator(rule) {
         if (rule.name === 'string') {
             return value => {
-                // validate null in null-rule
+                // validate null in filled-rule
                 if (value === null) {
                     return true;
                 }
@@ -18,15 +18,6 @@ export class StringValidator extends Validator {
                 const allowNull = rule.params === true;
                 // null only allowed if set
                 if (!allowNull && value === null) {
-                    return rule.message;
-                }
-                return true;
-            };
-        }
-        if (rule.name === 'filled') {
-            return value => {
-                const filled = rule.params === true;
-                if (filled && (!value || !value.length)) {
                     return rule.message;
                 }
                 return true;

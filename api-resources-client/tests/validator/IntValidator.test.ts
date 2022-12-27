@@ -54,31 +54,12 @@ describe.each([
 })
 
 describe.each([
+  '',
   null
 ])('filled', value => {
   test('invalid filled: ' + String(value), () => {
     const ruleValidator = createIntValidator('filled', { filled: true }, '{{ fieldLabel }} muss ausgefüllt sein.')
-    expect(ruleValidator(value)).toBe('MyInt muss ausgefüllt sein.')
-  })
-})
-
-describe.each([
-  0,
-  1,
-  null
-])('null', value => {
-  test('valid null: ' + String(value), () => {
-    const ruleValidator = createIntValidator('null', { null: true })
-    expect(ruleValidator(value)).toBe(true)
-  })
-})
-
-describe.each([
-  null
-])('null', value => {
-  test('invalid null: ' + String(value), () => {
-    const ruleValidator = createIntValidator('null', {}, '{{ fieldLabel }} darf nicht null sein.')
-    expect(ruleValidator(value)).toBe('MyInt darf nicht null sein.')
+    expect(ruleValidator(value as any)).toBe('MyInt muss ausgefüllt sein.')
   })
 })
 

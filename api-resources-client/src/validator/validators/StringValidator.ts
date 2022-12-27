@@ -5,7 +5,7 @@ export class StringValidator extends Validator<string | null> {
   public createRuleValidator (rule: FieldRule): RuleValidator<string | null> {
     if (rule.name === 'string') {
       return value => {
-        // validate null in null-rule
+        // validate null in filled-rule
         if (value === null) {
           return true
         }
@@ -29,19 +29,6 @@ export class StringValidator extends Validator<string | null> {
         return true
       }
     }
-
-    if (rule.name === 'filled') {
-      return value => {
-        const filled = rule.params === true
-
-        if (filled && (!value || !value.length)) {
-          return rule.message
-        }
-
-        return true
-      }
-    }
-
     if (rule.name === 'max') {
       return value => {
         const max = rule.params ? Number(rule.params) : false

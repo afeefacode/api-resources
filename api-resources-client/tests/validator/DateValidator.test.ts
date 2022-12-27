@@ -42,18 +42,19 @@ describe.each([
 describe.each([
   new Date(),
   null
-])('null', value => {
-  test('valid null: ' + String(value), () => {
-    const ruleValidator = createDateValidator('null', { null: true })
+])('filled', value => {
+  test('valid filled: ' + String(value), () => {
+    const ruleValidator = createDateValidator('filled')
     expect(ruleValidator(value)).toBe(true)
   })
 })
 
 describe.each([
+  '',
   null
-])('null', value => {
-  test('invalid null: ' + String(value), () => {
-    const ruleValidator = createDateValidator('null', {}, '{{ fieldLabel }} darf nicht null sein.')
-    expect(ruleValidator(value)).toBe('MyDate darf nicht null sein.')
+])('filled', value => {
+  test('invalid filled: ' + String(value), () => {
+    const ruleValidator = createDateValidator('filled', { filled: true }, '{{ fieldLabel }} muss ausgefüllt sein.')
+    expect(ruleValidator(value as any)).toBe('MyDate muss ausgefüllt sein.')
   })
 })

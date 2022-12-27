@@ -26,7 +26,17 @@ export class Validator {
             return params;
         }, params);
     }
-    createRuleValidator(_rule) {
+    createRuleValidator(rule) {
+        if (rule.name === 'filled') {
+            return value => {
+                const filled = rule.params === true;
+                // filled and value is empty
+                if (filled && !this.valueIsFilled(value)) {
+                    return rule.message;
+                }
+                return true;
+            };
+        }
         return () => true;
     }
     getEmptyValue(_params) {
@@ -34,5 +44,8 @@ export class Validator {
     }
     getMaxValueLength(_params) {
         return null;
+    }
+    valueIsFilled(value) {
+        return !!value;
     }
 }
