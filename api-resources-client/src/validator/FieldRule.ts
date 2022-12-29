@@ -1,9 +1,5 @@
 import { Rule } from './Rule'
 
-export type RuleJSON = {
-  message: string
-}
-
 export class FieldRule {
   public rule: Rule
   public fieldLabel: string

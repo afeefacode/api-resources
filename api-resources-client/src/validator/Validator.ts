@@ -1,16 +1,30 @@
 import { FieldRule } from './FieldRule'
+import { FieldSanitizer } from './FieldSanitizer'
 import { FieldValidator, FieldValidatorJSON } from './FieldValidator'
 import { Rule, RuleJSON } from './Rule'
+import { Sanitizer, SanitizerJSON } from './Sanitizer'
 
 export type ValidatorJSON = {
   type: string
+  sanitizers?: Record<string, SanitizerJSON>
   rules: Record<string, RuleJSON>
 }
 
 export type RuleValidator<T> = (value: T) => boolean | string
+export type SanitizerFunction<T> = (value: T) => T
 
 export class Validator<T=any> {
   protected _rules: Record<string, Rule> = {}
+  protected _sanitizers: Record<string, Sanitizer> = {}
+
+  public setSanitizers (sanitizers?: Record<string, SanitizerJSON>): void {
+    if (sanitizers) {
+      for (const [name, sanitizerJSON] of Object.entries(sanitizers)) {
+        const sanitizer = new Sanitizer(name, sanitizerJSON)
+        this._sanitizers[name] = sanitizer
+      }
+    }
+  }
 
   public setRules (rules: Record<string, RuleJSON>): void {
     if (rules) {
@@ -29,13 +43,26 @@ export class Validator<T=any> {
     return this._rules
   }
 
-  public getParamsWithDefaults (params: Record<string, unknown>): Record<string, unknown> {
-    return Object.entries(this._rules).reduce((params, [ruleName, rule]) => {
+  public getSanitizers (): Record<string, Sanitizer> {
+    return this._sanitizers
+  }
+
+  public getParamsWithDefaults (fieldParams: Record<string, unknown>): Record<string, unknown> {
+    const params = {...fieldParams}
+
+    for (const [ruleName, rule] of Object.entries(this._rules)) {
       if (!params.hasOwnProperty(ruleName)) {
         params[ruleName] = rule.default
       }
-      return params
-    }, params)
+    }
+
+    for (const [sanitizerName, sanitizer] of Object.entries(this._sanitizers)) {
+      if (!params.hasOwnProperty(sanitizerName)) {
+        params[sanitizerName] = sanitizer.default
+      }
+    }
+
+    return params
   }
 
   public createRuleValidator (rule: FieldRule): RuleValidator<T> {
@@ -53,6 +80,10 @@ export class Validator<T=any> {
     }
 
     return (): boolean => true
+  }
+
+  public createSanitizerFunction (_sanitizer: FieldSanitizer): SanitizerFunction<T> {
+    return (v): T => v
   }
 
   public getEmptyValue (_params: Record<string, unknown>): unknown {

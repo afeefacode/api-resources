@@ -1,5 +1,35 @@
 import { Validator } from '../Validator';
 export class StringValidator extends Validator {
+    createSanitizerFunction(sanitizer) {
+        if (sanitizer.name === 'trim') {
+            return value => {
+                const trim = sanitizer.params === true;
+                if (trim && typeof value === 'string') {
+                    return value.trim();
+                }
+                return value;
+            };
+        }
+        if (sanitizer.name === 'collapseWhite') {
+            return value => {
+                const collapseWhite = sanitizer.params === true;
+                if (collapseWhite && typeof value === 'string') {
+                    return value.replace(/(\s)+/g, '$1');
+                }
+                return value;
+            };
+        }
+        if (sanitizer.name === 'emptyNull') {
+            return value => {
+                const emptyNull = sanitizer.params === true;
+                if (emptyNull && !value) {
+                    return null;
+                }
+                return value;
+            };
+        }
+        return super.createSanitizerFunction(sanitizer);
+    }
     createRuleValidator(rule) {
         if (rule.name === 'string') {
             return value => {
@@ -47,7 +77,7 @@ export class StringValidator extends Validator {
         return super.createRuleValidator(rule);
     }
     getEmptyValue(params) {
-        return params.null ? null : '';
+        return params.emptyNull ? null : '';
     }
     getMaxValueLength(params) {
         return params.max || null;

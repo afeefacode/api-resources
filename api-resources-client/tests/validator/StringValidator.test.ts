@@ -1,6 +1,8 @@
 import { FieldRule } from '../../src/validator/FieldRule'
+import { FieldSanitizer } from '../../src/validator/FieldSanitizer'
 import { Rule } from '../../src/validator/Rule'
-import { RuleValidator } from '../../src/validator/Validator'
+import { Sanitizer } from '../../src/validator/Sanitizer'
+import { RuleValidator, SanitizerFunction } from '../../src/validator/Validator'
 import { StringValidator } from '../../src/validator/validators/StringValidator'
 
 function createStringValidator (ruleName: string, params = {}, message: string = ''): RuleValidator<string | null> {
@@ -9,6 +11,64 @@ function createStringValidator (ruleName: string, params = {}, message: string =
   const fieldRule = new FieldRule(rule, params, 'MyString')
   return validator.createRuleValidator(fieldRule)
 }
+
+function createStringSanitizer (sanitizerName: string, params = {}, json = {}): SanitizerFunction<string | null> {
+  const validator = new StringValidator()
+  const sanitizer = new Sanitizer(sanitizerName, json)
+  const fieldSanitizer = new FieldSanitizer(sanitizer, params)
+  return validator.createSanitizerFunction(fieldSanitizer)
+}
+
+describe('sanitizer trim', () => {
+  test('trim default false', () => {
+    const sanitizer = createStringSanitizer('trim')
+    expect(sanitizer(' a   a ')).toBe(' a   a ')
+  })
+
+  test('trim default true', () => {
+    const sanitizer = createStringSanitizer('trim', {}, {default: true})
+    expect(sanitizer(' a   a ')).toBe('a   a')
+  })
+
+  test('trim', () => {
+    const sanitizer = createStringSanitizer('trim', {trim: true})
+    expect(sanitizer(' a   a ')).toBe('a   a')
+  })
+})
+
+describe('sanitizer collapseWhite', () => {
+  test('collapseWhite default false', () => {
+    const sanitizer = createStringSanitizer('collapseWhite')
+    expect(sanitizer('  a   a  ')).toBe('  a   a  ')
+  })
+
+  test('collapseWhite default true', () => {
+    const sanitizer = createStringSanitizer('collapseWhite', {}, {default: true})
+    expect(sanitizer('  a   a  ')).toBe(' a a ')
+  })
+
+  test('collapseWhite', () => {
+    const sanitizer = createStringSanitizer('collapseWhite', {collapseWhite: true})
+    expect(sanitizer('  a   a  ')).toBe(' a a ')
+  })
+})
+
+describe('sanitizer emptyNull', () => {
+  test('emptyNull default false', () => {
+    const sanitizer = createStringSanitizer('emptyNull')
+    expect(sanitizer('')).toBe('')
+  })
+
+  test('emptyNull default true', () => {
+    const sanitizer = createStringSanitizer('emptyNull', {}, {default: true})
+    expect(sanitizer('')).toBe(null)
+  })
+
+  test('emptyNull', () => {
+    const sanitizer = createStringSanitizer('emptyNull', {emptyNull: true})
+    expect(sanitizer('')).toBe(null)
+  })
+})
 
 describe.each([
   null,

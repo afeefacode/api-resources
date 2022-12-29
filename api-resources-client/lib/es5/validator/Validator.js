@@ -1,8 +1,18 @@
 import { FieldValidator } from './FieldValidator';
 import { Rule } from './Rule';
+import { Sanitizer } from './Sanitizer';
 export class Validator {
     constructor() {
         this._rules = {};
+        this._sanitizers = {};
+    }
+    setSanitizers(sanitizers) {
+        if (sanitizers) {
+            for (const [name, sanitizerJSON] of Object.entries(sanitizers)) {
+                const sanitizer = new Sanitizer(name, sanitizerJSON);
+                this._sanitizers[name] = sanitizer;
+            }
+        }
     }
     setRules(rules) {
         if (rules) {
@@ -18,13 +28,22 @@ export class Validator {
     getRules() {
         return this._rules;
     }
-    getParamsWithDefaults(params) {
-        return Object.entries(this._rules).reduce((params, [ruleName, rule]) => {
+    getSanitizers() {
+        return this._sanitizers;
+    }
+    getParamsWithDefaults(fieldParams) {
+        const params = Object.assign({}, fieldParams);
+        for (const [ruleName, rule] of Object.entries(this._rules)) {
             if (!params.hasOwnProperty(ruleName)) {
                 params[ruleName] = rule.default;
             }
-            return params;
-        }, params);
+        }
+        for (const [sanitizerName, sanitizer] of Object.entries(this._sanitizers)) {
+            if (!params.hasOwnProperty(sanitizerName)) {
+                params[sanitizerName] = sanitizer.default;
+            }
+        }
+        return params;
     }
     createRuleValidator(rule) {
         if (rule.name === 'filled') {
@@ -38,6 +57,9 @@ export class Validator {
             };
         }
         return () => true;
+    }
+    createSanitizerFunction(_sanitizer) {
+        return (v) => v;
     }
     getEmptyValue(_params) {
         return null;

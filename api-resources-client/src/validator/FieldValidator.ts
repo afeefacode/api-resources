@@ -1,5 +1,6 @@
 import { FieldRule } from './FieldRule'
-import { RuleValidator, Validator } from './Validator'
+import { FieldSanitizer } from './FieldSanitizer'
+import { RuleValidator, SanitizerFunction, Validator } from './Validator'
 
 export type FieldValidatorJSON = {
   type: string
@@ -36,6 +37,14 @@ export class FieldValidator<T=any> {
       }),
       ...this._additionalRules
     ]
+  }
+
+  public getSanitizers (): SanitizerFunction<T>[] {
+    const sanitizers = this._validator.getSanitizers()
+    return Object.values(sanitizers).map(sanitizer => {
+      const fieldSanitizer = new FieldSanitizer(sanitizer, this._params)
+      return this._validator.createSanitizerFunction(fieldSanitizer)
+    })
   }
 
   public addAdditionalRule (rule: RuleValidator<T>): FieldValidator {

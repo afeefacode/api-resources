@@ -1,4 +1,5 @@
 import { FieldRule } from './FieldRule';
+import { FieldSanitizer } from './FieldSanitizer';
 export class FieldValidator {
     constructor(validator, json) {
         this._params = {};
@@ -23,6 +24,13 @@ export class FieldValidator {
             }),
             ...this._additionalRules
         ];
+    }
+    getSanitizers() {
+        const sanitizers = this._validator.getSanitizers();
+        return Object.values(sanitizers).map(sanitizer => {
+            const fieldSanitizer = new FieldSanitizer(sanitizer, this._params);
+            return this._validator.createSanitizerFunction(fieldSanitizer);
+        });
     }
     addAdditionalRule(rule) {
         this._additionalRules.push(rule);

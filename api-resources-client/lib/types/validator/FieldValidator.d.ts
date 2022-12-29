@@ -1,5 +1,5 @@
 import { FieldRule } from './FieldRule';
-import { RuleValidator, Validator } from './Validator';
+import { RuleValidator, SanitizerFunction, Validator } from './Validator';
 export declare type FieldValidatorJSON = {
     type: string;
     params: Record<string, unknown>;
@@ -12,6 +12,7 @@ export declare class FieldValidator<T = any> {
     getParams(): Record<string, unknown>;
     getParam(ruleName: string): unknown;
     getRules(fieldLabel: string): RuleValidator<T>[];
+    getSanitizers(): SanitizerFunction<T>[];
     addAdditionalRule(rule: RuleValidator<T>): FieldValidator;
     setAdditionalRules(rules: RuleValidator<T>[]): FieldValidator;
     getEmptyValue(): unknown;
