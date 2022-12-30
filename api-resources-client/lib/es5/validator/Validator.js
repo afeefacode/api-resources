@@ -61,9 +61,6 @@ export class Validator {
     createSanitizerFunction(_sanitizer) {
         return (v) => v;
     }
-    getEmptyValue(_params) {
-        return null;
-    }
     getMaxValueLength(_params) {
         return null;
     }

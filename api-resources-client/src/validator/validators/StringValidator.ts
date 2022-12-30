@@ -40,7 +40,7 @@ export class StringValidator extends Validator<string | null> {
   public createRuleValidator (rule: FieldRule): RuleValidator<string | null> {
     if (rule.name === 'string') {
       return value => {
-        // validate null in filled-rule
+        // null is allowed, validate empty value in filled
         if (value === null) {
           return true
         }
@@ -52,23 +52,20 @@ export class StringValidator extends Validator<string | null> {
       }
     }
 
-    if (rule.name === 'null') {
-      return value => {
-        const allowNull = rule.params === true
-
-        // null only allowed if set
-        if (!allowNull && value === null) {
-          return rule.message
-        }
-
-        return true
-      }
-    }
     if (rule.name === 'max') {
       return value => {
         const max = rule.params ? Number(rule.params) : false
 
-        if (max !== false && value && value.length > max) {
+        if (max === false) {
+          return true
+        }
+
+        // empty value cannot exceed max
+        if (!value) {
+          return true
+        }
+
+        if (value.length > max) {
           return rule.message
         }
 
@@ -84,7 +81,29 @@ export class StringValidator extends Validator<string | null> {
           return true
         }
 
-        if (typeof value === 'string' && value.length < min) {
+        // empty value validated in filled rule
+        if (!value) {
+          return true
+        }
+
+        if (value.length < min) {
+          return rule.message
+        }
+
+        return true
+      }
+    }
+
+    if (rule.name === 'regex') {
+      return value => {
+        const regex = rule.params as string || null
+
+        if (!regex) {
+          return true
+        }
+
+        const valueToTest = value || '' // convert null to ''
+        if (!new RegExp(regex).exec(valueToTest)) {
           return rule.message
         }
 
@@ -93,10 +112,6 @@ export class StringValidator extends Validator<string | null> {
     }
 
     return super.createRuleValidator(rule)
-  }
-
-  public getEmptyValue (params: Record<string, unknown>): unknown {
-    return params.emptyNull ? null : ''
   }
 
   public getMaxValueLength (params: Record<string, unknown>): number | null {

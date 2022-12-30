@@ -40,10 +40,6 @@ export class FieldValidator {
         this._additionalRules = rules;
         return this;
     }
-    getEmptyValue() {
-        const params = this._validator.getParamsWithDefaults(this._params);
-        return this._validator.getEmptyValue(params);
-    }
     getMaxValueLength() {
         const params = this._validator.getParamsWithDefaults(this._params);
         return this._validator.getMaxValueLength(params);

@@ -86,10 +86,6 @@ export class Validator<T=any> {
     return (v): T => v
   }
 
-  public getEmptyValue (_params: Record<string, unknown>): unknown {
-    return null
-  }
-
   public getMaxValueLength (_params: Record<string, unknown>): number | null {
     return null
   }

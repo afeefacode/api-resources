@@ -128,15 +128,6 @@ describe.each([
 })
 
 describe.each([
-  null
-])('null', value => {
-  test('invalid null: ' + String(value), () => {
-    const ruleValidator = createStringValidator('null', {}, '{{ fieldLabel }} darf nicht null sein.')
-    expect(ruleValidator(value)).toBe('MyString darf nicht null sein.')
-  })
-})
-
-describe.each([
   'abcde',
   'abcd',
   '',
@@ -158,6 +149,7 @@ describe.each([
 })
 
 describe.each([
+  '',
   null,
   'abcde',
   'abcdef'
@@ -169,11 +161,32 @@ describe.each([
 })
 
 describe.each([
-  'abcd',
-  ''
+  'abcd'
 ])('min', value => {
   test('invalid min: ' + String(value), () => {
     const ruleValidator = createStringValidator('min', { min: 5 }, '{{ fieldLabel }} muss >= {{ param }} sein.')
     expect(ruleValidator(value)).toBe('MyString muss >= 5 sein.')
+  })
+})
+
+describe.each([
+  'a b c',
+  'c a b',
+  'c b a'
+])('regex', value => {
+  test('valid regex: ' + String(value), () => {
+    const ruleValidator = createStringValidator('regex', { regex: /a/ }, '{{ fieldLabel }} muss ein {{ param }} enthalten.')
+    expect(ruleValidator(value)).toBe(true)
+  })
+})
+
+describe.each([
+  '',
+  null,
+  'b'
+])('regex', value => {
+  test('invalid regex: ' + String(value), () => {
+    const ruleValidator = createStringValidator('regex', { regex: /a/ }, '{{ fieldLabel }} muss ein {{ param }} enthalten.')
+    expect(ruleValidator(value)).toBe('MyString muss ein /a/ enthalten.')
   })
 })

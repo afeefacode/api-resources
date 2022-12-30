@@ -57,11 +57,6 @@ export class FieldValidator<T=any> {
     return this
   }
 
-  public getEmptyValue (): unknown {
-    const params = this._validator.getParamsWithDefaults(this._params)
-    return this._validator.getEmptyValue(params)
-  }
-
   public getMaxValueLength (): number | null {
     const params = this._validator.getParamsWithDefaults(this._params)
     return this._validator.getMaxValueLength(params)

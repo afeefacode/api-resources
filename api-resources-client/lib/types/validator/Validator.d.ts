@@ -21,7 +21,6 @@ export declare class Validator<T = any> {
     getParamsWithDefaults(fieldParams: Record<string, unknown>): Record<string, unknown>;
     createRuleValidator(rule: FieldRule): RuleValidator<T>;
     createSanitizerFunction(_sanitizer: FieldSanitizer): SanitizerFunction<T>;
-    getEmptyValue(_params: Record<string, unknown>): unknown;
     getMaxValueLength(_params: Record<string, unknown>): number | null;
     protected valueIsFilled(value: T): boolean;
 }

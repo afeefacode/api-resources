@@ -15,7 +15,6 @@ export declare class FieldValidator<T = any> {
     getSanitizers(): SanitizerFunction<T>[];
     addAdditionalRule(rule: RuleValidator<T>): FieldValidator;
     setAdditionalRules(rules: RuleValidator<T>[]): FieldValidator;
-    getEmptyValue(): unknown;
     getMaxValueLength(): number | null;
     protected createRuleValidator(rule: FieldRule): RuleValidator<T>;
 }
