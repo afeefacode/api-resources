@@ -9,11 +9,9 @@ export declare class ListViewFilter {
     constructor(filter: ActionFilter, model: ListViewModel);
     get name(): string;
     get filter(): ActionFilter;
+    hasDefaultValue(): boolean;
     get defaultValue(): ActionFilterValueType;
     hasDefaultValueSet(): boolean;
-    get nullIsOption(): boolean;
-    get allIsOption(): boolean;
-    get noneIsOption(): boolean;
     hasOptions(): boolean;
     get options(): unknown[];
     hasOptionsRequest(): boolean;

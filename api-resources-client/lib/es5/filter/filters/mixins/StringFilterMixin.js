@@ -4,17 +4,11 @@ export function StringFilterMixin(Filter) {
             if (value) {
                 return value;
             }
-            if (value === null) {
-                return '---';
-            }
             return undefined;
         }
         queryToValue(query) {
             if (query) {
                 return query;
-            }
-            if (query === '---') {
-                return null;
             }
             return undefined;
         }

@@ -39,7 +39,7 @@ export class Field {
     hasOptionsRequest() {
         return !!this._optionsRequestFactory;
     }
-    getOptionsRequest() {
+    createOptionsRequest() {
         if (this._optionsRequestFactory) {
             return this._optionsRequestFactory();
         }

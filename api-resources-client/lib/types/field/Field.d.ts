@@ -26,7 +26,7 @@ export declare class Field {
     createTypeField(json: FieldJSON): Field;
     getValidator(): FieldValidator | null;
     hasOptionsRequest(): boolean;
-    getOptionsRequest(): ApiRequest | null;
+    createOptionsRequest(): ApiRequest | null;
     hasOptions(): boolean;
     getOptions(): FieldOption[];
     default(): FieldValue;

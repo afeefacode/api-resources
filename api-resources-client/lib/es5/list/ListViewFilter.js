@@ -10,20 +10,14 @@ export class ListViewFilter {
     get filter() {
         return this._filter;
     }
+    hasDefaultValue() {
+        return this._filter.hasDefaultValue();
+    }
     get defaultValue() {
         return this._filter.defaultValue;
     }
     hasDefaultValueSet() {
         return JSON.stringify(this._value) === JSON.stringify(this.defaultValue);
-    }
-    get nullIsOption() {
-        return this._filter.nullIsOption;
-    }
-    get allIsOption() {
-        return this._filter.allIsOption;
-    }
-    get noneIsOption() {
-        return this._filter.noneIsOption;
     }
     hasOptions() {
         return this._filter.hasOptions();
@@ -74,14 +68,8 @@ export class ListViewFilter {
         return false;
     }
     serialize() {
-        if (!this.hasDefaultValueSet()) { // send only if no default
-            let useFilter = true;
-            if (this._value === null) { // send null only if it's an option
-                useFilter = this.nullIsOption;
-            }
-            if (useFilter) {
-                return this.serializeValue(this._value);
-            }
+        if (!this.hasDefaultValueSet()) { // don't send default
+            return this.serializeValue(this._value);
         }
         return undefined;
     }

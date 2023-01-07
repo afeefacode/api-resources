@@ -2,18 +2,13 @@ import { ApiRequest } from '../api/ApiRequest';
 export class ActionFilter {
     constructor(action, filter, name, json) {
         this._defaultValue = null;
-        this._nullIsOption = false;
-        this._allIsOption = false;
-        this._noneIsOption = false;
         this._options = [];
         this._requestFactory = null;
         this._filter = filter;
         this._name = name;
         this._defaultValue = json.default || null;
+        this._hasDefaultValue = json.hasOwnProperty('default');
         this._options = json.options || [];
-        this._nullIsOption = json.null_is_option || false;
-        this._allIsOption = json.all_is_option || false;
-        this._noneIsOption = json.none_is_option || false;
         if (json.options_request) {
             this._requestFactory = () => {
                 const requestAction = action.getApi().getAction(json.options_request.resource, json.options_request.action);
@@ -28,6 +23,9 @@ export class ActionFilter {
     get name() {
         return this._name;
     }
+    hasDefaultValue() {
+        return this._hasDefaultValue;
+    }
     get defaultValue() {
         return this._defaultValue;
     }
@@ -35,19 +33,10 @@ export class ActionFilter {
         return !!this._options.length;
     }
     hasOption(value) {
-        return this._options.includes(value);
+        return this._options.some(o => o.value === value);
     }
     get options() {
         return this._options;
-    }
-    get nullIsOption() {
-        return this._nullIsOption;
-    }
-    get allIsOption() {
-        return this._allIsOption;
-    }
-    get noneIsOption() {
-        return this._noneIsOption;
     }
     hasOptionsRequest() {
         return !!this._requestFactory;
