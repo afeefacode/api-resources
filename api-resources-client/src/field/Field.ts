@@ -81,7 +81,7 @@ export class Field {
     return !!this._optionsRequestFactory
   }
 
-  public getOptionsRequest (): ApiRequest | null {
+  public createOptionsRequest (): ApiRequest | null {
     if (this._optionsRequestFactory) {
       return this._optionsRequestFactory()
     }
