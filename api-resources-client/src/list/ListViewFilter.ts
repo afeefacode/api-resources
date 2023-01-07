@@ -33,18 +33,6 @@ export class ListViewFilter {
     return JSON.stringify(this._value) === JSON.stringify(this.defaultValue)
   }
 
-  public get nullIsOption (): boolean {
-    return this._filter.nullIsOption
-  }
-
-  public get allIsOption (): boolean {
-    return this._filter.allIsOption
-  }
-
-  public get noneIsOption (): boolean {
-    return this._filter.noneIsOption
-  }
-
   public hasOptions (): boolean {
     return this._filter.hasOptions()
   }
@@ -103,14 +91,8 @@ export class ListViewFilter {
   }
 
   public serialize (): ActionFilterValueType | undefined {
-    if (!this.hasDefaultValueSet()) { // send only if no default
-      let useFilter = true
-      if (this._value === null) { // send null only if it's an option
-        useFilter = this.nullIsOption
-      }
-      if (useFilter) {
-        return this.serializeValue(this._value)
-      }
+    if (!this.hasDefaultValueSet()) { // don't send default
+      return this.serializeValue(this._value)
     }
     return undefined
   }

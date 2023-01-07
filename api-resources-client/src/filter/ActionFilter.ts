@@ -10,23 +10,23 @@ export type ActionFilterValueType = (
 export type ActionFilterJSON = {
   type: string
   default: ActionFilterValueType
-  options: []
-  options_request: ApiRequestJSON
-  null_is_option: boolean
-  all_is_option: boolean
-  none_is_option: boolean
+  options?: ActionFilterOption[]
+  options_request?: ApiRequestJSON
 }
 
 type RequestFactory = (() => ApiRequest) | null
+
+export type ActionFilterOption = {
+  value: unknown,
+  title: string
+}
 
 export class ActionFilter {
   private _filter: Filter
   private _name: string
   private _defaultValue: ActionFilterValueType = null
-  private _nullIsOption: boolean = false
-  private _allIsOption: boolean = false
-  private _noneIsOption: boolean = false
-  private _options: unknown[] = []
+  private _hasDefaultValue: boolean
+  private _options: ActionFilterOption[] = []
   private _requestFactory: RequestFactory = null
 
   constructor (action: Action, filter: Filter, name: string, json: ActionFilterJSON) {
@@ -35,13 +35,10 @@ export class ActionFilter {
     this._defaultValue = json.default || null
     this._hasDefaultValue = json.hasOwnProperty('default')
     this._options = json.options || []
-    this._nullIsOption = json.null_is_option || false
-    this._allIsOption = json.all_is_option || false
-    this._noneIsOption = json.none_is_option || false
 
     if (json.options_request) {
       this._requestFactory = (): ApiRequest => {
-        const requestAction = action.getApi().getAction(json.options_request.resource, json.options_request.action)
+        const requestAction = action.getApi().getAction(json.options_request!.resource, json.options_request!.action)
         return new ApiRequest(json.options_request)
           .action(requestAction as Action)
       }
@@ -69,23 +66,11 @@ export class ActionFilter {
   }
 
   public hasOption (value: unknown): boolean {
-    return this._options.includes(value)
+    return this._options.some(o => o.value === value)
   }
 
-  public get options (): unknown[] {
+  public get options (): ActionFilterOption[] {
     return this._options
-  }
-
-  public get nullIsOption (): boolean {
-    return this._nullIsOption
-  }
-
-  public get allIsOption (): boolean {
-    return this._allIsOption
-  }
-
-  public get noneIsOption (): boolean {
-    return this._noneIsOption
   }
 
   public hasOptionsRequest (): boolean {
