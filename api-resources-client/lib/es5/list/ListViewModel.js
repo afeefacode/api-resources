@@ -93,6 +93,13 @@ export class ListViewModel {
         return this;
     }
     filterValueChanged(name) {
+        // do not reload if qfield changed but no keyword is given
+        if (name === 'qfield') {
+            const q = this.getFilter('q');
+            if (!q || !q.value) {
+                return;
+            }
+        }
         // reset page filter if any other filter changes
         if (this._filters.get(name).filter.type !== 'Afeefa.PageFilter') {
             const pageFilter = this._filters.values().find(f => f.filter.type === 'Afeefa.PageFilter');
@@ -252,6 +259,13 @@ export class ListViewModel {
         if (this._pushToFilterSource) {
             const query = this._filters.values()
                 .reduce((map, filter) => {
+                // do not show qfield in query if no keyword is given
+                if (filter.name === 'qfield') {
+                    const q = this.getFilter('q');
+                    if (!q || !q.value) {
+                        return map;
+                    }
+                }
                 return Object.assign(Object.assign({}, map), filter.toQuerySource());
             }, {});
             this._filterSource.push(query);
