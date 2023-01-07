@@ -9,20 +9,12 @@ export function StringFilterMixin<TFilter extends FilterMixinConstructor> (Filte
         return value
       }
 
-      if (value === null) {
-        return '---'
-      }
-
       return undefined
     }
 
     public queryToValue (query: string): StringFilterValue | undefined {
       if (query) {
         return query
-      }
-
-      if (query === '---') {
-        return null
       }
 
       return undefined
