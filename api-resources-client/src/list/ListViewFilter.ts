@@ -21,6 +21,10 @@ export class ListViewFilter {
     return this._filter
   }
 
+  public hasDefaultValue (): boolean {
+    return this._filter.hasDefaultValue()
+  }
+
   public get defaultValue (): ActionFilterValueType {
     return this._filter.defaultValue
   }

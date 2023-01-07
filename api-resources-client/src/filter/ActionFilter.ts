@@ -33,6 +33,7 @@ export class ActionFilter {
     this._filter = filter
     this._name = name
     this._defaultValue = json.default || null
+    this._hasDefaultValue = json.hasOwnProperty('default')
     this._options = json.options || []
     this._nullIsOption = json.null_is_option || false
     this._allIsOption = json.all_is_option || false
@@ -53,6 +54,10 @@ export class ActionFilter {
 
   public get name (): string {
     return this._name
+  }
+
+  public hasDefaultValue (): boolean {
+    return this._hasDefaultValue
   }
 
   public get defaultValue (): ActionFilterValueType {
