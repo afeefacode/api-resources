@@ -8,11 +8,11 @@ use Afeefa\ApiResources\Action\ActionParams;
 use Afeefa\ApiResources\Api\ApiRequest;
 use Afeefa\ApiResources\Field\Fields\IdAttribute;
 use Afeefa\ApiResources\Filter\FilterBag;
-use Afeefa\ApiResources\Filter\Filters\IdFilter;
 use Afeefa\ApiResources\Filter\Filters\KeywordFilter;
 use Afeefa\ApiResources\Filter\Filters\OrderFilter;
 use Afeefa\ApiResources\Filter\Filters\PageFilter;
 use Afeefa\ApiResources\Filter\Filters\PageSizeFilter;
+use Afeefa\ApiResources\Filter\Filters\SelectFilter;
 use Afeefa\ApiResources\Resource\Resource;
 use Afeefa\ApiResources\Type\Type;
 use Backend\Resolvers\AuthorsResolver;
@@ -29,7 +29,7 @@ class AuthorResource extends Resource
                 $action->filters(function (FilterBag $filters) {
                     $filters->add('q', KeywordFilter::class);
 
-                    $filters->add('tag_id', function (IdFilter $filter) {
+                    $filters->add('tag_id', function (SelectFilter $filter) {
                         $filter->optionsRequest(function (ApiRequest $request) {
                             $request
                                 ->resourceType(TagResource::type())
