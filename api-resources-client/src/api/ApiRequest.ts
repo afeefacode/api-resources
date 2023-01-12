@@ -1,4 +1,4 @@
-import axios, { AxiosError } from 'axios'
+import axios, { AxiosError, CancelTokenSource } from 'axios'
 
 import { Action } from '../action/Action'
 import { BagEntries } from '../bag/Bag'
@@ -22,6 +22,7 @@ export class ApiRequest {
   private _params!: Record<string, unknown>
   private _filters!: BagEntries<ActionFilterValueType>
   private _data!: Record<string, unknown>
+  private _cancelSource!: CancelTokenSource
 
   // private _lastRequestJSON: string = ''
   // private _lastRequest!: Promise<ApiResponse | boolean>
@@ -117,6 +118,15 @@ export class ApiRequest {
     return this
   }
 
+  public cancelSource (source: CancelTokenSource): ApiRequest {
+    this._cancelSource = source
+    return this
+  }
+
+  public getCancelSource (): CancelTokenSource {
+    return this._cancelSource
+  }
+
   public send (): Promise<ApiResponse | ApiError> {
     const params = this.serialize()
 
@@ -132,13 +142,17 @@ export class ApiRequest {
       url += ':' + (Object.keys(this._fields).join(','))
     }
 
-    const axiosResponse = axios.post(url, params)
+    const axiosResponse = axios.post(url, params, {
+      cancelToken: this._cancelSource?.token
+    })
       .then(result => {
         return new ApiResponse(this, result)
       })
       .catch((error: AxiosError) => {
-        console.error(error)
-        return new ApiError(this, error)
+        if (!axios.isCancel(error)) {
+          console.error(error)
+        }
+        return new ApiError(this, error, axios.isCancel(error))
       })
 
     // this._lastRequest = request

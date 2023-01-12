@@ -12,6 +12,7 @@ export class ApiAction {
         action._params = apiRequest.getParams();
         action._filters = apiRequest.getFilters();
         action._fields = apiRequest.getFields();
+        action._cancelSource = apiRequest.getCancelSource();
         return action;
     }
     // bulk
@@ -78,9 +79,15 @@ export class ApiAction {
         this._data = data;
         return this;
     }
+    // cancel
+    cancelSource(source) {
+        this._cancelSource = source;
+        return this;
+    }
     // run
     getApiRequest() {
         return this._action.createRequest()
+            .cancelSource(this._cancelSource)
             .params(this._params)
             .filters(this._filters)
             .fields(this._fields)
@@ -115,7 +122,12 @@ export class ApiAction {
             const result = await request.send();
             await this.afterRequest();
             if (result instanceof ApiError) {
-                this.processError(result);
+                if (result.isCancel) {
+                    this.processCancel(result);
+                }
+                else {
+                    this.processError(result);
+                }
                 return false;
             }
             return this.processResult(result);
@@ -145,6 +157,8 @@ export class ApiAction {
         }
         // single model null
         return null;
+    }
+    processCancel(_result) {
     }
     processError(_result) {
     }

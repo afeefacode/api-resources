@@ -12,7 +12,8 @@ export declare class ApiError {
     error: AxiosError;
     message: string | null;
     detail: string[] | string | null;
-    constructor(request: ApiRequest, error: AxiosError);
+    isCancel: boolean;
+    constructor(request: ApiRequest, error: AxiosError, isCancel?: boolean);
     private getErrorMessage;
     private getErrorDetail;
 }

@@ -72,7 +72,15 @@ export class ApiRequest {
         this._data = data;
         return this;
     }
+    cancelSource(source) {
+        this._cancelSource = source;
+        return this;
+    }
+    getCancelSource() {
+        return this._cancelSource;
+    }
     send() {
+        var _a;
         const params = this.serialize();
         const urlResourceType = this._action.getResource().getType().replace(/.+\./, '').replace(/Resource/, '');
         let url = this._action.getApi().getBaseUrl() + '?' + urlResourceType + ':' + this._action.getName();
@@ -82,13 +90,17 @@ export class ApiRequest {
         if (this._fields) {
             url += ':' + (Object.keys(this._fields).join(','));
         }
-        const axiosResponse = axios.post(url, params)
+        const axiosResponse = axios.post(url, params, {
+            cancelToken: (_a = this._cancelSource) === null || _a === void 0 ? void 0 : _a.token
+        })
             .then(result => {
             return new ApiResponse(this, result);
         })
             .catch((error) => {
-            console.error(error);
-            return new ApiError(this, error);
+            if (!axios.isCancel(error)) {
+                console.error(error);
+            }
+            return new ApiError(this, error, axios.isCancel(error));
         });
         // this._lastRequest = request
         return axiosResponse;

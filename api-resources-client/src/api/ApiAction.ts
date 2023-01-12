@@ -1,3 +1,5 @@
+import { CancelTokenSource } from 'axios'
+
 import { Action } from '../action/Action'
 import { apiResources } from '../ApiResources'
 import { BagEntries } from '../bag/Bag'
@@ -22,6 +24,7 @@ export class ApiAction {
   protected _filters!: BagEntries<ActionFilterValueType>
   protected _data!: BagEntries<unknown>
   protected _bulkIsSequential: boolean = false
+  private _cancelSource!: CancelTokenSource
 
   public static fromRequest (apiRequest: ApiRequest): ApiAction {
     const action = new this()
@@ -29,6 +32,7 @@ export class ApiAction {
     action._params = apiRequest.getParams()
     action._filters = apiRequest.getFilters()
     action._fields = apiRequest.getFields()
+    action._cancelSource = apiRequest.getCancelSource()
     return action
   }
 
@@ -118,10 +122,17 @@ export class ApiAction {
     return this
   }
 
+  // cancel
+  public cancelSource (source: CancelTokenSource): ApiAction {
+    this._cancelSource = source
+    return this
+  }
+
   // run
 
   public getApiRequest (): ApiRequest {
     return this._action.createRequest()
+      .cancelSource(this._cancelSource)
       .params(this._params)
       .filters(this._filters)
       .fields(this._fields)
@@ -168,7 +179,11 @@ export class ApiAction {
       await this.afterRequest()
 
       if (result instanceof ApiError) {
-        this.processError(result)
+        if (result.isCancel) {
+          this.processCancel(result)
+        } else {
+          this.processError(result)
+        }
         return false
       }
 
@@ -206,6 +221,9 @@ export class ApiAction {
 
     // single model null
     return null
+  }
+
+  public processCancel (_result: ApiError): void {
   }
 
   public processError (_result: ApiError): void {

@@ -1,9 +1,10 @@
 export class ApiError {
-    constructor(request, error) {
+    constructor(request, error, isCancel = false) {
         this.request = request;
         this.error = error;
         this.message = this.getErrorMessage();
         this.detail = this.getErrorDetail();
+        this.isCancel = isCancel;
     }
     getErrorMessage() {
         // error message from server

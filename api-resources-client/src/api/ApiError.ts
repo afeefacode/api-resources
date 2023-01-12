@@ -13,13 +13,15 @@ export class ApiError {
   public error: AxiosError
   public message: string | null
   public detail: string[] | string | null
+  public isCancel: boolean
 
-  constructor (request: ApiRequest, error: AxiosError) {
+  constructor (request: ApiRequest, error: AxiosError, isCancel: boolean = false) {
     this.request = request
     this.error = error
 
     this.message = this.getErrorMessage()
     this.detail = this.getErrorDetail()
+    this.isCancel = isCancel
   }
 
   private getErrorMessage (): string | null {

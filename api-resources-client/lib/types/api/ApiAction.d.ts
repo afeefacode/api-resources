@@ -1,3 +1,4 @@
+import { CancelTokenSource } from 'axios';
 import { Action } from '../action/Action';
 import { BagEntries } from '../bag/Bag';
 import { ActionFilterValueType } from '../filter/ActionFilter';
@@ -18,6 +19,7 @@ export declare class ApiAction {
     protected _filters: BagEntries<ActionFilterValueType>;
     protected _data: BagEntries<unknown>;
     protected _bulkIsSequential: boolean;
+    private _cancelSource;
     static fromRequest(apiRequest: ApiRequest): ApiAction;
     apiAction(apiAction: ApiAction): ApiAction;
     get isBulk(): boolean;
@@ -36,6 +38,7 @@ export declare class ApiAction {
     field(name: string, value: unknown): ApiAction;
     fields(fields: Record<string, unknown>): ApiAction;
     data(data: BagEntries<unknown>): ApiAction;
+    cancelSource(source: CancelTokenSource): ApiAction;
     getApiRequest(): ApiRequest;
     execute(): Promise<ApiActionResponse | ApiActionResponse[]>;
     beforeBulkRequest(): void;
@@ -43,6 +46,7 @@ export declare class ApiAction {
     beforeRequest(): Promise<unknown>;
     afterRequest(): Promise<unknown>;
     processResult(result: ApiResponse): ApiActionResponse;
+    processCancel(_result: ApiError): void;
     processError(_result: ApiError): void;
 }
 export {};

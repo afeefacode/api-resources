@@ -1,3 +1,4 @@
+import { CancelTokenSource } from 'axios';
 import { Action } from '../action/Action';
 import { BagEntries } from '../bag/Bag';
 import { ActionFilterValueType } from '../filter/ActionFilter';
@@ -18,6 +19,7 @@ export declare class ApiRequest {
     private _params;
     private _filters;
     private _data;
+    private _cancelSource;
     constructor(json?: ApiRequestJSON);
     action(action: Action): ApiRequest;
     getAction(): Action;
@@ -33,6 +35,8 @@ export declare class ApiRequest {
     addFilters(filters: BagEntries<ActionFilterValueType>): ApiRequest;
     getFilters(): BagEntries<ActionFilterValueType>;
     data(data: Record<string, unknown>): ApiRequest;
+    cancelSource(source: CancelTokenSource): ApiRequest;
+    getCancelSource(): CancelTokenSource;
     send(): Promise<ApiResponse | ApiError>;
     protected serialize(): object;
 }
