@@ -43,8 +43,15 @@ export class Model {
   }
 
   public static create (json: ModelJSON): Model {
-    const ModelClass = apiResources.getModelClass(json.type)
-    const model = new ModelClass()
+    let model
+    if (json.type) {
+      const ModelClass = apiResources.getModelClass(json.type)
+      model = new ModelClass()
+    } else {
+      const ModelType = this
+      model = new ModelType()
+      json.type = this.type
+    }
     model.deserialize(json)
     return model
   }

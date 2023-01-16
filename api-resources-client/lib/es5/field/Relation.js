@@ -12,11 +12,29 @@ export class Relation extends Field {
     }
     deserialize(value) {
         if (this._relatedType.isList) {
-            return value.map(modelJSON => Model.create(modelJSON));
+            const modelsJsons = value;
+            return modelsJsons.map(modelJSON => {
+                // if json does not contain type information, take first type of relation schema
+                if (!modelJSON.type) {
+                    if (this._relatedType.types.length > 1) {
+                        console.warn('Deserialize relation json without type information. Took first type found, but there are more.');
+                    }
+                    modelJSON.type = this._relatedType.types[0];
+                }
+                return Model.create(modelJSON);
+            });
         }
         else {
-            if (value) {
-                return Model.create(value);
+            const modelJSON = value;
+            if (modelJSON) {
+                // if json does not contain type information, take first type of relation schema
+                if (!modelJSON.type) {
+                    if (this._relatedType.types.length > 1) {
+                        console.warn('Deserialize relation json without type information. Took first type found, but there are more.');
+                    }
+                    modelJSON.type = this._relatedType.types[0];
+                }
+                return Model.create(modelJSON);
             }
             return null;
         }

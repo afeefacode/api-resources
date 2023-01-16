@@ -23,10 +23,28 @@ export class Relation extends Field {
 
   public deserialize (value: FieldJSONValue): FieldValue {
     if (this._relatedType.isList) {
-      return (value as ModelJSON[]).map(modelJSON => Model.create(modelJSON))
+      const modelsJsons = value as ModelJSON[]
+      return modelsJsons.map(modelJSON => {
+        // if json does not contain type information, take first type of relation schema
+        if (!modelJSON.type) {
+          if (this._relatedType.types.length > 1) {
+            console.warn('Deserialize relation json without type information. Took first type found, but there are more.')
+          }
+          modelJSON.type = this._relatedType.types[0]!
+        }
+        return Model.create(modelJSON)
+      })
     } else {
-      if (value) {
-        return Model.create(value as ModelJSON)
+      const modelJSON = value as ModelJSON
+      if (modelJSON) {
+        // if json does not contain type information, take first type of relation schema
+        if (!modelJSON.type) {
+          if (this._relatedType.types.length > 1) {
+            console.warn('Deserialize relation json without type information. Took first type found, but there are more.')
+          }
+          modelJSON.type = this._relatedType.types[0]!
+        }
+        return Model.create(modelJSON)
       }
       return null
     }
