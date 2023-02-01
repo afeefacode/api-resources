@@ -20,6 +20,7 @@
             "Afeefa\\ApiResources\\Tests\\": "tests/tests"
         },
         "files": [
+            "src/Utils/functions.php",
             "src/DI/functions.php"
         ]
     }
