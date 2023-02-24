@@ -45,7 +45,7 @@ class QueryActionResolver extends BaseActionResolver
 
         $actionName = $action->getName();
         $resourceType = $this->request->getResource()::type();
-        $mustReturn = "Load callback of action resolver for action {$actionName} on resource {$resourceType} must return";
+        $mustReturn = "Get callback of action resolver for action {$actionName} on resource {$resourceType} must return";
 
         // query db
 
