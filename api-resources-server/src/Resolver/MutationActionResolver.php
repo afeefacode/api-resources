@@ -66,15 +66,8 @@ class MutationActionResolver extends BaseMutationActionResolver
             return $request->dispatch();
         }
 
-        return $this->returnResponse($result);
-    }
-
-    protected function returnResponse($data = null): array
-    {
         return [
-            'data' => $data,
-            'input' => json_decode(file_get_contents('php://input'), true),
-            'request' => $this->request
+            'data' => $result
         ];
     }
 }

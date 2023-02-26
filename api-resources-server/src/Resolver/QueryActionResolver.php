@@ -100,9 +100,7 @@ class QueryActionResolver extends BaseActionResolver
 
         return [
             'data' => $data,
-            'meta' => $this->meta,
-            'input' => json_decode(file_get_contents('php://input'), true),
-            'request' => $this->request
+            'meta' => $this->meta
         ];
     }
 
