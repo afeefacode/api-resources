@@ -31,39 +31,48 @@ class MutationActionResolver extends BaseMutationActionResolver
             throw new MissingCallbackException("{$needsToImplement} a save() method.");
         }
 
-        // save model
+        $action = $this->request->getAction();
 
-        $input = $this->getInput();
-        if ($input->isUnion() && !$this->request->hasParam('type')) {
-            throw new InvalidConfigurationException('Must specify a type in the payload of the union action {$actionName} on resource {$resourceType}');
-        };
+        $result = null;
 
-        $typeName = $input->isUnion() ? $this->request->getParam('type') : $input->getTypeClass()::type();
+        if ($action->hasInput()) { // requires an input type
+            $input = $this->getInput();
+            if ($input->isUnion() && !$this->request->hasParam('type')) {
+                throw new InvalidConfigurationException('Must specify a type in the payload of the union action {$actionName} on resource {$resourceType}');
+            };
 
-        $resolveContext = $this->container->create(MutationResolveContext::class)
-            ->type($this->getTypeByName($typeName))
-            ->fieldsToSave($this->request->getFieldsToSave());
+            $typeName = $input->isUnion() ? $this->request->getParam('type') : $input->getTypeClass()::type();
 
-        $model = ($this->saveCallback)($this->getRequest(), $resolveContext->getSaveFields());
-        if ($model !== null && !$model instanceof ModelInterface) {
-            throw new InvalidConfigurationException("Save {$mustReturn} a ModelInterface object or null.");
+            $resolveContext = $this->container->create(MutationResolveContext::class)
+                ->type($this->getTypeByName($typeName))
+                ->fieldsToSave($this->request->getFieldsToSave());
+
+            $result = ($this->saveCallback)($this->getRequest(), $resolveContext->getSaveFields());
+        } else {
+            $result = ($this->saveCallback)($this->getRequest());
+        }
+
+        if ($action->hasResponse()) {
+            if ($result !== null && !$result instanceof ModelInterface) {
+                throw new InvalidConfigurationException("Save {$mustReturn} a ModelInterface object or null.");
+            }
         }
 
         // forward if present
 
         if ($this->forwardCallback) {
             $request = $this->getRequest();
-            ($this->forwardCallback)($request, $model);
+            ($this->forwardCallback)($request, $result);
             return $request->dispatch();
         }
 
-        return $this->returnResponse($model);
+        return $this->returnResponse($result);
     }
 
-    protected function returnResponse(?ModelInterface $model = null): array
+    protected function returnResponse($data = null): array
     {
         return [
-            'data' => $model,
+            'data' => $data,
             'input' => json_decode(file_get_contents('php://input'), true),
             'request' => $this->request
         ];
