@@ -3,20 +3,21 @@
 namespace Afeefa\ApiResources\Tests\Resolver;
 
 use Afeefa\ApiResources\Action\Action;
+use Afeefa\ApiResources\Api\ApiRequest;
 use Afeefa\ApiResources\Exception\Exceptions\InvalidConfigurationException;
 use Afeefa\ApiResources\Exception\Exceptions\MissingCallbackException;
 use Afeefa\ApiResources\Field\FieldBag;
 use Afeefa\ApiResources\Field\Fields\StringAttribute;
 use Afeefa\ApiResources\Field\Relation;
 use Afeefa\ApiResources\Model\Model;
-use Afeefa\ApiResources\Resolver\MutationActionSimpleResolver;
+use Afeefa\ApiResources\Resolver\MutationActionResolver;
 use Afeefa\ApiResources\Resolver\MutationRelationHasOneResolver;
 use Afeefa\ApiResources\Test\MutationTest;
 use function Afeefa\ApiResources\Test\T;
 use Closure;
 use stdClass;
 
-class MutationActionSimpleResolverTest extends MutationTest
+class MutationActionResolverTest extends MutationTest
 {
     public function test_missing_save_callback()
     {
@@ -26,7 +27,7 @@ class MutationActionSimpleResolverTest extends MutationTest
         $api = $this->createApiWithMutation(
             fn () => T('TYPE'),
             function (Action $action) {
-                $action->resolve(function (MutationActionSimpleResolver $r) {
+                $action->resolve(function (MutationActionResolver $r) {
                 });
             }
         );
@@ -39,7 +40,7 @@ class MutationActionSimpleResolverTest extends MutationTest
         $api = $this->createApiWithMutation(
             fn () => T('TYPE'),
             function (Action $action) {
-                $action->resolve(function (MutationActionSimpleResolver $r) {
+                $action->resolve(function (MutationActionResolver $r) {
                     $r->save(fn () => Model::fromSingle('TYPE', []));
                 });
             }
@@ -62,9 +63,9 @@ class MutationActionSimpleResolverTest extends MutationTest
             fn () => T('TYPE'),
             function (Action $action) {
                 $action
-                    ->resolve(function (MutationActionSimpleResolver $r) {
+                    ->resolve(function (MutationActionResolver $r) {
                         $r
-                            ->save(function (array $saveFields) {
+                            ->save(function (ApiRequest $request, array $saveFields) {
                                 $this->testWatcher->info('save');
                                 $this->testWatcher->saveFields($saveFields);
                                 return Model::fromSingle('TYPE', []);
@@ -117,9 +118,9 @@ class MutationActionSimpleResolverTest extends MutationTest
             fn () => T('TYPE'),
             function (Action $action) {
                 $action
-                    ->resolve(function (MutationActionSimpleResolver $r) {
+                    ->resolve(function (MutationActionResolver $r) {
                         $r
-                            ->save(function (array $saveFields) {
+                            ->save(function (ApiRequest $request, array $saveFields) {
                                 $this->testWatcher->saveFields($saveFields);
                                 return Model::fromSingle('TYPE', []);
                             });
@@ -133,6 +134,38 @@ class MutationActionSimpleResolverTest extends MutationTest
         );
 
         $this->assertEquals([$expectedFields], $this->testWatcher->saveFields);
+    }
+
+    /**
+     * @dataProvider saveFieldsDataProvider
+     */
+    public function test_api_request($fields, $expectedFields)
+    {
+        $api = $this->createApiWithUpdateTypeAndMutation(
+            function (FieldBag $fields) {
+                $fields
+                    ->attribute('name', StringAttribute::class)
+                    ->attribute('title', StringAttribute::class);
+            },
+            fn () => T('TYPE'),
+            function (Action $action) {
+                $action
+                    ->resolve(function (MutationActionResolver $r) {
+                        $r
+                            ->save(function (ApiRequest $request, array $saveFields) {
+                                $this->testWatcher->saveFields($request->getFieldsToSave());
+                                return Model::fromSingle('TYPE', []);
+                            });
+                    });
+            }
+        );
+
+        $this->request(
+            $api,
+            data: $fields
+        );
+
+        $this->assertEquals([$fields], $this->testWatcher->saveFields);
     }
 
     public function saveFieldsDataProvider()
@@ -217,9 +250,9 @@ class MutationActionSimpleResolverTest extends MutationTest
             fn () => T('TYPE'),
             function (Action $action) {
                 $action
-                    ->resolve(function (MutationActionSimpleResolver $r) {
+                    ->resolve(function (MutationActionResolver $r) {
                         $r
-                            ->save(function (array $saveFields) {
+                            ->save(function (ApiRequest $request, array $saveFields) {
                                 $this->testWatcher->info('owner');
                                 $this->testWatcher->saveFields($saveFields);
                                 return Model::fromSingle('TYPE', ['id' => '3']);
@@ -270,7 +303,7 @@ class MutationActionSimpleResolverTest extends MutationTest
             fn () => T('TYPE'),
             function (Action $action) use ($return) {
                 $action
-                    ->resolve(function (MutationActionSimpleResolver $r) use ($return) {
+                    ->resolve(function (MutationActionResolver $r) use ($return) {
                         $r
                             ->save(function () use ($return) {
                                 if ($return !== 'NOTHING') {
@@ -302,7 +335,7 @@ class MutationActionSimpleResolverTest extends MutationTest
             fn () => T('TYPE'),
             function (Action $action) use ($return) {
                 $action
-                    ->resolve(function (MutationActionSimpleResolver $r) use ($return) {
+                    ->resolve(function (MutationActionResolver $r) use ($return) {
                         $r
                             ->save(function () use ($return) {
                                 if ($return !== 'NOTHING') {
@@ -332,7 +365,7 @@ class MutationActionSimpleResolverTest extends MutationTest
             fn () => T('TYPE'),
             function (Action $action) {
                 $action
-                    ->resolve(function (MutationActionSimpleResolver $r) {
+                    ->resolve(function (MutationActionResolver $r) {
                         $r
                             ->transaction(function (Closure $execute) {
                                 $this->testWatcher->info('startTransaction');
@@ -362,7 +395,7 @@ class MutationActionSimpleResolverTest extends MutationTest
             fn () => T('TYPE'),
             function (Action $action) {
                 $action
-                    ->resolve(function (MutationActionSimpleResolver $r) {
+                    ->resolve(function (MutationActionResolver $r) {
                         $r->transaction(fn () => null);
                     });
             }

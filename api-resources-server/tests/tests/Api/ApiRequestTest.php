@@ -7,7 +7,7 @@ use Afeefa\ApiResources\Api\Api;
 use Afeefa\ApiResources\Api\ApiRequest;
 use Afeefa\ApiResources\DI\Container;
 use Afeefa\ApiResources\Model\Model;
-use Afeefa\ApiResources\Resolver\MutationActionSimpleResolver;
+use Afeefa\ApiResources\Resolver\MutationActionResolver;
 use Afeefa\ApiResources\Test\ApiResourcesTest;
 use Afeefa\ApiResources\Test\Fixtures\TestApi\TestApi;
 use Afeefa\ApiResources\Test\Fixtures\TestApi\TestResource;
@@ -148,7 +148,7 @@ class ApiRequestTest extends ApiResourcesTest
             fn () => Type::list(T('TYPE')),
             function (Action $action) {
                 $action
-                    ->resolve(function (MutationActionSimpleResolver $r) {
+                    ->resolve(function (MutationActionResolver $r) {
                         $r->save(function () {
                             return Model::fromSingle('TYPE');
                         });

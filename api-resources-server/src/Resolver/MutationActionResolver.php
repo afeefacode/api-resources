@@ -9,7 +9,7 @@ use Afeefa\ApiResources\Resolver\Mutation\BaseMutationActionResolver;
 use Afeefa\ApiResources\Resolver\Mutation\MutationResolveContext;
 use Closure;
 
-class MutationActionSimpleResolver extends BaseMutationActionResolver
+class MutationActionResolver extends BaseMutationActionResolver
 {
     protected ?Closure $saveCallback = null;
 
@@ -44,7 +44,7 @@ class MutationActionSimpleResolver extends BaseMutationActionResolver
             ->type($this->getTypeByName($typeName))
             ->fieldsToSave($this->request->getFieldsToSave());
 
-        $model = ($this->saveCallback)($resolveContext->getSaveFields());
+        $model = ($this->saveCallback)($this->getRequest(), $resolveContext->getSaveFields());
         if ($model !== null && !$model instanceof ModelInterface) {
             throw new InvalidConfigurationException("Save {$mustReturn} a ModelInterface object or null.");
         }
