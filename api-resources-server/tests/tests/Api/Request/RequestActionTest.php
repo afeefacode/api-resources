@@ -17,8 +17,8 @@ class RequestActionTest extends ApiResourcesTest
     public function test_query()
     {
         $api = $this->apiBuilder()->api('API', function (Closure $addResource) {
-            $addResource('RES', function (Closure $addAction) {
-                $addAction('ACT', T('TYPE'), function (Action $action) {
+            $addResource('RES', function (Closure $addAction, Closure $addQuery) {
+                $addQuery('ACT', T('TYPE'), function (Action $action) {
                     $action
                         ->resolve(function (QueryActionResolver $resolver) {
                             $resolver->get(function () {
@@ -54,7 +54,7 @@ class RequestActionTest extends ApiResourcesTest
     public function test_mutation_returns_null()
     {
         $api = $this->apiBuilder()->api('API', function (Closure $addResource) {
-            $addResource('RES', function (Closure $addAction, Closure $addMutation) {
+            $addResource('RES', function (Closure $addAction, Closure $addQuery, Closure $addMutation) {
                 $addMutation('ACT', T('TYPE'), function (Action $action) {
                     $action
                         ->resolve(function (MutationActionSimpleResolver $r) {
