@@ -11,8 +11,9 @@ declare type ApiListActionResponse = {
     meta: object;
 };
 declare type ApiActionResponse = boolean | Model | null | ApiListActionResponse;
+declare type ApiActionOrFactory = ApiAction | ((results?: ApiActionResponse[]) => ApiAction);
 export declare class ApiAction {
-    protected _apiActions: ApiAction[];
+    protected _apiActions: ApiActionOrFactory[];
     protected _action: Action;
     protected _fields: BagEntries<unknown>;
     protected _params: BagEntries<unknown>;
@@ -21,7 +22,7 @@ export declare class ApiAction {
     protected _bulkIsSequential: boolean;
     private _cancelSource;
     static fromRequest(apiRequest: ApiRequest): ApiAction;
-    apiAction(apiAction: ApiAction): ApiAction;
+    apiAction(apiAction: ApiActionOrFactory): ApiAction;
     get isBulk(): boolean;
     sequential(sequential?: boolean): ApiAction;
     action({ apiType, resourceType, actionName }: {

@@ -98,7 +98,10 @@ export class ApiAction {
             if (this._bulkIsSequential) {
                 const results = [];
                 this.beforeBulkRequest();
-                for (const action of this._apiActions) {
+                for (let action of this._apiActions) {
+                    if (typeof action === 'function') {
+                        action = action(results);
+                    }
                     const result = await action.execute();
                     results.push(result);
                 }
@@ -108,6 +111,9 @@ export class ApiAction {
             else {
                 const promises = [];
                 this._apiActions.forEach(a => {
+                    if (typeof a === 'function') {
+                        a = a();
+                    }
                     promises.push(a.execute());
                 });
                 this.beforeBulkRequest();

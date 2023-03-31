@@ -16,8 +16,10 @@ type ApiListActionResponse = {
 
 type ApiActionResponse = boolean | Model | null | ApiListActionResponse
 
+type ApiActionOrFactory = ApiAction | ((results?: ApiActionResponse[]) => ApiAction)
+
 export class ApiAction {
-  protected _apiActions: ApiAction[] = []
+  protected _apiActions: ApiActionOrFactory[] = []
   protected _action!: Action
   protected _fields!: BagEntries<unknown>
   protected _params!: BagEntries<unknown>
@@ -38,7 +40,7 @@ export class ApiAction {
 
   // bulk
 
-  public apiAction (apiAction: ApiAction): ApiAction {
+  public apiAction (apiAction: ApiActionOrFactory): ApiAction {
     this._apiActions.push(apiAction)
     return this
   }
@@ -146,7 +148,10 @@ export class ApiAction {
 
         this.beforeBulkRequest()
 
-        for (const action of this._apiActions) {
+        for (let action of this._apiActions) {
+          if (typeof action === 'function') {
+            action = action(results)
+          }
           const result = await action.execute() as ApiActionResponse
           results.push(result)
         }
@@ -158,6 +163,9 @@ export class ApiAction {
         const promises: Promise<ApiActionResponse>[] = []
 
         this._apiActions.forEach(a => {
+          if (typeof a === 'function') {
+            a = a()
+          }
           promises.push(a.execute() as Promise<ApiActionResponse>)
         })
 
