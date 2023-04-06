@@ -152,6 +152,11 @@ export class ApiAction {
           if (typeof action === 'function') {
             action = action(results)
           }
+
+          if (!action) { // no action e.g. if callback action(results) evaluated to null
+            continue
+          }
+
           const result = await action.execute() as ApiActionResponse
           results.push(result)
         }
@@ -166,7 +171,10 @@ export class ApiAction {
           if (typeof a === 'function') {
             a = a()
           }
-          promises.push(a.execute() as Promise<ApiActionResponse>)
+
+          if (a) { // no action e.g. if callback a() evaluated to null
+            promises.push(a.execute() as Promise<ApiActionResponse>)
+          }
         })
 
         this.beforeBulkRequest()
