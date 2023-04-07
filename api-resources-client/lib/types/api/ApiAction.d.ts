@@ -38,6 +38,7 @@ export declare class ApiAction {
     getFilters(): BagEntries<ActionFilterValueType>;
     field(name: string, value: unknown): ApiAction;
     fields(fields: Record<string, unknown>): ApiAction;
+    getFields(): BagEntries<unknown>;
     data(data: BagEntries<unknown>): ApiAction;
     cancelSource(source: CancelTokenSource): ApiAction;
     getApiRequest(): ApiRequest;

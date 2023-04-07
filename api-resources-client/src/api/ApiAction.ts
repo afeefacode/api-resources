@@ -117,6 +117,10 @@ export class ApiAction {
     return this
   }
 
+  public getFields (): BagEntries<unknown> {
+    return this._fields
+  }
+
   // data
 
   public data (data: BagEntries<unknown>): ApiAction {

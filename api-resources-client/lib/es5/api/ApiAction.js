@@ -74,6 +74,9 @@ export class ApiAction {
         this._fields = fields;
         return this;
     }
+    getFields() {
+        return this._fields;
+    }
     // data
     data(data) {
         this._data = data;
