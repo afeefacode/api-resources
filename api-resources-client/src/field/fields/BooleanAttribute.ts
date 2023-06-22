@@ -7,4 +7,8 @@ export class BooleanAttribute extends Attribute {
   protected fallbackDefault (): FieldValue {
     return false
   }
+
+  public deserialize (value: unknown): boolean {
+    return !!value
+  }
 }
