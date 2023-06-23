@@ -21,7 +21,7 @@ export class Relation extends Field {
                     }
                     modelJSON.type = this._relatedType.types[0];
                 }
-                return Model.create(modelJSON);
+                return Model.fromJson(modelJSON);
             });
         }
         else {
@@ -34,7 +34,7 @@ export class Relation extends Field {
                     }
                     modelJSON.type = this._relatedType.types[0];
                 }
-                return Model.create(modelJSON);
+                return Model.fromJson(modelJSON);
             }
             return null;
         }

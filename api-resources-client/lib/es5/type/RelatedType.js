@@ -6,7 +6,7 @@ export class RelatedType {
         if (json.type) {
             this.types = [json.type];
         }
-        else {
+        else if (json.types) {
             this.types = json.types;
         }
         this.isLink = json.link || false;

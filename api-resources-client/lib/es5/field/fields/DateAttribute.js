@@ -6,8 +6,5 @@ export class DateAttribute extends Attribute {
         }
         return null;
     }
-    serialize(value) {
-        return value;
-    }
 }
 DateAttribute.type = 'Afeefa.DateAttribute';

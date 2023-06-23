@@ -5,14 +5,16 @@ export class Type {
         this._updateFields = {};
         this._createFields = {};
         this.name = name;
-        for (const [name, fieldJSON] of Object.entries(json.fields)) {
-            const field = apiResources.getField(fieldJSON.type);
-            if (field) {
-                const typeField = field.createTypeField(fieldJSON);
-                this._fields[name] = typeField;
-            }
-            else {
-                console.warn(`No Field implementation for field ${name} type ${fieldJSON.type}.`);
+        if (json.fields) {
+            for (const [name, fieldJSON] of Object.entries(json.fields)) {
+                const field = apiResources.getField(fieldJSON.type);
+                if (field) {
+                    const typeField = field.createTypeField(fieldJSON);
+                    this._fields[name] = typeField;
+                }
+                else {
+                    console.warn(`No Field implementation for field ${name} type ${fieldJSON.type}.`);
+                }
             }
         }
         if (json.update_fields) {

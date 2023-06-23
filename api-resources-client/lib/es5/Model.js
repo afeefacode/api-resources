@@ -9,44 +9,108 @@ import { Relation } from './field/Relation';
 import { enumerable } from './utils/enumerable';
 let ID = 0;
 export class Model {
-    constructor(type) {
+    constructor(...args) {
         this.id = null;
+        this.type = 'Model';
         this._ID = ++ID;
         this._original = null;
         this.class = this.constructor;
-        this.type = type || this.constructor.type;
+        // type and data
+        if (args.length === 2) {
+            this.type = args[0];
+            this.fill(args[1]);
+            // type or data
+        }
+        else if (args.length === 1) {
+            if (typeof args[0] === 'string') {
+                this.type = args[0];
+            }
+            else {
+                this.type = this.class.type;
+                this.fill(args[0]);
+            }
+            // no type no data
+        }
+        else {
+            this.type = this.class.type;
+        }
     }
     static getType() {
         return apiResources.getType(this.type);
     }
-    static create(json) {
+    /**
+     * Deserializes a server response json.
+     */
+    static fromJson(json) {
         let model;
         if (json.type) {
             const ModelClass = apiResources.getModelClass(json.type);
             model = new ModelClass();
         }
         else {
-            const ModelType = this;
-            model = new ModelType();
+            model = new this();
             json.type = this.type;
         }
         model.deserialize(json);
         return model;
     }
-    static createForNew(fields) {
-        const ModelType = this;
-        const model = new ModelType();
+    /**
+     * Creates a new instance while setting all create fields to a default value.
+     */
+    static defaults(data) {
+        const model = new this();
         const type = this.getType();
         for (const [name, field] of Object.entries(type.getCreateFields())) {
-            if (!fields || fields[name]) {
-                model[name] = field.default();
-            }
+            model[name] = field.default();
+        }
+        if (data) {
+            model.fill(data);
         }
         return model;
     }
+    /**
+     * Deletes all model attributes not included in fields.
+     */
+    withOnly(fields) {
+        for (const name of Object.keys(this)) {
+            if (name === 'id' || name === 'type') {
+                continue;
+            }
+            if (!(fields === null || fields === void 0 ? void 0 : fields[name])) {
+                delete this[name];
+            }
+        }
+        return this;
+    }
+    /**
+     * Deletes all model attributes included in fields.
+     */
+    without(fields) {
+        for (const name of Object.keys(this)) {
+            if (fields === null || fields === void 0 ? void 0 : fields[name]) {
+                delete this[name];
+            }
+        }
+        return this;
+    }
+    /**
+     * Fills the model.
+     */
+    fill(data) {
+        for (const [key, value] of Object.entries(data)) {
+            this[key] = value;
+        }
+        return this;
+    }
+    /**
+     * Returns the Type-instance associated to this model.
+     */
     getType() {
         return apiResources.getType(this.type);
     }
+    /**
+     * Initializes the model with the given json data.
+     */
     deserialize(json) {
         const type = apiResources.getType(json.type);
         this.id = json.id || null;
@@ -55,63 +119,53 @@ export class Model {
             if (json[name] !== undefined) {
                 this[name] = field.deserialize(json[name]);
             }
+            else {
+                this[name] = field.default(); // set a default value
+            }
             if (field instanceof Relation && json['count_' + name] !== undefined) {
                 this['count_' + name] = json['count_' + name];
             }
         }
     }
-    cloneForEdit(fields) {
+    clone(relationsToClone) {
         const ModelClass = apiResources.getModelClass(this.type);
         const model = new ModelClass();
         model._original = this;
         if (this.id) {
             model.id = this.id;
         }
-        const type = apiResources.getType(this.type);
-        // determine all allowed fields
-        const typeFields = Object.assign(Object.assign({}, type.getFields()), type.getUpdateFields());
-        // console.log('cloneForEdit', this, fields, typeFields)
-        for (const name of Object.keys(typeFields)) {
-            if (fields && fields[name] === false) { // ignore deactivated fields
-                // console.log('ignore', this, name)
-                continue;
-            }
-            if (!this[name]) { // value not set (undefined or null or false or '' or 0), just copy
-                // console.log('novalue-copy', this, name)
-                model[name] = this[name];
-            }
-            else {
-                if (this[name] instanceof Model) { // has one relation
-                    const relatedModel = this[name];
-                    if (fields && fields[name]) { // clone related too
-                        // console.log('one-relation', relatedModel, fields[name], relatedModel.cloneForEdit(fields[name] as ModelAttributes))
-                        model[name] = relatedModel.cloneForEdit(fields[name]);
-                    }
-                    else { // copy related
-                        // console.log('one-relation-copy', relatedModel)
-                        model[name] = relatedModel;
-                    }
+        // copy / clone from original
+        for (const [name, value] of Object.entries(this)) {
+            const nestedRelationsToClone = typeof (relationsToClone === null || relationsToClone === void 0 ? void 0 : relationsToClone[name]) === 'object' ? relationsToClone[name] : undefined;
+            if (value instanceof Model) { // has one relation
+                const relatedModel = value;
+                if (relationsToClone === null || relationsToClone === void 0 ? void 0 : relationsToClone[name]) { // clone related too
+                    // console.log('one-relation', relatedModel, relationsToClone[name], relatedModel.clone(relationsToClone[name] as ModelAttributes))
+                    model[name] = relatedModel.clone(nestedRelationsToClone);
                 }
-                else if (Array.isArray(this[name])) { // has many relation or array
-                    const relatedValues = this[name];
-                    const newRelatedValues = [];
-                    relatedValues.forEach(rv => {
-                        if (rv instanceof Model) { // value is model
-                            if (fields && fields[name]) { // clone model too
-                                // console.log('many-relation', rv, fields[name], rv.cloneForEdit(fields[name] as ModelAttributes))
-                                newRelatedValues.push(rv.cloneForEdit(fields[name]));
-                                return;
-                            }
-                        }
+                else { // copy related
+                    // console.log('one-relation-copy', relatedModel)
+                    model[name] = relatedModel;
+                }
+            }
+            else if (Array.isArray(value)) { // has many relation or array
+                const relatedValues = value;
+                const newRelatedValues = [];
+                relatedValues.forEach(rv => {
+                    if (rv instanceof Model && (relationsToClone === null || relationsToClone === void 0 ? void 0 : relationsToClone[name])) { // value is model to be also cloned
+                        // console.log('many-relation', rv, relationsToClone[name], rv.clone(relationsToClone[name] as ModelAttributes))
+                        newRelatedValues.push(rv.clone(nestedRelationsToClone));
+                    }
+                    else {
                         // console.log('many-relation-copy', rv)
                         newRelatedValues.push(rv); // copy value
-                    });
-                    model[name] = newRelatedValues;
-                }
-                else {
-                    // console.log('value-copy', this, name)
-                    model[name] = this[name];
-                }
+                    }
+                });
+                model[name] = newRelatedValues;
+            }
+            else { // any other value gets copied
+                // console.log('value-copy', this, name)
+                model[name] = value;
             }
         }
         return model;
@@ -126,8 +180,10 @@ export class Model {
         const type = apiResources.getType(this.type);
         const typeFields = this.id ? type.getUpdateFields() : type.getCreateFields();
         for (const [name, field] of Object.entries(typeFields)) {
-            if (!fields || fields[name]) { // serialize all allowed fields if no specific fields are given
-                json[name] = field.serialize(this[name]);
+            if (!fields || fields[name]) { // serialize all allowed fields (or only given ones of them, if specific fields are given)
+                if (this.hasOwnProperty(name) && this[name] !== undefined) {
+                    json[name] = field.serialize(this[name]);
+                }
             }
         }
         // check all given fields are allowed to update/create

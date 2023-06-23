@@ -2,14 +2,16 @@ import { Action } from '../action/Action'
 import { ApiRequest, ApiRequestJSON } from '../api/ApiRequest'
 import { apiResources } from '../ApiResources'
 import { Model, ModelJSON } from '../Model'
+import { RelatedTypeJSON } from '../type/RelatedType'
 import { FieldValidator, FieldValidatorJSON } from '../validator/FieldValidator'
 
 export type FieldJSON = {
-  type: string
-  default: FieldJSONValue
-  validator: FieldValidatorJSON
-  options: FieldOption[]
-  options_request: ApiRequestJSON
+  type: string,
+  related_type?: RelatedTypeJSON
+  default?: FieldJSONValue
+  validator?: FieldValidatorJSON
+  options?: FieldOption[]
+  options_request?: ApiRequestJSON
 }
 
 export type FieldValue = boolean | string | number | Date | null | Model | Model[]
@@ -49,7 +51,7 @@ export class Field {
     const field = this.newInstance<Field>()
 
     if (json.default) {
-      field._default = json.default as FieldValue
+      field._default = this.deserialize(json.default)
     }
 
     if (json.options_request) {
@@ -68,7 +70,9 @@ export class Field {
       field._options = json.options
     }
 
-    field.setupFieldValidator(json.validator)
+    if (json.validator) {
+      field.setupFieldValidator(json.validator)
+    }
 
     return field
   }
@@ -113,13 +117,11 @@ export class Field {
   }
 
   protected setupFieldValidator (json: FieldValidatorJSON): void {
-    if (json) {
-      const validator = apiResources.getValidator(json.type)
-      if (validator) {
-        this._validator = validator.createFieldValidator(json)
-      } else {
-        console.warn(`No field validator of type ${json.type}.`)
-      }
+    const validator = apiResources.getValidator(json.type)
+    if (validator) {
+      this._validator = validator.createFieldValidator(json)
+    } else {
+      console.warn(`No field validator of type ${json.type}.`)
     }
   }
 }

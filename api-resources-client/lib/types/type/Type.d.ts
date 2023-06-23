@@ -1,8 +1,8 @@
 import { Field, FieldJSON } from '../field/Field';
 export declare type TypeJSON = {
-    fields: Record<string, FieldJSON>;
-    update_fields: Record<string, FieldJSON>;
-    create_fields: Record<string, FieldJSON>;
+    fields?: Record<string, FieldJSON>;
+    update_fields?: Record<string, FieldJSON>;
+    create_fields?: Record<string, FieldJSON>;
 };
 export declare class Type {
     name: string;

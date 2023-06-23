@@ -1,8 +1,8 @@
 export declare type RelatedTypeJSON = {
-    type: string;
-    types: string[];
-    link: boolean;
-    list: boolean;
+    type?: string;
+    types?: string[];
+    link?: boolean;
+    list?: boolean;
 };
 export declare class RelatedType {
     types: string[];

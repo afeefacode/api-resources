@@ -2,9 +2,9 @@ import { apiResources } from '../ApiResources'
 import { Field, FieldJSON } from '../field/Field'
 
 export type TypeJSON = {
-  fields: Record<string, FieldJSON>
-  update_fields: Record<string, FieldJSON>
-  create_fields: Record<string, FieldJSON>
+  fields?: Record<string, FieldJSON>
+  update_fields?: Record<string, FieldJSON>
+  create_fields?: Record<string, FieldJSON>
 }
 
 export class Type {
@@ -16,13 +16,15 @@ export class Type {
   constructor (name: string, json: TypeJSON) {
     this.name = name
 
-    for (const [name, fieldJSON] of Object.entries(json.fields)) {
-      const field = apiResources.getField(fieldJSON.type)
-      if (field) {
-        const typeField = field.createTypeField(fieldJSON)
-        this._fields[name] = typeField
-      } else {
-        console.warn(`No Field implementation for field ${name} type ${fieldJSON.type}.`)
+    if (json.fields) {
+      for (const [name, fieldJSON] of Object.entries(json.fields)) {
+        const field = apiResources.getField(fieldJSON.type)
+        if (field) {
+          const typeField = field.createTypeField(fieldJSON)
+          this._fields[name] = typeField
+        } else {
+          console.warn(`No Field implementation for field ${name} type ${fieldJSON.type}.`)
+        }
       }
     }
 

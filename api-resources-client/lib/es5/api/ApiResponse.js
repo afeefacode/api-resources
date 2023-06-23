@@ -17,6 +17,6 @@ export class ApiResponse {
         this.meta = response.data.meta;
     }
     toModel(json) {
-        return Model.create(json);
+        return Model.fromJson(json);
     }
 }

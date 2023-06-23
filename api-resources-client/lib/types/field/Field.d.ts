@@ -1,12 +1,14 @@
 import { ApiRequest, ApiRequestJSON } from '../api/ApiRequest';
 import { Model, ModelJSON } from '../Model';
+import { RelatedTypeJSON } from '../type/RelatedType';
 import { FieldValidator, FieldValidatorJSON } from '../validator/FieldValidator';
 export declare type FieldJSON = {
     type: string;
-    default: FieldJSONValue;
-    validator: FieldValidatorJSON;
-    options: FieldOption[];
-    options_request: ApiRequestJSON;
+    related_type?: RelatedTypeJSON;
+    default?: FieldJSONValue;
+    validator?: FieldValidatorJSON;
+    options?: FieldOption[];
+    options_request?: ApiRequestJSON;
 };
 export declare type FieldValue = boolean | string | number | Date | null | Model | Model[];
 export declare type FieldJSONValue = boolean | string | number | null | ModelJSON | ModelJSON[];

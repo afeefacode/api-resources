@@ -1,8 +1,8 @@
 export type RelatedTypeJSON = {
-  type: string
-  types: string[]
-  link: boolean
-  list: boolean
+  type?: string
+  types?: string[]
+  link?: boolean
+  list?: boolean
 }
 
 export class RelatedType {
@@ -13,7 +13,7 @@ export class RelatedType {
   constructor (json: RelatedTypeJSON) {
     if (json.type) {
       this.types = [json.type]
-    } else {
+    } else if (json.types) {
       this.types = json.types
     }
     this.isLink = json.link || false

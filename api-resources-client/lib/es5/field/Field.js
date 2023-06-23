@@ -14,7 +14,7 @@ export class Field {
     createTypeField(json) {
         const field = this.newInstance();
         if (json.default) {
-            field._default = json.default;
+            field._default = this.deserialize(json.default);
         }
         if (json.options_request) {
             const optionsRequest = json.options_request;
@@ -30,7 +30,9 @@ export class Field {
         if (json.options) {
             field._options = json.options;
         }
-        field.setupFieldValidator(json.validator);
+        if (json.validator) {
+            field.setupFieldValidator(json.validator);
+        }
         return field;
     }
     getValidator() {
@@ -64,14 +66,12 @@ export class Field {
         return null;
     }
     setupFieldValidator(json) {
-        if (json) {
-            const validator = apiResources.getValidator(json.type);
-            if (validator) {
-                this._validator = validator.createFieldValidator(json);
-            }
-            else {
-                console.warn(`No field validator of type ${json.type}.`);
-            }
+        const validator = apiResources.getValidator(json.type);
+        if (validator) {
+            this._validator = validator.createFieldValidator(json);
+        }
+        else {
+            console.warn(`No field validator of type ${json.type}.`);
         }
     }
 }

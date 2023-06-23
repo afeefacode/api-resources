@@ -33,6 +33,6 @@ export class ApiResponse {
   }
 
   protected toModel (json: ModelJSON): Model {
-    return Model.create(json)
+    return Model.fromJson(json)
   }
 }
