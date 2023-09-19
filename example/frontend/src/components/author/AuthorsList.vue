@@ -39,7 +39,7 @@
           </router-link>
         </div>
 
-        <div class="info">
+        <div class="text--info">
           {{ author.count_articles }}
         </div>
 

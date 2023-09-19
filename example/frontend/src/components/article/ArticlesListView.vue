@@ -49,7 +49,7 @@
     </template>
 
     <template #model-table="{ model: article, setFilter }">
-      <div class="info">
+      <div class="text--info">
         {{ date(article) }}
       </div>
 
@@ -66,7 +66,7 @@
         >{{ article.author.name }}</a>
       </div>
 
-      <div class="info">
+      <div class="text--info">
         {{ article.count_comments }}
       </div>
 
