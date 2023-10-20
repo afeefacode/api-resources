@@ -4,8 +4,6 @@ import { mdiAccount } from '@mdi/js'
 export class Author extends Model {
   static type = 'Example.Author'
 
-  static resourceType = 'Example.AuthorResource'
-
   static routeName = 'authors'
 
   static routeIdKey = 'authorId'

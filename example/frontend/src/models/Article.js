@@ -4,8 +4,6 @@ import { mdiFileDocumentOutline } from '@mdi/js'
 export class Article extends Model {
   static type = 'Example.Article'
 
-  static resourceType = 'Example.ArticleResource'
-
   static routeName = 'articles'
 
   static routeIdKey = 'articleId'
