@@ -1,6 +1,6 @@
 {
   "name": "@afeefa/api-resources-client",
-  "version": "0.1.35",
+  "version": "0.1.36",
   "description": "",
   "module": "lib/es5/index.js",
   "typings": "lib/types/index.d.ts",
