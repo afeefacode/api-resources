@@ -19,6 +19,36 @@ export class DateValidator extends Validator<Date | null> {
       }
     }
 
+    if (rule.name === 'max_day') {
+      return value => {
+        const maxDateString: string|false = rule.params as string || false
+
+        if (maxDateString === false) {
+          return true
+        }
+
+        // empty value cannot exceed max
+        if (!value) {
+          return true
+        }
+
+        const maxDate = new Date(maxDateString)
+
+        if (value > maxDate) {
+          const options: Intl.DateTimeFormatOptions = {
+            year: 'numeric',
+            month: '2-digit',
+            day: '2-digit'
+          }
+
+          const maxLocalDateString = maxDate.toLocaleDateString('de-DE', options)
+          return rule.rule.getMessage(rule.fieldLabel, maxLocalDateString)
+        }
+
+        return true
+      }
+    }
+
     return super.createRuleValidator(rule)
   }
 }
