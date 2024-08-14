@@ -1,4 +1,4 @@
-export declare type RuleJSON = {
+export type RuleJSON = {
     message: string;
     default?: unknown;
 };

@@ -1,8 +1,8 @@
 import { AxiosResponse } from 'axios';
 import { Model, ModelJSON } from '../Model';
 import { ApiRequest } from './ApiRequest';
-export declare type ApiResponseDataJSON = ModelJSON | ModelJSON[];
-export declare type ApiResponseJSON = {
+export type ApiResponseDataJSON = ModelJSON | ModelJSON[];
+export type ApiResponseJSON = {
     data: ApiResponseDataJSON;
     meta: object;
 };

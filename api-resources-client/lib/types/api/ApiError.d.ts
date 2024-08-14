@@ -1,6 +1,6 @@
 import { AxiosError } from 'axios';
 import { ApiRequest } from './ApiRequest';
-export declare type ApiResponseErrorJSON = {
+export type ApiResponseErrorJSON = {
     message: string;
     error_details: string[] | string;
     exception: {

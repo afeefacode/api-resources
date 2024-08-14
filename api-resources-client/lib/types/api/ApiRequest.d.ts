@@ -4,7 +4,7 @@ import { BagEntries } from '../bag/Bag';
 import { ActionFilterValueType } from '../filter/ActionFilter';
 import { ApiError } from './ApiError';
 import { ApiResponse } from './ApiResponse';
-export declare type ApiRequestJSON = {
+export type ApiRequestJSON = {
     api?: string;
     resource: string;
     action: string;

@@ -1,4 +1,4 @@
-export declare type ActionParamJSON = {
+export type ActionParamJSON = {
     type: string;
     [key: string]: unknown;
 };

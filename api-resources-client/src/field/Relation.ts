@@ -1,4 +1,4 @@
-import { Model, ModelJSON } from '../Model'
+import { Model, ModelAttributes, ModelJSON } from '../Model'
 import { RelatedType, RelatedTypeJSON } from '../type/RelatedType'
 import { Field, FieldJSON, FieldJSONValue, FieldValue } from './Field'
 
@@ -50,7 +50,7 @@ export class Relation extends Field {
     }
   }
 
-  public serialize (value: FieldValue): FieldJSONValue {
+  public serialize (value: FieldValue, fields?: ModelAttributes): FieldJSONValue {
     if (this._relatedType.isList) {
       if (!value) {
         value = this.default()
@@ -61,7 +61,7 @@ export class Relation extends Field {
           id: m.id
         }))
       } else { // HasMany
-        return (value as Model[]).map(m => m.serialize())
+        return (value as Model[]).map(m => m.serialize(fields))
       }
     } else {
       if (value) {
@@ -72,7 +72,7 @@ export class Relation extends Field {
             id: model.id
           }
         } else { // HasOne
-          return (value as Model).serialize()
+          return (value as Model).serialize(fields)
         }
       }
       return null

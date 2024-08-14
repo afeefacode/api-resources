@@ -6,12 +6,12 @@ import { Model } from '../Model';
 import { ApiError } from './ApiError';
 import { ApiRequest } from './ApiRequest';
 import { ApiResponse } from './ApiResponse';
-declare type ApiListActionResponse = {
+type ApiListActionResponse = {
     models: Model[];
     meta: object;
 };
-declare type ApiActionResponse = boolean | Model | null | ApiListActionResponse;
-declare type ApiActionOrFactory = ApiAction | ((results?: ApiActionResponse[]) => ApiAction);
+type ApiActionResponse = boolean | Model | null | ApiListActionResponse;
+type ApiActionOrFactory = ApiAction | ((results?: ApiActionResponse[]) => ApiAction);
 export declare class ApiAction {
     protected _apiActions: ApiActionOrFactory[];
     protected _action: Action;

@@ -1,7 +1,7 @@
 import { Action } from '../action/Action'
 import { ApiRequest, ApiRequestJSON } from '../api/ApiRequest'
 import { apiResources } from '../ApiResources'
-import { Model, ModelJSON } from '../Model'
+import { Model, ModelAttributes, ModelJSON } from '../Model'
 import { RelatedTypeJSON } from '../type/RelatedType'
 import { FieldValidator, FieldValidatorJSON } from '../validator/FieldValidator'
 
@@ -108,7 +108,7 @@ export class Field {
     return value as FieldValue
   }
 
-  public serialize (value: FieldValue): FieldJSONValue {
+  public serialize (value: FieldValue, _fields?: ModelAttributes | true): FieldJSONValue {
     return value as FieldJSONValue
   }
 

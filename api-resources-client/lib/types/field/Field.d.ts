@@ -1,8 +1,8 @@
 import { ApiRequest, ApiRequestJSON } from '../api/ApiRequest';
-import { Model, ModelJSON } from '../Model';
+import { Model, ModelAttributes, ModelJSON } from '../Model';
 import { RelatedTypeJSON } from '../type/RelatedType';
 import { FieldValidator, FieldValidatorJSON } from '../validator/FieldValidator';
-export declare type FieldJSON = {
+export type FieldJSON = {
     type: string;
     related_type?: RelatedTypeJSON;
     default?: FieldJSONValue;
@@ -10,13 +10,13 @@ export declare type FieldJSON = {
     options?: FieldOption[];
     options_request?: ApiRequestJSON;
 };
-export declare type FieldValue = boolean | string | number | Date | null | Model | Model[];
-export declare type FieldJSONValue = boolean | string | number | null | ModelJSON | ModelJSON[];
-declare type FieldObjectOption = {
+export type FieldValue = boolean | string | number | Date | null | Model | Model[];
+export type FieldJSONValue = boolean | string | number | null | ModelJSON | ModelJSON[];
+type FieldObjectOption = {
     title: string;
     value: FieldOption;
 };
-declare type FieldOption = boolean | string | number | FieldObjectOption;
+type FieldOption = boolean | string | number | FieldObjectOption;
 export declare class Field {
     type: string;
     private _default;
@@ -33,7 +33,7 @@ export declare class Field {
     getOptions(): FieldOption[];
     default(): FieldValue;
     deserialize(value: FieldJSONValue): FieldValue;
-    serialize(value: FieldValue): FieldJSONValue;
+    serialize(value: FieldValue, _fields?: ModelAttributes | true): FieldJSONValue;
     protected fallbackDefault(): FieldValue;
     protected setupFieldValidator(json: FieldValidatorJSON): void;
 }

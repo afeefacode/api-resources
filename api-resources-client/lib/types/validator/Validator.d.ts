@@ -3,13 +3,13 @@ import { FieldSanitizer } from './FieldSanitizer';
 import { FieldValidator, FieldValidatorJSON } from './FieldValidator';
 import { Rule, RuleJSON } from './Rule';
 import { Sanitizer, SanitizerJSON } from './Sanitizer';
-export declare type ValidatorJSON = {
+export type ValidatorJSON = {
     type: string;
     sanitizers?: Record<string, SanitizerJSON>;
     rules: Record<string, RuleJSON>;
 };
-export declare type RuleValidator<T> = (value: T) => boolean | string;
-export declare type SanitizerFunction<T> = (value: T) => T;
+export type RuleValidator<T> = (value: T) => boolean | string;
+export type SanitizerFunction<T> = (value: T) => T;
 export declare class Validator<T = any> {
     protected _rules: Record<string, Rule>;
     protected _sanitizers: Record<string, Sanitizer>;

@@ -1,19 +1,19 @@
 import { FieldJSONValue, FieldValue } from './field/Field';
 import { Type } from './type/Type';
-export declare type ModelJSON = {
+export type ModelJSON = {
     [key: string]: FieldJSONValue | undefined;
     type: string;
     id?: string | null;
 };
-declare type ModelAttributes = {
+export type ModelAttributes = {
     [key: string]: ModelAttributes | true;
 };
-export declare type ModelData = {
+export type ModelData = {
     [key: string]: FieldValue | undefined;
     type?: string;
     id?: string | null;
 };
-export declare type ModelConstructor = {
+export type ModelConstructor = {
     new (data?: ModelData): Model;
     new (type: string, data?: ModelData): Model;
     type: string;
@@ -64,5 +64,4 @@ export declare class Model {
     serialize(fields?: ModelAttributes): ModelJSON;
     equals(model?: Model): boolean;
 }
-export {};
 //# sourceMappingURL=Model.d.ts.map

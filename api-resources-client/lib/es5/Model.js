@@ -9,32 +9,6 @@ import { Relation } from './field/Relation';
 import { enumerable } from './utils/enumerable';
 let ID = 0;
 export class Model {
-    constructor(...args) {
-        this.id = null;
-        this.type = 'Model';
-        this._ID = ++ID;
-        this._original = null;
-        this.class = this.constructor;
-        // type and data
-        if (args.length === 2) {
-            this.type = args[0];
-            this.fill(args[1]);
-            // type or data
-        }
-        else if (args.length === 1) {
-            if (typeof args[0] === 'string') {
-                this.type = args[0];
-            }
-            else {
-                this.type = this.class.type;
-                this.fill(args[0]);
-            }
-            // no type no data
-        }
-        else {
-            this.type = this.class.type;
-        }
-    }
     static getType() {
         return apiResources.getType(this.type);
     }
@@ -67,6 +41,32 @@ export class Model {
             model.fill(data);
         }
         return model;
+    }
+    constructor(...args) {
+        this.id = null;
+        this.type = 'Model';
+        this._ID = ++ID;
+        this._original = null;
+        this.class = this.constructor;
+        // type and data
+        if (args.length === 2) {
+            this.type = args[0];
+            this.fill(args[1]);
+            // type or data
+        }
+        else if (args.length === 1) {
+            if (typeof args[0] === 'string') {
+                this.type = args[0];
+            }
+            else {
+                this.type = this.class.type;
+                this.fill(args[0]);
+            }
+            // no type no data
+        }
+        else {
+            this.type = this.class.type;
+        }
     }
     /**
      * Deletes all model attributes not included in fields.
@@ -182,7 +182,10 @@ export class Model {
         for (const [name, field] of Object.entries(typeFields)) {
             if (!fields || fields[name]) { // serialize all allowed fields (or only given ones of them, if specific fields are given)
                 if (this.hasOwnProperty(name) && this[name] !== undefined) {
-                    json[name] = field.serialize(this[name]);
+                    if ((fields === null || fields === void 0 ? void 0 : fields[name]) === true) {
+                        fields[name] = {};
+                    }
+                    json[name] = field.serialize(this[name], fields === null || fields === void 0 ? void 0 : fields[name]);
                 }
             }
         }

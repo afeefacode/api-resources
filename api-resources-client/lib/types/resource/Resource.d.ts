@@ -1,6 +1,6 @@
 import { Action, ActionJSON } from '../action/Action';
 import { Api } from '../api/Api';
-export declare type ResourceJSON = Record<string, ActionJSON>;
+export type ResourceJSON = Record<string, ActionJSON>;
 export declare class Resource {
     private _api;
     private _type;

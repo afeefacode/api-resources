@@ -1,14 +1,14 @@
 import { Action } from '../action/Action';
 import { ApiRequest, ApiRequestJSON } from '../api/ApiRequest';
 import { Filter } from './Filter';
-export declare type ActionFilterValueType = (boolean | string | number | null | Record<string, boolean | string | number | null>);
-export declare type ActionFilterJSON = {
+export type ActionFilterValueType = (boolean | string | number | null | Record<string, boolean | string | number | null>);
+export type ActionFilterJSON = {
     type: string;
     default: ActionFilterValueType;
     options?: ActionFilterOption[];
     options_request?: ApiRequestJSON;
 };
-export declare type ActionFilterOption = {
+export type ActionFilterOption = {
     value: unknown;
     title: string;
 };

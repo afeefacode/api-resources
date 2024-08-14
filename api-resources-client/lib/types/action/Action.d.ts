@@ -7,7 +7,7 @@ import { Resource } from '../resource/Resource';
 import { ActionInput } from './ActionInput';
 import { ActionParamJSON } from './ActionParams';
 import { ActionResponse } from './ActionResponse';
-export declare type ActionJSON = {
+export type ActionJSON = {
     params: Record<string, ActionParamJSON>;
     filters: Record<string, ActionFilterJSON>;
     input: {

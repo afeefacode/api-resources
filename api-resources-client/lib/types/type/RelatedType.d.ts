@@ -1,4 +1,4 @@
-export declare type RelatedTypeJSON = {
+export type RelatedTypeJSON = {
     type?: string;
     types?: string[];
     link?: boolean;

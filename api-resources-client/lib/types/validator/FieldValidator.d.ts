@@ -1,6 +1,6 @@
 import { FieldRule } from './FieldRule';
 import { RuleValidator, SanitizerFunction, Validator } from './Validator';
-export declare type FieldValidatorJSON = {
+export type FieldValidatorJSON = {
     type: string;
     params: Record<string, unknown>;
 };

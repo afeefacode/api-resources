@@ -1,4 +1,4 @@
-export declare type SanitizerJSON = {
+export type SanitizerJSON = {
     default?: unknown;
 };
 export declare class Sanitizer {

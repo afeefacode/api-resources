@@ -39,7 +39,7 @@ export class Relation extends Field {
             return null;
         }
     }
-    serialize(value) {
+    serialize(value, fields) {
         if (this._relatedType.isList) {
             if (!value) {
                 value = this.default();
@@ -51,7 +51,7 @@ export class Relation extends Field {
                 }));
             }
             else { // HasMany
-                return value.map(m => m.serialize());
+                return value.map(m => m.serialize(fields));
             }
         }
         else {
@@ -64,7 +64,7 @@ export class Relation extends Field {
                     };
                 }
                 else { // HasOne
-                    return value.serialize();
+                    return value.serialize(fields);
                 }
             }
             return null;

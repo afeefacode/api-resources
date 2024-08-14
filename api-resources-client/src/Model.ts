@@ -10,7 +10,7 @@ export type ModelJSON = {
   id?: string | null
 }
 
-type ModelAttributes = {
+export type ModelAttributes = {
   [key: string]: ModelAttributes | true
 }
 
@@ -237,7 +237,10 @@ export class Model {
     for (const [name, field] of Object.entries(typeFields)) {
       if (!fields || fields[name]) { // serialize all allowed fields (or only given ones of them, if specific fields are given)
         if (this.hasOwnProperty(name) && this[name] !== undefined) {
-          json[name] = field.serialize(this[name] as FieldValue)
+          if (fields?.[name] === true) {
+            fields[name] = {}
+          }
+          json[name] = field.serialize(this[name] as FieldValue, fields?.[name])
         }
       }
     }

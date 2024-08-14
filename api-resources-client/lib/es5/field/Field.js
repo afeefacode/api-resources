@@ -59,7 +59,7 @@ export class Field {
     deserialize(value) {
         return value;
     }
-    serialize(value) {
+    serialize(value, _fields) {
         return value;
     }
     fallbackDefault() {

@@ -7,7 +7,7 @@ import { Model } from './Model';
 import { Type } from './type/Type';
 import { FieldValidator } from './validator/FieldValidator';
 import { RuleValidator, Validator } from './validator/Validator';
-declare type ModelType = typeof Model;
+type ModelType = typeof Model;
 declare class ApiResources {
     private _apis;
     private _defaultApiType;

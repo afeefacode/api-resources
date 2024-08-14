@@ -1,4 +1,4 @@
-export declare type BagEntries<T> = Record<string, T>;
+export type BagEntries<T> = Record<string, T>;
 export declare class Bag<T> {
     private _entries;
     add(name: string, entry: T): Bag<T>;
