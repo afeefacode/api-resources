@@ -50,7 +50,9 @@ export class Relation extends Field {
     }
   }
 
-  public serialize (value: FieldValue, fields?: ModelAttributes): FieldJSONValue {
+  public serialize (value: FieldValue, fields?: ModelAttributes | true): FieldJSONValue {
+    fields = fields === true ? undefined : fields // don't pass relation: true further down
+
     if (this._relatedType.isList) {
       if (!value) {
         value = this.default()

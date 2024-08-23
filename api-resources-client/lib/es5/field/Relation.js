@@ -40,6 +40,7 @@ export class Relation extends Field {
         }
     }
     serialize(value, fields) {
+        fields = fields === true ? undefined : fields; // don't pass relation: true further down
         if (this._relatedType.isList) {
             if (!value) {
                 value = this.default();

@@ -10,7 +10,7 @@ export declare class Relation extends Field {
     createTypeField(json: RelationJSON): Relation;
     getRelatedType(): RelatedType;
     deserialize(value: FieldJSONValue): FieldValue;
-    serialize(value: FieldValue, fields?: ModelAttributes): FieldJSONValue;
+    serialize(value: FieldValue, fields?: ModelAttributes | true): FieldJSONValue;
     protected fallbackDefault(): FieldValue;
 }
 export {};
