@@ -1,0 +1,1 @@
+{"version":3,"file":"SetAttribute.d.ts","sourceRoot":"","sources":["../../../../src/field/fields/SetAttribute.ts"],"names":[],"mappings":"AAAA,OAAO,EAAE,SAAS,EAAE,MAAM,cAAc,CAAA;AACxC,OAAO,EAAE,UAAU,EAAE,MAAM,UAAU,CAAA;AAErC,qBAAa,YAAa,SAAQ,SAAS;IACzC,OAAc,IAAI,EAAE,MAAM,CAAwB;IAElD,SAAS,CAAC,eAAe,IAAK,UAAU;CAGzC"}

@@ -5,6 +5,7 @@ import { EnumAttribute } from './EnumAttribute'
 import { IdAttribute } from './IdAttribute'
 import { IntAttribute } from './IntAttribute'
 import { NumberAttribute } from './NumberAttribute'
+import { SetAttribute } from './SetAttribute'
 import { StringAttribute } from './StringAttribute'
 
 export const fields = [
@@ -15,6 +16,7 @@ export const fields = [
   new IntAttribute(),
   new NumberAttribute(),
   new EnumAttribute(),
+  new SetAttribute(),
 
   new Relation()
 ]
