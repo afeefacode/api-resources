@@ -3,7 +3,7 @@ import { ApiRequest, ApiRequestJSON } from '../api/ApiRequest'
 import { Filter } from './Filter'
 
 export type ActionFilterValueType = (
-  boolean | string | number | null |
+  boolean | string | number | null | Date |
   Record<string, boolean | string | number | null>
 )
 
@@ -32,7 +32,7 @@ export class ActionFilter {
   constructor (action: Action, filter: Filter, name: string, json: ActionFilterJSON) {
     this._filter = filter
     this._name = name
-    this._defaultValue = json.default || null
+    this._defaultValue = filter.deserializeDefaultValue(json.default || null)
     this._hasDefaultValue = json.hasOwnProperty('default')
     this._options = json.options || []
 
@@ -94,5 +94,9 @@ export class ActionFilter {
 
   public serializeValue (value: ActionFilterValueType): ActionFilterValueType {
     return value
+  }
+
+  public deserializeDefaultValue (value: ActionFilterValueType): ActionFilterValueType {
+    return this._filter.deserializeDefaultValue(value)
   }
 }

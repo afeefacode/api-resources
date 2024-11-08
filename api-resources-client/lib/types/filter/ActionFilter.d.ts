@@ -1,7 +1,7 @@
 import { Action } from '../action/Action';
 import { ApiRequest, ApiRequestJSON } from '../api/ApiRequest';
 import { Filter } from './Filter';
-export type ActionFilterValueType = (boolean | string | number | null | Record<string, boolean | string | number | null>);
+export type ActionFilterValueType = (boolean | string | number | null | Date | Record<string, boolean | string | number | null>);
 export type ActionFilterJSON = {
     type: string;
     default: ActionFilterValueType;
@@ -32,5 +32,6 @@ export declare class ActionFilter {
     valueToQuery(value: ActionFilterValueType): string | undefined;
     queryToValue(value: string): ActionFilterValueType | undefined;
     serializeValue(value: ActionFilterValueType): ActionFilterValueType;
+    deserializeDefaultValue(value: ActionFilterValueType): ActionFilterValueType;
 }
 //# sourceMappingURL=ActionFilter.d.ts.map

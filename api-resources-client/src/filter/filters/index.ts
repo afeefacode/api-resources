@@ -1,3 +1,4 @@
+import { DateFilter } from './DateFilter'
 import { KeywordFilter } from './KeywordFilter'
 import { OrderFilter } from './OrderFilter'
 import { PageFilter } from './PageFilter'
@@ -9,5 +10,6 @@ export const filters = [
   new PageSizeFilter(),
   new KeywordFilter(),
   new OrderFilter(),
-  new SelectFilter()
+  new SelectFilter(),
+  new DateFilter()
 ]

@@ -24,4 +24,11 @@ export class Filter {
     serializeValue(value) {
         return value;
     }
+    /**
+     * Converts a given default value into a filter value
+     * E.g.: 2024-11-07T23:00:00.000000Z -> Date
+     */
+    deserializeDefaultValue(value) {
+        return value;
+    }
 }

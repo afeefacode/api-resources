@@ -6,7 +6,7 @@ export class ActionFilter {
         this._requestFactory = null;
         this._filter = filter;
         this._name = name;
-        this._defaultValue = json.default || null;
+        this._defaultValue = filter.deserializeDefaultValue(json.default || null);
         this._hasDefaultValue = json.hasOwnProperty('default');
         this._options = json.options || [];
         if (json.options_request) {
@@ -55,5 +55,8 @@ export class ActionFilter {
     }
     serializeValue(value) {
         return value;
+    }
+    deserializeDefaultValue(value) {
+        return this._filter.deserializeDefaultValue(value);
     }
 }

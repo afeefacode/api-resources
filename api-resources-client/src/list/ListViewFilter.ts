@@ -61,7 +61,7 @@ export class ListViewFilter {
     const newJson = JSON.stringify(value)
     const oldJson = JSON.stringify(this._value)
     if (newJson !== oldJson) {
-      this._value = value
+      this._value = this._filter.deserializeDefaultValue(value)
       if (dispatchChange) {
         this._model.filterValueChanged(this.name)
       }

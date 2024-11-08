@@ -63,7 +63,7 @@ export class Relation extends Field {
           id: m.id
         }))
       } else { // HasMany
-        return (value as Model[]).map(m => m.serialize(fields))
+        return (value as Model[]).map(m => m.serialize(fields as ModelAttributes))
       }
     } else {
       if (value) {
