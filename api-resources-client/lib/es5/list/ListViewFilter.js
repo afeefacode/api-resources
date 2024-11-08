@@ -41,7 +41,7 @@ export class ListViewFilter {
         const newJson = JSON.stringify(value);
         const oldJson = JSON.stringify(this._value);
         if (newJson !== oldJson) {
-            this._value = this._filter.deserializeDefaultValue(value);
+            this._value = value;
             if (dispatchChange) {
                 this._model.filterValueChanged(this.name);
             }
@@ -90,5 +90,12 @@ export class ListViewFilter {
      */
     serializeValue(value) {
         return this._filter.serializeValue(value);
+    }
+    /**
+     * Converts a given serialized value into a filter value
+     * E.g.: 2024-11-07T23:00:00.000000Z -> Date
+     */
+    deserializeDefaultValue(value) {
+        return this._filter.deserializeDefaultValue(value);
     }
 }

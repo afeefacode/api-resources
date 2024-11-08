@@ -100,6 +100,10 @@ export class ListViewModel {
   }
 
   public usedFilters (usedFilters: BagEntries<ActionFilterValueType> | null, count: number): ListViewModel {
+    if (usedFilters) {
+      this.deserializeUsedFilters(usedFilters)
+    }
+
     this._usedFilters = usedFilters
     this._usedFiltersCount = count
     return this
@@ -187,6 +191,8 @@ export class ListViewModel {
   }
 
   public initFromUsedFilters (usedFilters: BagEntries<ActionFilterValueType>, count: number): void {
+    this.deserializeUsedFilters(usedFilters)
+
     this.setFilterValues(usedFilters)
 
     this.handleFilterHistory(count)
@@ -205,6 +211,15 @@ export class ListViewModel {
     })
 
     this.dispatchChange()
+  }
+
+  private deserializeUsedFilters (usedFilters: BagEntries<ActionFilterValueType>): void {
+    for (const [name, value] of Object.entries(usedFilters)) {
+      const filter = this._filters.get(name)
+      if (filter) {
+        usedFilters[name] = filter.deserializeDefaultValue(value)
+      }
+    }
   }
 
   private handleFilterHistory (count: number): void {

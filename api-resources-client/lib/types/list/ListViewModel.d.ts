@@ -49,6 +49,7 @@ export declare class ListViewModel {
     filterSourceChanged(): void;
     initFromUsedFilters(usedFilters: BagEntries<ActionFilterValueType>, count: number): void;
     resetFilters(): void;
+    private deserializeUsedFilters;
     private handleFilterHistory;
     private dispatchChange;
     private initFilterValues;

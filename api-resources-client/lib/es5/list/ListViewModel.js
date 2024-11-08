@@ -71,6 +71,9 @@ export class ListViewModel {
         return filterNames;
     }
     usedFilters(usedFilters, count) {
+        if (usedFilters) {
+            this.deserializeUsedFilters(usedFilters);
+        }
         this._usedFilters = usedFilters;
         this._usedFiltersCount = count;
         return this;
@@ -142,6 +145,7 @@ export class ListViewModel {
         this.pushToFilterSource();
     }
     initFromUsedFilters(usedFilters, count) {
+        this.deserializeUsedFilters(usedFilters);
         this.setFilterValues(usedFilters);
         this.handleFilterHistory(count);
         this.pushToFilterSource();
@@ -155,6 +159,14 @@ export class ListViewModel {
             }
         });
         this.dispatchChange();
+    }
+    deserializeUsedFilters(usedFilters) {
+        for (const [name, value] of Object.entries(usedFilters)) {
+            const filter = this._filters.get(name);
+            if (filter) {
+                usedFilters[name] = filter.deserializeDefaultValue(value);
+            }
+        }
     }
     handleFilterHistory(count) {
         const historyKey = this._historyKey;
