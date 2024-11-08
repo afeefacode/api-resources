@@ -8,7 +8,8 @@ export class DateFilter extends Filter {
     let query: string | undefined
 
     if (value) {
-      query = value.toISOString()
+      // sv wegen https://stackoverflow.com/a/65758103
+      query = value.toLocaleDateString('sv', { year: 'numeric', month: '2-digit', day: '2-digit' })
     }
 
     return query
@@ -20,6 +21,13 @@ export class DateFilter extends Filter {
     }
 
     return undefined
+  }
+
+  public serializeValue (value: ActionFilterValueType): ActionFilterValueType {
+    if (value) {
+      value = (value as Date).toLocaleDateString('sv', { year: 'numeric', month: '2-digit', day: '2-digit' })
+    }
+    return value
   }
 
   public deserializeDefaultValue (value: ActionFilterValueType): ActionFilterValueType {

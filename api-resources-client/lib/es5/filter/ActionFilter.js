@@ -54,7 +54,7 @@ export class ActionFilter {
         return this._filter.queryToValue(value);
     }
     serializeValue(value) {
-        return value;
+        return this._filter.serializeValue(value);
     }
     deserializeDefaultValue(value) {
         return this._filter.deserializeDefaultValue(value);

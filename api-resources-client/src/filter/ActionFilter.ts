@@ -93,7 +93,7 @@ export class ActionFilter {
   }
 
   public serializeValue (value: ActionFilterValueType): ActionFilterValueType {
-    return value
+    return this._filter.serializeValue(value)
   }
 
   public deserializeDefaultValue (value: ActionFilterValueType): ActionFilterValueType {
