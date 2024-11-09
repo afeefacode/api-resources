@@ -71,9 +71,6 @@ export class ListViewModel {
         return filterNames;
     }
     usedFilters(usedFilters, count) {
-        if (usedFilters) {
-            this.deserializeUsedFilters(usedFilters);
-        }
         this._usedFilters = usedFilters;
         this._usedFiltersCount = count;
         return this;
@@ -145,8 +142,8 @@ export class ListViewModel {
         this.pushToFilterSource();
     }
     initFromUsedFilters(usedFilters, count) {
-        this.deserializeUsedFilters(usedFilters);
-        this.setFilterValues(usedFilters);
+        const deserializedUsedFilters = this.deserializeUsedFilters(usedFilters);
+        this.setFilterValues(deserializedUsedFilters); // set deserialized used filter values
         this.handleFilterHistory(count);
         this.pushToFilterSource();
     }
@@ -161,12 +158,14 @@ export class ListViewModel {
         this.dispatchChange();
     }
     deserializeUsedFilters(usedFilters) {
+        const deserializedUsedFilters = {};
         for (const [name, value] of Object.entries(usedFilters)) {
             const filter = this._filters.get(name);
             if (filter) {
-                usedFilters[name] = filter.deserializeDefaultValue(value);
+                deserializedUsedFilters[name] = filter.deserializeDefaultValue(value);
             }
         }
+        return deserializedUsedFilters;
     }
     handleFilterHistory(count) {
         const historyKey = this._historyKey;
@@ -198,7 +197,7 @@ export class ListViewModel {
         let filtersToUse = {};
         // check used filters
         if (used) {
-            filtersToUse = this._usedFilters;
+            filtersToUse = this.deserializeUsedFilters(this._usedFilters); // take deserialized used filters
             history = false;
             source = false;
             filters = false;
@@ -262,7 +261,14 @@ export class ListViewModel {
         if (this._historyKey) {
             if (filterHistory.hasFilters(this._historyKey)) {
                 const filters = filterHistory.getFilters(this._historyKey);
-                return filters.serialize();
+                const historyFilters = {};
+                for (const [name, filter] of filters.entries()) {
+                    const value = filter.value;
+                    if (value !== undefined) {
+                        historyFilters[name] = value;
+                    }
+                }
+                return historyFilters;
             }
         }
         return {};

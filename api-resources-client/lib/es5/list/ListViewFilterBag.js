@@ -10,4 +10,14 @@ export class ListViewFilterBag extends Bag {
         }
         return filters;
     }
+    toActionFilterValueBag() {
+        const filters = {};
+        for (const [name, filter] of this.entries()) {
+            const value = filter.value;
+            if (value !== undefined) {
+                filters[name] = value;
+            }
+        }
+        return filters;
+    }
 }

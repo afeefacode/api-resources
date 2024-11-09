@@ -100,10 +100,6 @@ export class ListViewModel {
   }
 
   public usedFilters (usedFilters: BagEntries<ActionFilterValueType> | null, count: number): ListViewModel {
-    if (usedFilters) {
-      this.deserializeUsedFilters(usedFilters)
-    }
-
     this._usedFilters = usedFilters
     this._usedFiltersCount = count
     return this
@@ -191,9 +187,8 @@ export class ListViewModel {
   }
 
   public initFromUsedFilters (usedFilters: BagEntries<ActionFilterValueType>, count: number): void {
-    this.deserializeUsedFilters(usedFilters)
-
-    this.setFilterValues(usedFilters)
+    const deserializedUsedFilters = this.deserializeUsedFilters(usedFilters)
+    this.setFilterValues(deserializedUsedFilters) // set deserialized used filter values
 
     this.handleFilterHistory(count)
 
@@ -213,13 +208,15 @@ export class ListViewModel {
     this.dispatchChange()
   }
 
-  private deserializeUsedFilters (usedFilters: BagEntries<ActionFilterValueType>): void {
+  private deserializeUsedFilters (usedFilters: BagEntries<ActionFilterValueType>): BagEntries<ActionFilterValueType> {
+    const deserializedUsedFilters: BagEntries<ActionFilterValueType> = {}
     for (const [name, value] of Object.entries(usedFilters)) {
       const filter = this._filters.get(name)
       if (filter) {
-        usedFilters[name] = filter.deserializeDefaultValue(value)
+        deserializedUsedFilters[name] = filter.deserializeDefaultValue(value)
       }
     }
+    return deserializedUsedFilters
   }
 
   private handleFilterHistory (count: number): void {
@@ -262,7 +259,7 @@ export class ListViewModel {
 
     // check used filters
     if (used) {
-      filtersToUse = this._usedFilters!
+      filtersToUse = this.deserializeUsedFilters(this._usedFilters!) // take deserialized used filters
 
       history = false
       source = false
@@ -339,8 +336,15 @@ export class ListViewModel {
   private getFiltersFromHistory (): BagEntries<ActionFilterValueType> {
     if (this._historyKey) {
       if (filterHistory.hasFilters(this._historyKey)) {
-        const filters = filterHistory.getFilters(this._historyKey)
-        return filters.serialize()
+        const filters: BagEntries<ActionFilterValueType> = {}
+
+        for (const [name, filter] of filterHistory.getFilters(this._historyKey).entries()) {
+          const value = filter.value
+          if (value !== undefined) {
+            filters[name] = value
+          }
+        }
+        return filters
       }
     }
     return {}
