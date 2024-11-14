@@ -12,6 +12,7 @@ export type ActionFilterJSON = {
   default: ActionFilterValueType
   options?: ActionFilterOption[]
   options_request?: ApiRequestJSON
+  multiple?: boolean
 }
 
 type RequestFactory = (() => ApiRequest) | null
@@ -27,6 +28,7 @@ export class ActionFilter {
   private _defaultValue: ActionFilterValueType = null
   private _hasDefaultValue: boolean
   private _options: ActionFilterOption[] = []
+  private _multiple: boolean = false
   private _requestFactory: RequestFactory = null
 
   constructor (action: Action, filter: Filter, name: string, json: ActionFilterJSON) {
@@ -35,6 +37,7 @@ export class ActionFilter {
     this._defaultValue = filter.deserializeDefaultValue(json.default || null)
     this._hasDefaultValue = json.hasOwnProperty('default')
     this._options = json.options || []
+    this._multiple = json.multiple || false
 
     if (json.options_request) {
       this._requestFactory = (): ApiRequest => {
@@ -82,6 +85,10 @@ export class ActionFilter {
       return this._requestFactory()
     }
     return null
+  }
+
+  public get multiple (): boolean {
+    return this._multiple
   }
 
   public valueToQuery (value: ActionFilterValueType): string | undefined {

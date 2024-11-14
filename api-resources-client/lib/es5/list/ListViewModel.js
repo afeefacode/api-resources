@@ -260,15 +260,14 @@ export class ListViewModel {
     getFiltersFromHistory() {
         if (this._historyKey) {
             if (filterHistory.hasFilters(this._historyKey)) {
-                const filters = filterHistory.getFilters(this._historyKey);
-                const historyFilters = {};
-                for (const [name, filter] of filters.entries()) {
+                const filters = {};
+                for (const [name, filter] of filterHistory.getFilters(this._historyKey).entries()) {
                     const value = filter.value;
                     if (value !== undefined) {
-                        historyFilters[name] = value;
+                        filters[name] = value;
                     }
                 }
-                return historyFilters;
+                return filters;
             }
         }
         return {};

@@ -16,6 +16,7 @@ export declare class ListViewFilter {
     get options(): unknown[];
     hasOptionsRequest(): boolean;
     createOptionsRequest(): ApiRequest | null;
+    get multiple(): boolean;
     get value(): ActionFilterValueType;
     set value(value: ActionFilterValueType);
     setInternalValue(value: ActionFilterValueType, dispatchChange?: boolean): boolean;

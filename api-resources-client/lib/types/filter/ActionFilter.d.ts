@@ -7,6 +7,7 @@ export type ActionFilterJSON = {
     default: ActionFilterValueType;
     options?: ActionFilterOption[];
     options_request?: ApiRequestJSON;
+    multiple?: boolean;
 };
 export type ActionFilterOption = {
     value: unknown;
@@ -18,6 +19,7 @@ export declare class ActionFilter {
     private _defaultValue;
     private _hasDefaultValue;
     private _options;
+    private _multiple;
     private _requestFactory;
     constructor(action: Action, filter: Filter, name: string, json: ActionFilterJSON);
     get type(): string;
@@ -29,6 +31,7 @@ export declare class ActionFilter {
     get options(): ActionFilterOption[];
     hasOptionsRequest(): boolean;
     createOptionsRequest(): ApiRequest | null;
+    get multiple(): boolean;
     valueToQuery(value: ActionFilterValueType): string | undefined;
     queryToValue(value: string): ActionFilterValueType | undefined;
     serializeValue(value: ActionFilterValueType): ActionFilterValueType;

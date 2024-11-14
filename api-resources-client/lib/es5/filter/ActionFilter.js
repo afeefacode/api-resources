@@ -3,12 +3,14 @@ export class ActionFilter {
     constructor(action, filter, name, json) {
         this._defaultValue = null;
         this._options = [];
+        this._multiple = false;
         this._requestFactory = null;
         this._filter = filter;
         this._name = name;
         this._defaultValue = filter.deserializeDefaultValue(json.default || null);
         this._hasDefaultValue = json.hasOwnProperty('default');
         this._options = json.options || [];
+        this._multiple = json.multiple || false;
         if (json.options_request) {
             this._requestFactory = () => {
                 const requestAction = action.getApi().getAction(json.options_request.resource, json.options_request.action);
@@ -46,6 +48,9 @@ export class ActionFilter {
             return this._requestFactory();
         }
         return null;
+    }
+    get multiple() {
+        return this._multiple;
     }
     valueToQuery(value) {
         return this._filter.valueToQuery(value);

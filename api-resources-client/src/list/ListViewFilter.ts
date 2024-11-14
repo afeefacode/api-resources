@@ -49,6 +49,10 @@ export class ListViewFilter {
     return this._filter.createOptionsRequest()
   }
 
+  public get multiple (): boolean {
+    return this._filter.multiple
+  }
+
   public get value (): ActionFilterValueType {
     return this._value
   }

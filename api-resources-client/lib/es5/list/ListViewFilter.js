@@ -31,6 +31,9 @@ export class ListViewFilter {
     createOptionsRequest() {
         return this._filter.createOptionsRequest();
     }
+    get multiple() {
+        return this._filter.multiple;
+    }
     get value() {
         return this._value;
     }
