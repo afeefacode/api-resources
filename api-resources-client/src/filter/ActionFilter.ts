@@ -4,7 +4,8 @@ import { Filter } from './Filter'
 
 export type ActionFilterValueType = (
   boolean | string | number | null | Date |
-  Record<string, boolean | string | number | null>
+  Record<string, boolean | string | number | null> |
+  (boolean | string | number | Date)[]
 )
 
 export type ActionFilterJSON = {
@@ -34,10 +35,12 @@ export class ActionFilter {
   constructor (action: Action, filter: Filter, name: string, json: ActionFilterJSON) {
     this._filter = filter
     this._name = name
-    this._defaultValue = filter.deserializeDefaultValue(json.default || null)
-    this._hasDefaultValue = json.hasOwnProperty('default')
+    this._multiple = !!json.multiple
     this._options = json.options || []
-    this._multiple = json.multiple || false
+    this._hasDefaultValue = json.hasOwnProperty('default')
+
+    const empty = this._multiple ? [] : null
+    this._defaultValue = filter.deserializeDefaultValue(json.default || empty)
 
     if (json.options_request) {
       this._requestFactory = (): ApiRequest => {

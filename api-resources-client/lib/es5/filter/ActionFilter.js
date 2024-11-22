@@ -7,10 +7,11 @@ export class ActionFilter {
         this._requestFactory = null;
         this._filter = filter;
         this._name = name;
-        this._defaultValue = filter.deserializeDefaultValue(json.default || null);
-        this._hasDefaultValue = json.hasOwnProperty('default');
+        this._multiple = !!json.multiple;
         this._options = json.options || [];
-        this._multiple = json.multiple || false;
+        this._hasDefaultValue = json.hasOwnProperty('default');
+        const empty = this._multiple ? [] : null;
+        this._defaultValue = filter.deserializeDefaultValue(json.default || empty);
         if (json.options_request) {
             this._requestFactory = () => {
                 const requestAction = action.getApi().getAction(json.options_request.resource, json.options_request.action);

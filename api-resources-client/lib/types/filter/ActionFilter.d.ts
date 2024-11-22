@@ -1,7 +1,7 @@
 import { Action } from '../action/Action';
 import { ApiRequest, ApiRequestJSON } from '../api/ApiRequest';
 import { Filter } from './Filter';
-export type ActionFilterValueType = (boolean | string | number | null | Date | Record<string, boolean | string | number | null>);
+export type ActionFilterValueType = (boolean | string | number | null | Date | Record<string, boolean | string | number | null> | (boolean | string | number | Date)[]);
 export type ActionFilterJSON = {
     type: string;
     default: ActionFilterValueType;
