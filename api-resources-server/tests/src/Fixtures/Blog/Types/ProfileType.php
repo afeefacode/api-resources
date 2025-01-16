@@ -15,18 +15,24 @@ class ProfileType extends ModelType
     protected function fields(FieldBag $fields): void
     {
         $fields
-            ->string('about_me');
+            ->string('about_me')
+
+            ->hasOne('author', AuthorType::class);
     }
 
     protected function updateFields(FieldBag $updateFields): void
     {
-        $updateFields->string('about_me');
+        $updateFields
+            ->string('about_me')
+
+            ->linkOne('author', AuthorType::class);
     }
 
     protected function createFields(FieldBag $createFields, FieldBag $updateFields): void
     {
         $createFields
+            ->from($updateFields, 'about_me')
 
-            ->from($updateFields, 'about_me');
+            ->from($updateFields, 'author');
     }
 }
