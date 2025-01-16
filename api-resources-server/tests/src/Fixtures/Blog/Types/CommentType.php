@@ -16,7 +16,7 @@ class CommentType extends ModelType
     protected function fields(FieldBag $fields): void
     {
         $fields
-            ->attribute('text', StringAttribute::class)
+            ->string('text')
 
             ->hasOne('owner', [AuthorType::class, ArticleType::class]);
     }
@@ -24,7 +24,7 @@ class CommentType extends ModelType
     protected function updateFields(FieldBag $updateFields): void
     {
         $updateFields
-            ->attribute('text', StringAttribute::class)
+            ->string('text')
 
             ->linkOne('owner', [AuthorType::class, ArticleType::class]);
     }

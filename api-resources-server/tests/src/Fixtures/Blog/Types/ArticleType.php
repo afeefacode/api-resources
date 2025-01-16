@@ -6,7 +6,6 @@ use Afeefa\ApiResources\Api\ApiRequest;
 use Afeefa\ApiResources\Eloquent\ModelType;
 use Afeefa\ApiResources\Field\Attribute;
 use Afeefa\ApiResources\Field\FieldBag;
-use Afeefa\ApiResources\Field\Fields\DateAttribute;
 use Afeefa\ApiResources\Field\Fields\StringAttribute;
 use Afeefa\ApiResources\Field\Relation;
 use Afeefa\ApiResources\Test\Fixtures\Blog\Models\Article;
@@ -22,13 +21,14 @@ class ArticleType extends ModelType
 
     protected function fields(FieldBag $fields): void
     {
-        $fields->attribute('title', StringAttribute::class)
+        $fields
+            ->string('title')
 
-            ->attribute('summary', StringAttribute::class)
+            ->string('summary')
 
-            ->attribute('content', StringAttribute::class)
+            ->string('content')
 
-            ->attribute('date', DateAttribute::class)
+            ->date('date')
 
             ->hasOne('author', AuthorType::class)
 
@@ -38,7 +38,7 @@ class ArticleType extends ModelType
     protected function updateFields(FieldBag $updateFields): void
     {
         $updateFields
-            ->attribute('title', function (StringAttribute $attribute) {
+            ->string('title', function (StringAttribute $attribute) {
                 $attribute
                     ->validate(function (StringValidator $v) {
                         $v
@@ -48,7 +48,7 @@ class ArticleType extends ModelType
                     });
             })
 
-            ->attribute('summary', function (StringAttribute $attribute) {
+            ->string('summary', function (StringAttribute $attribute) {
                 $attribute
                     ->validate(function (StringValidator $v) {
                         $v
@@ -57,9 +57,9 @@ class ArticleType extends ModelType
                     });
             })
 
-            ->attribute('content', StringAttribute::class)
+            ->string('content')
 
-            ->attribute('date', DateAttribute::class)
+            ->date('date')
 
             ->linkOne('author', AuthorType::class, function (Relation $relation) {
                 $relation

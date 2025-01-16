@@ -4,7 +4,6 @@ namespace Afeefa\ApiResources\Test\Fixtures\Blog\Types;
 
 use Afeefa\ApiResources\Eloquent\ModelType;
 use Afeefa\ApiResources\Field\FieldBag;
-use Afeefa\ApiResources\Field\Fields\StringAttribute;
 use Afeefa\ApiResources\Test\Fixtures\Blog\Models\Tag;
 
 class TagType extends ModelType
@@ -16,7 +15,7 @@ class TagType extends ModelType
     protected function fields(FieldBag $fields): void
     {
         $fields
-            ->attribute('name', StringAttribute::class)
+            ->string('name')
 
             ->hasMany('tag_users', TagUserType::class);
     }
