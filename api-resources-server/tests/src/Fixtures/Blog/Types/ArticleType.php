@@ -11,7 +11,6 @@ use Afeefa\ApiResources\Field\Fields\StringAttribute;
 use Afeefa\ApiResources\Field\Relation;
 use Afeefa\ApiResources\Test\Fixtures\Blog\Models\Article;
 use Afeefa\ApiResources\Test\Fixtures\Blog\Resources\AuthorResource;
-use Afeefa\ApiResources\Type\Type;
 use Afeefa\ApiResources\Validator\Validators\LinkOneValidator;
 use Afeefa\ApiResources\Validator\Validators\StringValidator;
 
@@ -31,9 +30,9 @@ class ArticleType extends ModelType
 
             ->attribute('date', DateAttribute::class)
 
-            ->relation('author', AuthorType::class)
+            ->hasOne('author', AuthorType::class)
 
-            ->relation('tags', Type::list(TagType::class));
+            ->hasMany('tags', TagType::class);
     }
 
     protected function updateFields(FieldBag $updateFields): void
@@ -62,7 +61,7 @@ class ArticleType extends ModelType
 
             ->attribute('date', DateAttribute::class)
 
-            ->relation('author', Type::link(AuthorType::class), function (Relation $relation) {
+            ->linkOne('author', AuthorType::class, function (Relation $relation) {
                 $relation
                     ->validate(function (LinkOneValidator $v) {
                         $v->filled();
@@ -76,7 +75,7 @@ class ArticleType extends ModelType
                     });
             })
 
-            ->relation('tags', Type::list(Type::link(TagType::class)));
+            ->linkMany('tags', TagType::class);
     }
 
     protected function createFields(FieldBag $createFields, FieldBag $updateFields): void
