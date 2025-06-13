@@ -153,7 +153,7 @@ class ModelResolver
 
                 // scope
 
-                ($this->scopeFunction)($query);
+                ($this->scopeFunction)($query, $params);
 
                 // params
 
