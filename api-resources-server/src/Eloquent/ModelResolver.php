@@ -277,6 +277,9 @@ class ModelResolver
                     }
                 }
 
+                // group-by Model ID, so we have any entity only once
+                $query->groupBy($table . '.id');
+
                 // get
 
                 // sleep(2);
