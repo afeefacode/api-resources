@@ -8,7 +8,7 @@ fi
 
 # wait for db
 
-while ! mysqladmin ping -h"mysql" --silent; do
+while ! mysqladmin ping -h"mysql" --silent --skip-ssl; do
     echo "waiting for database connection ..."
     sleep 1
 done

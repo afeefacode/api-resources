@@ -2,30 +2,37 @@ import './main.scss'
 import './config/components'
 
 import * as models from '@/models'
-import { bootstrap } from '@a-admin/bootstrap'
+import { AfeefaAdmin } from '@a-admin/AfeefaAdmin'
 
 import SidebarMenu from './components/SidebarMenu'
 import Splash from './components/Splash'
+import { breadcrumbs } from './config/breadcrumbs'
+import { routes } from './config/routes'
 import routing from './config/routing'
 
-bootstrap({
-  apis: {
-    'Example.BackendApi': '/backend-api'
-  },
+new AfeefaAdmin()
 
-  models: Object.values(models),
-
-  routing,
-
-  app: {
+  .app({
     logo: '/frontend/logo.svg',
     title: 'Example',
     loaderColor: '#82b81c',
-    rootRouteName: 'articles.list'
-  },
+    rootRouteName: 'articles.list',
+    components: {
+      Splash,
+      SidebarMenu
+    }
+  })
 
-  components: {
-    Splash,
-    SidebarMenu
-  }
-})
+  .api({
+    models: Object.values(models),
+    apis: {
+      'Example.BackendApi': '/backend-api'
+    }
+  })
+
+  .routing(routeConfigPlugin => {
+    routeConfigPlugin
+      .scrollContainer('#v-main')
+      .routes(routes)
+      .breadcrumbs(breadcrumbs)
+  })

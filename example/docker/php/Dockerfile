@@ -1,10 +1,11 @@
-FROM php:7.4-fpm
+FROM php:8.2-fpm
 
 # packages
 
 RUN apt-get update; \
   apt-get install -y \
   zip unzip libzip-dev \
+  iputils-ping \
   mariadb-client
 
 # locales
@@ -17,7 +18,7 @@ RUN DEBIAN_FRONTEND=noninteractive apt-get install -y locales; \
 # php modules
 
 RUN docker-php-ext-install \
-  pdo_mysql zip; \
+  pdo_mysql mysqli zip; \
   pecl install xdebug; \
   docker-php-ext-enable xdebug
 

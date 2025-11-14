@@ -45,7 +45,7 @@ services:
 
   mysql:
     container_name: api-resources-mysql
-    image: mariadb
+    image: mariadb:10.11
     volumes:
       - api-resources-mysql:/var/lib/mysql
     environment:
@@ -53,7 +53,6 @@ services:
       MYSQL_DATABASE: api
     ports:
       - '23306:3306'
-
 
 networks:
   nginx-frontproxy:
