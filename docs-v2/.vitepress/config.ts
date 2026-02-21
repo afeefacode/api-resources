@@ -31,6 +31,7 @@ export default defineConfig({
           text: 'Erweitert',
           items: [
             { text: 'Resolver & Options', link: '/guide/resolver' },
+            { text: 'Api-Level Konfiguration', link: '/guide/api-konfiguration' },
             { text: 'Migration v1 → v2', link: '/guide/migration' }
           ]
         }

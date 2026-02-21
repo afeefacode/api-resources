@@ -78,6 +78,26 @@ forOperation(UPDATE) → toV1Field(UPDATE) → StringAttribute mit Validator
 | `WritableFieldBag` | V1\FieldBag | Exposiert `addField()` für `forOperation()` |
 | `Type` | V1\Type | Override `created()` mit Blueprint-Split |
 | `ModelType` | V2\Type | + Eloquent-Model + Auto-Resolver |
+| `TypeConfigurator` | – | Api-Level Type-Konfiguration (only, readOnly, field) |
+| `FieldConfigurator` | – | Feld-spezifische Konfiguration (required, validate) |
+
+### Api-Level Konfiguration
+
+Neben der Type-Definition selbst können Types auf Api-Ebene konfiguriert werden — ohne Subclassing. `configureType()` in der Api-Klasse gibt einen `TypeConfigurator` zurück:
+
+```php
+class DebitorApi extends Api
+{
+    protected function configureTypes(): void
+    {
+        $this->configureType(OrderType::class)
+            ->only(['date', 'customer', 'settlement'])
+            ->readOnly();
+    }
+}
+```
+
+Mehr dazu unter [Api-Level Type-Konfiguration](./api-konfiguration.md).
 
 ### Warum funktioniert das?
 

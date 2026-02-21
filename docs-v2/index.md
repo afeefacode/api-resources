@@ -18,6 +18,8 @@ features:
     details: Alle Felder zentral definieren mit ->on(READ, UPDATE, CREATE) statt drei separaten Methoden.
   - title: Volle v1-Kompatibilität
     details: V2 Types erzeugen identisches Schema-JSON. Bestehende Resources, Actions, Resolver und Client funktionieren unverändert.
+  - title: Api-Level Konfiguration
+    details: configureType() in der Api-Klasse — Feld-Subset, readOnly, Validierung — ohne Type-Subclassing.
   - title: Schrittweise Migration
     details: Type für Type migrieren. V1 und v2 Types koexistieren im selben Projekt.
 ---

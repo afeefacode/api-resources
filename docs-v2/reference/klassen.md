@@ -158,6 +158,49 @@ protected function defineFields(FieldBag $fields): void
 }
 ```
 
+## TypeConfigurator
+
+Konfiguriert einen Type auf Api-Ebene. Wird von `Api::configureType()` zurückgegeben.
+Lebt in `src-v2/TypeConfigurator.php`.
+
+### Methoden
+
+| Methode | Beschreibung |
+|---------|-------------|
+| `only(array $fieldNames): static` | Schränkt auf Feld-Subset ein (READ + UPDATE + CREATE) |
+| `readOnly(): static` | Entfernt alle UPDATE- und CREATE-Felder |
+| `field(string $name): FieldConfigurator` | Gibt FieldConfigurator für ein bestimmtes Feld zurück |
+| `apply(Type $type): void` | Wendet Konfiguration auf einen Type an (intern, in `toSchemaJson()`) |
+
+### Wann wird apply() aufgerufen?
+
+In `Api::toSchemaJson()`, nachdem `TypeClassMap::createUsedTypesForApi()` alle Type-Instanzen erzeugt hat. Die Konfiguration modifiziert die fertigen v1 FieldBags der Instanzen.
+
+## FieldConfigurator
+
+Konfiguriert ein einzelnes Feld innerhalb eines TypeConfigurators.
+Lebt in `src-v2/FieldConfigurator.php`.
+
+### Methoden
+
+| Methode | Beschreibung |
+|---------|-------------|
+| `onMutation(?callable $validate, ?bool $required): static` | Setzt Config für UPDATE + CREATE |
+| `onUpdate(?callable $validate, ?bool $required): static` | Nur für UPDATE |
+| `onCreate(?callable $validate, ?bool $required): static` | Nur für CREATE |
+| `applyToField(Field $field, Operation $op): void` | Intern: wendet Config auf v1 Field an |
+
+### Beispiel
+
+```php
+$this->configureType(PersonType::class)
+    ->field('date_birth')->onMutation(required: true);
+
+$this->configureType(PersonType::class)
+    ->field('name')->onUpdate(validate: fn(StringValidator $v) => $v->filled())
+                   ->onCreate(required: true);
+```
+
 ## ModelType
 
 Extends `V2\Type`. Für Eloquent-basierte Types.
