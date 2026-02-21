@@ -22,7 +22,7 @@ class Bag implements ToSchemaJsonInterface, ContainerAwareInterface
 
     private array $definitions = [];
 
-    public function get(string $name, Closure $callback = null): BagEntryInterface
+    public function get(string $name, ?Closure $callback = null): BagEntryInterface
     {
         $entry = $this->entries[$name] ?? null;
 
@@ -47,7 +47,7 @@ class Bag implements ToSchemaJsonInterface, ContainerAwareInterface
         return $entry;
     }
 
-    public function setDefinition(string $name, $classOrCallback, Closure $createCallback = null): Bag
+    public function setDefinition(string $name, $classOrCallback, ?Closure $createCallback = null): Bag
     {
         $this->definitions[$name] = [$classOrCallback, $createCallback];
         return $this;

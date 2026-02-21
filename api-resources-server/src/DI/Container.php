@@ -30,7 +30,7 @@ class Container implements ContainerInterface
      *
      * @param mixed $classOrCallback
      */
-    public function get($classOrCallback, Closure $resolveCallback = null): object
+    public function get($classOrCallback, ?Closure $resolveCallback = null): object
     {
         [$TypeClass, $callback] = classOrCallback($classOrCallback);
         if ($TypeClass) {
@@ -79,7 +79,7 @@ class Container implements ContainerInterface
     /**
      * Creates a class but does not add it to the container
      */
-    public function create($classOrCallback, Closure $resolveCallback = null): object
+    public function create($classOrCallback, ?Closure $resolveCallback = null): object
     {
         return $this->createInstance($classOrCallback, $resolveCallback);
     }
@@ -87,7 +87,7 @@ class Container implements ContainerInterface
     /**
      * Calls a function while injecting dependencies
      */
-    public function call($callback, Closure $resolveCallback = null, Closure $resolveCallback2 = null)
+    public function call($callback, ?Closure $resolveCallback = null, ?Closure $resolveCallback2 = null)
     {
         $callback = $this->callback($callback);
         $TypeClasses = getCallbackArgumentTypes($callback); // min 0 max *
@@ -169,7 +169,7 @@ class Container implements ContainerInterface
         debug_dump($dump);
     }
 
-    private function createInstance($classOrCallback, Closure $resolveCallback = null, $register = false): object
+    private function createInstance($classOrCallback, ?Closure $resolveCallback = null, $register = false): object
     {
         [$TypeClass, $callback] = classOrCallback($classOrCallback);
         if ($callback) { // callback and no type class given
