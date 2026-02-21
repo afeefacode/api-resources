@@ -28,7 +28,7 @@ class TypeConfigurator
     public function field(string $name): FieldConfigurator
     {
         if (!isset($this->fieldConfigs[$name])) {
-            $this->fieldConfigs[$name] = new FieldConfigurator($this);
+            $this->fieldConfigs[$name] = new FieldConfigurator();
         }
         return $this->fieldConfigs[$name];
     }

@@ -6,16 +6,9 @@ use Afeefa\ApiResources\Field\Field;
 
 class FieldConfigurator
 {
-    private TypeConfigurator $typeConfigurator;
-
     private array $perOpValidate = [];
 
     private array $perOpRequired = [];
-
-    public function __construct(TypeConfigurator $typeConfigurator)
-    {
-        $this->typeConfigurator = $typeConfigurator;
-    }
 
     public function onMutation(?callable $validate = null, ?bool $required = null): static
     {
