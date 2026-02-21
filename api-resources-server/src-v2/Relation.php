@@ -45,7 +45,7 @@ class Relation extends Field
 
     public function onMutation(?string $mode = null, $validate = null, ?bool $required = null): static
     {
-        parent::onMutation($validate, $required);
+        $this->setPerOperation([Operation::UPDATE, Operation::CREATE], $validate, $required);
         if ($mode !== null) {
             $this->perOpMode[Operation::UPDATE->value] = $mode;
             $this->perOpMode[Operation::CREATE->value] = $mode;
@@ -55,7 +55,7 @@ class Relation extends Field
 
     public function onUpdate(?string $mode = null, $validate = null, ?bool $required = null): static
     {
-        parent::onUpdate($validate, $required);
+        $this->setPerOperation([Operation::UPDATE], $validate, $required);
         if ($mode !== null) {
             $this->perOpMode[Operation::UPDATE->value] = $mode;
         }
@@ -64,7 +64,7 @@ class Relation extends Field
 
     public function onCreate(?string $mode = null, $validate = null, ?bool $required = null): static
     {
-        parent::onCreate($validate, $required);
+        $this->setPerOperation([Operation::CREATE], $validate, $required);
         if ($mode !== null) {
             $this->perOpMode[Operation::CREATE->value] = $mode;
         }
@@ -147,6 +147,11 @@ class Relation extends Field
             // Apply skipSaveRelatedIf
             if ($this->skipSaveRelatedIfCallback) {
                 $relation->skipSaveRelatedIf($this->skipSaveRelatedIfCallback);
+            }
+
+            // Apply optionsRequest
+            if ($this->optionsRequestCallback) {
+                $relation->optionsRequest($this->optionsRequestCallback);
             }
         });
 

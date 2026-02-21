@@ -8,6 +8,7 @@ use Afeefa\ApiResources\Field\Fields\StringAttribute;
 use Afeefa\ApiResources\Field\Relation as V1Relation;
 use Afeefa\ApiResources\TestV2\V2TestCase;
 use Afeefa\ApiResources\V2\FieldBag;
+use Afeefa\ApiResources\Validator\Validators\LinkOneValidator;
 use Afeefa\ApiResources\Validator\Validators\StringValidator;
 
 use function Afeefa\ApiResources\Test\T;
@@ -172,6 +173,33 @@ class V2TypeTest extends V2TestCase
         $this->assertTrue($createRelation->getRelatedType()->isLink());
     }
 
+    public function test_v2_type_relation_mode_link_with_validate_and_required()
+    {
+        $type = $this->v2TypeBuilder()->type('Test.V2Type', function (FieldBag $fields) {
+            $fields
+                ->hasOne('cancelation_reason', T('Test.Category'))->on(READ, UPDATE, CREATE)
+                    ->onMutation(mode: 'link', validate: fn(LinkOneValidator $v) => $v->filled(), required: true);
+        })->get();
+
+        // READ: normal relation, no link, no validator, not required
+        $readRelation = $type->getRelation('cancelation_reason');
+        $this->assertFalse($readRelation->getRelatedType()->isLink());
+        $this->assertFalse($readRelation->hasValidator());
+        $this->assertFalse($readRelation->isRequired());
+
+        // UPDATE: link + validator + required
+        $updateRelation = $type->getUpdateRelation('cancelation_reason');
+        $this->assertTrue($updateRelation->getRelatedType()->isLink());
+        $this->assertTrue($updateRelation->hasValidator());
+        $this->assertTrue($updateRelation->isRequired());
+
+        // CREATE: link + validator + required
+        $createRelation = $type->getCreateRelation('cancelation_reason');
+        $this->assertTrue($createRelation->getRelatedType()->isLink());
+        $this->assertTrue($createRelation->hasValidator());
+        $this->assertTrue($createRelation->isRequired());
+    }
+
     public function test_v2_type_relation_mode_per_operation()
     {
         $type = $this->v2TypeBuilder()->type('Test.V2Type', function (FieldBag $fields) {
@@ -201,6 +229,61 @@ class V2TypeTest extends V2TestCase
         $relation = $type->getRelation('tags');
         $this->assertTrue($relation->getRelatedType()->isList());
         $this->assertFalse($relation->getRelatedType()->isLink());
+    }
+
+    public function test_v2_type_attribute_options_request()
+    {
+        $type = $this->v2TypeBuilder()->type('Test.V2Type', function (FieldBag $fields) {
+            $fields
+                ->string('status')->on(READ, UPDATE, CREATE)
+                    ->optionsRequest(function () {
+                        return ['active', 'inactive'];
+                    });
+        })->get();
+
+        $this->assertTrue($type->getField('status')->hasOptionsRequest());
+        $this->assertTrue($type->getUpdateField('status')->hasOptionsRequest());
+        $this->assertTrue($type->getCreateField('status')->hasOptionsRequest());
+    }
+
+    public function test_v2_type_relation_options_request()
+    {
+        $type = $this->v2TypeBuilder()->type('Test.V2Type', function (FieldBag $fields) {
+            $fields
+                ->hasOne('category', T('Test.Category'))->on(READ)
+                    ->optionsRequest(function () {
+                        return [];
+                    });
+        })->get();
+
+        $this->assertTrue($type->getRelation('category')->hasOptionsRequest());
+    }
+
+    public function test_v2_type_relation_link_with_options_request()
+    {
+        $type = $this->v2TypeBuilder()->type('Test.V2Type', function (FieldBag $fields) {
+            $fields
+                ->hasOne('country', T('Test.Country'))->on(READ, UPDATE, CREATE)
+                    ->onMutation(mode: 'link')
+                    ->optionsRequest(function () {
+                        return [];
+                    });
+        })->get();
+
+        // READ: not a link, but has optionsRequest
+        $readRelation = $type->getRelation('country');
+        $this->assertFalse($readRelation->getRelatedType()->isLink());
+        $this->assertTrue($readRelation->hasOptionsRequest());
+
+        // UPDATE: link + optionsRequest
+        $updateRelation = $type->getUpdateRelation('country');
+        $this->assertTrue($updateRelation->getRelatedType()->isLink());
+        $this->assertTrue($updateRelation->hasOptionsRequest());
+
+        // CREATE: link + optionsRequest
+        $createRelation = $type->getCreateRelation('country');
+        $this->assertTrue($createRelation->getRelatedType()->isLink());
+        $this->assertTrue($createRelation->hasOptionsRequest());
     }
 
     public function test_v2_type_resolver_preserved()
