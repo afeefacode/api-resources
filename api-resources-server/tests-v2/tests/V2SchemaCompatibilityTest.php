@@ -2,12 +2,21 @@
 
 namespace Afeefa\ApiResources\TestsV2;
 
+use Afeefa\ApiResources\Api\Api;
+use Afeefa\ApiResources\Api\ApiRequest;
 use Afeefa\ApiResources\Field\FieldBag;
+use Afeefa\ApiResources\Field\Relation;
 use Afeefa\ApiResources\TestV2\V2TestCase;
 use Afeefa\ApiResources\V2\FieldBag as V2FieldBag;
 use Afeefa\ApiResources\Validator\Validators\StringValidator;
 
 use function Afeefa\ApiResources\Test\T;
+
+// Minimal test Api with a static type for ApiRequest::toSchemaJson()
+class TestApi extends Api
+{
+    protected static string $type = 'Test.Api';
+}
 
 use const Afeefa\ApiResources\V2\CREATE;
 use const Afeefa\ApiResources\V2\READ;
@@ -250,6 +259,56 @@ class V2SchemaCompatibilityTest extends V2TestCase
                 $fields
                     ->string('name')->on(CREATE)
                         ->onCreate(required: true);
+            }
+        )->get();
+
+        $this->assertEquals(
+            $v1Type->toSchemaJson(),
+            $v2Type->toSchemaJson()
+        );
+    }
+
+    public function test_schema_with_options_request()
+    {
+        // ApiRequest::toSchemaJson() needs an Api with a static $type.
+        // Register a minimal test Api so the container can resolve Api::class.
+        $testApi = $this->container->get(TestApi::class);
+        $this->container->registerAlias($testApi, Api::class);
+
+        $optionsCallback = function (ApiRequest $request) {
+            $request
+                ->resourceType('Test.CategoryResource')
+                ->actionName('list')
+                ->fields(['title' => true]);
+        };
+
+        // v1 type: all three field bags must set optionsRequest explicitly to match v2 behavior
+        // (in v2, optionsRequest is global across all operations)
+        $v1Type = $this->typeBuilder()->type(
+            'Test.V1Type',
+            function (FieldBag $fields) use ($optionsCallback) {
+                $fields->hasOne('category', T('Test.Category'), function (Relation $r) use ($optionsCallback) {
+                    $r->optionsRequest($optionsCallback);
+                });
+            },
+            function (FieldBag $updateFields) use ($optionsCallback) {
+                $updateFields->linkOne('category', T('Test.Category'), function (Relation $r) use ($optionsCallback) {
+                    $r->optionsRequest($optionsCallback);
+                });
+            },
+            function (FieldBag $createFields, FieldBag $updateFields) {
+                $createFields->from($updateFields, 'category');
+            }
+        )->get();
+
+        // v2 equivalent: single definition with ->on() + ->onMutation(mode:'link') + optionsRequest
+        $v2Type = $this->v2TypeBuilder()->type(
+            'Test.V2Type',
+            function (V2FieldBag $fields) use ($optionsCallback) {
+                $fields
+                    ->hasOne('category', T('Test.Category'))->on(READ, UPDATE, CREATE)
+                        ->onMutation(mode: 'link')
+                        ->optionsRequest($optionsCallback);
             }
         )->get();
 
