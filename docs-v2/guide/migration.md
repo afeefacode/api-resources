@@ -243,15 +243,15 @@ $updateFields->linkOne('customer', CustomerType::class, function (Relation $rela
 - [ ] Schema-JSON vergleichen (sollte identisch sein)
 - [ ] Tests ausführen
 
-## Automatische Migration mit Claude Code
+## Migrations-Skill
 
-Das Projekt enthält einen Claude-Code-Befehl für automatische Migrationen:
+Das Projekt enthält einen Skill für automatische Migrationen:
 
 ```
 /migrate-type <DateiPfad>
 ```
 
-Der Befehl analysiert die v1-Datei, wendet alle Migrationsregeln an und schreibt die v2-Datei. Anschließend wird die PHP-Syntax geprüft und eine Zusammenfassung ausgegeben.
+Der Skill analysiert die v1-Datei, wendet alle Migrationsregeln an und schreibt die v2-Datei. Anschließend wird die PHP-Syntax geprüft und eine Zusammenfassung ausgegeben.
 
 ## Vollständiges Migrations-Beispiel
 
