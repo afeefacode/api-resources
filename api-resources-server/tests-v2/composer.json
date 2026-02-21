@@ -1,0 +1,33 @@
+{
+    "require": {
+        "php": ">=8.3",
+        "phpunit/phpunit": "^12.0",
+        "fakerphp/faker": "^v1.20",
+        "psr/container": "^1.0 || ^2.0",
+        "symfony/filesystem": "^6.1 || ^7.0"
+    },
+    "autoload": {
+        "psr-4": {
+            "Afeefa\\ApiResources\\": "../src",
+            "Afeefa\\ApiResources\\V2\\": "../src-v2",
+            "Afeefa\\ApiResources\\Test\\": "../tests/src",
+            "Afeefa\\ApiResources\\TestV2\\": "src",
+            "Afeefa\\ApiResources\\TestsV2\\": "tests"
+        },
+        "files": [
+            "../src/Utils/functions.php",
+            "../src/DI/functions.php",
+            "../src-v2/Operation.php",
+            "../tests/src/functions.php",
+            "../tests/src/global-functions.php"
+        ]
+    },
+    "scripts": {
+        "test": "bash phpunit"
+    },
+    "config": {
+        "platform": {
+            "php": "8.3"
+        }
+    }
+}

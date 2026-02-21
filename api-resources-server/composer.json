@@ -17,11 +17,13 @@
     "autoload": {
         "psr-4": {
             "Afeefa\\ApiResources\\": "src",
+            "Afeefa\\ApiResources\\V2\\": "src-v2",
             "Afeefa\\ApiResources\\Tests\\": "tests/tests"
         },
         "files": [
             "src/Utils/functions.php",
-            "src/DI/functions.php"
+            "src/DI/functions.php",
+            "src-v2/Operation.php"
         ]
     },
     "config": {
