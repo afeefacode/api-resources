@@ -40,7 +40,8 @@ export default defineConfig({
         {
           text: 'API-Referenz',
           items: [
-            { text: 'Klassen-Übersicht', link: '/reference/klassen' }
+            { text: 'Klassen-Übersicht', link: '/reference/klassen' },
+            { text: 'DI Container', link: '/reference/container' }
           ]
         }
       ]
