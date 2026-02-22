@@ -1,7 +1,4 @@
 {
-    "bin": [
-        "phpunit2"
-    ],
     "require": {
         "robmorgan/phinx": "^0.12",
         "fakerphp/faker": "^v1.20",
@@ -20,13 +17,10 @@
             "Afeefa\\ApiResources\\Tests\\": "tests"
         },
         "files": [
+            "../src/Utils/functions.php",
+            "../src/DI/functions.php",
             "src/global-functions.php",
             "src/functions.php"
-        ]
-    },
-    "scripts": {
-        "post-update-cmd": [
-            "php post-install.php"
         ]
     },
     "config": {

@@ -10,4 +10,4 @@ docker run --rm \
     -e DB_HOST=mysql \
     -e DB_PORT=3306 \
     reg.localbin.dev/neuedev/core/docker/php-dev:8.3 \
-    php vendor/bin/_phpunit "$@"
+    php vendor/phpunit/phpunit/phpunit "$@"
