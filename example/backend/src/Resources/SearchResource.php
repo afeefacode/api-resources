@@ -8,8 +8,9 @@ use Afeefa\ApiResources\Filter\FilterBag;
 use Afeefa\ApiResources\Filter\Filters\KeywordFilter;
 use Afeefa\ApiResources\Resource\Resource;
 use Afeefa\ApiResources\Type\Type;
-use Backend\Models\Author;
-use Backend\Models\Comment;
+use Backend\Types\ArticleType;
+use Backend\Types\AuthorType;
+use Backend\Types\CommentType;
 
 class SearchResource extends Resource
 {
@@ -19,7 +20,7 @@ class SearchResource extends Resource
     {
         $actions->query(
             'search',
-            Type::list([Article::class, Author::class, Comment::class]),
+            Type::list([ArticleType::class, AuthorType::class, CommentType::class]),
             function (Action $action) {
                 $action->filters(function (FilterBag $filters) {
                     $filters->add('q', KeywordFilter::class);

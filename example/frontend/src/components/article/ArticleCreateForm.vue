@@ -1,10 +1,9 @@
 <template>
   <edit-form v-bind="$attrs">
     <template #fields>
-      <form-field
+      <form-field-search-select
         name="author"
         label="Autor"
-        :options="authorOptions()"
       />
 
       <form-field-text
@@ -14,32 +13,3 @@
     </template>
   </edit-form>
 </template>
-
-
-<script>
-import { Component, Vue } from 'vue-property-decorator'
-
-@Component
-export default class ArticleCreateForm extends Vue {
-  async authorOptions () {
-    const result = await this.$apiResources
-      .createRequest({
-        resourceType: 'Example.AuthorResource',
-        actionName: 'get_authors'
-      })
-      .fields({
-        name: true
-      })
-      .send()
-
-    return [
-      ...result.data.map(i => {
-        return {
-          itemTitle: i.name,
-          itemValue: i
-        }
-      })
-    ]
-  }
-}
-</script>

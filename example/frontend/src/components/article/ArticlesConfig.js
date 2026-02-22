@@ -54,7 +54,7 @@ export class ArticlesConfig extends RouteConfig {
   edit = {
     Component: ArticleForm,
 
-    action: this.api.getAction('Example.ArticleResource', 'update_article'),
+    action: this.api.getAction('Example.ArticleResource', 'save_article'),
 
     fields: {
       title: true,
@@ -68,7 +68,7 @@ export class ArticlesConfig extends RouteConfig {
 
     Component: ArticleCreateForm,
 
-    action: this.api.getAction('Example.ArticleResource', 'create_article'),
+    action: this.api.getAction('Example.ArticleResource', 'save_article'),
 
     fields: {
       author: true,

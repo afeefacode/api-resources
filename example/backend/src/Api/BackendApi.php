@@ -8,7 +8,6 @@ use Backend\Resources\AppResource;
 use Backend\Resources\ArticleResource;
 use Backend\Resources\AuthorResource;
 use Backend\Resources\TagResource;
-use Backend\Types\AuthorType;
 
 class BackendApi extends Api
 {
@@ -20,15 +19,6 @@ class BackendApi extends Api
             ->add(AppResource::class)
             ->add(ArticleResource::class)
             ->add(TagResource::class)
-            ->add(function (AuthorResource $resource) {
-                // $resource->removeAction('get_authors');
-            });
+            ->add(AuthorResource::class);
     }
-
-    // protected function types(TypeBag $types): void
-    // {
-    //     $types->get(function (AuthorType $authorType) {
-    //         $authorType->removeRelation('articles');
-    //     });
-    // }
 }

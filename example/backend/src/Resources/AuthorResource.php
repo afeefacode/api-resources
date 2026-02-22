@@ -42,7 +42,7 @@ class AuthorResource extends Resource
                         $filter
                             ->fields([
                                 'id' => [OrderFilter::DESC, OrderFilter::ASC],
-                                'name' => [OrderFilter::ASC], OrderFilter::DESC,
+                                'name' => [OrderFilter::ASC, OrderFilter::DESC],
                                 'count_articles' => [OrderFilter::DESC, OrderFilter::ASC]
                             ])
                             ->default(['name' => OrderFilter::ASC]);

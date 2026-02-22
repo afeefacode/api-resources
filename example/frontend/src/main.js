@@ -8,7 +8,6 @@ import SidebarMenu from './components/SidebarMenu'
 import Splash from './components/Splash'
 import { breadcrumbs } from './config/breadcrumbs'
 import { routes } from './config/routes'
-import routing from './config/routing'
 
 new AfeefaAdmin()
 

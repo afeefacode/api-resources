@@ -3,7 +3,6 @@
 namespace Backend\Types;
 
 use Afeefa\ApiResources\Field\FieldBag;
-use Afeefa\ApiResources\Field\Fields\StringAttribute;
 use Afeefa\ApiResources\Field\Relation;
 use Afeefa\ApiResources\Type\Type;
 use Afeefa\ApiResources\Validator\Validators\StringValidator;
@@ -14,44 +13,33 @@ class AuthorType extends Type
 {
     protected static string $type = 'Example.Author';
 
-    // protected function translations(): array
-    // {
-    //     return [
-    //         'TITLE_SINGULAR' => 'Autor:in',
-    //         'TITLE_PLURAL' => 'Autor:innen',
-    //         'TITLE_EMPTY' => 'Kein Name',
-    //         'TITLE_NEW' => 'Neue Autor:in'
-    //     ];
-    // }
-
     protected function fields(FieldBag $fields): void
     {
         $fields
-            ->attribute('name', StringAttribute::class)
+            ->string('name')
 
-            ->attribute('email', StringAttribute::class)
+            ->string('email')
 
-            ->relation('articles', Type::list(ArticleType::class), function (Relation $relation) {
+            ->hasMany('articles', ArticleType::class, function (Relation $relation) {
                 $relation
                     ->restrictTo(Relation::RESTRICT_TO_COUNT)
                     ->resolve([ArticlesResolver::class, 'resolve_articles_relation']);
             })
 
-            ->relation('tags', Type::list(TagType::class), function (Relation $relation) {
+            ->hasMany('tags', TagType::class, function (Relation $relation) {
                 $relation->resolve([TagsResolver::class, 'resolve_tags_relation']);
             });
     }
 
     protected function updateFields(FieldBag $updateFields): void
     {
-        $updateFields->attribute('name', function (StringAttribute $attribute) {
-            $attribute->validate(function (StringValidator $v) {
+        $updateFields
+            ->string('name', validate: function (StringValidator $v) {
                 $v
                     ->filled()
                     ->min(5)
                     ->max(101);
             });
-        });
     }
 
     protected function createFields(FieldBag $createFields, FieldBag $updateFields): void

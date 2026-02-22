@@ -5,8 +5,6 @@ namespace Backend\Types;
 use Afeefa\ApiResources\Api\ApiRequest;
 use Afeefa\ApiResources\Field\Attribute;
 use Afeefa\ApiResources\Field\FieldBag;
-use Afeefa\ApiResources\Field\Fields\DateAttribute;
-use Afeefa\ApiResources\Field\Fields\StringAttribute;
 use Afeefa\ApiResources\Field\Relation;
 use Afeefa\ApiResources\Type\Type;
 use Afeefa\ApiResources\Validator\Validators\LinkOneValidator;
@@ -20,35 +18,26 @@ class ArticleType extends Type
 {
     protected static string $type = 'Example.Article';
 
-    // protected function translations(): array
-    // {
-    //     return [
-    //         'TITLE_SINGULAR' => 'Artikel',
-    //         'TITLE_PLURAL' => 'Artikel',
-    //         'TITLE_EMPTY' => 'Kein Titel',
-    //         'TITLE_NEW' => 'Neuer Artikel'
-    //     ];
-    // }
-
     protected function fields(FieldBag $fields): void
     {
-        $fields->attribute('title', StringAttribute::class)
+        $fields
+            ->string('title')
 
-            ->attribute('summary', StringAttribute::class)
+            ->string('summary')
 
-            ->attribute('content', StringAttribute::class)
+            ->string('content')
 
-            ->attribute('date', DateAttribute::class)
+            ->date('date')
 
-            ->relation('author', AuthorType::class, function (Relation $relation) {
+            ->hasOne('author', AuthorType::class, function (Relation $relation) {
                 $relation->resolve([AuthorsResolver::class, 'resolve_author_relation']);
             })
 
-            ->relation('comments', Type::list(CommentType::class), function (Relation $relation) {
+            ->hasMany('comments', CommentType::class, function (Relation $relation) {
                 $relation->resolve([CommentsResolver::class, 'resolve_comments_relation']);
             })
 
-            ->relation('tags', Type::list(TagType::class), function (Relation $relation) {
+            ->hasMany('tags', TagType::class, function (Relation $relation) {
                 $relation->resolve([TagsResolver::class, 'resolve_tags_relation']);
             });
     }
@@ -56,30 +45,24 @@ class ArticleType extends Type
     protected function updateFields(FieldBag $updateFields): void
     {
         $updateFields
-            ->attribute('title', function (StringAttribute $attribute) {
-                $attribute
-                    ->validate(function (StringValidator $v) {
-                        $v
-                            ->filled()
-                            ->min(5)
-                            ->max(101);
-                    });
+            ->string('title', validate: function (StringValidator $v) {
+                $v
+                    ->filled()
+                    ->min(5)
+                    ->max(101);
             })
 
-            ->attribute('summary', function (StringAttribute $attribute) {
-                $attribute
-                    ->validate(function (StringValidator $v) {
-                        $v
-                            ->min(3)
-                            ->max(200);
-                    });
+            ->string('summary', validate: function (StringValidator $v) {
+                $v
+                    ->min(3)
+                    ->max(200);
             })
 
-            ->attribute('content', StringAttribute::class)
+            ->string('content')
 
-            ->attribute('date', DateAttribute::class)
+            ->date('date')
 
-            ->relation('author', Type::link(AuthorType::class), function (Relation $relation) {
+            ->linkOne('author', AuthorType::class, function (Relation $relation) {
                 $relation
                     ->required()
                     ->validate(function (LinkOneValidator $v) {
@@ -95,7 +78,7 @@ class ArticleType extends Type
                     });
             })
 
-            ->relation('tags', Type::list(Type::link(TagType::class)));
+            ->linkMany('tags', TagType::class);
     }
 
     protected function createFields(FieldBag $createFields, FieldBag $updateFields): void

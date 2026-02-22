@@ -23,10 +23,9 @@ export function breadcrumbs ({BREADCRUMB, BREADCRUMBSET}) {
         BREADCRUMBSET({
           name: 'comments',
           titles: {
-            list: 'Comments',
-            detail: 'Comment'
-          },
-          getTitle: getBreadcrumbTitleFunction('Comment', 'commentId', {title: true})
+            list: 'Kommentare',
+            detail: 'Kommentar'
+          }
         })
       ]
     })
@@ -43,7 +42,6 @@ function getBreadcrumbTitleFunction (resourceType, idKey, actionName, fields) {
       .params({id: routeParams[idKey]})
       .fields(fields)
       .send()
-    // await sleep(1)
     return result.data && result.data.getTitle()
   }
 }

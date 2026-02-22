@@ -7,7 +7,6 @@ use Afeefa\ApiResources\Resource\ResourceBag;
 use Backend\Resources\ArticleResource;
 use Backend\Resources\AuthorResource;
 use Backend\Resources\TagResource;
-use Backend\Types\AuthorType;
 
 class FrontendApi extends Api
 {
@@ -22,16 +21,7 @@ class FrontendApi extends Api
                 $resource->allowActions([
                     'get_authors',
                     'create_author'
-                ])
-                // $resource->removeAction('get_authors');
+                ]);
             });
-    }
-
-    protected function types(TypeBag $types): void
-    {
-        $types->get(function (AuthorType $authorType) {
-            $authorType->fields(function (FieldBag $fields) {
-            });
-        });
     }
 }
