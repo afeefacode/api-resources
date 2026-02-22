@@ -2,7 +2,6 @@
 
 namespace Afeefa\ApiResources\DI;
 
-use Afeefa\ApiResources\Exception\Exceptions\NotACallbackException;
 use Afeefa\ApiResources\Exception\Exceptions\NotATypeException;
 use Closure;
 use Psr\Container\ContainerInterface;
@@ -21,46 +20,22 @@ class Container implements ContainerInterface
 
     /**
      * Returns a container entry and creates and adds it, if it not exists
-     *
-     * @param mixed $classOrCallback
      */
-    public function get($classOrCallback, ?Closure $resolveCallback = null): object
+    public function get(string $TypeClass): object
     {
-        [$TypeClass, $callback] = classOrCallback($classOrCallback);
-        if ($TypeClass) {
-            $Types = [$TypeClass];
-        } else {
-            $Types = getCallbackArgumentTypes($callback, 1); // min 1 max *
+        if ($this->has($TypeClass)) {
+            return $this->entries[$TypeClass];
         }
 
-        $arguments = [];
-        foreach ($Types as $TypeClass) {
-            $instance = null;
-            if (!$this->has($TypeClass)) {
-                $definition = $this->config[$TypeClass] ?? null;
+        $definition = $this->config[$TypeClass] ?? null;
 
-                // if a single instance is set via config, register and return this instance
-                if ($definition instanceof $TypeClass) {
-                    $this->register($TypeClass, $definition);
-                    return $definition;
-                }
-
-                $instance = $this->createInstance($TypeClass, null, true);
-            } else {
-                $instance = $this->entries[$TypeClass];
-            }
-            $arguments[] = $instance;
+        // if a single instance is set via config, register and return this instance
+        if ($definition instanceof $TypeClass) {
+            $this->register($TypeClass, $definition);
+            return $definition;
         }
 
-        if ($callback) {
-            $callback(...$arguments);
-        }
-
-        if ($resolveCallback) {
-            $resolveCallback(...$arguments);
-        }
-
-        return $arguments[0];
+        return $this->createInstance($TypeClass, null, true);
     }
 
     public function has(string $TypeClass): bool
@@ -133,14 +108,10 @@ class Container implements ContainerInterface
             $TypeClass = $TypeClasses[0];
         }
 
-        $instance = null;
-
-        if (!$instance) {
-            if (!class_exists($TypeClass)) { // possibly interface
-                throw new NotATypeException("{$TypeClass} can not be instantiated to create a new instance.");
-            }
-            $instance = new $TypeClass(); // create new instance from class
+        if (!class_exists($TypeClass)) { // possibly interface
+            throw new NotATypeException("{$TypeClass} can not be instantiated to create a new instance.");
         }
+        $instance = new $TypeClass();
 
         if ($instance instanceof ContainerAwareInterface) {
             $instance->container($this);
@@ -163,16 +134,6 @@ class Container implements ContainerInterface
         }
 
         return $instance;
-    }
-
-    private function callback($callback): Closure
-    {
-        if ($callback instanceof Closure) {
-            return $callback;
-        } elseif (is_callable($callback)) {
-            return Closure::fromCallable($callback);
-        }
-        throw new NotACallbackException('Argument is not a callback.');
     }
 
     private function register(string $TypeClass, object $instance)
