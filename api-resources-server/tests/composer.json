@@ -13,12 +13,16 @@
     "autoload": {
         "psr-4": {
             "Afeefa\\ApiResources\\": "../src",
+            "Afeefa\\ApiResources\\V2\\": "../src-v2",
             "Afeefa\\ApiResources\\Test\\": "src",
-            "Afeefa\\ApiResources\\Tests\\": "tests"
+            "Afeefa\\ApiResources\\TestV2\\": "src/V2",
+            "Afeefa\\ApiResources\\Tests\\": "tests",
+            "Afeefa\\ApiResources\\TestsV2\\": "tests/V2"
         },
         "files": [
             "../src/Utils/functions.php",
             "../src/DI/functions.php",
+            "../src-v2/Operation.php",
             "src/global-functions.php",
             "src/functions.php"
         ]
