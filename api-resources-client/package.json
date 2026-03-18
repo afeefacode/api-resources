@@ -14,6 +14,10 @@
   },
   "author": "Afeefa Kollektiv <kollektiv@afeefa.de>",
   "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/afeefacode/api-resources"
+  },
   "devDependencies": {
     "@types/jest": "^29.2.2",
     "axios": "^0.27.2",
