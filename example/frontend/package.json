@@ -17,8 +17,7 @@
     "@tiptap/extension-highlight": "^2.0.0-beta.199",
     "@tiptap/extension-text-style": "^2.0.0-beta.199",
     "@tiptap/starter-kit": "2.0.0-beta.199",
-    "@tiptap/vue-2": "2.0.0-beta.199",
-    "vuedraggable": "^2.24.3"
+    "@tiptap/vue-2": "2.0.0-beta.199"
   },
   "devDependencies": {
     "vuetify-loader": "^1.7.2"
