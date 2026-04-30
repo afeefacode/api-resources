@@ -458,6 +458,124 @@ Gut für einfache Fälle. Der Type-Hint im Parameter bestimmt den Resolver-Typ.
 
 ---
 
+## Resource-Sicht: `scope()` und `authorize()`
+
+`ModelResource` bietet zwei Hooks, mit denen du einschränkst, welche Datensätze überhaupt in den Resolver-Pfaden erscheinen. Beide hängen `where`-Klauseln an die Eloquent-Query, aber sie greifen in unterschiedlichen Pfaden und haben unterschiedliche Semantik.
+
+### Überblick
+
+| Hook | Signatur | Greift in | Failure | Semantik |
+|------|----------|-----------|---------|----------|
+| `scope($query, $params)` | `Builder, array` | nur `list` | unsichtbar (Liste schrumpft) | List-Default — definiert die Bezugsmenge der Liste, in die `count_all`, Filter und Search hineinwirken. Darf `$params` lesen. |
+| `authorize($query)` | `Builder` | `list` + `get` + `save` | `NotFoundException` in `get`/`save` | Berechtigung — was der Account überhaupt sehen oder ändern darf, unabhängig vom Aufrufpfad. |
+
+```text
+list:  data = DB ∩ authorize ∩ scope ∩ filter ∩ search
+       count_all   = |DB ∩ authorize ∩ scope|
+       count_filter = |DB ∩ authorize ∩ scope ∩ filter|
+
+get:   DB ∩ authorize ∩ where('id', $id)   →  Model oder NotFoundException
+
+save:  DB ∩ authorize ∩ where('id', $id)   →  Model oder NotFoundException
+```
+
+### Wann `scope()`, wann `authorize()`?
+
+Zwei Tests helfen bei der Zuordnung:
+
+**1. Der „fremde ID per `get`"-Test**
+
+Stell dir vor, jemand mit erratener ID ruft `get(fremde_id)` oder `save(fremde_id)`. Soll das …
+
+- einen Fehler werfen (`NotFoundException`)? → `authorize()`
+- technisch durchgehen (das Model ist halt nicht in der Default-Liste, aber direkter Zugriff ist okay)? → `scope()`
+
+**2. Der Datenleck-Test**
+
+Wenn die `where`-Klausel wegfällt — entsteht ein Sicherheits- oder Compliance-Problem (Mandanten-Trennung, Account-Isolation, fremde Daten sichtbar)?
+
+- ja → `authorize()`
+- nein (UX-Komfort, Default-Sicht, statischer Filter) → `scope()`
+
+### Beispiel: reine Berechtigung
+
+```php
+class DebitorOrderResource extends ModelResource
+{
+    protected function authorize(Builder $query): void
+    {
+        $debitorIds = $this->authService->getAccount()->account_roles
+            ->first()->objects->pluck('object_id');
+
+        $query->whereIn('debitor_id', $debitorIds);
+    }
+}
+```
+
+- `list` zeigt nur Orders zu den eigenen Debitoren
+- `get(fremde_order_id)` → `NotFoundException`
+- `save(fremde_order_id)` → `NotFoundException` (kein Datensatz-Update an fremden Daten)
+
+Eine `scope()`-Methode ist hier nicht nötig — `authorize()` allein bestimmt die Default-Liste.
+
+### Beispiel: reiner List-Default mit Params
+
+```php
+class DebitorResource extends ModelResource
+{
+    protected function scope(Builder $query, array $params): void
+    {
+        if ($params['customer_id'] ?? null) {
+            $query
+                ->leftJoin('sprint_customer_debitors as cd', 'cd.debitor_id', '=', 'sprint_debitors.id')
+                ->where('cd.customer_id', $params['customer_id']);
+        }
+    }
+}
+```
+
+- `scope()` formt die Liste auf Basis eines Request-Parameters
+- In `get`/`save` greift der Block nicht (Params sind dort leer) — kein `authorize()` nötig, weil keine Account-Beschränkung gewünscht ist.
+
+### Beispiel: beides kombiniert
+
+```php
+class PsychSessionResource extends ModelResource
+{
+    protected function params(ActionParams $params): void
+    {
+        $params->attribute('client_id', IdAttribute::class);
+    }
+
+    // Berechtigung: nur Sessions zu zugewiesenen Klient:innen — gilt überall
+    protected function authorize(Builder $query): void
+    {
+        $accountId = $this->authService->getAccount()->id;
+        $clientIds = ClientPsychologist::where('account_id', $accountId)->pluck('client_id');
+        $query->whereIn('client_id', $clientIds);
+    }
+
+    // List-UX: optionaler Filter auf einen einzelnen Klienten
+    protected function scope(Builder $query, array $params): void
+    {
+        if (isset($params['client_id'])) {
+            $query->where('client_id', $params['client_id']);
+        }
+    }
+}
+```
+
+- `list` ohne Param: alle Sessions der zugewiesenen Klient:innen
+- `list` mit `client_id=42`: Schnittmenge — wenn 42 nicht zugewiesen ist, leere Liste
+- `get(session_id)`: nur wenn die Session zu einer zugewiesenen Klient:in gehört, sonst 404
+- `save(session_id)`: gleicher Schutz
+
+### Default-Verhalten
+
+Beide Methoden sind in `ModelResource` als No-Op-Defaults vorhanden. Wenn du keine überschreibst, verhält sich die Resource wie vor der Einführung von `authorize()` — kein Filter, kein zusätzlicher 404.
+
+---
+
 ## Resource-Lifecycle-Hooks (Mutations)
 
 Neben Action-Resolvern bietet `ModelResource` Lifecycle-Hooks, die bei jeder Mutation (Create, Update, Delete) automatisch aufgerufen werden. Sie sind der Hauptmechanismus für Business-Logik bei Schreiboperationen.

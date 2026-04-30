@@ -185,8 +185,9 @@ class OfekApi extends Api
 | `configureType()->readOnly()` | Mutations deaktivieren |
 | `configureType()->field()->onMutation()` | Validierung/Required überschreiben |
 | `overrideTypes()` | Fields hinzufügen oder Type komplett ersetzen |
-| Resource `scope()` | *Welche* Datensätze sichtbar sind (Datenbank-Ebene) |
+| Resource `scope()` | List-Default: welche Datensätze die Liste per Default zeigt (nur `list`) |
+| Resource `authorize()` | Berechtigung: welche Datensätze der Account überhaupt sehen/ändern darf (in `list`, `get`, `save`) |
 
 ::: tip
-`configureType()` wirkt auf das Schema-JSON. Es kontrolliert, welche Felder der Client sieht und welche Mutations er ausführen kann. Die Datensatz-Filterung (welche Rows zurückgegeben werden) gehört in `Resource::scope()`.
+`configureType()` wirkt auf das Schema-JSON. Es kontrolliert, welche Felder der Client sieht und welche Mutations er ausführen kann. Die Datensatz-Filterung (welche Rows zurückgegeben werden) gehört in `Resource::scope()` (Listen-Default) bzw. `Resource::authorize()` (Berechtigung). Mehr dazu unter [Resource-Sicht: scope() und authorize()](./resolver.md#resource-sicht-scope-und-authorize).
 :::
