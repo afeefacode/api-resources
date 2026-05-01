@@ -500,35 +500,31 @@ Wenn die `where`-Klausel wegfällt — entsteht ein Sicherheits- oder Compliance
 ### Beispiel: reine Berechtigung
 
 ```php
-class DebitorOrderResource extends ModelResource
+class CommentResource extends ModelResource
 {
     protected function authorize(Builder $query): void
     {
-        $debitorIds = $this->authService->getAccount()->account_roles
-            ->first()->objects->pluck('object_id');
-
-        $query->whereIn('debitor_id', $debitorIds);
+        $authorId = $this->authService->getAccount()->id;
+        $query->where('author_id', $authorId);
     }
 }
 ```
 
-- `list` zeigt nur Orders zu den eigenen Debitoren
-- `get(fremde_order_id)` → `NotFoundException`
-- `save(fremde_order_id)` → `NotFoundException` (kein Datensatz-Update an fremden Daten)
+- `list` zeigt nur eigene Comments
+- `get(fremde_comment_id)` → `NotFoundException`
+- `save(fremde_comment_id)` → `NotFoundException` (kein Update an fremden Daten)
 
 Eine `scope()`-Methode ist hier nicht nötig — `authorize()` allein bestimmt die Default-Liste.
 
 ### Beispiel: reiner List-Default mit Params
 
 ```php
-class DebitorResource extends ModelResource
+class ArticleResource extends ModelResource
 {
     protected function scope(Builder $query, array $params): void
     {
-        if ($params['customer_id'] ?? null) {
-            $query
-                ->leftJoin('sprint_customer_debitors as cd', 'cd.debitor_id', '=', 'sprint_debitors.id')
-                ->where('cd.customer_id', $params['customer_id']);
+        if ($params['author_id'] ?? null) {
+            $query->where('author_id', $params['author_id']);
         }
     }
 }
@@ -539,36 +535,38 @@ class DebitorResource extends ModelResource
 
 ### Beispiel: beides kombiniert
 
+Ein Redakteur sieht nur Artikel der ihm zugewiesenen Autor:innen. Auf der Listenseite kann er optional auf einen einzelnen Autor filtern.
+
 ```php
-class PsychSessionResource extends ModelResource
+class EditorArticleResource extends ModelResource
 {
     protected function params(ActionParams $params): void
     {
-        $params->attribute('client_id', IdAttribute::class);
+        $params->attribute('author_id', IdAttribute::class);
     }
 
-    // Berechtigung: nur Sessions zu zugewiesenen Klient:innen — gilt überall
+    // Berechtigung: nur Artikel zugewiesener Autor:innen — gilt überall
     protected function authorize(Builder $query): void
     {
-        $accountId = $this->authService->getAccount()->id;
-        $clientIds = ClientPsychologist::where('account_id', $accountId)->pluck('client_id');
-        $query->whereIn('client_id', $clientIds);
+        $editorId = $this->authService->getAccount()->id;
+        $authorIds = EditorAuthor::where('editor_id', $editorId)->pluck('author_id');
+        $query->whereIn('author_id', $authorIds);
     }
 
-    // List-UX: optionaler Filter auf einen einzelnen Klienten
+    // List-UX: optionaler Filter auf eine einzelne Autorin
     protected function scope(Builder $query, array $params): void
     {
-        if (isset($params['client_id'])) {
-            $query->where('client_id', $params['client_id']);
+        if (isset($params['author_id'])) {
+            $query->where('author_id', $params['author_id']);
         }
     }
 }
 ```
 
-- `list` ohne Param: alle Sessions der zugewiesenen Klient:innen
-- `list` mit `client_id=42`: Schnittmenge — wenn 42 nicht zugewiesen ist, leere Liste
-- `get(session_id)`: nur wenn die Session zu einer zugewiesenen Klient:in gehört, sonst 404
-- `save(session_id)`: gleicher Schutz
+- `list` ohne Param: alle Artikel zugewiesener Autor:innen
+- `list` mit `author_id=42`: Schnittmenge — wenn 42 nicht zugewiesen ist, leere Liste
+- `get(article_id)`: nur wenn der Artikel zu einer zugewiesenen Autorin gehört, sonst 404
+- `save(article_id)`: gleicher Schutz
 
 ### Default-Verhalten
 
