@@ -136,10 +136,10 @@ $r->get(function (array $owners) {
     $ids = array_map(fn ($o) => $o->id, $owners);
 
     $stats = DB::table('orders')
-        ->selectRaw('debitor_id, SUM(cost) as total, COUNT(*) as count')
-        ->whereIn('debitor_id', $ids)
-        ->groupBy('debitor_id')
-        ->get()->keyBy('debitor_id');
+        ->selectRaw('customer_id, SUM(cost) as total, COUNT(*) as count')
+        ->whereIn('customer_id', $ids)
+        ->groupBy('customer_id')
+        ->get()->keyBy('customer_id');
 
     // Direkt auf Owners setzen — kein map() nötig
     foreach ($owners as $owner) {
@@ -241,7 +241,7 @@ Die `get()`-Closure bekommt Hilfsfunktionen für optimierte Queries:
 
 ```php
 ->hasMany('recent_orders', OrderType::class)->on(READ)
-    ->resolve([SprintResolver::class, 'resolve_recent_orders'])
+    ->resolve([RelatedOrdersResolver::class, 'resolve_recent_orders'])
 ```
 
 ```php
@@ -251,11 +251,11 @@ public function resolve_recent_orders(QueryRelationResolver $r)
         $ids = array_map(fn ($o) => $o->id, $owners);
 
         $orders = Order::select($getSelectFields())
-            ->whereIn('sprint_id', $ids)
+            ->whereIn('customer_id', $ids)
             ->orderByDesc('date')
             ->limit(5)
             ->get()
-            ->groupBy('sprint_id');
+            ->groupBy('customer_id');
 
         // Verschachteltes Array: pro Owner ein Array von Orders
         return array_map(
@@ -285,14 +285,14 @@ class OrderResource extends ModelResource
 
         // Custom Query-Action
         $actions->query(
-            'sprint_other_orders',
+            'related_orders',
             Type::list(OrderType::class),
             function (Action $action) {
                 $action
                     ->params(function (ActionParams $params) {
                         $params
                             ->string('order_id')
-                            ->string('sprint_ids');
+                            ->string('customer_ids');
                     })
 
                     ->resolve(function (QueryActionResolver $r) {
@@ -301,10 +301,10 @@ class OrderResource extends ModelResource
                             Closure $getSelectFields
                         ) {
                             $order = Order::find($request->getParam('order_id'));
-                            $sprintIds = explode(',', $request->getParam('sprint_ids'));
+                            $customerIds = explode(',', $request->getParam('customer_ids'));
 
                             $orders = Order::select($getSelectFields())
-                                ->whereIn('sprint_id', $sprintIds)
+                                ->whereIn('customer_id', $customerIds)
                                 ->where('date', $order->date)
                                 ->where('id', '!=', $order->id)
                                 ->get()->all();
@@ -631,7 +631,7 @@ protected function afterResolve(?Model $order, stdClass $meta): void
     // Flag aus beforeResolve auswerten
     if ($meta->newCustomer ?? false) {
         // Post-Processing für neuen Kunden
-        CustomerResource::syncToOwnDebitorInstitution($order->customer);
+        CustomerResource::syncOwnInstitution($order->customer);
     }
 }
 ```
@@ -639,18 +639,18 @@ protected function afterResolve(?Model $order, stdClass $meta): void
 ### Beispiel: Defaults setzen nach CREATE
 
 ```php
-class DebitorResource extends ModelResource
+class InvoiceProfileResource extends ModelResource
 {
-    protected function afterAdd(Model $debitor, array $saveFields, stdClass $meta): void
+    protected function afterAdd(Model $profile, array $saveFields, stdClass $meta): void
     {
         // Rechnungslayout aus Config setzen
-        $layoutKey = $this->sprintConfig->get('default_invoice_layout_key');
-        $debitor->invoice_layout_id = InvoiceLayout::where('key', $layoutKey)->first()->id;
+        $layoutKey = $this->appConfig->get('default_invoice_layout_key');
+        $profile->invoice_layout_id = InvoiceLayout::where('key', $layoutKey)->first()->id;
 
-        $variationKey = $this->sprintConfig->get('default_invoice_variation_key');
-        $debitor->invoice_variation_id = InvoiceVariation::where('key', $variationKey)->first()->id;
+        $variationKey = $this->appConfig->get('default_invoice_variation_key');
+        $profile->invoice_variation_id = InvoiceVariation::where('key', $variationKey)->first()->id;
 
-        $debitor->save();
+        $profile->save();
     }
 }
 ```
@@ -674,20 +674,20 @@ protected function beforeAdd(Model $order, array $saveFields, stdClass $meta): a
 ```php
 protected function beforeResolve(array $params, ?array $data, stdClass $meta): array
 {
-    if (($params['id'] ?? null) && array_key_exists('own_debitor', $data ?? [])) {
+    if (($params['id'] ?? null) && array_key_exists('billing_account', $data ?? [])) {
         $customer = Customer::find($params['id']);
-        $meta->previousOwnDebitorId = $customer?->own_debitor_id;
+        $meta->previousBillingAccountId = $customer?->billing_account_id;
     }
     return [$params, $data];
 }
 
 protected function afterResolve(?Model $customer, stdClass $meta): void
 {
-    // own_debitor wurde entfernt → Debitor-Institution entkoppeln
-    $previousId = $meta->previousOwnDebitorId ?? null;
-    if ($previousId && !$customer?->own_debitor_id) {
-        $previousDebitor = Debitor::find($previousId);
-        CustomerResource::endSyncToOwnDebitorInstitution($previousDebitor);
+    // billing_account wurde entfernt → Account-Institution entkoppeln
+    $previousId = $meta->previousBillingAccountId ?? null;
+    if ($previousId && !$customer?->billing_account_id) {
+        $previousAccount = BillingAccount::find($previousId);
+        CustomerResource::endSyncOwnInstitution($previousAccount);
     }
 }
 ```

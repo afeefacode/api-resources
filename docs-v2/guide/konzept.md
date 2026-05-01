@@ -86,12 +86,12 @@ forOperation(UPDATE) → toV1Field(UPDATE) → StringAttribute mit Validator
 Neben der Type-Definition selbst können Types auf Api-Ebene konfiguriert werden — ohne Subclassing. `configureType()` in der Api-Klasse gibt einen `TypeConfigurator` zurück:
 
 ```php
-class DebitorApi extends Api
+class BlogApi extends Api
 {
     protected function configureTypes(): void
     {
-        $this->configureType(OrderType::class)
-            ->only(['date', 'customer', 'settlement'])
+        $this->configureType(ArticleType::class)
+            ->only(['date', 'author', 'summary'])
             ->readOnly();
     }
 }

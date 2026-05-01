@@ -5,17 +5,17 @@
 V2 Types sind generisch und wiederverwendbar. Oft braucht man aber pro Projekt oder Rolle eine andere Sicht auf denselben Type:
 
 - **Projekt 1** will `date_birth` als Pflichtfeld, **Projekt 2** will `phone` als Pflichtfeld
-- Ein **Debitor-Portal** soll nur 10 von 45 Feldern sehen und nichts ändern dürfen
-- Eine **OFEK-Api** fügt Felder hinzu *und* passt Validierung an
+- Ein **Lese-Portal** soll nur 10 von 45 Feldern sehen und nichts ändern dürfen
+- Eine **Projekt-A-Api** fügt Felder hinzu *und* passt Validierung an
 
-Die naheliegende Lösung — Type-Subclasses pro Projekt oder Rolle — führt zu Explosion: `DebitorOrderType`, `DebitorSprintType`, `Projekt1PersonType`, `Projekt2PersonType`, ...
+Die naheliegende Lösung — Type-Subclasses pro Projekt oder Rolle — führt zu Explosion: `PortalOrderType`, `PortalIssueType`, `ProjectOnePersonType`, `ProjectTwoPersonType`, ...
 
 ## Die Lösung: `configureType()`
 
 Die Api kann Types konfigurieren, ohne sie zu subclassen. In `configureTypes()` werden die Konfigurationen deklarativ festgelegt:
 
 ```php
-class DebitorApi extends Api
+class PortalApi extends Api
 {
     protected function configureTypes(): void
     {
@@ -91,32 +91,32 @@ Nur für CREATE.
 ### Rollen-Einschränkung (only + readOnly)
 
 ```php
-class DebitorApi extends Api
+class PortalApi extends Api
 {
     protected function configureTypes(): void
     {
         $this->configureType(OrderType::class)
             ->only([
-                'date', 'language', 'customer', 'orderer', 'debitor',
-                'accepted_or_withdrawn_canceled_sprint', 'settlement',
+                'date', 'language', 'customer', 'orderer', 'billing_account',
+                'confirmed_or_canceled', 'settlement',
                 'appointments', 'appointment_type', 'order_status',
             ])
             ->readOnly();
 
-        $this->configureType(SprintType::class)
+        $this->configureType(EditionType::class)
             ->only(['note', 'person'])
             ->readOnly();
     }
 }
 ```
 
-Kein `DebitorOrderType` oder `DebitorSprintType` mehr nötig.
+Kein `PortalOrderType` oder `PortalEditionType` mehr nötig.
 
 ### Projektspezifische Validierung
 
 ```php
 // Projekt 1: Geburtstag Pflicht
-class Projekt1Api extends Api
+class ProjectOneApi extends Api
 {
     protected function configureTypes(): void
     {
@@ -126,7 +126,7 @@ class Projekt1Api extends Api
 }
 
 // Projekt 2: Telefon Pflicht
-class Projekt2Api extends Api
+class ProjectTwoApi extends Api
 {
     protected function configureTypes(): void
     {
@@ -139,7 +139,7 @@ class Projekt2Api extends Api
 ### Kombination
 
 ```php
-class DebitorProjekt1Api extends Api
+class ProjectOnePortalApi extends Api
 {
     protected function configureTypes(): void
     {
@@ -160,12 +160,12 @@ class DebitorProjekt1Api extends Api
 Wenn Fields *hinzugefügt* werden müssen, bleibt `overrideTypes()` sinnvoll. Beide Mechanismen ergänzen sich:
 
 ```php
-class OfekApi extends Api
+class ProjectAApi extends Api
 {
     // Fields hinzufügen → weiterhin via Type-Vererbung
     protected function overrideTypes(): array
     {
-        return [ClientType::type() => OfekClientType::class];
+        return [AuthorType::type() => ProjectAAuthorType::class];
     }
 
     // Validierung anpassen → Api-Level
