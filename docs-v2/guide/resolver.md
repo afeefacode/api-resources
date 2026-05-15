@@ -467,17 +467,29 @@ Gut für einfache Fälle. Der Type-Hint im Parameter bestimmt den Resolver-Typ.
 | Hook | Signatur | Greift in | Failure | Semantik |
 |------|----------|-----------|---------|----------|
 | `scope($query, $params)` | `Builder, array` | nur `list` | unsichtbar (Liste schrumpft) | List-Default — definiert die Bezugsmenge der Liste, in die `count_all`, Filter und Search hineinwirken. Darf `$params` lesen. |
-| `authorize($query)` | `Builder` | `list` + `get` + `save` | `NotFoundException` in `get`/`save` | Berechtigung — was der Account überhaupt sehen oder ändern darf, unabhängig vom Aufrufpfad. |
+| `authorize($query)` | `Builder` | `list` + `get` + `save` (alle Pfade) | `NotFoundException` in `get`/`save` | Berechtigung — was der Account überhaupt sehen oder ändern darf, unabhängig vom Aufrufpfad. |
 
 ```text
-list:  data = DB ∩ authorize ∩ scope ∩ filter ∩ search
-       count_all   = |DB ∩ authorize ∩ scope|
-       count_filter = |DB ∩ authorize ∩ scope ∩ filter|
+list:    data = DB ∩ authorize ∩ scope ∩ filter ∩ search
+         count_all   = |DB ∩ authorize ∩ scope|
+         count_filter = |DB ∩ authorize ∩ scope ∩ filter|
 
-get:   DB ∩ authorize ∩ where('id', $id)   →  Model oder NotFoundException
+get:     DB ∩ authorize ∩ where('id', $id)   →  Model oder NotFoundException
 
-save:  DB ∩ authorize ∩ where('id', $id)   →  Model oder NotFoundException
+save (update/delete):
+  1. pre-state:  DB ∩ authorize ∩ where('id', $id)   →  Model oder NotFoundException
+  2. post-state (nur update): DB ∩ authorize ∩ where('id', $id) gegen den geänderten
+                Datensatz innerhalb derselben Transaktion. Schlägt der Check fehl,
+                wird NotFoundException geworfen und die Transaktion rollt zurück.
+
+save (add):
+  post-state:   DB ∩ authorize ∩ where('id', $newId) gegen den frisch angelegten
+                Datensatz innerhalb derselben Transaktion. Schlägt der Check fehl,
+                wird NotFoundException geworfen und die Transaktion rollt zurück —
+                der Datensatz existiert am Ende nicht.
 ```
+
+Die post-state-Prüfungen sorgen dafür, dass die `authorize()`-Regel **symmetrisch** für jede Operation gilt: ein Datensatz darf nur dann angelegt oder verändert werden, wenn sein Endzustand für den Account erreichbar bleibt. Damit lässt sich z.B. nicht über `save(add)` ein Datensatz mit fremdem Mandanten-FK platzieren, selbst wenn der direkte API-Aufruf das nicht über die UI bietet.
 
 ### Wann `scope()`, wann `authorize()`?
 
@@ -513,6 +525,8 @@ class CommentResource extends ModelResource
 - `list` zeigt nur eigene Comments
 - `get(fremde_comment_id)` → `NotFoundException`
 - `save(fremde_comment_id)` → `NotFoundException` (kein Update an fremden Daten)
+- `save(add)` mit `author_id` = fremder Account → `NotFoundException` (post-state-Check, Transaktion rollt zurück, kein Eintrag in der DB)
+- `save(update)` mit Mutation, die `author_id` auf einen fremden Account ändert → `NotFoundException` (post-state-Check, Original bleibt unverändert)
 
 Eine `scope()`-Methode ist hier nicht nötig — `authorize()` allein bestimmt die Default-Liste.
 

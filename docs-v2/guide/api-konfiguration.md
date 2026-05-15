@@ -186,7 +186,7 @@ class ProjectAApi extends Api
 | `configureType()->field()->onMutation()` | Validierung/Required überschreiben |
 | `overrideTypes()` | Fields hinzufügen oder Type komplett ersetzen |
 | Resource `scope()` | List-Default: welche Datensätze die Liste per Default zeigt (nur `list`) |
-| Resource `authorize()` | Berechtigung: welche Datensätze der Account überhaupt sehen/ändern darf (in `list`, `get`, `save`) |
+| Resource `authorize()` | Berechtigung: welche Datensätze der Account überhaupt sehen/ändern darf — greift in `list`, `get` und allen `save`-Pfaden (pre-state vor `update`/`delete`, post-state nach `add` und `update`) |
 
 ::: tip
 `configureType()` wirkt auf das Schema-JSON. Es kontrolliert, welche Felder der Client sieht und welche Mutations er ausführen kann. Die Datensatz-Filterung (welche Rows zurückgegeben werden) gehört in `Resource::scope()` (Listen-Default) bzw. `Resource::authorize()` (Berechtigung). Mehr dazu unter [Resource-Sicht: scope() und authorize()](./resolver.md#resource-sicht-scope-und-authorize).
