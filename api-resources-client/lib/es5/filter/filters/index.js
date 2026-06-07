@@ -3,6 +3,7 @@ import { KeywordFilter } from './KeywordFilter';
 import { OrderFilter } from './OrderFilter';
 import { PageFilter } from './PageFilter';
 import { PageSizeFilter } from './PageSizeFilter';
+import { PolarizedSelectFilter } from './PolarizedSelectFilter';
 import { SelectFilter } from './SelectFilter';
 export const filters = [
     new PageFilter(),
@@ -10,5 +11,6 @@ export const filters = [
     new KeywordFilter(),
     new OrderFilter(),
     new SelectFilter(),
+    new PolarizedSelectFilter(),
     new DateFilter()
 ];
