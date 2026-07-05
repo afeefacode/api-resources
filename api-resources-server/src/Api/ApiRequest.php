@@ -218,8 +218,10 @@ class ApiRequest implements ContainerAwareInterface, ToSchemaJsonInterface, Json
     public function unbounded(?int $pageSize = null, ?int $limit = null): ApiRequest
     {
         $this->unbounded = true;
-        $this->unboundedPageSize = $pageSize;
-        $this->unboundedLimit = $limit;
+        // Guard against < 1 (e.g. a legacy bool call coerced to 0/1 without
+        // strict_types): a page size of 0 would divide by zero in pageToLimit().
+        $this->unboundedPageSize = $pageSize === null ? null : max($pageSize, 1);
+        $this->unboundedLimit = $limit === null ? null : max($limit, 1);
         return $this;
     }
 

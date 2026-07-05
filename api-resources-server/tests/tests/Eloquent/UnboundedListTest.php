@@ -111,6 +111,27 @@ class UnboundedListTest extends ApiResourcesEloquentTest
         $this->assertEquals(60, $page1['meta']['count_all']);
     }
 
+    /**
+     * A page size below 1 (e.g. a legacy bool call like unbounded(false) coerced
+     * to 0 without strict_types) must not divide by zero — it is clamped to 1.
+     */
+    public function test_unbounded_page_size_below_one_is_clamped()
+    {
+        Author::factory()->count(5)->create();
+
+        $api = (new ApiResources())->getApi(BlogApi::class);
+
+        $result = $api->newRequest(fn (ApiRequest $request) => $request
+            ->resourceType('Blog.AuthorResource')
+            ->actionName('list')
+            ->fields(['name' => true])
+            ->unbounded(0));
+
+        // Clamped to page size 1 → first page returns exactly 1 row, no error.
+        $this->assertCount(1, $result['data']);
+        $this->assertEquals(5, $result['meta']['count_search']);
+    }
+
     public function test_normal_list_stays_paginated()
     {
         Author::factory()->count(60)->create();
