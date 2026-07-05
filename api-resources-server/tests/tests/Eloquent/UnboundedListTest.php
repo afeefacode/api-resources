@@ -61,6 +61,56 @@ class UnboundedListTest extends ApiResourcesEloquentTest
         $this->assertEquals(15, $meta['used_filters']['page_size']);
     }
 
+    public function test_unbounded_page_size_bypasses_the_whitelist()
+    {
+        Author::factory()->count(60)->create();
+
+        $api = (new ApiResources())->getApi(BlogApi::class);
+
+        // 25 is not in the page size whitelist [15, 30, 50]; unbounded() lets the
+        // server use it anyway, still paginating (page 1 → first 25 rows).
+        $result = $api->newRequest(fn (ApiRequest $request) => $request
+            ->resourceType('Blog.AuthorResource')
+            ->actionName('list')
+            ->fields(['name' => true])
+            ->unbounded(25));
+
+        ['data' => $data, 'meta' => $meta] = $result;
+
+        $this->assertCount(25, $data);
+        $this->assertEquals(25, $meta['used_filters']['page_size']);
+    }
+
+    public function test_unbounded_limit_caps_the_total_rows()
+    {
+        Author::factory()->count(60)->create();
+
+        $api = (new ApiResources())->getApi(BlogApi::class);
+
+        // Page through in steps of 25 with a hard total cap of 40 rows.
+        $page1 = $api->newRequest(fn (ApiRequest $request) => $request
+            ->resourceType('Blog.AuthorResource')
+            ->actionName('list')
+            ->filters(['page' => 1])
+            ->fields(['name' => true])
+            ->unbounded(25, 40));
+
+        $page2 = $api->newRequest(fn (ApiRequest $request) => $request
+            ->resourceType('Blog.AuthorResource')
+            ->actionName('list')
+            ->filters(['page' => 2])
+            ->fields(['name' => true])
+            ->unbounded(25, 40));
+
+        // Page 1: rows 0–24 (full 25). Page 2: rows 25–39 only (15), capped at 40.
+        $this->assertCount(25, $page1['data']);
+        $this->assertCount(15, $page2['data']);
+
+        // The cap must NOT distort the counts — count_search stays the true total.
+        $this->assertEquals(60, $page1['meta']['count_search']);
+        $this->assertEquals(60, $page1['meta']['count_all']);
+    }
+
     public function test_normal_list_stays_paginated()
     {
         Author::factory()->count(60)->create();
