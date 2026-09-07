@@ -41,6 +41,7 @@ class Api implements ContainerAwareInterface
 
         $this->overriddenTypes = $this->overrideTypes();
         $this->configureTypes();
+        $this->configureAuth();
     }
 
     public function debug($debug = true): static
@@ -188,6 +189,28 @@ class Api implements ContainerAwareInterface
         return $this->typeConfigurators[$typeName];
     }
 
+    /**
+     * Registers the authorization rules of a type.
+     *
+     * $all is a shorthand for read + write, so a rule that describes a plain
+     * data scope is a single call. A repeated call for the same type returns
+     * the same configurator and adds to it, just like configureType(): a
+     * library registers its rule, a project refines it, neither erases the
+     * other. Replacing instead of refining is AuthConfigurator::reset().
+     */
+    public function authorize(string $typeClass, ?Closure $all = null): AuthConfigurator
+    {
+        $configurator = $this->container->get(Authorizator::class)->configure($typeClass);
+
+        if ($all) {
+            $configurator
+                ->read($all)
+                ->write($all);
+        }
+
+        return $configurator;
+    }
+
     protected function resources(ResourceBag $resources): void
     {
     }
@@ -198,6 +221,10 @@ class Api implements ContainerAwareInterface
     }
 
     protected function configureTypes(): void
+    {
+    }
+
+    protected function configureAuth(): void
     {
     }
 
