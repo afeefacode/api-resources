@@ -315,6 +315,45 @@ class ApiAuthorizeSaveTest extends ApiResourcesAuthorizeTest
         $this->assertEquals([$tags[0]->id, $tags[1]->id], Author::find($author->id)->tags()->pluck('tags.id')->all());
     }
 
+    public function test_an_unreadable_belongs_to_link_is_replaced_anyway()
+    {
+        $author = Author::factory()->create(['name' => 'ok one']);
+        $blockedTag = Tag::factory()->create(['name' => 'blocked tag']);
+        $okTag = Tag::factory()->create(['name' => 'ok tag']);
+        $author->featured_tag_id = $blockedTag->id;
+        $author->save();
+
+        // Counterpart to the case above: here the foreign key sits in the owner
+        // row itself, so replacing it is a change to the owner and gets written
+        // over regardless of whether the previous target was visible.
+        $this->request($this->onlyOkTags(), $this->saveAuthor($author->id, [
+            'featured_tag' => ['id' => $okTag->id]
+        ]));
+
+        $this->assertEquals($okTag->id, Author::find($author->id)->featured_tag_id);
+    }
+
+    public function test_replacing_a_belongs_to_link_falls_under_the_update_slot_of_the_owner()
+    {
+        $author = Author::factory()->create(['name' => 'ok one']);
+        $blockedTag = Tag::factory()->create(['name' => 'blocked tag']);
+        $okTag = Tag::factory()->create(['name' => 'ok tag']);
+        $author->featured_tag_id = $blockedTag->id;
+        $author->save();
+
+        $this->expectException(NotFoundException::class);
+
+        try {
+            $this->request(
+                fn (Api $api) => $api->authorize(AuthorType::class)
+                    ->update(fn (EloquentAuthContext $c) => $c->deny()),
+                $this->saveAuthor($author->id, ['featured_tag' => ['id' => $okTag->id]])
+            );
+        } finally {
+            $this->assertEquals($blockedTag->id, Author::find($author->id)->featured_tag_id);
+        }
+    }
+
     // documented misconfiguration
 
     public function test_create_allowed_and_read_blocked_writes_the_row_and_answers_not_found()
@@ -415,6 +454,14 @@ class ApiAuthorizeSaveTest extends ApiResourcesAuthorizeTest
     {
         return fn (Api $api) => $api->authorize(
             AuthorType::class,
+            fn (EloquentAuthContext $c) => $c->query()->where('name', 'like', 'ok%')
+        );
+    }
+
+    protected function onlyOkTags(): callable
+    {
+        return fn (Api $api) => $api->authorize(
+            TagType::class,
             fn (EloquentAuthContext $c) => $c->query()->where('name', 'like', 'ok%')
         );
     }
