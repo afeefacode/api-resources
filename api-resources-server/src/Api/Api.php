@@ -29,6 +29,9 @@ class Api implements ContainerAwareInterface
     /** @var TypeConfigurator[] */
     protected array $typeConfigurators = [];
 
+    /** @var array<int, true> spl_object_id of every type instance already configured */
+    protected array $configuredTypeObjectIds = [];
+
     public function created(): void
     {
         $this->container->registerAlias($this, self::class);
@@ -112,11 +115,7 @@ class Api implements ContainerAwareInterface
             ->overrideTypes($this->overriddenTypes)
             ->createUsedTypesForApi($this);
 
-        foreach ($this->typeConfigurators as $typeName => $configurator) {
-            if (isset($usedTypes[$typeName])) {
-                $configurator->apply($usedTypes[$typeName]);
-            }
-        }
+        $this->applyTypeConfigurators($usedTypes);
 
         $usedValidators = $this->createAllUsedValidators($usedTypes);
 
@@ -144,6 +143,38 @@ class Api implements ContainerAwareInterface
             'types' => $types,
             'validators' => $validators
         ];
+    }
+
+    /**
+     * Applies the configuration collected in configureTypes() to the given type
+     * instances.
+     *
+     * Called from toSchemaJson() and from ApiRequest::dispatch(): the configuration
+     * has to reach the same type instances the resolvers read their field bags from,
+     * otherwise a field excluded via write(false) would disappear from the schema but
+     * stay writable in a save request.
+     *
+     * Types are container singletons, and the operations are not idempotent (removing
+     * an already removed field throws), so each instance is configured only once.
+     *
+     * @param Type[] $types keyed by type name
+     */
+    public function applyTypeConfigurators(array $types): void
+    {
+        foreach ($this->typeConfigurators as $typeName => $configurator) {
+            if (!isset($types[$typeName])) {
+                continue;
+            }
+
+            $type = $types[$typeName];
+            $objectId = spl_object_id($type);
+            if (isset($this->configuredTypeObjectIds[$objectId])) {
+                continue;
+            }
+
+            $configurator->apply($type);
+            $this->configuredTypeObjectIds[$objectId] = true;
+        }
     }
 
     public function configureType(string $typeClass): TypeConfigurator
