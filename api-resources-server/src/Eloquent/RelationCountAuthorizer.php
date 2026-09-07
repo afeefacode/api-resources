@@ -24,9 +24,12 @@ class RelationCountAuthorizer
         $typeNames = $relation->getRelatedType()->getAllTypeNames();
 
         return function (EloquentBuilder $query) use ($authorizator, $typeNames): void {
-            // More than one possible target type means the rows counted in this
-            // single subquery belong to different types - there is no one rule
-            // to apply. Eloquent cannot count such a relation anyway.
+            // Nothing to do for more than one possible target type: a relation
+            // that may point at several types is a MorphTo, and Eloquent cannot
+            // count one. withCount() builds its subquery from a single related
+            // model, which a MorphTo does not have - the resulting statement
+            // compares an empty column and the database rejects it. The count
+            // never reaches a rule, with or without one.
             if (!$authorizator || count($typeNames) !== 1) {
                 return;
             }
