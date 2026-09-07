@@ -100,7 +100,7 @@ class ModelRelationResolver
                                 $authorizator->applyAuthorizeForTypeName(
                                     $typeName,
                                     Operation::READ,
-                                    new EloquentAuthContext($relation)
+                                    new EloquentAuthContext($relation, $this->getTargetTable($relation, $typeName))
                                 );
                             }
                         )
@@ -154,7 +154,8 @@ class ModelRelationResolver
             ->get(function (Model $owner) use ($r, $authorizator) {
                 $eloquentRelation = $this->getEloquentRelationWrapper($r->getRelation(), $owner)->relation();
                 $this->authorizeRelationQuery($authorizator, $r->getRelation(), $eloquentRelation);
-                return $eloquentRelation->get()->first();
+                $related = $eloquentRelation->get()->all();
+                return $this->filterAuthorizedRelated($authorizator, $r->getRelation(), $related)[0] ?? null;
             })
             ->add(function (Model $owner, string $typeName, array $saveFields) use ($r, $authorizator) {
                 $eloquentRelation = $this->getEloquentRelationWrapper($r->getRelation(), $owner)->relation();
@@ -204,7 +205,7 @@ class ModelRelationResolver
             ->get(function (Model $owner) use ($r, $authorizator) {
                 $eloquentRelation = $this->getEloquentRelationWrapper($r->getRelation(), $owner)->relation();
                 $this->authorizeRelationQuery($authorizator, $r->getRelation(), $eloquentRelation);
-                return $eloquentRelation->get()->all();
+                return $this->filterAuthorizedRelated($authorizator, $r->getRelation(), $eloquentRelation->get()->all());
             })
             ->add(function (Model $owner, string $typeName, array $saveFields) use ($r, $authorizator) {
                 $eloquentRelation = $this->getEloquentRelationWrapper($r->getRelation(), $owner)->relation();
@@ -254,9 +255,14 @@ class ModelRelationResolver
             ->get(function (Model $owner) use ($r, $authorizator) {
                 $eloquentRelation = $this->getEloquentRelationWrapper($r->getRelation(), $owner)->relation();
                 // A link the read rule does not reach does not show up here and
-                // is therefore not unlinked either.
+                // is therefore not unlinked either. Say a client has counselors 7
+                // and 12 attached, and 12 belongs to a team the current account
+                // cannot see. Account 7 saves the client with its own counselor
+                // list, 12 is missing from the payload - unfiltered, the save
+                // would detach a link the account does not even know about.
                 $this->authorizeRelationQuery($authorizator, $r->getRelation(), $eloquentRelation);
-                return $eloquentRelation->first();
+                $related = $eloquentRelation->first();
+                return $this->filterAuthorizedRelated($authorizator, $r->getRelation(), $related ? [$related] : [])[0] ?? null;
             })
             ->exists(function (string $id, string $typeName) use ($r, $authorizator) {
                 $RelatedClass = EloquentRelation::getMorphedModel($typeName);
@@ -289,9 +295,13 @@ class ModelRelationResolver
             ->get(function (Model $owner) use ($r, $authorizator) {
                 $eloquentRelation = $this->getEloquentRelationWrapper($r->getRelation(), $owner)->relation();
                 // A link the read rule does not reach does not show up here and
-                // is therefore not unlinked either.
+                // is therefore not unlinked either. Say a client has counselors 7
+                // and 12 attached, and 12 belongs to a team the current account
+                // cannot see. Account 7 saves the client with its own counselor
+                // list, 12 is missing from the payload - unfiltered, the save
+                // would detach a link the account does not even know about.
                 $this->authorizeRelationQuery($authorizator, $r->getRelation(), $eloquentRelation);
-                return $eloquentRelation->get()->all();
+                return $this->filterAuthorizedRelated($authorizator, $r->getRelation(), $eloquentRelation->get()->all());
             })
             ->exists(function (string $id, string $typeName) use ($r, $authorizator) {
                 $eloquentRelation = $this->getEloquentRelationWrapper($r->getRelation())->relation();
@@ -312,28 +322,109 @@ class ModelRelationResolver
     }
 
     /**
+     * The table the rule of $typeName will run against, or null when the query
+     * carries it itself.
+     *
+     * A MorphTo splits into one query per type only when it is loaded, and
+     * until then it sits on the query of its parent - its from part names the
+     * owner table, not the target. Here the type is already known, because the
+     * owners were sorted by it beforehand.
+     */
+    protected function getTargetTable(EloquentRelation $eloquentRelation, string $typeName): ?string
+    {
+        if (!$eloquentRelation instanceof MorphTo) {
+            return null;
+        }
+
+        $RelatedClass = EloquentRelation::getMorphedModel($typeName);
+
+        return $RelatedClass ? (new $RelatedClass())->getTable() : null;
+    }
+
+    /**
      * Adds the read rule of the relation target to a relation query.
      *
-     * Skipped as soon as more than one target type is possible: which rule
-     * applies is only known once the rows are loaded, and there is no single
-     * query to hang it on.
+     * Only possible while the target type is unique. May the relation point at
+     * several types, which rule applies is not known before the rows are there
+     * - filterAuthorizedRelated() takes over afterwards.
      */
     protected function authorizeRelationQuery(?Authorizator $authorizator, Relation $relation, EloquentRelation $eloquentRelation): void
     {
-        if (!$authorizator) {
-            return;
-        }
-
-        $typeNames = $relation->getRelatedType()->getAllTypeNames();
-        if (count($typeNames) !== 1) {
+        if (!$authorizator || !$this->hasUniqueTargetType($relation)) {
             return;
         }
 
         $authorizator->applyAuthorizeForTypeName(
-            $typeNames[0],
+            $relation->getRelatedType()->getAllTypeNames()[0],
             Operation::READ,
             new EloquentAuthContext($eloquentRelation)
         );
+    }
+
+    /**
+     * Drops the loaded rows the read rule of their own type does not reach.
+     *
+     * The counterpart of authorizeRelationQuery() for a relation with more than
+     * one possible target type: every row brings its type, so the rule can be
+     * looked up per row - but it is asked once per type that actually occurred,
+     * with the ids of that group, not once per row.
+     *
+     * @param ModelInterface[] $models
+     * @return ModelInterface[]
+     */
+    protected function filterAuthorizedRelated(?Authorizator $authorizator, Relation $relation, array $models): array
+    {
+        if (!$authorizator || !count($models) || $this->hasUniqueTargetType($relation)) {
+            return $models; // unique target type: already narrowed in the query
+        }
+
+        $blocked = [];
+
+        foreach ($this->sortRelatedByType($models) as $typeName => $modelsOfType) {
+            if (!$authorizator->hasAuthorize($typeName, Operation::READ)) {
+                continue;
+            }
+
+            $query = $modelsOfType[0]->newQuery();
+            $authorizator->applyAuthorizeForTypeName($typeName, Operation::READ, new EloquentAuthContext($query));
+
+            $keyName = $modelsOfType[0]->getQualifiedKeyName();
+            $keys = array_map(fn (Model $model) => $model->getKey(), $modelsOfType);
+            $reachable = $query->whereIn($keyName, $keys)->pluck($keyName)->all();
+
+            foreach ($modelsOfType as $model) {
+                if (!in_array($model->getKey(), $reachable)) {
+                    $blocked[$typeName][$model->getKey()] = true;
+                }
+            }
+        }
+
+        if (!count($blocked)) {
+            return $models;
+        }
+
+        return array_values(array_filter(
+            $models,
+            fn (ModelInterface $model) => !isset($blocked[$model->apiResourcesGetType()][$model->apiResourcesGetId()])
+        ));
+    }
+
+    protected function hasUniqueTargetType(Relation $relation): bool
+    {
+        return count($relation->getRelatedType()->getAllTypeNames()) === 1;
+    }
+
+    /**
+     * @param ModelInterface[] $models
+     * @return array<string, Model[]>
+     */
+    protected function sortRelatedByType(array $models): array
+    {
+        $modelsByType = [];
+        foreach ($models as $model) {
+            $modelsByType[$model->apiResourcesGetType()][] = $model;
+        }
+        return $modelsByType;
     }
 
     /**

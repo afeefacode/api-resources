@@ -15,8 +15,14 @@ use Illuminate\Database\Query\Expression;
  */
 class EloquentAuthContext extends AuthContext
 {
+    /**
+     * $tablePrefix names the target table explicitly, for the paths where the
+     * query does not carry it: a MorphTo whose type is not resolved yet sits on
+     * the query of its parent, so its from part names the owner table.
+     */
     public function __construct(
-        protected EloquentBuilder|EloquentRelation $query
+        protected EloquentBuilder|EloquentRelation $query,
+        protected ?string $tablePrefix = null
     ) {
     }
 
@@ -43,6 +49,10 @@ class EloquentAuthContext extends AuthContext
      */
     public function getTablePrefix(): string
     {
+        if ($this->tablePrefix !== null) {
+            return $this->tablePrefix;
+        }
+
         $query = $this->query instanceof EloquentRelation
             ? $this->query->getQuery()
             : $this->query;
