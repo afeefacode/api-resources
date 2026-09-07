@@ -8,6 +8,8 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\MorphTo;
 use Illuminate\Database\Eloquent\Relations\Relation;
 
+use Closure;
+
 class Builder extends EloquentBuilder
 {
     public function __construct(Model $owner)
@@ -24,10 +26,18 @@ class Builder extends EloquentBuilder
      * - to return the result set
      *
      * @see parent::eagerLoadRelation()
+     *
+     * $authorize receives the relation and adds the authorization rule of the
+     * related type to it. It runs inside the with() closure so its conditions
+     * end up on the relation query, not on the owner query.
      */
-    public function afeefaEagerLoadRelation(array $models, string $relationName, array $selectFields, array $relationCounts, array $params)
+    public function afeefaEagerLoadRelation(array $models, string $relationName, array $selectFields, array $relationCounts, array $params, ?Closure $authorize = null)
     {
-        $this->with($relationName, function (Relation $relation) use ($selectFields, $relationCounts, $params) {
+        $this->with($relationName, function (Relation $relation) use ($selectFields, $relationCounts, $params, $authorize) {
+            if ($authorize) {
+                $authorize($relation);
+            }
+
             // do not alias columns which are morphed to
             if (!$relation instanceof MorphTo) {
                 $relatedTable = $relation->getRelated()->getTable();
