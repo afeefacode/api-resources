@@ -112,9 +112,9 @@ class Api implements ContainerAwareInterface
             ->overrideTypes($this->overriddenTypes)
             ->createUsedTypesForApi($this);
 
-        foreach ($this->typeConfigurators as $typeClass => $configurator) {
-            if (isset($usedTypes[$typeClass])) {
-                $configurator->apply($usedTypes[$typeClass]);
+        foreach ($this->typeConfigurators as $type => $configurator) {
+            if (isset($usedTypes[$type])) {
+                $configurator->apply($usedTypes[$type]);
             }
         }
 
@@ -148,10 +148,13 @@ class Api implements ContainerAwareInterface
 
     public function configureType(string $typeClass): TypeConfigurator
     {
-        if (!isset($this->typeConfigurators[$typeClass])) {
-            $this->typeConfigurators[$typeClass] = new TypeConfigurator();
+        // Keyed by type string, not by class: a project may swap the class for this
+        // type via overrideTypes(), and the configuration has to follow the type.
+        $type = $typeClass::type();
+        if (!isset($this->typeConfigurators[$type])) {
+            $this->typeConfigurators[$type] = new TypeConfigurator();
         }
-        return $this->typeConfigurators[$typeClass];
+        return $this->typeConfigurators[$type];
     }
 
     protected function resources(ResourceBag $resources): void
