@@ -326,7 +326,7 @@ class SimpleListAction extends Action
                 if (preg_match('/^count_(.+)/', $fieldName, $matches)) {
                     $countRelationName = $matches[1];
                     if ($type->hasRelation($countRelationName)) {
-                        $isEloquentRelationResolver = $this->type->getRelation($countRelationName)->getResolveParam('is_eloquent_relation');
+                        $isEloquentRelationResolver = $type->getRelation($countRelationName)->getResolveParam('is_eloquent_relation');
                         if ($isEloquentRelationResolver) {
                             $relationCounts[] = $countRelationName . ' as count_' . $countRelationName;
                         }
