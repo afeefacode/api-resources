@@ -221,7 +221,7 @@ class Api implements ContainerAwareInterface
             $resource = $this->resources->has($resourceType) ? $this->resources->get($resourceType) : null;
             $configurator = $authorizator->configureResource($TypeOrResourceClass, $resource);
         } elseif (is_subclass_of($TypeOrResourceClass, Type::class)) {
-            $configurator = $authorizator->configure($TypeOrResourceClass);
+            $configurator = $authorizator->configureType($TypeOrResourceClass);
         } else {
             throw new InvalidConfigurationException(
                 'authorize() takes a type or a resource, ' . $TypeOrResourceClass . ' is neither.'

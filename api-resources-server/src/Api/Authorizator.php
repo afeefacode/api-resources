@@ -39,7 +39,7 @@ class Authorizator implements ContainerAwareInterface
      *
      * @internal registration goes through Api::authorize()
      */
-    public function configure(string $typeClass): AuthConfigurator
+    public function configureType(string $typeClass): AuthConfigurator
     {
         $typeName = $typeClass::type();
         if (!isset($this->configurators[$typeName])) {
@@ -73,21 +73,21 @@ class Authorizator implements ContainerAwareInterface
      * works with Eloquent builds an EloquentAuthContext around their query,
      * every other data source brings its own context.
      */
-    public function applyAuthorize(string $typeClass, Operation $operation, AuthContext $context): void
+    public function applyAuthorizeType(string $typeClass, Operation $operation, AuthContext $context): void
     {
-        $this->applyAuthorizeForTypeName($typeClass::type(), $operation, $context);
+        $this->applyAuthorizeTypeByName($typeClass::type(), $operation, $context);
     }
 
     /**
-     * Same as applyAuthorize(), for paths that only know the type string - a
+     * Same as applyAuthorizeType(), for paths that only know the type string - a
      * nested read knows its target type by name, a saved model carries it in
      * Model::$type.
      *
      * @internal
      */
-    public function applyAuthorizeForTypeName(string $typeName, Operation $operation, AuthContext $context): void
+    public function applyAuthorizeTypeByName(string $typeName, Operation $operation, AuthContext $context): void
     {
-        $this->runRule($this->getAuthorize($typeName, $operation), $typeName, $context);
+        $this->runRule($this->getTypeAuthorize($typeName, $operation), $typeName, $context);
     }
 
     /**
@@ -99,7 +99,7 @@ class Authorizator implements ContainerAwareInterface
      */
     public function applyAuthorizeResource(string $ResourceClass, Operation $operation, AuthContext $context): void
     {
-        $this->applyAuthorizeForResourceType($ResourceClass::type(), $operation, $context);
+        $this->applyAuthorizeResourceByName($ResourceClass::type(), $operation, $context);
     }
 
     /**
@@ -108,7 +108,7 @@ class Authorizator implements ContainerAwareInterface
      *
      * @internal
      */
-    public function applyAuthorizeForResourceType(string $resourceType, Operation $operation, AuthContext $context): void
+    public function applyAuthorizeResourceByName(string $resourceType, Operation $operation, AuthContext $context): void
     {
         $this->runRule($this->getResourceAuthorize($resourceType, $operation), $resourceType, $context);
     }
@@ -189,7 +189,7 @@ class Authorizator implements ContainerAwareInterface
      *
      * @internal
      */
-    public function getAuthorize(string $typeName, Operation $operation): ?AuthRule
+    public function getTypeAuthorize(string $typeName, Operation $operation): ?AuthRule
     {
         return ($this->configurators[$typeName] ?? null)?->getRule($operation);
     }
@@ -197,9 +197,9 @@ class Authorizator implements ContainerAwareInterface
     /**
      * Whether the slot was closed with false, e.g. create(false).
      */
-    public function isForbidden(string $typeName, Operation $operation): bool
+    public function isTypeForbidden(string $typeName, Operation $operation): bool
     {
-        return $this->getAuthorize($typeName, $operation)?->isForbidden() ?? false;
+        return $this->getTypeAuthorize($typeName, $operation)?->isForbidden() ?? false;
     }
 
     /**
@@ -209,16 +209,16 @@ class Authorizator implements ContainerAwareInterface
      *
      * @internal called by the resolvers in front of add, update and delete
      */
-    public function assertNotForbidden(string $typeName, Operation $operation): void
+    public function assertTypeNotForbidden(string $typeName, Operation $operation): void
     {
-        if ($this->isForbidden($typeName, $operation)) {
+        if ($this->isTypeForbidden($typeName, $operation)) {
             throw new NotFoundException('Model not found');
         }
     }
 
-    public function hasAuthorize(string $typeName, Operation $operation): bool
+    public function hasTypeAuthorize(string $typeName, Operation $operation): bool
     {
-        return $this->getAuthorize($typeName, $operation) !== null;
+        return $this->getTypeAuthorize($typeName, $operation) !== null;
     }
 
     /**

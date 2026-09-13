@@ -209,7 +209,7 @@ class ModelResolver
                 // authorize
 
                 ($this->authorizeFunction)($query);
-                $this->applyAuthorize($query, Operation::READ);
+                $this->applyAuthorizeType($query, Operation::READ);
 
                 // scope
 
@@ -407,7 +407,7 @@ class ModelResolver
                 // authorize
 
                 ($this->authorizeFunction)($query);
-                $this->applyAuthorize($query, Operation::READ);
+                $this->applyAuthorizeType($query, Operation::READ);
 
                 // select $selectFields before counts, since withCount()
                 // will add a '*' column by default, which we don't want.
@@ -463,7 +463,7 @@ class ModelResolver
                 // rule does not reach must not be saved either.
                 $query = $this->ModelClass::query();
                 ($this->authorizeFunction)($query);
-                $this->applyAuthorize($query, Operation::READ);
+                $this->applyAuthorizeType($query, Operation::READ);
                 return $query
                     ->where('id', $id)
                     ->first();
@@ -564,23 +564,23 @@ class ModelResolver
     {
         $query = $this->ModelClass::query();
         ($this->authorizeFunction)($query);
-        $this->applyAuthorize($query, $operation);
+        $this->applyAuthorizeType($query, $operation);
 
         if (!$query->where('id', $model->id)->exists()) {
             throw new NotFoundException('Model not found');
         }
     }
 
-    protected function applyAuthorize(EloquentBuilder $query, Operation $operation): void
+    protected function applyAuthorizeType(EloquentBuilder $query, Operation $operation): void
     {
-        $this->authorizator?->applyAuthorizeForTypeName(
+        $this->authorizator?->applyAuthorizeTypeByName(
             $this->type::type(),
             $operation,
             new EloquentAuthContext($query)
         );
 
         if ($this->resourceType) {
-            $this->authorizator?->applyAuthorizeForResourceType(
+            $this->authorizator?->applyAuthorizeResourceByName(
                 $this->resourceType,
                 $operation,
                 new EloquentAuthContext($query)
@@ -595,7 +595,7 @@ class ModelResolver
      */
     protected function assertNotForbidden(Operation $operation): void
     {
-        $this->authorizator?->assertNotForbidden($this->type::type(), $operation);
+        $this->authorizator?->assertTypeNotForbidden($this->type::type(), $operation);
 
         if ($this->resourceType) {
             $this->authorizator?->assertResourceNotForbidden($this->resourceType, $operation);
