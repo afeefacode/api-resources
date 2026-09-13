@@ -24,6 +24,7 @@ class ModelResolver
     protected string $ModelClass;
     protected string $relationName;
     protected ?Authorizator $authorizator = null;
+    protected ?string $resourceType = null;
 
     protected Closure $scopeFunction;
     protected Closure $authorizeFunction;
@@ -58,6 +59,19 @@ class ModelResolver
     public function authorizator(?Authorizator $authorizator): ModelResolver
     {
         $this->authorizator = $authorizator;
+        return $this;
+    }
+
+    /**
+     * The resource whose list, get and save this resolver serves.
+     *
+     * Set only for the top level: a nested relation is resolved by
+     * ModelRelationResolver, and a rule registered for a resource is meant to
+     * stay out of there.
+     */
+    public function resourceType(string $resourceType): ModelResolver
+    {
+        $this->resourceType = $resourceType;
         return $this;
     }
 
@@ -456,7 +470,7 @@ class ModelResolver
             })
 
             ->add(function (string $typeName, array $saveFields) use ($meta) {
-                $this->authorizator?->assertNotForbidden($this->type::type(), Operation::CREATE);
+                $this->assertNotForbidden(Operation::CREATE);
 
                 $model = new $this->ModelClass();
 
@@ -487,7 +501,7 @@ class ModelResolver
             })
 
             ->update(function (Model $model, array $saveFields) use ($meta) {
-                $this->authorizator?->assertNotForbidden($this->type::type(), Operation::UPDATE);
+                $this->assertNotForbidden(Operation::UPDATE);
 
                 $saveFields = ($this->beforeUpdateFunction)($model, $saveFields, $meta);
 
@@ -513,7 +527,7 @@ class ModelResolver
             })
 
             ->delete(function (Model $model) use ($meta) {
-                $this->authorizator?->assertNotForbidden($this->type::type(), Operation::DELETE);
+                $this->assertNotForbidden(Operation::DELETE);
 
                 // Pre state check: the row still exists, so the delete rule is
                 // asked before it is gone.
@@ -564,6 +578,28 @@ class ModelResolver
             $operation,
             new EloquentAuthContext($query)
         );
+
+        if ($this->resourceType) {
+            $this->authorizator?->applyAuthorizeForResourceType(
+                $this->resourceType,
+                $operation,
+                new EloquentAuthContext($query)
+            );
+        }
+    }
+
+    /**
+     * Asks both closed slots in front of a write: the one of the type, which
+     * closes the operation on every path, and the one of the resource, which
+     * closes it for direct calls only.
+     */
+    protected function assertNotForbidden(Operation $operation): void
+    {
+        $this->authorizator?->assertNotForbidden($this->type::type(), $operation);
+
+        if ($this->resourceType) {
+            $this->authorizator?->assertResourceNotForbidden($this->resourceType, $operation);
+        }
     }
 
     protected function getRelationCounts(QueryActionResolver $r): array
