@@ -1,7 +1,7 @@
 import axios from 'axios';
-import { apiResources } from '../ApiResources';
-import { Resource } from '../resource/Resource';
-import { Type } from '../type/Type';
+import { apiResources } from '../ApiResources.js';
+import { Resource } from '../resource/Resource.js';
+import { Type } from '../type/Type.js';
 export class Api {
     constructor(baseUrl) {
         this._resources = {};

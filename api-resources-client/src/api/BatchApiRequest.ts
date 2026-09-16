@@ -1,6 +1,6 @@
-import { ApiError } from './ApiError'
-import { ApiRequest } from './ApiRequest'
-import { ApiResponse } from './ApiResponse'
+import { ApiError } from './ApiError.js'
+import { ApiRequest } from './ApiRequest.js'
+import { ApiResponse } from './ApiResponse.js'
 
 export class BatchApiRequest extends ApiRequest {
   private currentPromise?: Promise<ApiResponse | ApiError>

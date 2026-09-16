@@ -1,4 +1,4 @@
-import { BagEntries } from '../bag/Bag'
+import { BagEntries } from '../bag/Bag.js'
 
 export class ListViewFilterSource {
   public getQuery (): BagEntries<string> {

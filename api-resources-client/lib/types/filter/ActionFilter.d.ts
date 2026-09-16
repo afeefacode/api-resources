@@ -1,6 +1,6 @@
-import { Action } from '../action/Action';
-import { ApiRequest, ApiRequestJSON } from '../api/ApiRequest';
-import { Filter } from './Filter';
+import { Action } from '../action/Action.js';
+import { ApiRequest, ApiRequestJSON } from '../api/ApiRequest.js';
+import { Filter } from './Filter.js';
 export type ActionFilterValueType = (boolean | string | number | null | Date | Record<string, boolean | string | number | null> | (boolean | string | number | Date)[]);
 export type ActionFilterJSON = {
     type: string;

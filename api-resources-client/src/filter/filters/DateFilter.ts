@@ -1,5 +1,5 @@
-import { ActionFilterValueType } from '../ActionFilter'
-import { Filter } from '../Filter'
+import { ActionFilterValueType } from '../ActionFilter.js'
+import { Filter } from '../Filter.js'
 
 export class DateFilter extends Filter {
   public static type: string = 'Afeefa.DateFilter'

@@ -1,6 +1,6 @@
 import axios from 'axios';
-import { ApiError } from './ApiError';
-import { ApiResponse } from './ApiResponse';
+import { ApiError } from './ApiError.js';
+import { ApiResponse } from './ApiResponse.js';
 export class ApiRequest {
     // private _lastRequestJSON: string = ''
     // private _lastRequest!: Promise<ApiResponse | boolean>

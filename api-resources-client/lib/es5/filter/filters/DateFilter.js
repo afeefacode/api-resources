@@ -1,4 +1,4 @@
-import { Filter } from '../Filter';
+import { Filter } from '../Filter.js';
 export class DateFilter extends Filter {
     valueToQuery(value) {
         let query;

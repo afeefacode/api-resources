@@ -1,4 +1,4 @@
-import { ApiRequest } from './ApiRequest';
+import { ApiRequest } from './ApiRequest.js';
 export class BatchApiRequest extends ApiRequest {
     send() {
         if (this.currentPromise) {

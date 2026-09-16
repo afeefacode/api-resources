@@ -1,4 +1,4 @@
-import { Sanitizer } from './Sanitizer';
+import { Sanitizer } from './Sanitizer.js';
 export declare class FieldSanitizer {
     sanitizer: Sanitizer;
     private _params;

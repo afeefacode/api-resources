@@ -1,5 +1,5 @@
-import { Action, ActionJSON } from '../action/Action';
-import { Api } from '../api/Api';
+import { Action, ActionJSON } from '../action/Action.js';
+import { Api } from '../api/Api.js';
 export type ResourceJSON = Record<string, ActionJSON>;
 export declare class Resource {
     private _api;

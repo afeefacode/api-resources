@@ -1,12 +1,12 @@
-import { Action } from './action/Action';
-import { Api, ApiSchemaJSON } from './api/Api';
-import { ApiRequest } from './api/ApiRequest';
-import { Field } from './field/Field';
-import { Filter } from './filter/Filter';
-import { Model } from './Model';
-import { Type } from './type/Type';
-import { FieldValidator } from './validator/FieldValidator';
-import { RuleValidator, Validator } from './validator/Validator';
+import { Action } from './action/Action.js';
+import { Api, ApiSchemaJSON } from './api/Api.js';
+import { ApiRequest } from './api/ApiRequest.js';
+import { Field } from './field/Field.js';
+import { Filter } from './filter/Filter.js';
+import { Model } from './Model.js';
+import { Type } from './type/Type.js';
+import { FieldValidator } from './validator/FieldValidator.js';
+import { RuleValidator, Validator } from './validator/Validator.js';
 type ModelType = typeof Model;
 declare class ApiResources {
     private _apis;

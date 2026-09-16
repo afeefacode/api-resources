@@ -1,7 +1,7 @@
 import { AxiosResponse } from 'axios'
 
-import { Model, ModelJSON } from '../Model'
-import { ApiRequest } from './ApiRequest'
+import { Model, ModelJSON } from '../Model.js'
+import { ApiRequest } from './ApiRequest.js'
 
 export type ApiResponseDataJSON = ModelJSON | ModelJSON[]
 

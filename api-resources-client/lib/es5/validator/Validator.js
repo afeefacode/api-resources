@@ -1,6 +1,6 @@
-import { FieldValidator } from './FieldValidator';
-import { Rule } from './Rule';
-import { Sanitizer } from './Sanitizer';
+import { FieldValidator } from './FieldValidator.js';
+import { Rule } from './Rule.js';
+import { Sanitizer } from './Sanitizer.js';
 export class Validator {
     constructor() {
         this._rules = {};

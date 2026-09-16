@@ -1,4 +1,4 @@
-import { NumberValidator } from './NumberValidator';
+import { NumberValidator } from './NumberValidator.js';
 export class IntValidator extends NumberValidator {
     createRuleValidator(rule) {
         if (rule.name === 'int') {

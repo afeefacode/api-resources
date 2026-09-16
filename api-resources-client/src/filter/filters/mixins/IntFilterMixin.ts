@@ -1,4 +1,4 @@
-import { FilterMixinConstructor } from './FilterMixinConstructor'
+import { FilterMixinConstructor } from './FilterMixinConstructor.js'
 
 type IntFilterValue = number | null
 

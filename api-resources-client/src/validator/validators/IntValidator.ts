@@ -1,6 +1,6 @@
-import { FieldRule } from '../FieldRule'
-import { RuleValidator } from '../Validator'
-import { NumberValidator } from './NumberValidator'
+import { FieldRule } from '../FieldRule.js'
+import { RuleValidator } from '../Validator.js'
+import { NumberValidator } from './NumberValidator.js'
 
 export class IntValidator extends NumberValidator {
   public createRuleValidator (rule: FieldRule): RuleValidator<number | null> {

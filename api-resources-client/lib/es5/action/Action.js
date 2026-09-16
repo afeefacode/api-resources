@@ -1,10 +1,10 @@
-import { ApiRequest } from '../api/ApiRequest';
-import { BatchApiRequest } from '../api/BatchApiRequest';
-import { apiResources } from '../ApiResources';
-import { ActionFilterBag } from '../filter/ActionFilterBag';
-import { ActionInput } from './ActionInput';
-import { ActionParam } from './ActionParams';
-import { ActionResponse } from './ActionResponse';
+import { ApiRequest } from '../api/ApiRequest.js';
+import { BatchApiRequest } from '../api/BatchApiRequest.js';
+import { apiResources } from '../ApiResources.js';
+import { ActionFilterBag } from '../filter/ActionFilterBag.js';
+import { ActionInput } from './ActionInput.js';
+import { ActionParam } from './ActionParams.js';
+import { ActionResponse } from './ActionResponse.js';
 export class Action {
     constructor(resource, name, json) {
         this._response = null;

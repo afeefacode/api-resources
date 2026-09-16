@@ -1,1 +1,1 @@
-{"version":3,"file":"PageFilter.d.ts","sourceRoot":"","sources":["../../../../src/filter/filters/PageFilter.ts"],"names":[],"mappings":"AAAA,OAAO,EAAE,MAAM,EAAE,MAAM,WAAW,CAAA;;AAGlC,qBAAa,UAAW,SAAQ,eAAsB;IACpD,OAAc,IAAI,EAAE,MAAM,CAAsB;CACjD"}
+{"version":3,"file":"PageFilter.d.ts","sourceRoot":"","sources":["../../../../src/filter/filters/PageFilter.ts"],"names":[],"mappings":"AAAA,OAAO,EAAE,MAAM,EAAE,MAAM,cAAc,CAAA;;AAGrC,qBAAa,UAAW,SAAQ,eAAsB;IACpD,OAAc,IAAI,EAAE,MAAM,CAAsB;CACjD"}

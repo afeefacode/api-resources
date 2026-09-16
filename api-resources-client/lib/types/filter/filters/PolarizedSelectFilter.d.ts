@@ -1,4 +1,4 @@
-import { Filter } from '../Filter';
+import { Filter } from '../Filter.js';
 export declare class PolarizedSelectFilter extends Filter {
     static type: string;
     valueToQuery(value: any): string | undefined;

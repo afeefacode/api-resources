@@ -1,6 +1,6 @@
-import { Bag, BagEntries } from '../bag/Bag'
-import { ActionFilterValueType } from '../filter/ActionFilter'
-import { ListViewFilter } from './ListViewFilter'
+import { Bag, BagEntries } from '../bag/Bag.js'
+import { ActionFilterValueType } from '../filter/ActionFilter.js'
+import { ListViewFilter } from './ListViewFilter.js'
 
 export class ListViewFilterBag extends Bag<ListViewFilter> {
   public serialize (): BagEntries<ActionFilterValueType> {

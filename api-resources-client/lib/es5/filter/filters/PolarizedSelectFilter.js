@@ -1,4 +1,4 @@
-import { Filter } from '../Filter';
+import { Filter } from '../Filter.js';
 // Filter for a multi-select that supports per-entry polarity (include/exclude).
 //
 // Canonical value = flat string array of tokens, where an excluded id carries

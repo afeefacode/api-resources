@@ -1,4 +1,4 @@
-import { Model, ModelJSON } from '../Model';
+import { Model, ModelJSON } from '../Model.js';
 export declare class JsonObject extends Model {
     static type: string;
     deserialize(json: ModelJSON): void;

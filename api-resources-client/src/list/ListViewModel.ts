@@ -1,12 +1,12 @@
-import { ApiAction } from '../api/ApiAction'
-import { ApiRequest } from '../api/ApiRequest'
-import { BagEntries } from '../bag/Bag'
-import { ActionFilterValueType } from '../filter/ActionFilter'
-import { ListViewFilter } from './ListViewFilter'
-import { ListViewFilterBag } from './ListViewFilterBag'
-import { ListViewFilterChangeEvent } from './ListViewFilterChangeEvent'
-import { filterHistory } from './ListViewFilterHistory'
-import { ListViewFilterSource } from './ListViewFilterSource'
+import { ApiAction } from '../api/ApiAction.js'
+import { ApiRequest } from '../api/ApiRequest.js'
+import { BagEntries } from '../bag/Bag.js'
+import { ActionFilterValueType } from '../filter/ActionFilter.js'
+import { ListViewFilter } from './ListViewFilter.js'
+import { ListViewFilterBag } from './ListViewFilterBag.js'
+import { ListViewFilterChangeEvent } from './ListViewFilterChangeEvent.js'
+import { filterHistory } from './ListViewFilterHistory.js'
+import { ListViewFilterSource } from './ListViewFilterSource.js'
 
 export class ListViewModel {
   private _apiAction: ApiAction

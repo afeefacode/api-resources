@@ -1,11 +1,11 @@
 import axios from 'axios'
 
-import { Action } from '../action/Action'
-import { apiResources } from '../ApiResources'
-import { ModelJSON } from '../Model'
-import { Resource, ResourceJSON } from '../resource/Resource'
-import { Type, TypeJSON } from '../type/Type'
-import { Validator, ValidatorJSON } from '../validator/Validator'
+import { Action } from '../action/Action.js'
+import { apiResources } from '../ApiResources.js'
+import { ModelJSON } from '../Model.js'
+import { Resource, ResourceJSON } from '../resource/Resource.js'
+import { Type, TypeJSON } from '../type/Type.js'
+import { Validator, ValidatorJSON } from '../validator/Validator.js'
 
 export type ApiSchemaJSON = {
   types: Record<string, TypeJSON>

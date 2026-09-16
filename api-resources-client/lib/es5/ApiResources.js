@@ -1,9 +1,9 @@
-import { Api } from './api/Api';
-import { fields } from './field/fields';
-import { filters } from './filter/filters';
-import { Model } from './Model';
-import { JsonObject } from './model/JsonObject';
-import { validators } from './validator/validators';
+import { Api } from './api/Api.js';
+import { fields } from './field/fields/index.js';
+import { filters } from './filter/filters/index.js';
+import { Model } from './Model.js';
+import { JsonObject } from './model/JsonObject.js';
+import { validators } from './validator/validators/index.js';
 class ApiResources {
     constructor() {
         this._apis = {};

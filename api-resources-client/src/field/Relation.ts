@@ -1,6 +1,6 @@
-import { Model, ModelAttributes, ModelJSON } from '../Model'
-import { RelatedType, RelatedTypeJSON } from '../type/RelatedType'
-import { Field, FieldJSON, FieldJSONValue, FieldValue } from './Field'
+import { Model, ModelAttributes, ModelJSON } from '../Model.js'
+import { RelatedType, RelatedTypeJSON } from '../type/RelatedType.js'
+import { Field, FieldJSON, FieldJSONValue, FieldValue } from './Field.js'
 
 type RelationJSON = FieldJSON & {
   related_type: RelatedTypeJSON

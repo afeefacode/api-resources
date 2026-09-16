@@ -1,5 +1,5 @@
-import { Action } from '../action/Action';
-import { ActionFilter, ActionFilterJSON, ActionFilterValueType } from './ActionFilter';
+import { Action } from '../action/Action.js';
+import { ActionFilter, ActionFilterJSON, ActionFilterValueType } from './ActionFilter.js';
 export declare class Filter {
     get type(): string;
     createActionFilter(action: Action, name: string, json: ActionFilterJSON): ActionFilter;

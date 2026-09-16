@@ -1,4 +1,4 @@
-import { Attribute } from '../Attribute';
+import { Attribute } from '../Attribute.js';
 export declare class IdAttribute extends Attribute {
     static type: string;
 }

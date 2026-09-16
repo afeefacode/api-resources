@@ -1,5 +1,5 @@
-import { BagEntries } from '../bag/Bag'
-import { ListViewFilterBag } from './ListViewFilterBag'
+import { BagEntries } from '../bag/Bag.js'
+import { ListViewFilterBag } from './ListViewFilterBag.js'
 
 class ListViewFilterHistory {
   private filters: BagEntries<ListViewFilterBag> = {}

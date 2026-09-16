@@ -1,8 +1,8 @@
-import { apiResources } from './ApiResources'
-import { FieldJSONValue, FieldValue } from './field/Field'
-import { Relation } from './field/Relation'
-import { Type } from './type/Type'
-import { enumerable } from './utils/enumerable'
+import { apiResources } from './ApiResources.js'
+import { FieldJSONValue, FieldValue } from './field/Field.js'
+import { Relation } from './field/Relation.js'
+import { Type } from './type/Type.js'
+import { enumerable } from './utils/enumerable.js'
 
 export type ModelJSON = {
   [key: string]: FieldJSONValue | undefined

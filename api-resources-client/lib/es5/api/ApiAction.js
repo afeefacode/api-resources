@@ -1,6 +1,6 @@
-import { apiResources } from '../ApiResources';
-import { Model } from '../Model';
-import { ApiError } from './ApiError';
+import { apiResources } from '../ApiResources.js';
+import { Model } from '../Model.js';
+import { ApiError } from './ApiError.js';
 export class ApiAction {
     constructor() {
         this._apiActions = [];

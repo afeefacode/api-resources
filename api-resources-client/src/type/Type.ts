@@ -1,5 +1,5 @@
-import { apiResources } from '../ApiResources'
-import { Field, FieldJSON } from '../field/Field'
+import { apiResources } from '../ApiResources.js'
+import { Field, FieldJSON } from '../field/Field.js'
 
 export type TypeJSON = {
   fields?: Record<string, FieldJSON>

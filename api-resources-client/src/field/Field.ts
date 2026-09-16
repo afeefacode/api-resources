@@ -1,9 +1,9 @@
-import { Action } from '../action/Action'
-import { ApiRequest, ApiRequestJSON } from '../api/ApiRequest'
-import { apiResources } from '../ApiResources'
-import { Model, ModelAttributes, ModelJSON } from '../Model'
-import { RelatedTypeJSON } from '../type/RelatedType'
-import { FieldValidator, FieldValidatorJSON } from '../validator/FieldValidator'
+import { Action } from '../action/Action.js'
+import { ApiRequest, ApiRequestJSON } from '../api/ApiRequest.js'
+import { apiResources } from '../ApiResources.js'
+import { Model, ModelAttributes, ModelJSON } from '../Model.js'
+import { RelatedTypeJSON } from '../type/RelatedType.js'
+import { FieldValidator, FieldValidatorJSON } from '../validator/FieldValidator.js'
 
 export type FieldJSON = {
   type: string,

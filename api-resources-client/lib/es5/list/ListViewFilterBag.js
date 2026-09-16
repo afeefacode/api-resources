@@ -1,4 +1,4 @@
-import { Bag } from '../bag/Bag';
+import { Bag } from '../bag/Bag.js';
 export class ListViewFilterBag extends Bag {
     serialize() {
         const filters = {};

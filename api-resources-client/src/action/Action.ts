@@ -1,13 +1,13 @@
-import { Api } from '../api/Api'
-import { ApiRequest } from '../api/ApiRequest'
-import { BatchApiRequest } from '../api/BatchApiRequest'
-import { apiResources } from '../ApiResources'
-import { ActionFilterJSON } from '../filter/ActionFilter'
-import { ActionFilterBag } from '../filter/ActionFilterBag'
-import { Resource } from '../resource/Resource'
-import { ActionInput } from './ActionInput'
-import { ActionParam, ActionParamJSON } from './ActionParams'
-import { ActionResponse } from './ActionResponse'
+import { Api } from '../api/Api.js'
+import { ApiRequest } from '../api/ApiRequest.js'
+import { BatchApiRequest } from '../api/BatchApiRequest.js'
+import { apiResources } from '../ApiResources.js'
+import { ActionFilterJSON } from '../filter/ActionFilter.js'
+import { ActionFilterBag } from '../filter/ActionFilterBag.js'
+import { Resource } from '../resource/Resource.js'
+import { ActionInput } from './ActionInput.js'
+import { ActionParam, ActionParamJSON } from './ActionParams.js'
+import { ActionResponse } from './ActionResponse.js'
 
 export type ActionJSON = {
   params: Record<string, ActionParamJSON>

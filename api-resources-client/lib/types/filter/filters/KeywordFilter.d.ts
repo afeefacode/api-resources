@@ -1,4 +1,4 @@
-import { Filter } from '../Filter';
+import { Filter } from '../Filter.js';
 declare const KeywordFilter_base: typeof Filter;
 export declare class KeywordFilter extends KeywordFilter_base {
     static type: string;

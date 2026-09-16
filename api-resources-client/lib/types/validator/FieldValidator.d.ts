@@ -1,5 +1,5 @@
-import { FieldRule } from './FieldRule';
-import { RuleValidator, SanitizerFunction, Validator } from './Validator';
+import { FieldRule } from './FieldRule.js';
+import { RuleValidator, SanitizerFunction, Validator } from './Validator.js';
 export type FieldValidatorJSON = {
     type: string;
     params: Record<string, unknown>;

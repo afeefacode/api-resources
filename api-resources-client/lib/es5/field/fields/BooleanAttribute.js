@@ -1,4 +1,4 @@
-import { Attribute } from '../Attribute';
+import { Attribute } from '../Attribute.js';
 export class BooleanAttribute extends Attribute {
     fallbackDefault() {
         return false;

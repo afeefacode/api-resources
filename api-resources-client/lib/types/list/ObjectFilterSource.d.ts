@@ -1,5 +1,5 @@
-import { BagEntries } from '../bag/Bag';
-import { ListViewFilterSource } from './ListViewFilterSource';
+import { BagEntries } from '../bag/Bag.js';
+import { ListViewFilterSource } from './ListViewFilterSource.js';
 export declare class ObjectFilterSource extends ListViewFilterSource {
     query: BagEntries<string>;
     constructor(query: BagEntries<string>);

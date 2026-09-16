@@ -1,1 +1,1 @@
-{"version":3,"file":"StringAttribute.d.ts","sourceRoot":"","sources":["../../../../src/field/fields/StringAttribute.ts"],"names":[],"mappings":"AAAA,OAAO,EAAE,SAAS,EAAE,MAAM,cAAc,CAAA;AAExC,qBAAa,eAAgB,SAAQ,SAAS;IAC5C,OAAc,IAAI,EAAE,MAAM,CAA2B;CACtD"}
+{"version":3,"file":"StringAttribute.d.ts","sourceRoot":"","sources":["../../../../src/field/fields/StringAttribute.ts"],"names":[],"mappings":"AAAA,OAAO,EAAE,SAAS,EAAE,MAAM,iBAAiB,CAAA;AAE3C,qBAAa,eAAgB,SAAQ,SAAS;IAC5C,OAAc,IAAI,EAAE,MAAM,CAA2B;CACtD"}

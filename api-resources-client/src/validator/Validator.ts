@@ -1,8 +1,8 @@
-import { FieldRule } from './FieldRule'
-import { FieldSanitizer } from './FieldSanitizer'
-import { FieldValidator, FieldValidatorJSON } from './FieldValidator'
-import { Rule, RuleJSON } from './Rule'
-import { Sanitizer, SanitizerJSON } from './Sanitizer'
+import { FieldRule } from './FieldRule.js'
+import { FieldSanitizer } from './FieldSanitizer.js'
+import { FieldValidator, FieldValidatorJSON } from './FieldValidator.js'
+import { Rule, RuleJSON } from './Rule.js'
+import { Sanitizer, SanitizerJSON } from './Sanitizer.js'
 
 export type ValidatorJSON = {
   type: string

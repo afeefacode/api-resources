@@ -1,4 +1,4 @@
-import { ActionFilter } from './ActionFilter';
+import { ActionFilter } from './ActionFilter.js';
 export class Filter {
     get type() {
         return this.constructor.type;

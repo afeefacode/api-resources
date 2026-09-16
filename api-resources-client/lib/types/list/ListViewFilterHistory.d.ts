@@ -1,4 +1,4 @@
-import { ListViewFilterBag } from './ListViewFilterBag';
+import { ListViewFilterBag } from './ListViewFilterBag.js';
 declare class ListViewFilterHistory {
     private filters;
     hasFilters(historyKey: string): boolean;

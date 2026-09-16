@@ -1,6 +1,6 @@
-import { ModelJSON } from '../../Model';
-import { FieldRule } from '../FieldRule';
-import { RuleValidator, Validator } from '../Validator';
+import { ModelJSON } from '../../Model.js';
+import { FieldRule } from '../FieldRule.js';
+import { RuleValidator, Validator } from '../Validator.js';
 export declare class LinkManyValidator extends Validator<ModelJSON[]> {
     createRuleValidator(rule: FieldRule): RuleValidator<ModelJSON[]>;
 }

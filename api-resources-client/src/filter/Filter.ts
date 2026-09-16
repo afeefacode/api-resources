@@ -1,5 +1,5 @@
-import { Action } from '../action/Action'
-import { ActionFilter, ActionFilterJSON, ActionFilterValueType } from './ActionFilter'
+import { Action } from '../action/Action.js'
+import { ActionFilter, ActionFilterJSON, ActionFilterValueType } from './ActionFilter.js'
 
 type FilterConstructor = {
   new (): Filter,

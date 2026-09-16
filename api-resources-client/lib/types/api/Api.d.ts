@@ -1,8 +1,8 @@
-import { Action } from '../action/Action';
-import { ModelJSON } from '../Model';
-import { Resource, ResourceJSON } from '../resource/Resource';
-import { TypeJSON } from '../type/Type';
-import { ValidatorJSON } from '../validator/Validator';
+import { Action } from '../action/Action.js';
+import { ModelJSON } from '../Model.js';
+import { Resource, ResourceJSON } from '../resource/Resource.js';
+import { TypeJSON } from '../type/Type.js';
+import { ValidatorJSON } from '../validator/Validator.js';
 export type ApiSchemaJSON = {
     types: Record<string, TypeJSON>;
     resources: Record<string, ResourceJSON>;

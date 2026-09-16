@@ -1,4 +1,4 @@
-import { Validator } from '../Validator';
+import { Validator } from '../Validator.js';
 export class SetValidator extends Validator {
     createRuleValidator(rule) {
         if (rule.name === 'filled') {

@@ -1,7 +1,7 @@
-import { ApiRequest } from '../api/ApiRequest';
-import { BagEntries } from '../bag/Bag';
-import { ActionFilter, ActionFilterValueType } from '../filter/ActionFilter';
-import { ListViewModel } from './ListViewModel';
+import { ApiRequest } from '../api/ApiRequest.js';
+import { BagEntries } from '../bag/Bag.js';
+import { ActionFilter, ActionFilterValueType } from '../filter/ActionFilter.js';
+import { ListViewModel } from './ListViewModel.js';
 export declare class ListViewFilter {
     private _filter;
     private _model;

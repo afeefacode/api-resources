@@ -1,4 +1,4 @@
-import { Model, ModelConstructor, ModelJSON } from '../Model'
+import { Model, ModelConstructor, ModelJSON } from '../Model.js'
 
 export class JsonObject extends Model {
   public static type = 'Afeefa.JsonObject'

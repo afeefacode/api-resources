@@ -1,5 +1,5 @@
-import { ApiRequest } from '../api/ApiRequest';
-import { apiResources } from '../ApiResources';
+import { ApiRequest } from '../api/ApiRequest.js';
+import { apiResources } from '../ApiResources.js';
 export class Field {
     constructor() {
         this._default = null;

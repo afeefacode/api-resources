@@ -1,4 +1,4 @@
-import { Filter } from '../Filter';
+import { Filter } from '../Filter.js';
 type Direction = 'asc' | 'desc';
 type OrderFilterValue = Record<string, Direction> | null;
 export declare class OrderFilter extends Filter {

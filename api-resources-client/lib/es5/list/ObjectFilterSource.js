@@ -1,4 +1,4 @@
-import { ListViewFilterSource } from './ListViewFilterSource';
+import { ListViewFilterSource } from './ListViewFilterSource.js';
 export class ObjectFilterSource extends ListViewFilterSource {
     constructor(query) {
         super();

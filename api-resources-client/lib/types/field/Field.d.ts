@@ -1,7 +1,7 @@
-import { ApiRequest, ApiRequestJSON } from '../api/ApiRequest';
-import { Model, ModelAttributes, ModelJSON } from '../Model';
-import { RelatedTypeJSON } from '../type/RelatedType';
-import { FieldValidator, FieldValidatorJSON } from '../validator/FieldValidator';
+import { ApiRequest, ApiRequestJSON } from '../api/ApiRequest.js';
+import { Model, ModelAttributes, ModelJSON } from '../Model.js';
+import { RelatedTypeJSON } from '../type/RelatedType.js';
+import { FieldValidator, FieldValidatorJSON } from '../validator/FieldValidator.js';
 export type FieldJSON = {
     type: string;
     related_type?: RelatedTypeJSON;

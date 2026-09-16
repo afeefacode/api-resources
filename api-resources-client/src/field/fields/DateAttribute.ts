@@ -1,4 +1,4 @@
-import { Attribute } from '../Attribute'
+import { Attribute } from '../Attribute.js'
 
 export class DateAttribute extends Attribute {
   public static type: string = 'Afeefa.DateAttribute'

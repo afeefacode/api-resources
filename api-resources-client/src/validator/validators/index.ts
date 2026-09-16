@@ -1,11 +1,11 @@
-import { DateValidator } from './DateValidator'
-import { IntValidator } from './IntValidator'
-import { LinkManyValidator } from './LinkManyValidator'
-import { LinkOneValidator } from './LinkOneValidator'
-import { NumberValidator } from './NumberValidator'
-import { SetValidator } from './SetValidator'
-import { StringValidator } from './StringValidator'
-import { TextValidator } from './TextValidator'
+import { DateValidator } from './DateValidator.js'
+import { IntValidator } from './IntValidator.js'
+import { LinkManyValidator } from './LinkManyValidator.js'
+import { LinkOneValidator } from './LinkOneValidator.js'
+import { NumberValidator } from './NumberValidator.js'
+import { SetValidator } from './SetValidator.js'
+import { StringValidator } from './StringValidator.js'
+import { TextValidator } from './TextValidator.js'
 
 export const validators = {
   'Afeefa.StringValidator': new StringValidator(),

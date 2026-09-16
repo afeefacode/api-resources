@@ -1,13 +1,13 @@
 import { CancelTokenSource } from 'axios'
 
-import { Action } from '../action/Action'
-import { apiResources } from '../ApiResources'
-import { BagEntries } from '../bag/Bag'
-import { ActionFilterValueType } from '../filter/ActionFilter'
-import { Model } from '../Model'
-import { ApiError } from './ApiError'
-import { ApiRequest } from './ApiRequest'
-import { ApiResponse } from './ApiResponse'
+import { Action } from '../action/Action.js'
+import { apiResources } from '../ApiResources.js'
+import { BagEntries } from '../bag/Bag.js'
+import { ActionFilterValueType } from '../filter/ActionFilter.js'
+import { Model } from '../Model.js'
+import { ApiError } from './ApiError.js'
+import { ApiRequest } from './ApiRequest.js'
+import { ApiResponse } from './ApiResponse.js'
 
 type ApiListActionResponse = {
   models: Model[],

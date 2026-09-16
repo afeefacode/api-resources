@@ -1,10 +1,10 @@
 import axios, { AxiosError, CancelTokenSource } from 'axios'
 
-import { Action } from '../action/Action'
-import { BagEntries } from '../bag/Bag'
-import { ActionFilterValueType } from '../filter/ActionFilter'
-import { ApiError } from './ApiError'
-import { ApiResponse } from './ApiResponse'
+import { Action } from '../action/Action.js'
+import { BagEntries } from '../bag/Bag.js'
+import { ActionFilterValueType } from '../filter/ActionFilter.js'
+import { ApiError } from './ApiError.js'
+import { ApiResponse } from './ApiResponse.js'
 
 export type ApiRequestJSON = {
   api?: string,

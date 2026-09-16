@@ -1,4 +1,4 @@
-import { Model } from '../Model';
+import { Model } from '../Model.js';
 export class JsonObject extends Model {
     deserialize(json) {
         this.class = this.constructor;

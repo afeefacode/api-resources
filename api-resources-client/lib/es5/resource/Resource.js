@@ -1,4 +1,4 @@
-import { Action } from '../action/Action';
+import { Action } from '../action/Action.js';
 export class Resource {
     constructor(api, name, json) {
         this._actions = {};

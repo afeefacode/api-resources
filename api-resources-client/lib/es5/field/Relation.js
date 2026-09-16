@@ -1,6 +1,6 @@
-import { Model } from '../Model';
-import { RelatedType } from '../type/RelatedType';
-import { Field } from './Field';
+import { Model } from '../Model.js';
+import { RelatedType } from '../type/RelatedType.js';
+import { Field } from './Field.js';
 export class Relation extends Field {
     createTypeField(json) {
         const relation = super.createTypeField(json);

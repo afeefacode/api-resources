@@ -1,4 +1,4 @@
-import { Attribute } from '../Attribute';
+import { Attribute } from '../Attribute.js';
 export declare class IntAttribute extends Attribute {
     static type: string;
 }

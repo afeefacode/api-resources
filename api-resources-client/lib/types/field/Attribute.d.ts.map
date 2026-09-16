@@ -1,1 +1,1 @@
-{"version":3,"file":"Attribute.d.ts","sourceRoot":"","sources":["../../../src/field/Attribute.ts"],"names":[],"mappings":"AAAA,OAAO,EAAE,KAAK,EAAE,MAAM,SAAS,CAAA;AAE/B,qBAAa,SAAU,SAAQ,KAAK;CACnC"}
+{"version":3,"file":"Attribute.d.ts","sourceRoot":"","sources":["../../../src/field/Attribute.ts"],"names":[],"mappings":"AAAA,OAAO,EAAE,KAAK,EAAE,MAAM,YAAY,CAAA;AAElC,qBAAa,SAAU,SAAQ,KAAK;CACnC"}

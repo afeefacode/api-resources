@@ -1,5 +1,5 @@
-import { ActionFilterValueType } from '../ActionFilter';
-import { Filter } from '../Filter';
+import { ActionFilterValueType } from '../ActionFilter.js';
+import { Filter } from '../Filter.js';
 export declare class DateFilter extends Filter {
     static type: string;
     valueToQuery(value: Date | null): string | undefined;

@@ -1,4 +1,4 @@
-import { Attribute } from '../Attribute';
+import { Attribute } from '../Attribute.js';
 export class SetAttribute extends Attribute {
     fallbackDefault() {
         return [];

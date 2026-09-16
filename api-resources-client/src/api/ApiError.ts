@@ -1,6 +1,6 @@
 import { AxiosError } from 'axios'
 
-import { ApiRequest } from './ApiRequest'
+import { ApiRequest } from './ApiRequest.js'
 
 export type ApiResponseErrorJSON = {
   message: string,

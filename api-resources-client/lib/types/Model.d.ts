@@ -1,5 +1,5 @@
-import { FieldJSONValue, FieldValue } from './field/Field';
-import { Type } from './type/Type';
+import { FieldJSONValue, FieldValue } from './field/Field.js';
+import { Type } from './type/Type.js';
 export type ModelJSON = {
     [key: string]: FieldJSONValue | undefined;
     type: string;

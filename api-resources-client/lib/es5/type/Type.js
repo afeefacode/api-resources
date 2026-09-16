@@ -1,4 +1,4 @@
-import { apiResources } from '../ApiResources';
+import { apiResources } from '../ApiResources.js';
 export class Type {
     constructor(name, json) {
         this._fields = {};

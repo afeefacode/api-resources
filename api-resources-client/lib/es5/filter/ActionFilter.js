@@ -1,4 +1,4 @@
-import { ApiRequest } from '../api/ApiRequest';
+import { ApiRequest } from '../api/ApiRequest.js';
 export class ActionFilter {
     constructor(action, filter, name, json) {
         this._defaultValue = null;

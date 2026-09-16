@@ -1,12 +1,12 @@
-import { Relation } from '../Relation'
-import { BooleanAttribute } from './BooleanAttribute'
-import { DateAttribute } from './DateAttribute'
-import { EnumAttribute } from './EnumAttribute'
-import { IdAttribute } from './IdAttribute'
-import { IntAttribute } from './IntAttribute'
-import { NumberAttribute } from './NumberAttribute'
-import { SetAttribute } from './SetAttribute'
-import { StringAttribute } from './StringAttribute'
+import { Relation } from '../Relation.js'
+import { BooleanAttribute } from './BooleanAttribute.js'
+import { DateAttribute } from './DateAttribute.js'
+import { EnumAttribute } from './EnumAttribute.js'
+import { IdAttribute } from './IdAttribute.js'
+import { IntAttribute } from './IntAttribute.js'
+import { NumberAttribute } from './NumberAttribute.js'
+import { SetAttribute } from './SetAttribute.js'
+import { StringAttribute } from './StringAttribute.js'
 
 export const fields = [
   new StringAttribute(),

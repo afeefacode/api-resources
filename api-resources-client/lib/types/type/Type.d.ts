@@ -1,4 +1,4 @@
-import { Field, FieldJSON } from '../field/Field';
+import { Field, FieldJSON } from '../field/Field.js';
 export type TypeJSON = {
     fields?: Record<string, FieldJSON>;
     update_fields?: Record<string, FieldJSON>;

@@ -1,4 +1,4 @@
-import { Validator } from '../Validator';
+import { Validator } from '../Validator.js';
 export class StringValidator extends Validator {
     createSanitizerFunction(sanitizer) {
         if (sanitizer.name === 'trim') {

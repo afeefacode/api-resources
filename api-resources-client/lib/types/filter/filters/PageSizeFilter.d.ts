@@ -1,4 +1,4 @@
-import { Filter } from '../Filter';
+import { Filter } from '../Filter.js';
 declare const PageSizeFilter_base: typeof Filter;
 export declare class PageSizeFilter extends PageSizeFilter_base {
     static type: string;

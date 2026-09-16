@@ -1,5 +1,5 @@
-import { FieldRule } from './FieldRule';
-import { FieldSanitizer } from './FieldSanitizer';
+import { FieldRule } from './FieldRule.js';
+import { FieldSanitizer } from './FieldSanitizer.js';
 export class FieldValidator {
     constructor(validator, json) {
         this._params = {};

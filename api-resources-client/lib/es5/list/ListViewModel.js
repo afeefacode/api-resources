@@ -1,7 +1,7 @@
-import { ListViewFilter } from './ListViewFilter';
-import { ListViewFilterBag } from './ListViewFilterBag';
-import { ListViewFilterChangeEvent } from './ListViewFilterChangeEvent';
-import { filterHistory } from './ListViewFilterHistory';
+import { ListViewFilter } from './ListViewFilter.js';
+import { ListViewFilterBag } from './ListViewFilterBag.js';
+import { ListViewFilterChangeEvent } from './ListViewFilterChangeEvent.js';
+import { filterHistory } from './ListViewFilterHistory.js';
 export class ListViewModel {
     constructor(apiAction) {
         this._filterSource = null;
