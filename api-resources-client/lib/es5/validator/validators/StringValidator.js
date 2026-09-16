@@ -82,7 +82,7 @@ export class StringValidator extends Validator {
                     return true;
                 }
                 const valueToTest = value || ''; // convert null to ''
-                if (!new RegExp(regex).exec(valueToTest)) {
+                if (!this.toRegExp(regex).exec(valueToTest)) {
                     return rule.message;
                 }
                 return true;
@@ -92,5 +92,17 @@ export class StringValidator extends Validator {
     }
     getMaxValueLength(params) {
         return params.max || null;
+    }
+    /**
+     * The pattern arrives the way the server needs it, wrapped in delimiters: '/^a+$/i'.
+     * RegExp reads those slashes as characters to match, so they are peeled off here and
+     * the flags are kept. A pattern without them is passed through untouched.
+     */
+    toRegExp(pattern) {
+        const delimited = /^\/([\s\S]*)\/([a-z]*)$/.exec(pattern);
+        if (delimited) {
+            return new RegExp(delimited[1], delimited[2]);
+        }
+        return new RegExp(pattern);
     }
 }
