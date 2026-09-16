@@ -190,3 +190,27 @@ describe.each([
     expect(ruleValidator(value)).toBe('MyString muss ein /a/ enthalten.')
   })
 })
+
+// The server sends the pattern as a string, wrapped in the delimiters preg_match needs.
+describe('regex from the schema', () => {
+  test('delimited pattern matches', () => {
+    const ruleValidator = createStringValidator('regex', { regex: '/^[^@]+@[^@]+$/' }, 'invalid')
+    expect(ruleValidator('someone@example.com')).toBe(true)
+  })
+
+  test('delimited pattern rejects', () => {
+    const ruleValidator = createStringValidator('regex', { regex: '/^[^@]+@[^@]+$/' }, 'invalid')
+    expect(ruleValidator('someone')).toBe('invalid')
+  })
+
+  test('delimited pattern keeps its flags', () => {
+    const ruleValidator = createStringValidator('regex', { regex: '/^ABC$/i' }, 'invalid')
+    expect(ruleValidator('abc')).toBe(true)
+  })
+
+  test('pattern without delimiters still works', () => {
+    const ruleValidator = createStringValidator('regex', { regex: '^a+$' }, 'invalid')
+    expect(ruleValidator('aaa')).toBe(true)
+    expect(ruleValidator('b')).toBe('invalid')
+  })
+})

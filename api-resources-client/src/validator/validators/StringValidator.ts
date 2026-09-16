@@ -103,7 +103,7 @@ export class StringValidator extends Validator<string | null> {
         }
 
         const valueToTest = value || '' // convert null to ''
-        if (!new RegExp(regex).exec(valueToTest)) {
+        if (!this.toRegExp(regex).exec(valueToTest)) {
           return rule.message
         }
 
@@ -116,5 +116,20 @@ export class StringValidator extends Validator<string | null> {
 
   public getMaxValueLength (params: Record<string, unknown>): number | null {
     return params.max as number || null
+  }
+
+  /**
+   * The pattern arrives the way the server needs it, wrapped in delimiters: '/^a+$/i'.
+   * RegExp reads those slashes as characters to match, so they are peeled off here and
+   * the flags are kept. A pattern without them is passed through untouched.
+   */
+  protected toRegExp (pattern: string): RegExp {
+    const delimited = /^\/([\s\S]*)\/([a-z]*)$/.exec(pattern)
+
+    if (delimited) {
+      return new RegExp(delimited[1] as string, delimited[2])
+    }
+
+    return new RegExp(pattern)
   }
 }
