@@ -39,6 +39,24 @@ export class FieldValidator<T=any> {
     ]
   }
 
+  /**
+   * Checks a value against all rules of the field and returns the result of the
+   * first failing rule, or true if the value passes.
+   *
+   * getRules() returns the rules as functions for a form framework to call.
+   * This runs them directly, for code that does not use one. The return value
+   * follows the same contract as a single rule: true, or a message.
+   */
+  public validate (value: T, fieldLabel: string): boolean | string {
+    for (const rule of this.getRules(fieldLabel)) {
+      const result = rule(value)
+      if (result !== true) {
+        return result
+      }
+    }
+    return true
+  }
+
   public getSanitizers (): SanitizerFunction<T>[] {
     const sanitizers = this._validator.getSanitizers()
     return Object.values(sanitizers).map(sanitizer => {
